@@ -2,6 +2,7 @@
 
 namespace League\Skeleton\Test;
 
+/* todo: another docblock */
 class ExampleTest extends \PHPUnit_Framework_TestCase
 {
 

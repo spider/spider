@@ -2,6 +2,7 @@
 
 namespace League\Skeleton;
 
+/* todo: docblock */
 class SkeletonClass
 {
 
@@ -22,5 +23,9 @@ class SkeletonClass
     public function echoPhrase($phrase)
     {
         return $phrase;
+    }
+
+    public function michael() {
+
     }
 }
