@@ -1,8 +1,7 @@
 <?php
 
-namespace League\Skeleton;
+namespace Michaels\Spider;
 
-/* todo: docblock */
 class SkeletonClass
 {
 
@@ -23,9 +22,5 @@ class SkeletonClass
     public function echoPhrase($phrase)
     {
         return $phrase;
-    }
-
-    public function michael() {
-
     }
 }
