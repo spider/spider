@@ -2,7 +2,7 @@
 
 namespace Michaels\Spider;
 
-class SkeletonClass
+class Spider
 {
 
     /**

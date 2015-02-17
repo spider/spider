@@ -11,3 +11,7 @@ Pull Requests against the proposal documents are welcome, but only if you work w
   * No querybuilder, but a seprate package that can enhance this one with a query builder
   * Standard blueprints implementation
   * A filter builder that doesn't make your mind go nuts.
+  * An easy transition from SQL or Mongo
+  * Simple one Class drivers
+  * Not limited to Graph Datastores, can make drivers for any datastore
+  * Populate Graphs from array data, not only data sources
