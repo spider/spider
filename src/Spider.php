@@ -1,6 +1,6 @@
 <?php
 
-namespace Michaels\Spider;
+namespace Spider;
 
 class Spider
 {

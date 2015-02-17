@@ -2,6 +2,7 @@
 In an effort to be modular, DRY, and SOLID, the package itself is divided into the following, self-contained pieces, each with their own namespace:
   * **Spider\Spider**: Top level API and actual Spider that walks and manipulates graphs
   * **Spider\Walker**: Gremlin-like query builder "walks" Graph data
+  * **Spider\Pathfinder**: Forked from [neo4j](https://github.com/jadell/neo4jphp/wiki/Paths)
   * **Spider\QueryBuilder**: Build queries from chained method calls. (May be part of Walker)
   * **Spider\Graph**: Individual graph from query results or population. Basically an OGM and Graph Collection.
   * **Spider\Connection**: Manages various connections and interfaces. Connects to database through Drivers
