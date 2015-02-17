@@ -23,8 +23,6 @@ $graph->michael->friends_with->nicole->setProperty('last_name', 'wilson');
 $graph->save();
 ```
   
-## The Spider
-
 ## Connections and Drivers
 Connections hold the actual connection and credentials, but do all work through the Driver
 
