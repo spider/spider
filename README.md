@@ -5,21 +5,22 @@ Pull Requests against the proposal documents are welcome, but only if you work w
 Please browse through /proposal/ to see the work in progress. Begin with proposal/overview.md
 
 *Goals*
-  * Framework agnostic, generic package.
-  * Use drivers (with interfaces) to connect to specific graph databases (orient, neo4j, titat, etc)
-  * Default to RexsterPro driver (included)
-  * Include a basic OGM and GraphCollection to return Graph queries
-  * Standard blueprints implementation
-  * A filter builder that doesn't make your mind go nuts.
+  * Framework agnostic, generic package using composer.
+  * Community-driven, best practices code (DRY, SOLID, PHP The Right Way, PSRs, Tinkerpop, Testing, etc.)
   * An easy transition from SQL or Mongo
-  * Not limited to Graph Datastores, can make drivers for any datastore
-  * Validation, Filtering, and Security
+  * Simple, fluent, and consistent API
+  * An Object-Graph-Mapper and Models inspired by Eloquent, Propel, and Monga.
+  * A filter/query builder that doesn't make your mind go nuts.
+  * Simple drivers to connect to specific graph databases (orient, neo4j, titat, etc) or other datastores
+  * Handle multiple connections
+  * Validation, filtering, security, and performance.
+  * Extensible and configurable (e.g. for caching).
 
 *Inspired By*
   * [Eloquent ORM](http://laravel.com/docs/5.0/eloquent)
   * [Hibernate OGM](http://hibernate.org/ogm/)
-  * Propel ORM
-  * Neo4j Client
-  * Bulbflow
+  * [Propel ORM](http://propelorm.org)
+  * [Neo4j Client](https://github.com/neoxygen/neo4j-neoclient)
+  * [Bulbflow](http://bulbflow.com/)
   
   
