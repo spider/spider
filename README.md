@@ -1,8 +1,10 @@
 # Spider Graphs
-A simple, flexible, and generic graph database abstraction for php. **This is in proposal stage right now**, the api is being worked out.
-Pull Requests against the proposal documents are welcome, but only if you work with Graph Databases.
+A simple, flexible, and generic graph-data abstraction for php.
 
-Please browse through /proposal/ to see the work in progress. Begin with proposal/overview.md
+**This is in [proposal](proposal/overview.md) stage right now**, the api is being worked out.
+Pull Requests against the proposal documents are welcome from all, not just graph junkies.
+
+Please browse through the [proposal](proposal/overview.md) to see the work in progress. Begin with proposal/overview.md
 
 *Goals*
   * Framework agnostic, generic package using composer.
