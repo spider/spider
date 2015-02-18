@@ -43,12 +43,12 @@ The Driver itself makes all the CRUD transactions. The driver is accessed throug
   * Use the [DataMapper Patter](http://martinfowler.com/eaaCatalog/dataMapper.html)
   * GraphModels protects against Mass Assignment
 
-## v0.5 Spider and Walker
+## v0.5 Spider and Walker (First Beta Release)
 Top level Api wrapper meant to encapsulate for easy use.
   * walk data currently held in a Graph()
   * walk data as a method of querying against a connection stored in a Graph()
 
-## v0.6 Rexster Driver and Gremlin Server Driver
+## v0.6 Rexster Driver and Gremlin Server Driver (First Production Release, though unstable)
 Use dependencies.
 
 ## v0.7 Caching, Events, and Extensions
@@ -58,6 +58,8 @@ Use dependencies.
   * Extension for [Container](http://container.thephpleague.com/)
   
 ## v0.8 Finalize API and Security
+  * Towards a production release
+  * Security concerns, testing
 
 ## Beyond
   * Pathfinder and Utilities
