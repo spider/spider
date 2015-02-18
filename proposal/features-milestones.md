@@ -27,6 +27,7 @@ The Driver itself makes all the CRUD transactions. The driver is accessed throug
     * e.g. `$graph->michael['last_name']->married_to['years']->wife['previous_names']['maiden_name'];`
   * Built in ways to itenerate through the stored graph or results (using closures or loops)
   * Accessors and Mutators
+  * Graph Collections can be extended `Graph::extend('reverse', $closure)`
   
 ## v0.4 Queries
   * Return Graph with connection to datastore
@@ -47,6 +48,8 @@ The Driver itself makes all the CRUD transactions. The driver is accessed throug
 Top level Api wrapper meant to encapsulate for easy use.
   * walk data currently held in a Graph()
   * walk data as a method of querying against a connection stored in a Graph()
+  * Find shortest paths
+  * Allow for extensions to give the spider new functionality.
 
 ## v0.6 Rexster Driver and Gremlin Server Driver (First Production Release, though unstable)
 Use dependencies.
