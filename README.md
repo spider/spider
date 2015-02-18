@@ -1,6 +1,8 @@
 # Spider Graphs
 A simple, flexible, and generic graph-data abstraction for php.
 
+Why "Spider?" Because spiders crawl over webs, and webs look like graphs. Walk your data.
+
 **This is in [proposal](proposal/overview.md) stage right now**, the api is being worked out.
 Pull Requests against the proposal documents are welcome from all, not just graph junkies.
 
