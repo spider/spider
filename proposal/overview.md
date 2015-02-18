@@ -8,7 +8,7 @@ Let's break down the above description to describe the problem being solved.
 ### Graphs Data Manager
 Highly relational data can be thought of as a graph. Take the one below:
 
-[[ http://talks.chastell.net/rubyconf-2011/file/relations/graph-database.png | height = 100px ]]
+<a href="http://talks.chastell.net/rubyconf-2011/file/relations/graph-database.png"><img src="http://talks.chastell.net/rubyconf-2011/file/relations/graph-database.png" height="100" ></a>
 
 We can immediately see a lot about this data. We can find who knows whom and for how long. If the graph were expanded, we could see who knows whom through others or how many friendships a single person has in common, etc.
 
@@ -45,5 +45,5 @@ Even cooler, Tinkerpop has created a Server API with its own, flexible query lan
 Spider includes a driver to connect to these databases, so in 90 percent of the cases, all you have to do is `composer require` Spider and off you go :)
 
 ## The Proposal
-
+Spider is only in the proposal stages, right now
 
