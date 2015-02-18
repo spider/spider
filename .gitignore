@@ -4,5 +4,4 @@ composer.lock
 vendor
 
 .idea
-scratch.php
-api.php
+sandbox

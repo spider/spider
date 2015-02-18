@@ -17,7 +17,8 @@
     ],
     "require": {
       "php": ">=5.4.0",
-      "illuminate/support": "~5.0"
+      "illuminate/support": "~5.0",
+      "everyman/neo4jphp": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit" : "4.*",
@@ -30,7 +31,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Michaels\\Spider\\Test\\": "tests"
+          "Spider\\Test\\": "tests"
         }
     },
     "extra": {
