@@ -3,7 +3,7 @@ Spider is a graph-aware data manager with a driver-based abstraction for various
 
 ## So What Is Spider, Really?
 Let's break down the above description to describe the problem being solved.
-  > A **graph**-aware **data manager** with a **driver-based abstraction** for various graph **datastores** and a **blueprints** implementation.
+  > A **graph**-aware **data manager** with a **driver-based** abstraction for various graph **datastores** and a **gremlin** implementation.
 
 ### Graphs Data Manager
 Highly relational data can be thought of as a graph. Take the one below:
@@ -22,7 +22,27 @@ Obviously, the possibilities of graphs can get uber complex, and super useful. F
   * http://neo4j.com/developer/graph-database/
   
 Not worrying about *how* we get graph data, lets say you have some data that is highly relational, just like this graph. **Spider** is a set of tools that allow you to "walk", iterate over, and manipulate that graph.
+It's goal is to be highly-intuitive, feature-full, and performant.
 
-### Data Manager
+```php
+/* A Simple Graph */
+$graph = new Graph();
+$michael = $graph->addVertex('Michael', ['location' => 'Houston']);
+$nicole = $graph->addVertex('Nicole', ['location' => 'Houston']);
+$graph->connect($michael, 'is_married_to', $nicole, ['since' => 2014]);
+
+$wife = $graph->findOne('Michael', 'is_married_to');
+```
+
+### Driver Based Datastores
+We want to persist that data, and there are lots of graph databases out there. Right now, especially for php, each has its own (usually not well maintained) language binding. **Spider** aims to be a generic abstraction for graph data regardless of which database you use.
+In theory, you could even create a simple (one class) driver that works with a MySQL or file-based data store. You can switch datastores out, use remote connections, use multiple connections, and clustering. All from one api that is simple and flexible.
+
+### Gremlin
+[Tinkerpop](http://www.tinkerpop.com/) is an open-source organization that aims to standardize all these wonderful graph datastores.
+**Spider** builds on this standardization, taking full advantage of the language and workflows that already work (why re-invent the wheel?)
+Even cooler, Tinkerpop has created a Server API with its own, flexible query language that sits on top of nearly all graph databases. This allows you to use gremlin with [OrientDB](http://www.orientechnologies.com/), [Neo4j](http://neo4j.com), etc.
+Spider includes a driver to connect to these databases, so in 90 percent of the cases, all you have to do is `composer require` Spider and off you go :)
+
 
 
