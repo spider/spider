@@ -8,7 +8,7 @@ Let's break down the above description to describe the problem being solved.
 ### Graphs Data Manager
 Highly relational data can be thought of as a graph. Take the one below:
 
-<a href="http://talks.chastell.net/rubyconf-2011/file/relations/graph-database.png"><img src="http://talks.chastell.net/rubyconf-2011/file/relations/graph-database.png" height="100" ></a>
+<a href="http://talks.chastell.net/rubyconf-2011/file/relations/graph-database.png"><img src="http://talks.chastell.net/rubyconf-2011/file/relations/graph-database.png" height="400" ></a>
 
 We can immediately see a lot about this data. We can find who knows whom and for how long. If the graph were expanded, we could see who knows whom through others or how many friendships a single person has in common, etc.
 
@@ -45,5 +45,32 @@ Even cooler, Tinkerpop has created a Server API with its own, flexible query lan
 Spider includes a driver to connect to these databases, so in 90 percent of the cases, all you have to do is `composer require` Spider and off you go :)
 
 ## The Proposal
-Spider is only in the proposal stages, right now
+Spider is only in the proposal stages, right now. We are working out the goals, architecture, and API over the next few weeks before diving into the actionalble code. Better to measure twice and cut once.
+If you have any feedback, please open an issue and label `proposal` for discussion. You can also edit these markdown files and submit pull requests. Be clear about what you are trying to do.
+This is a living proposal. The more feedback the better.
+
+### Overreaching Goals
+  * Framework agnostic, generic package using composer.
+  * Community-driven, best practices code (DRY, SOLID, PHP The Right Way, PSRs, Tinkerpop, Testing, etc.)
+  * An easy transition from SQL or Mongo
+  * Simple, fluent, and consistent API
+  * An Object-Graph-Mapper and Models inspired by Eloquent, Propel, and Monga.
+  * A filter/query builder that doesn't make your mind go nuts.
+  * Simple drivers to connect to specific graph databases (orient, neo4j, titat, etc) or other datastores
+  * Handle multiple connections
+  * Validation, filtering, security, and performance.
+  * Extensible and configurable (e.g. for caching).
+  
+### Table of Contents
+  * **[User Story](user-story.md)**: Like an acceptence test, a developer uses v1.0 in the future.
+  * **[Features and Milestones](features-milestones.md)**: An organic roadmap for development. Which features land in which semver versions up to 1.0. Great for an overview of all features.
+  * **[Architecture](architecture.md)**: Notes on construction, coding, and design. Dependencies.
+  * **[Inspiration](inspiration.md)**: Bits of code from other packages and languages we like. A hodge podge.
+  * **[Quotes](quotes.md)**: Snippets of quotes about graphs that may be useful.
+  * **Api**: Fleshing out the *public* api for the different components.
+    * [Connections, Managers, and Drivers](api/connections-drivers.md)
+    * [Graphs and Models](api/graphs-models.md)
+    * [QueryBuilder](api/query-builder.md)
+    * [Spider and Utilities](api/spider.md)
+  * **[Meta](meta.md)**: Other thoughts.
 
