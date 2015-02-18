@@ -20,12 +20,12 @@ The Driver itself makes all the CRUD transactions. The driver is accessed throug
 ## v0.3 Graphs and GraphCollections
   * Populate Graphs from array data, not only data sources
   * Extend `Illuminate\Support\Collection`
-  * toGraphson()
-  * Filter (aura) and validation
+  * ->toGraphson()
+  * Filter and validation
   * Driver results filtered into a Graph
   * A sane and simple way to explore the graph as a php object.
     * e.g. `$graph->michael['last_name']->married_to['years']->wife['previous_names']['maiden_name'];`
-  * Built in ways to itenerate through the stored graph or results (using closures or loops)
+  * Built in ways to iterate through the stored graph or results (using closures or loops)
   * Accessors and Mutators
   * Graph Collections can be extended `Graph::extend('reverse', $closure)`
   
@@ -37,9 +37,10 @@ The Driver itself makes all the CRUD transactions. The driver is accessed throug
   * Allow for multiple (batch) queries as sent through an array
   * Allow for PreparedQueries() to be saved and reused as templates
   * Perhaps use Data Marshal [aura](https://github.com/auraphp/Aura.Marshal/tree/master)
-  * ?Querybuilder to Gremlin Script to connection?
+  * ? Querybuilder to Gremlin Script to connection ?
 
 ## v0.4 GraphModels and OGM
+Model driven OGM inspiered by popular ORMs.
   * Allow for explicit models or generic (included) model ($manager->buildGraph()) or Spider\Models\Generic('type')
   * Use the [DataMapper Patter](http://martinfowler.com/eaaCatalog/dataMapper.html)
   * GraphModels protects against Mass Assignment
@@ -52,7 +53,7 @@ Top level Api wrapper meant to encapsulate for easy use.
   * Allow for extensions to give the spider new functionality.
 
 ## v0.6 Rexster Driver and Gremlin Server Driver (First Production Release, though unstable)
-Use dependencies.
+Use dependencies. Complete Driver.
 
 ## v0.7 Caching, Events, and Extensions
   * Caching interface to integrate into current caching scenario. Caching can be enabled or disabled.
