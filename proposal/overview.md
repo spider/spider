@@ -1,5 +1,5 @@
 # Spider Proposal Overview
-Spider is a graph-aware data manager with a driver-based abstraction for various graph datastores and a blueprints implementation.
+Spider is a graph-aware data manager with a driver-based abstraction for various graph datastores and a gremlin implementation.
 
 ## So What Is Spider, Really?
 Let's break down the above description to describe the problem being solved.
@@ -8,7 +8,7 @@ Let's break down the above description to describe the problem being solved.
 ### Graphs Data Manager
 Highly relational data can be thought of as a graph. Take the one below:
 
-![alt text](http://talks.chastell.net/rubyconf-2011/file/relations/graph-database.png "Property Graph")
+[[ http://talks.chastell.net/rubyconf-2011/file/relations/graph-database.png | height = 100px ]]
 
 We can immediately see a lot about this data. We can find who knows whom and for how long. If the graph were expanded, we could see who knows whom through others or how many friendships a single person has in common, etc.
 
@@ -44,5 +44,6 @@ In theory, you could even create a simple (one class) driver that works with a M
 Even cooler, Tinkerpop has created a Server API with its own, flexible query language that sits on top of nearly all graph databases. This allows you to use gremlin with [OrientDB](http://www.orientechnologies.com/), [Neo4j](http://neo4j.com), etc.
 Spider includes a driver to connect to these databases, so in 90 percent of the cases, all you have to do is `composer require` Spider and off you go :)
 
+## The Proposal
 
 
