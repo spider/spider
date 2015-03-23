@@ -7,7 +7,12 @@ In an effort to be modular, DRY, and SOLID, the package itself is divided into t
   * **Spider\Graph**: Individual graph from query results or population. Basically an OGM and Graph Collection.
   * **Spider\Connection**: Manages various connections and interfaces. Connects to database through Drivers
   * **Spider\Drivers**: First party drivers for Tinkerpop and maybe SQL
+  * **Spider\Algorithms**: Command pack for [midas](http://github.com/chrismichaels84/midas)
   * **<vendor>\<DataStore>Driver**: ThirdParty drivers from various datastores
+ 
+## Algorithms
+  * Much of the data manipulation should be reusable algorithms. There should also exist algorithms for finding shortest path, etc.
+  * Depend on [midas](http://github.com/chrismichaels84/midas) for algorithm management
   
 ## Sample Api Usage
 ```php
