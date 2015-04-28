@@ -5,7 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/chrismichaels84/spider-graph/badge.svg?branch=master)](https://coveralls.io/r/chrismichaels84/spider-graph?branch=master)
 [![Total Downloads](https://img.shields.io/packagist/dt/michaels/spider-graph.svg?style=flat-square)](https://packagist.org/packages/michaels/spider-graph)
 
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/3ef3b9a4-6078-4ddf-bf0d-c84dac87f37a/big.png)](https://insight.sensiolabs.com/projects/3ef3b9a4-6078-4ddf-bf0d-c84dac87f37a)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/374720ec-b7db-47fc-b958-cc240cf06fbb/big.png)](https://insight.sensiolabs.com/projects/374720ec-b7db-47fc-b958-cc240cf06fbb)
 
 A simple, flexible, and generic graph-data abstraction for php.
 
@@ -79,6 +79,7 @@ $manager = new Michaels\Spider\Connections\Manager([
 
 $defaultConnection = $manager->make();
 $connectionTwo = $manager->make('connection-two');
+```
 
 The connection manager also inherits from [michaels/data-manager](http://github.com/chrismichaels84/data-manager), 
 so you have access to get(), set, has(), etc using dot notation for all connections.
