@@ -1,9 +1,10 @@
 {
-    "name": "Mihcaels/Spider",
-    "description": "Graph awesomeness",
+  "name": "michaels/spider",
+  "description": "Simple, flexible graph database abstraction. IN DEVELOPMENT.",
     "keywords": [
         "graphs",
-        "tinkerpop"
+      "tinkerpop",
+      "database"
     ],
     "homepage": "https://github.com/chrismichaels84/spider-graph",
     "license": "MIT",
@@ -18,8 +19,7 @@
     "require": {
       "php" : ">=5.4.0",
       "illuminate/support": "5.*",
-      "everyman/neo4jphp": "dev-master",
-        "michaels/midas": "v0.3.1"
+      "michaels/data-manager": "0.*"
     },
     "require-dev": {
       "phpunit/phpunit" : "4.*",
