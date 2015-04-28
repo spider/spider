@@ -1,9 +1,9 @@
 # Spider Graphs
-[![Latest Version](https://img.shields.io/github/release/chrismichaels84/data-manager.svg?style=flat-square)](https://github.com/chrismichaels84/data-manager/releases)
+[![Latest Version](https://img.shields.io/github/release/chrismichaels84/spider-graph.svg?style=flat-square)](https://github.com/chrismichaels84/spider-graph/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Build Status](https://img.shields.io/travis/chrismichaels84/data-manager/master.svg?style=flat-square)](https://travis-ci.org/chrismichaels84/data-manager)
-[![Coverage Status](https://coveralls.io/repos/chrismichaels84/data-manager/badge.svg?branch=master)](https://coveralls.io/r/chrismichaels84/data-manager?branch=master)
-[![Total Downloads](https://img.shields.io/packagist/dt/michaels/data-manager.svg?style=flat-square)](https://packagist.org/packages/michaels/data-manager)
+[![Build Status](https://img.shields.io/travis/chrismichaels84/spider-graph/master.svg?style=flat-square)](https://travis-ci.org/chrismichaels84/spider-graph)
+[![Coverage Status](https://coveralls.io/repos/chrismichaels84/spider-graph/badge.svg?branch=master)](https://coveralls.io/r/chrismichaels84/spider-graph?branch=master)
+[![Total Downloads](https://img.shields.io/packagist/dt/michaels/spider-graph.svg?style=flat-square)](https://packagist.org/packages/michaels/spider-graph)
 
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/3ef3b9a4-6078-4ddf-bf0d-c84dac87f37a/big.png)](https://insight.sensiolabs.com/projects/3ef3b9a4-6078-4ddf-bf0d-c84dac87f37a)
 
