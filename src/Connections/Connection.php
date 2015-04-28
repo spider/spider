@@ -28,7 +28,7 @@ class Connection implements ConnectionInterface
     public function __construct(DriverInterface $driver, array $properties)
     {
         $this->driver = $driver;
-        $this->reset($properties); // todo: change to init() when data-manager updates
+        $this->initManager($properties);
     }
 
     /**
