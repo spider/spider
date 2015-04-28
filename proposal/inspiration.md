@@ -1,5 +1,4 @@
 ## Models and OGM
-
 Create, update and refresh against a datastore
 ```php
 // From [neomodel](http://neomodel.readthedocs.org/en/latest/getting_started.html)
