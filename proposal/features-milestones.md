@@ -14,7 +14,6 @@ The connection manager creates and returns connections with drivers from a confi
 ## v0.2 DriverInterface and Neo4j Driver (First Release)
 The Driver itself makes all the CRUD transactions. The driver is accessed through the connections.
   * Simple one Class drivers
-  * Dependency: neo4j client
   * Contract Interface
 
 ## v0.3 Graphs and GraphCollections
