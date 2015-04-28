@@ -1,9 +1,9 @@
 # Spider Graphs
 [![Latest Version](https://img.shields.io/github/release/chrismichaels84/spider-graph.svg?style=flat-square)](https://github.com/chrismichaels84/spider-graph/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Build Status](https://img.shields.io/travis/chrismichaels84/spider-graph/master.svg?style=flat-square)](https://travis-ci.org/chrismichaels84/spider-graph)
+[![Build Status](https://travis-ci.org/chrismichaels84/Spider-Graph.svg?branch=master)](https://travis-ci.org/chrismichaels84/Spider-Graph)
 [![Coverage Status](https://coveralls.io/repos/chrismichaels84/spider-graph/badge.svg?branch=master)](https://coveralls.io/r/chrismichaels84/spider-graph?branch=master)
-[![Total Downloads](https://img.shields.io/packagist/dt/michaels/spider-graph.svg?style=flat-square)](https://packagist.org/packages/michaels/spider-graph)
+[![Total Downloads](https://img.shields.io/packagist/dt/michaels/spider.svg?style=flat-square)](https://packagist.org/packages/michaels/spider)
 
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/374720ec-b7db-47fc-b958-cc240cf06fbb/big.png)](https://insight.sensiolabs.com/projects/374720ec-b7db-47fc-b958-cc240cf06fbb)
 
