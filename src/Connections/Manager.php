@@ -27,10 +27,10 @@ class Manager implements ManagesItemsInterface
     public function make($connectionName = '')
     {
         $connectionName = ($connectionName !== '') ? $connectionName : $this->get('default');
-        $connection = $this->get("connections.$connectionName");
-        $driver = $connection['driver'];
-        unset($connection['driver']);
+        $properties = $this->get("connections.$connectionName");
+        $diverClassName = $properties['driver'];
+        unset($properties['driver']);
 
-        return new Connection(new $driver, $connection);
+        return new Connection(new $diverClassName, $properties);
     }
 }

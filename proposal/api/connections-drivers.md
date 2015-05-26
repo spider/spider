@@ -1,5 +1,4 @@
 # Api for Connections and Drivers
-
 ```php
 $config = [
     'driver' => 'orientdb' // Default driver
@@ -36,7 +35,7 @@ $connection->driver->operations();
 
 // Passed To Driver
 $connection->addVertex('name', $properties);
-$connection->addEdge('name', $beginingId, $endingId, $properties);
+$connection->addEdge('name', $beginningId, $endingId, $properties);
 $connection->updateVertex();
 $connection->updateEdge();
 $connection->getVertex()->property('name');

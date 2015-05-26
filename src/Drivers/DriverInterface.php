@@ -3,5 +3,5 @@ namespace Michaels\Spider\Drivers;
 
 interface DriverInterface
 {
-    public function connect();
+    public function connect($properties);
 }

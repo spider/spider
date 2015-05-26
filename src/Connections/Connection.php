@@ -27,8 +27,18 @@ class Connection implements ConnectionInterface
      */
     public function __construct(DriverInterface $driver, array $properties)
     {
-        $this->driver = $driver;
         $this->initManager($properties);
+        $this->driver = $driver;
+    }
+
+    public function connect()
+    {
+        $this->driver->connect($this);
+    }
+
+    public function __call($name, $args)
+    {
+        return call_user_func_array([$this->driver, $name], $args);
     }
 
     /**

@@ -3,18 +3,18 @@ This document breaks down the goals and workflow into feature sets with linear m
 
 ## v0.1 Manager and Connections
 The connection manager creates and returns connections with drivers from a config array. 
-  * `Connection\Manager` receives config array
-    * `make()`s the default connection
-    * `make()`s non-default connections
-    * setters and getters
-  * `Connection` holds credential information
-    * sens most through to the driver
-    * setters and getters
+  * ~~`Connection\Manager` receives config array~~
+    * ~~`make()`s the default connection~~
+    * ~~`make()`s non-default connections~~
+    * ~~setters and getters~~
+  * ~~`Connection` holds credential information~~
+    * sends most through to the driver
+    * ~~setters and getters~~
   
-## v0.2 DriverInterface and Neo4j Driver (First Release)
+## v0.2 DriverInterface and Neo4j and Orient Driver (First Release)
 The Driver itself makes all the CRUD transactions. The driver is accessed through the connections.
   * Simple one Class drivers
-  * Dependency: neo4j client
+  * Dependency: neo4j client, orient driver
   * Contract Interface
 
 ## v0.3 Graphs and GraphCollections
