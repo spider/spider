@@ -8,7 +8,7 @@ use PhpOrient\PhpOrient;
  * Class OrientDriver
  * @package Michaels\Spider\Drivers\OrientDB
  */
-class OrientDriver implements DriverInterface
+class OrientDriver implements DriverInterface, DriverInterface
 {
 
     public function __construct()
@@ -22,8 +22,23 @@ class OrientDriver implements DriverInterface
         $this->client->connect();
     }
 
-    public function blue($string)
+    public function listDatabases()
     {
-        echo "here" . $string;
+        return $this->client->dbList();
+    }
+
+    public function open($database)
+    {
+        return $this->client->dbOpen($database);
+    }
+
+    public function close()
+    {
+        return $this->client->dbClose();
+    }
+
+    public function statement($statement)
+    {
+        return $this->client->query($statement);
     }
 }
