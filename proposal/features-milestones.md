@@ -13,10 +13,21 @@ The connection manager creates and returns connections with drivers from a confi
   
 ## v0.2 DriverInterface and Neo4j and Orient Driver (First Release)
 The Driver itself makes all the CRUD transactions. The driver is accessed through the connections.
-  * Simple one Class drivers
-  * Dependency: neo4j client, orient driver
-  * Contract Interface
-
+  * ~Simple one Class drivers~
+  * ~Dependency: neo4j client, orient driver~
+  * ~Contract Interface~
+  
+  Orient Driver is mostly done. Still ToDo before beginning Neo4j:
+  * `getVertexAndEdges($vertexId, $depth, $filter)`
+  * extract database operations to separate interface
+  * Orient Transactions
+  * Create a GremlinInterface for other drivers
+  
+  Neo4j Driver
+  * Use https://github.com/jadell/neo4jphp/wiki if possible
+  * Work in Labels, possibly updating Orient to include classes and call them something similar
+  * Go through each interface method
+  
 ## v0.3 Graphs and GraphCollections
   * Populate Graphs from array data, not only data sources
   * Extend `Illuminate\Support\Collection`
