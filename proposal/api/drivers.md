@@ -17,7 +17,7 @@ $connection->dropEdge($id);
 ```
 
 | OrientDb      | Neo        | Spider       |
----------------------------------------------
+|---------------|------------|--------------|
 | connect       |            | connect      |
 | dbCreate      |            |              |
 | dbDrop        |            |              |
