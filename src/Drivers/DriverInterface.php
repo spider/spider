@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Michael
- * Date: 5/26/2015
- * Time: 4:41 PM
- */
+
 namespace Michaels\Spider\Drivers;
 
 
@@ -16,25 +11,25 @@ interface DriverInterface
 {
     public function connect($properties);
 
-    public function listDatabases();
+    public function listDbs();
 
-    public function open($database);
+    public function openDb($database);
 
-    public function close();
+    public function closeDb();
 
-    public function addVertex($name, $properties);
+    public function addVertex($properties);
 
-    public function addEdge($name, $properties);
+    public function addEdge($from, $to, $properties);
 
-    public function updateVertex($name, $properties);
+    public function updateVertex($id, $properties);
 
-    public function getVertex($name);
+    public function getVertex($id);
 
-    public function getEdge();
+    public function getEdge($id);
 
-    public function dropVertex();
+    public function dropVertex($id);
 
-    public function dropEdge();
+    public function dropEdge($id);
 
     public function statement($statement);
 

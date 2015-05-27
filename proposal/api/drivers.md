@@ -19,22 +19,15 @@ $connection->dropEdge($id);
 | OrientDb      | Neo        | Spider       |
 |---------------|------------|--------------|
 | connect       |            | connect      |
-| dbCreate      |            |              |
-| dbDrop        |            |              |
-| dbExists      |            |              |
+| dbCreate      |            | createDb     |
+| dbDrop        |            | dropDb       |
+| dbExists      |            | dbExists     |
 | dbList        |            | listDbs      |
 | dbOpen        |            | openDb       |
 | dbSize        |            | sizeOfDb     |
-| dataClusterDataRange |    |               |
-| dataClusterCount |        |               |
-| dbCountRecords |          |               |
-| dbReload      |           |               |
-| dataClusterAdd |           |              |
-| dataClusterDrop |          |              |
-| <session tokens> |        |               |
 | query         |            | query        |
 | query         |            | statement    |
-| queryAsync    |            |              |
+| queryAsync    |            | ---         |
 | recordLoad    |            | getVertex    |
 | recordLoad    |            | getEdge      |
 | recordLoad    |            | getVertexAndEdges |
@@ -44,9 +37,15 @@ $connection->dropEdge($id);
 | recordUpdate    |            | updateEdge      |
 | recordDelete    |            | dropVertex      |
 | recordDelete    |            | dropEdge      |
-| sqlBatch        |            | commands      |
-| getTxStatement  |            |               |
-| tx->begin       |            |                |
-| tx->attach      |            |                |
-| tx->commit      |            |                |
--------------------------------------------------
+| sqlBatch        |            |       |
+| getTxStatement  |            | ---             |
+| tx->begin       |            | ---              |
+| tx->attach      |            | ---              |
+| tx->commit      |            | ---              |
+| dataClusterDataRange |    |               |
+| dataClusterCount |        |               |
+| dbCountRecords |          |               |
+| dbReload      |           |               |
+| dataClusterAdd |           |              |
+| dataClusterDrop |          |              |
+| ?session tokens? |        |               |
