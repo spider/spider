@@ -16,36 +16,39 @@ $connection->dropVertex($id);
 $connection->dropEdge($id);
 ```
 
-| OrientDb      | Neo        | Spider       |
-|---------------|------------|--------------|
-| connect       |            | connect      |
-| dbCreate      |            | createDb     |
-| dbDrop        |            | dropDb       |
-| dbExists      |            | dbExists     |
-| dbList        |            | listDbs      |
-| dbOpen        |            | openDb       |
-| dbSize        |            | sizeOfDb     |
-| query         |            | query        |
-| query         |            | statement    |
-| queryAsync    |            | ---         |
-| recordLoad    |            | getVertex    |
-| recordLoad    |            | getEdge      |
-| recordLoad    |            | getVertexAndEdges |
-| recordCreate    |            | addVertex    |
-| recordCreate    |            | addEdge      |
-| recordUpdate    |            | updateVertex    |
-| recordUpdate    |            | updateEdge      |
-| recordDelete    |            | dropVertex      |
-| recordDelete    |            | dropEdge      |
-| sqlBatch        |            |       |
-| getTxStatement  |            | ---             |
-| tx->begin       |            | ---              |
-| tx->attach      |            | ---              |
-| tx->commit      |            | ---              |
-| dataClusterDataRange |    |               |
-| dataClusterCount |        |               |
-| dbCountRecords |          |               |
-| dbReload      |           |               |
-| dataClusterAdd |           |              |
-| dataClusterDrop |          |              |
-| ?session tokens? |        |               |
+| OrientDb      | Neo        | Spider       | Notes |
+|---------------|------------|--------------|-------|
+| connect       | (on create)  | connect      | |
+| dbCreate      |  X        | createDb     | extract to trait |
+| dbDrop        |  X       | dropDb       |extract to trait |
+| dbExists      |  X       | dbExists     | extract to trait |
+| dbList        |  X      | listDbs      | extract to trait |
+| dbOpen        | (on create) | openDb       | extract to trait |
+| dbSize        |  X       | sizeOfDb     | extract to trait |
+| query         | new Query() | query        |
+| query         | new Query()           | statement    |
+| gremlin       | new Grm\Query() | X | make into a trait? |
+| queryAsync    |  X       | ---         |
+| recordLoad    |  getNode   | getVertex    |
+| recordLoad    |  getRelationship | getEdge      |
+| recordLoad    |  getRelationships          | **getVertexAndEdges** |
+| recordCreate    | makeNode | addVertex    |
+| recordCreate    | relateTo          | addEdge      |
+| recordUpdate    | (modify, then save() | updateVertex    |
+| recordUpdate    | (get, then save()          | updateEdge      |
+| recordDelete    | (get, then delete() | dropVertex      |
+| recordDelete    | (get, then delete() | dropEdge      |
+| sqlBatch        | new Batch  |       |
+| getTxStatement  | new Batch           | ---             |
+| tx->begin       | new Batch           | ---              |
+| tx->attach      | (statements)  | ---              |
+| tx->commit      | batch->commit           | ---              |
+| dataClusterDataRange | X   |               |
+| dataClusterCount | X      |               |
+| dbCountRecords | X        |               |
+| dbReload      | X          |               |
+| dataClusterAdd | X          |              |
+| dataClusterDrop | X         |              |
+| ?session tokens? |         |               |
+
+ * In Neo, labels are similar to classes
