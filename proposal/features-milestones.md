@@ -21,7 +21,7 @@ The Driver itself makes all the CRUD transactions. The driver is accessed throug
   * `getVertexAndEdges($vertexId, $depth, $filter)`
   * extract database operations to separate interface
   * Orient Transactions
-  * Create a GremlinInterface for other drivers
+  * ~Create a GremlinInterface for other drivers~
   
   Neo4j Driver
   * Use https://github.com/jadell/neo4jphp/wiki if possible
