@@ -1,77 +1,118 @@
 <?php
 namespace Michaels\Spider\Drivers\OrientDB;
 
+use Michaels\Spider\Connections\Manager;
+use Michaels\Spider\Drivers\ConnectionException;
 use Michaels\Spider\Drivers\DriverInterface;
+use Michaels\Spider\Queries\QueryInterface;
 use PhpOrient\PhpOrient;
 use PhpOrient\Protocols\Binary\Data\ID;
 use PhpOrient\Protocols\Binary\Data\Record;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
 /**
- * Class OrientDriver
+ * Driver for Native OrientDB (not using gremlin)
  * @package Michaels\Spider\Drivers\OrientDB
  */
 class OrientDriver implements DriverInterface
 {
-
+    /**
+     * Create a new instance with a client
+     */
     public function __construct()
     {
         $this->client = new PhpOrient();
     }
 
+    /**
+     * Connect to the database
+     *
+     * @param Manager|array $properties Connection credentials
+     *
+     * @return $this
+     * @throws ConnectionException if connection is refused or broken
+     */
     public function connect($properties)
     {
+        $properties = (array)$properties; // In case we were given a Manager instance
+
         $this->client->configure($properties->getAll());
         $this->client->connect();
     }
 
+    /**
+     * Create a new database
+     * @param string $name
+     * @param null   $storageType
+     * @param null   $databaseType
+     *
+     * @return bool
+     */
     public function createDb($name, $storageType = null, $databaseType = null)
     {
         return $this->client->dbCreate($name, $storageType, $databaseType);
     }
 
+    /**
+     * Delete a database
+     * @param string $name
+     *
+     * @return bool
+     */
     public function dropDb($name)
     {
         return $this->client->dbDrop($name);
     }
 
+    /**
+     * Verify existence of a database
+     * @param string $name
+     *
+     * @return bool
+     */
     public function dbExists($name)
     {
         return $this->client->dbExists($name);
     }
 
+    /**
+     * List available databases
+     * @return array
+     */
     public function listDbs()
     {
         return $this->client->dbList();
     }
 
+    /**
+     * Opens a specific database
+     *
+     * @param string $database
+     *
+     * @return $this
+     */
     public function openDb($database)
     {
-        return $this->client->dbOpen($database);
-    }
-
-    public function closeDb()
-    {
-        return $this->client->dbClose();
-    }
-
-    public function statement($statement)
-    {
-        return $this->client->query($statement);
-    }
-
-    public function query($statement)
-    {
-        return $this->client->query($statement);
+        $this->client->dbOpen($database); // What if I *want* the cluster map?
+        return $this;
     }
 
     /**
-     * Add a vertex (node)
-     * For OrientDB, you can use $properties['class'] to utilize native class functionality
+     * Close the database
+     * @return $this
+     */
+    public function closeDb()
+    {
+        $this->client->dbClose(); // returns int
+        return $this;
+    }
+
+    /**
+     * Create a new Vertex (or node)
      *
-     * @param $properties
+     * @param array $properties
      *
-     * @return Record|\PhpOrient\Protocols\Binary\Operations\RecordCreate
+     * @return \Michaels\Spider\Graphs\GraphCollection Record Created
      */
     public function addVertex($properties)
     {
@@ -80,24 +121,18 @@ class OrientDriver implements DriverInterface
         $record = $this->buildRecord($properties, $recordClass);
         $result = $this->client->recordCreate($record);
 
-        return $result;
+        return $result; // ToDo: Convert to GraphCollection
     }
 
-    public function getVertex($rid)
-    {
-        return $this->getRecord($rid);
-    }
-
-    public function updateVertex($rid, $properties)
-    {
-        return $this->updateRecord($rid, $properties);
-    }
-
-    public function dropVertex($rid)
-    {
-        return $this->dropRecord($rid);
-    }
-
+    /**
+     * Create a new edge (relationship)
+     *
+     * @param $from
+     * @param $to
+     * @param $properties
+     *
+     * @return \Michaels\Spider\Graphs\GraphCollection Edge Created
+     */
     public function addEdge($from, $to, $properties)
     {
         $from = $this->parseRidToString($from);
@@ -106,27 +141,111 @@ class OrientDriver implements DriverInterface
 
         $statement = "create edge $class from $from to $to content " . json_encode($properties);
 
-        return $this->client->command($statement);
-    }
-
-    public function getEdge($rid)
-    {
-        return $this->getRecord($rid);
-    }
-
-    public function updateEdge($rid, $properties)
-    {
-        return $this->updateRecord($rid, $properties);
-    }
-
-    public function dropEdge($rid)
-    {
-        return $this->dropRecord($rid);
+        return $this->client->command($statement); // ToDo: Convert to GraphCollection
     }
 
     /**
+     * Retrieve a vertex
+     *
+     * @param int|string $rid
+     *
+     * @return \Michaels\Spider\Graphs\GraphCollection Edge Created
+     */
+    public function getVertex($rid)
+    {
+        return $this->getRecord($rid); // ToDo: Convert to GraphCollection
+    }
+
+    /**
+     * Retrieve an Edge
+     *
+     * @param string|int $rid
+     *
+     * @return \Michaels\Spider\Graphs\GraphCollection Edge record
+     */
+    public function getEdge($rid)
+    {
+        return $this->getRecord($rid); // ToDo: Convert to GraphCollection
+    }
+
+    /**
+     * @param string|int $rid
+     * @param array      $properties
+     *
+     * @return \Michaels\Spider\Graphs\GraphCollection Vertex record
+     */
+    public function updateVertex($rid, $properties)
+    {
+        return $this->updateRecord($rid, $properties); // ToDo: Convert to GraphCollection
+    }
+
+    /**
+     * Update an edge
+     *
+     * @param string|int $rid
+     * @param array      $properties
+     *
+     * @return \Michaels\Spider\Graphs\GraphCollection Edge record
+     */
+    public function updateEdge($rid, $properties)
+    {
+        return $this->updateRecord($rid, $properties); // ToDo: Convert to GraphCollection
+    }
+
+    /**
+     * Delete a Vertex (node)
+     *
+     * @param string|int $rid
+     *
+     * @return $this
+     */
+    public function dropVertex($rid)
+    {
+        $this->dropRecord($rid); // returns RecordDelete|bool
+        return $this;
+    }
+
+    /**
+     * Delete an Edge (relationship)
+     *
      * @param $rid
      *
+     * @return $this
+     */
+    public function dropEdge($rid)
+    {
+        $this->dropRecord($rid); //returns RecordDelete|bool
+        return $this;
+    }
+
+    /**
+     * Execute a command in the graph database's native language (orient, sparql, cypher, etc)
+     *
+     * @param string $command
+     *
+     * @return mixed
+     */
+    public function command($command)
+    {
+        return $this->client->query($command);
+    }
+
+    /**
+     * Execute a query
+     * From the Queryies\QueryBuilder which translates to a native or gremlin statement
+     *
+     * @param QueryInterface $query
+     *
+     * @return mixed
+     */
+    public function query(QueryInterface $query)
+    {
+        return $this->client->query($query->getScript());
+    }
+
+    /**
+     * Transforms string RID into object RID
+     * @param string $rid
      * @return ID
      */
     protected function parseRid($rid)
@@ -145,6 +264,11 @@ class OrientDriver implements DriverInterface
         }
     }
 
+    /**
+     * Transforms RID object to RID string
+     * @param $rid
+     * @return string
+     */
     protected function parseRidToString($rid)
     {
         if ($rid instanceof ID) {
@@ -157,7 +281,8 @@ class OrientDriver implements DriverInterface
     }
 
     /**
-     * @param        $properties
+     * Separates orient CLASS from properties or returns default
+     * @param array $properties
      * @param string $default
      *
      * @return array
@@ -175,6 +300,7 @@ class OrientDriver implements DriverInterface
     }
 
     /**
+     * Builds a Record Object from properties
      * @param         $properties
      * @param         $recordClass
      * @param bool|ID $rid
@@ -198,6 +324,7 @@ class OrientDriver implements DriverInterface
     }
 
     /**
+     * Updates a record
      * @param $rid
      * @param $properties
      *
@@ -214,6 +341,7 @@ class OrientDriver implements DriverInterface
     }
 
     /**
+     * Deletes a record
      * @param $rid
      *
      * @return bool|\PhpOrient\Protocols\Binary\Operations\RecordDelete
@@ -227,6 +355,7 @@ class OrientDriver implements DriverInterface
     }
 
     /**
+     * Retrieves a record
      * @param $rid
      *
      * @return mixed
