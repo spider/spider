@@ -32,11 +32,9 @@ class OrientDriver implements DriverInterface
      * @return $this
      * @throws ConnectionException if connection is refused or broken
      */
-    public function connect($properties)
+    public function connect(array $properties)
     {
-        $properties = (array)$properties; // In case we were given a Manager instance
-
-        $this->client->configure($properties->getAll());
+        $this->client->configure($properties);
         $this->client->connect();
     }
 

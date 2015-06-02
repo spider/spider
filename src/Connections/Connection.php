@@ -33,7 +33,7 @@ class Connection implements ConnectionInterface
 
     public function connect()
     {
-        $this->driver->connect($this);
+        $this->driver->connect($this->items);
     }
 
     public function __call($name, $args)

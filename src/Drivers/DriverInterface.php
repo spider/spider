@@ -17,7 +17,7 @@ interface DriverInterface
      *
      * @return $this
      */
-    public function connect($properties);
+    public function connect(array $properties);
 
     /**
      * List available databases
