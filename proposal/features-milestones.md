@@ -19,7 +19,7 @@ The Driver itself makes all the CRUD transactions. The driver is accessed throug
   
   Orient Driver is mostly done. Still ToDo before beginning Neo4j:
   * `getVertexAndEdges($vertexId, $depth, $filter)`
-  * extract database operations to separate interface
+  * ~extract database operations to separate interface~
   * Orient Transactions
   * ~Create a GremlinInterface for other drivers~
   

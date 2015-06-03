@@ -1,21 +1,22 @@
 <?php
 namespace Michaels\Spider\Drivers;
 
-use Michaels\Spider\Connections\Manager;
 use Michaels\Spider\Queries\QueryInterface;
 
 /**
  * Class OrientDriver
  * @package Michaels\Spider\Drivers\OrientDB
  */
+/* ToDo: Transaction Support */
+
 interface DriverInterface
 {
     /**
      * Connect to the database
      *
-     * @param Manager|array $properties credentials
+     * @param array $properties credentials
      *
-     * @return $this
+*@return $this
      */
     public function connect(array $properties);
 
