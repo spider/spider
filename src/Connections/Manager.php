@@ -17,6 +17,16 @@ class Manager implements ManagesItemsInterface
     use ManagesItemsTrait;
 
     /**
+     * Build a new manager instance
+     *
+     * @param array $items
+     */
+    public function __construct($items = [])
+    {
+        $this->initManager($items);
+    }
+
+    /**
      * Builds and Returns a Connection, either default of other
      *
      * @param string $connectionName
