@@ -48,25 +48,30 @@ class Connection implements ConnectionInterface
 
     public function mapToReturnObject($response)
     {
-        $returnObject = $this->get('config.return-object');
+        $returnObject = $this->get('config.return-object', 'graph');
 
         switch ($returnObject) {
-            case false:
+            case 'native':
                 return $response; // Return native response
                 break;
 
-            case null:
+            case 'graph':
                 return new Graph($response); // Return Graph by default
                 break;
-        }
 
-        if (!is_null($method = $this->get('config.map-method'))) {
-            // Return a specified return object, mapped using custom method
-            return call_user_func([new $returnObject, $method], $response);
-        }
+            default:
+                if ($this->has('config.map-method')) {
+                    // Return a specified return object, mapped using custom method
+                    $response = new $returnObject;
+                    call_user_func([$response, $this->get('config.map-method')], $response);
+                    return $response;
+                    break;
+                }
 
-        // Return a specified return object, mapped using constructor
-        return new $returnObject($response);
+                // Return a specified return object, mapped using constructor
+                return new $returnObject($response);
+                break;
+        }
     }
 
     /**
