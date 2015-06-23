@@ -19,10 +19,16 @@ class Manager implements ManagesItemsInterface
     /**
      * Build a new manager instance
      *
-     * @param array $items
+     * @param array $connections
+     * @param array $config
      */
-    public function __construct($items = [])
+    public function __construct($connections = [], $config = [])
     {
+        $items = [
+            'connections' => $connections,
+            'config' => $config,
+        ];
+
         $this->initManager($items);
     }
 
@@ -36,11 +42,11 @@ class Manager implements ManagesItemsInterface
      */
     public function make($connectionName = '')
     {
-        $connectionName = ($connectionName !== '') ? $connectionName : $this->get('default');
+        $connectionName = ($connectionName !== '') ? $connectionName : $this->get('connections.default');
         $properties = $this->get("connections.$connectionName");
         $diverClassName = $properties['driver'];
         unset($properties['driver']);
 
-        return new Connection(new $diverClassName, $properties);
+        return new Connection(new $diverClassName, $properties, $this->get('config'));
     }
 }

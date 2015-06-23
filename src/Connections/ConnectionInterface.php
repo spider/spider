@@ -11,6 +11,11 @@ use Michaels\Spider\Drivers\DriverInterface;
 interface ConnectionInterface extends ManagesItemsInterface
 {
     /**
+     * Connects to the database
+     */
+    public function connect();
+
+    /**
      * Returns the properties array
      * @return array
      */

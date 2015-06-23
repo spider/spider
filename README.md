@@ -43,7 +43,7 @@ The `develop` branch is a step ahead and may me unstable right now. As we near v
 A connection holds the driver to a datastore and whatever settings that driver needs to connect (username, host, port, etc). All connections implement `Michaels\Spider\Connections\ConnectionInterface` and must be passed Driver Object and array of paremeters at creation.
 
 ```php
-$connection = new Connection(new SomeDriver(), ['username' => 'me', 'etc' => 'etc']);
+$connection = new Connection(new SomeDriver(), ['username' => 'me', 'etc' => 'etc'], $optionalConfigs);
 ```
 
 The connection is not activated (does not connect) at creation. So, you may alter it:
@@ -52,6 +52,7 @@ $connection->setDriver(new OtherDriver());
 $properties = $connection->getProperties();
 $connection->setProperties(['new' => 'properties']);
 $driverName = $connection->getDriverName(); // returns the classname of the current driver.
+$connection->set('config.whatever', 'value');
 ```
 
 Connections also inherit from [michaels/data-manager](http://github.com/chrismichaels84/data-manager), so you have access to get(), set, has(), etc using dot notation for all properties.
@@ -62,18 +63,20 @@ For convenience, a connection manager is included. This allows you to store mult
 ```php
 $manager = new Michaels\Spider\Connections\Manager([
     'default' => 'default-connection',
-    'connections' => [
-        'default-connection' => [
-            'driver'   => 'Full\Namespaced\Class\Name',
-            'whatever' => 'options',
-            'the' => 'driver',
-            'needs' => 'to connect'
-        ],
-        'connection-two'     => [
-            'driver'      => 'Some\Driver\Two',
-            'credentials' => 'whatever',
-            'is'       => 'needed'
-        ]
+    'default-connection' => [
+        'driver'   => 'Full\Namespaced\Class\Name',
+        'whatever' => 'options',
+        'the' => 'driver',
+        'needs' => 'to connect'
+    ],
+    'connection-two' => [
+        'driver'      => 'Some\Driver\Two',
+        'credentials' => 'whatever',
+        'is'       => 'needed'
+    ],
+    'config' => [
+        'these' => 'are',
+        'optional' => true,
     ]
 ]);
 
@@ -88,6 +91,40 @@ so you have access to get(), set, has(), etc using dot notation for all connecti
 $manager->get('connections.default-connection');
 $manager->add('connection.new-connection', ['my' => 'connection']);
 //etc.
+```
+
+### Configuration
+You store configuration inside of the Connection Manager and it will propagate through the system. Otherwise, you must pass a config array into the connection.
+
+#### Return Objects
+By default, any `connection` will convert the driver's native response into an instance of `Michaels\Graphs\Graph`.
+
+You may specify a **different** return object:
+```php
+$manager = new Michaels\Spider\Connections\Manager([
+    'default' => 'default-connection',
+    'default-connection' => [...]
+    'config' => [
+        'return-object' => [Full\Class\Name\Here',
+    ]
+]);
+```
+which will pass the traversable response into the constructor.
+
+If your return object needs to use a **specific method** to load/hydrate/fill
+```php
+    'config' => [
+        'return-object' => [Full\Class\Name\Here',
+        'map-method' => 'methodName'
+    ]
+```
+which will pass the traversable response into that method after creating a new response object.
+
+Lastly, you may also choose to get back the **native** response
+```php
+    'config' => [
+        'return-object' => 'native'
+    ]
 ```
 
 ## Inspired By

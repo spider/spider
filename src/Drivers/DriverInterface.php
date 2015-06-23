@@ -44,7 +44,7 @@ interface DriverInterface
      * Create a new Vertex (or node)
      * @param array $properties
      *
-     * @return \Michaels\Spider\Graphs\GraphCollection Record Created
+     * @return mixed Record Created
      */
     public function addVertex($properties);
 
@@ -55,7 +55,7 @@ interface DriverInterface
      * @param $to
      * @param $properties
      *
-     * @return \Michaels\Spider\Graphs\GraphCollection Edge Created
+     * @return mixed Edge Created
      */
     public function addEdge($from, $to, $properties);
 
@@ -63,7 +63,7 @@ interface DriverInterface
      * Retrieve a vertex
      * @param int|string $id
      *
-     * @return \Michaels\Spider\Graphs\GraphCollection Edge Created
+     * @return mixed Edge Created
      */
     public function getVertex($id);
 
@@ -71,7 +71,7 @@ interface DriverInterface
      * Retrieve an Edge
      * @param string|int $id
      *
-     * @return \Michaels\Spider\Graphs\GraphCollection Edge record
+     * @return mixed Edge record
      */
     public function getEdge($id);
 
@@ -79,7 +79,7 @@ interface DriverInterface
      * @param string|int $id
      * @param array      $properties
      *
-     * @return \Michaels\Spider\Graphs\GraphCollection Vertex record
+     * @return mixed Vertex record
      */
     public function updateVertex($id, $properties);
 
@@ -89,7 +89,7 @@ interface DriverInterface
      * @param string|int $id
      * @param array      $properties
      *
-     * @return \Michaels\Spider\Graphs\GraphCollection Edge record
+     * @return mixed Edge record
      */
     public function updateEdge($id, $properties);
 

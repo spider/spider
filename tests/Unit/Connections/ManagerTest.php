@@ -11,34 +11,36 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 {
     use Specify;
 
-    protected $testConfig;
+    protected $connections;
+    protected $config;
 
     public function setup()
     {
-        $this->testConfig = [
+        $this->connections = [
             'default'     => 'default-connection',
-            'connections' => [
-                'default-connection' => [
-                    'driver'   => 'Michaels\Spider\Drivers\GenericDriver',
-                    'username' => 'username',
-                    'host'     => 'host',
-                    'pass'     => 'pass'
-                ],
-                'connection-one'     => [
-                    'driver'      => 'Michaels\Spider\Test\Stubs\DriverStub',
-                    'credentials' => 'one-credentials',
-                    'other'       => 'one-other'
-                ],
-                'connection-two'     => [
-                    'driver'      => 'Some\Driver\Two',
-                    'credentials' => 'two-credentials',
-                    'other'       => 'two-other'
-                ]
+            'default-connection' => [
+                'driver' => 'Michaels\Spider\Drivers\GenericDriver',
+                'username' => 'username',
+                'host' => 'host',
+                'pass' => 'pass'
             ],
-            'config'      => [
-                'something' => 'a',
-                'else'      => 'b'
+            'connection-one' => [
+                'driver' => 'Michaels\Spider\Test\Stubs\DriverStub',
+                'credentials' => 'one-credentials',
+                'other' => 'one-other'
+            ],
+            'connection-two' => [
+                'driver' => 'Some\Driver\Two',
+                'credentials' => 'two-credentials',
+                'other' => 'two-other'
             ]
+        ];
+
+        $this->config = [
+            'something' => 'something-value',
+            'return-object' => false, // return native object
+//            'return-object' => 'Class\Name\Here',
+//            'map-method' => 'map',
         ];
     }
 
@@ -46,7 +48,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     public function testMakeStoredConnections()
     {
         $this->specify("it makes a new instance of the default connection", function () {
-            $manager = new Manager($this->testConfig);
+            $manager = new Manager($this->connections);
             $connection = $manager->make();
 
             // Connection is a valid instance of Connection
@@ -58,13 +60,14 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
             // Connection is using the correct driver
             $this->assertEquals(
-                $this->testConfig['connections']['default-connection']['driver'],
+                $this->connections['default-connection']['driver'],
                 $connection->getDriverName(),
                 "failed to set correct driver"
             );
 
             // Connection is using the correct properties
-            $expected = $this->testConfig['connections']['default-connection'];
+            $expected = $this->connections['default-connection'];
+            $expected['config'] = [];
             unset($expected['driver']);
 
             $this->assertEquals(
@@ -75,7 +78,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("it makes a new instance of a specified connection", function () {
-            $manager = new Manager($this->testConfig);
+            $manager = new Manager($this->connections);
             $connection = $manager->make('connection-one');
 
             // Connection is a valid instance of Connection
@@ -87,20 +90,28 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
             // Connection is using the correct driver
             $this->assertEquals(
-                $this->testConfig['connections']['connection-one']['driver'],
+                $this->connections['connection-one']['driver'],
                 $connection->getDriverName(),
                 "failed to set correct driver"
             );
 
             // Connection is using the correct properties
-            $expected = $this->testConfig['connections']['connection-one'];
+            $expected = $this->connections['connection-one'];
             unset($expected['driver']);
+            $expected['config'] = [];
 
             $this->assertEquals(
                 $expected,
                 $connection->getProperties(),
                 "failed to set correct properties"
             );
+        });
+
+        $this->specify("it sets config correctly", function () {
+            $manager = new Manager($this->connections, $this->config);
+            $connection = $manager->make('connection-one');
+
+            $this->assertEquals($this->config['something'], $connection->get('config.something'), 'failed to set and return config value');
         });
     }
 }

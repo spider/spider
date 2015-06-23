@@ -8,6 +8,15 @@ use Michaels\Spider\Queries\QueryInterface;
 class DriverStub implements DriverInterface
 {
 
+    protected function returnData()
+    {
+        return new NativeReturnStub([
+            'one' => 1,
+            'two' => true,
+            'three' => 'three',
+        ]);
+    }
+
     /**
      * Connect to the database
      *
@@ -17,7 +26,7 @@ class DriverStub implements DriverInterface
      */
     public function connect(array $properties)
     {
-        // TODO: Implement connect() method.
+        return $this;
     }
 
     /**
@@ -26,7 +35,7 @@ class DriverStub implements DriverInterface
      */
     public function listDbs()
     {
-        // TODO: Implement listDbs() method.
+        return ['dbOne', 'dbTwo'];
     }
 
     /**
@@ -38,7 +47,7 @@ class DriverStub implements DriverInterface
      */
     public function openDb($database)
     {
-        // TODO: Implement openDb() method.
+        return $this;
     }
 
     /**
@@ -47,7 +56,7 @@ class DriverStub implements DriverInterface
      */
     public function closeDb()
     {
-        // TODO: Implement closeDb() method.
+        return $this;
     }
 
     /**
@@ -55,11 +64,11 @@ class DriverStub implements DriverInterface
      *
      * @param array $properties
      *
-     * @return \Michaels\Spider\Graphs\GraphCollection Record Created
+     * @return mixed Record Created
      */
     public function addVertex($properties)
     {
-        // TODO: Implement addVertex() method.
+        return $this->returnData();
     }
 
     /**
@@ -69,11 +78,11 @@ class DriverStub implements DriverInterface
      * @param $to
      * @param $properties
      *
-     * @return \Michaels\Spider\Graphs\GraphCollection Edge Created
+     * @return mixed Edge Created
      */
     public function addEdge($from, $to, $properties)
     {
-        // TODO: Implement addEdge() method.
+        return $this->returnData();
     }
 
     /**
@@ -81,11 +90,11 @@ class DriverStub implements DriverInterface
      *
      * @param int|string $id
      *
-     * @return \Michaels\Spider\Graphs\GraphCollection Edge Created
+     * @return mixed Edge Created
      */
     public function getVertex($id)
     {
-        // TODO: Implement getVertex() method.
+        return $this->returnData();
     }
 
     /**
@@ -93,22 +102,22 @@ class DriverStub implements DriverInterface
      *
      * @param string|int $id
      *
-     * @return \Michaels\Spider\Graphs\GraphCollection Edge record
+     * @return mixed Edge record
      */
     public function getEdge($id)
     {
-        // TODO: Implement getEdge() method.
+        return $this->returnData();
     }
 
     /**
      * @param string|int $id
      * @param array      $properties
      *
-     * @return \Michaels\Spider\Graphs\GraphCollection Vertex record
+     * @return mixed Vertex record
      */
     public function updateVertex($id, $properties)
     {
-        // TODO: Implement updateVertex() method.
+        return $this->returnData();
     }
 
     /**
@@ -117,11 +126,11 @@ class DriverStub implements DriverInterface
      * @param string|int $id
      * @param array      $properties
      *
-     * @return \Michaels\Spider\Graphs\GraphCollection Edge record
+     * @return mixed Edge record
      */
     public function updateEdge($id, $properties)
     {
-        // TODO: Implement updateEdge() method.
+        return $this->returnData();
     }
 
     /**
@@ -133,7 +142,7 @@ class DriverStub implements DriverInterface
      */
     public function dropVertex($id)
     {
-        // TODO: Implement dropVertex() method.
+        return $this;
     }
 
     /**
@@ -145,7 +154,7 @@ class DriverStub implements DriverInterface
      */
     public function dropEdge($id)
     {
-        // TODO: Implement dropEdge() method.
+        return $this;
     }
 
     /**
@@ -157,7 +166,7 @@ class DriverStub implements DriverInterface
      */
     public function command($command)
     {
-        // TODO: Implement command() method.
+        return $this->returnData();
     }
 
     /**
@@ -170,5 +179,6 @@ class DriverStub implements DriverInterface
      */
     public function query(QueryInterface $query)
     {
-        // TODO: Implement query() method.
-}}
+        return $this->returnData();
+    }
+}

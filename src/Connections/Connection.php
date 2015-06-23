@@ -3,6 +3,7 @@ namespace Michaels\Spider\Connections;
 
 use Michaels\Manager\Traits\ManagesItemsTrait;
 use Michaels\Spider\Drivers\DriverInterface;
+use Michaels\Spider\Graphs\Graph;
 
 /**
  * Facilitates two-way communication with a driver store
@@ -23,22 +24,71 @@ class Connection implements ConnectionInterface
      * Constructs a new connection with driver and properties
      *
      * @param DriverInterface $driver
-     * @param array           $properties Credentials, host, and the like
+     * @param array $properties Credentials, host, and the like
+     * @param array $config
      */
-    public function __construct(DriverInterface $driver, array $properties)
+    public function __construct(DriverInterface $driver, array $properties, array $config = [])
     {
+        $properties['config'] = $config;
+
         $this->initManager($properties);
         $this->driver = $driver;
     }
 
+    /**
+     * Connects to the database
+     */
     public function connect()
     {
         $this->driver->connect($this->items);
     }
 
+    /**
+     * Passes through to driver
+     *
+     * @param $name
+     * @param $args
+     * @return Graph
+     */
     public function __call($name, $args)
     {
-        return call_user_func_array([$this->driver, $name], $args);
+        $response = call_user_func_array([$this->driver, $name], $args);
+        return $this->mapToReturnObject($response);
+    }
+
+    /**
+     * Maps the response to a Graph or Specified Return Object or native
+     *
+     * @param $response
+     * @return Graph
+     * @throws \Michaels\Manager\Exceptions\ItemNotFoundException
+     */
+    public function mapToReturnObject($response)
+    {
+        $returnObject = $this->get('config.return-object', 'graph');
+
+        switch ($returnObject) {
+            case 'native':
+                return $response; // Return native response
+                break;
+
+            case 'graph':
+                return new Graph($response); // Return Graph by default
+                break;
+
+            default:
+                if ($this->has('config.map-method')) {
+                    // Return a specified return object, mapped using custom method
+                    $response = new $returnObject;
+                    call_user_func([$response, $this->get('config.map-method')], $response);
+                    return $response;
+                    break;
+                }
+
+                // Return a specified return object, mapped using constructor
+                return new $returnObject($response);
+                break;
+        }
     }
 
     /**
