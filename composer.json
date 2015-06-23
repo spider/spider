@@ -19,7 +19,7 @@
     "require": {
       "php" : ">=5.4.0",
       "illuminate/support": "5.*",
-      "michaels/data-manager": "dev-develop",
+      "michaels/data-manager": "dev-master",
       "ostico/phporient": "dev-master"
 
     },
