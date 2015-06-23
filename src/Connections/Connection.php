@@ -3,6 +3,7 @@ namespace Michaels\Spider\Connections;
 
 use Michaels\Manager\Traits\ManagesItemsTrait;
 use Michaels\Spider\Drivers\DriverInterface;
+use Michaels\Spider\Graphs\Graph;
 
 /**
  * Facilitates two-way communication with a driver store
@@ -41,7 +42,31 @@ class Connection implements ConnectionInterface
 
     public function __call($name, $args)
     {
-        return call_user_func_array([$this->driver, $name], $args);
+        $response = call_user_func_array([$this->driver, $name], $args);
+        return $this->mapToReturnObject($response);
+    }
+
+    public function mapToReturnObject($response)
+    {
+        $returnObject = $this->get('config.return-object');
+
+        switch ($returnObject) {
+            case false:
+                return $response; // Return native response
+                break;
+
+            case null:
+                return new Graph($response); // Return Graph by default
+                break;
+        }
+
+        if (!is_null($method = $this->get('config.map-method'))) {
+            // Return a specified return object, mapped using custom method
+            return call_user_func([new $returnObject, $method], $response);
+        }
+
+        // Return a specified return object, mapped using constructor
+        return new $returnObject($response);
     }
 
     /**
