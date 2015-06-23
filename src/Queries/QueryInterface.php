@@ -40,7 +40,7 @@ interface QueryInterface
      *
      * @param $language
      *
-*@return $this
+     * @return $this
      */
     public function setScriptLanguage($language);
 }

@@ -11,11 +11,19 @@ class Graph implements GraphInterface
 {
     use ManagesItemsTrait;
 
+    /**
+     * Creates  new instance of a Graph
+     *
+     * @param $data
+     */
     public function __construct($data)
     {
 
     }
 
+    /**
+     * Returns the raw data
+     */
     public function getRaw()
     {
 

@@ -35,17 +35,34 @@ class Connection implements ConnectionInterface
         $this->driver = $driver;
     }
 
+    /**
+     * Connects to the database
+     */
     public function connect()
     {
         $this->driver->connect($this->items);
     }
 
+    /**
+     * Passes through to driver
+     *
+     * @param $name
+     * @param $args
+     * @return Graph
+     */
     public function __call($name, $args)
     {
         $response = call_user_func_array([$this->driver, $name], $args);
         return $this->mapToReturnObject($response);
     }
 
+    /**
+     * Maps the response to a Graph or Specified Return Object or native
+     *
+     * @param $response
+     * @return Graph
+     * @throws \Michaels\Manager\Exceptions\ItemNotFoundException
+     */
     public function mapToReturnObject($response)
     {
         $returnObject = $this->get('config.return-object', 'graph');
