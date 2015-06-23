@@ -23,10 +23,13 @@ class Connection implements ConnectionInterface
      * Constructs a new connection with driver and properties
      *
      * @param DriverInterface $driver
-     * @param array           $properties Credentials, host, and the like
+     * @param array $properties Credentials, host, and the like
+     * @param array $config
      */
-    public function __construct(DriverInterface $driver, array $properties)
+    public function __construct(DriverInterface $driver, array $properties, array $config = [])
     {
+        $properties['config'] = $config;
+
         $this->initManager($properties);
         $this->driver = $driver;
     }

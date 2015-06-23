@@ -37,7 +37,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->specify("it gets properties array", function () {
             $connection = new Connection(new DriverStub(), ['one' => 'one']);
 
-            $this->assertEquals(['one' => 'one'], $connection->getProperties(), 'failed to return properties');
+            $this->assertEquals(['one' => 'one', 'config' => []], $connection->getProperties(), 'failed to return properties');
         });
 
         $this->specify("it sets properties array", function () {
@@ -63,7 +63,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             $connection->set('two', 'two');
             $connection->set('three.four', 'four');
 
-            $this->assertEquals(['one' => 'new-one', 'two' => 'two', 'three' => ['four' => 'four']], $connection->getProperties(), "failed to set properties");
+            $this->assertEquals(['one' => 'new-one', 'two' => 'two', 'three' => ['four' => 'four'], 'config' => []], $connection->getProperties(), "failed to set properties");
         });
     }
 }
