@@ -124,7 +124,7 @@ which will pass the traversable response into the constructor.
 If your return object needs to use a **specific method** to load/hydrate/fill
 ```php
     'config' => [
-        'return-object' => [Full\Class\Name\Here',
+        'return-object' => 'Full\Class\Name\Here',
         'map-method' => 'methodName'
     ]
 ```
