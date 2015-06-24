@@ -3,6 +3,7 @@ namespace Michaels\Spider\Test\Unit\Connections;
 
 use Codeception\Specify;
 use Michaels\Manager\Exceptions\ItemNotFoundException;
+use Michaels\Spider\Connections\ConnectionNotFoundException;
 use Michaels\Spider\Connections\Manager;
 
 /*
@@ -105,6 +106,16 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
                 "failed to set correct properties"
             );
         });
+
+        $this->specify("it throws an exception if making a default connection that was not registered", function () {
+            $manager = new Manager();
+            $manager->make();
+        }, ['throws' => new ConnectionNotFoundException()]);
+
+        $this->specify("it throws an exception if making a non-existent connection", function () {
+            $manager = new Manager($this->connections);
+            $manager->make('doesnotexist');
+        }, ['throws' => new ConnectionNotFoundException()]);
 
         $this->specify("it sets config correctly", function () {
             $manager = new Manager($this->connections, $this->config);

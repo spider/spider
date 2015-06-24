@@ -2,6 +2,7 @@
 namespace Michaels\Spider\Connections;
 
 use Michaels\Manager\Contracts\ManagesItemsInterface;
+use Michaels\Manager\Exceptions\ItemNotFoundException;
 use Michaels\Manager\Traits\ManagesItemsTrait;
 
 /**
@@ -65,7 +66,23 @@ class Manager implements ManagesItemsInterface
      */
     protected function buildConnectionName($connectionName = null)
     {
-        return ($connectionName !== null) ? $connectionName : $this->get('connections.default');
+        // Set the default connection
+        if (is_null($connectionName)) {
+            try {
+                $connectionName = $this->get('connections.default');
+            } catch (ItemNotFoundException $e) {
+                throw new ConnectionNotFoundException("There is no default connection set");
+            }
+        }
+
+        // Set the supplied connection
+        if (!$this->has("connections.$connectionName")) {
+            throw new ConnectionNotFoundException("$connectionName has not been registered");
+        }
+
+        return $connectionName;
+
+//        return ($connectionName !== null) ? $connectionName : $this->get('connections.default');
     }
 
     public function clearCache()
