@@ -2,6 +2,7 @@
 namespace Michaels\Spider\Test\Unit\Connections;
 
 use Codeception\Specify;
+use Michaels\Manager\Exceptions\ItemNotFoundException;
 use Michaels\Spider\Connections\Manager;
 
 /*
@@ -39,8 +40,6 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $this->config = [
             'something' => 'something-value',
             'return-object' => false, // return native object
-//            'return-object' => 'Class\Name\Here',
-//            'map-method' => 'map',
         ];
     }
 
@@ -112,6 +111,84 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             $connection = $manager->make('connection-one');
 
             $this->assertEquals($this->config['something'], $connection->get('config.something'), 'failed to set and return config value');
+        });
+    }
+
+    public function testCacheConnections()
+    {
+        $this->specify("it caches connection with make", function () {
+            $manager = new Manager($this->connections);
+
+            $defaultConnection = $manager->make();
+            $connectionOne = $manager->make('connection-one');
+
+            $expected = [
+                'default-connection' => $defaultConnection,
+                'connection-one' => $connectionOne,
+            ];
+
+            $this->assertEquals($expected, $manager->get('cache'), "failed to cache connections");
+        });
+
+        $this->specify("it clears cached connections", function () {
+            $manager = new Manager($this->connections);
+
+            $manager->make();
+            $manager->make('connection-one');
+
+            $manager->clearCache();
+
+            $expected = [];
+
+            $this->assertEquals($expected, $manager->get('cache'), "failed to clear cache");
+        });
+
+        $this->specify("it returns a specific cached connection", function () {
+            $manager = new Manager($this->connections);
+
+            $defaultConnection = $manager->make();
+            $connectionOne = $manager->make('connection-one');
+
+            $this->assertEquals($defaultConnection, $manager->get('cache.default-connection'), "failed to return default connection");
+            $this->assertEquals($connectionOne, $manager->get('cache.connection-one'), "failed to return connection=one");
+        });
+
+        $this->specify("it throws an exception if requesting a non cached item", function () {
+            $manager = new Manager($this->connections);
+
+            $manager->get('cache.connection-one');
+        }, ['throws' => new ItemNotFoundException()]);
+    }
+
+    public function testFetchConnections()
+    {
+        $this->specify("it returns an already cached item via fetch()", function () {
+            $manager = new Manager($this->connections);
+
+            $defaultConnection = $manager->make();
+            $connectionOne = $manager->make('connection-one');
+
+            $this->assertEquals($connectionOne, $manager->fetch('connection-one'), "failed to return cached connection");
+            $this->assertEquals($defaultConnection, $manager->fetch('default-connection'), "failed to return cached default connection by name");
+            $this->assertEquals($defaultConnection, $manager->fetch(), "failed to return default cached connection by default");
+        });
+
+        $this->specify("it returns a new connection via fetch() and caches", function () {
+            $manager = new Manager($this->connections);
+
+            // These are for $expected
+            $defaultConnection = $manager->make();
+            $connectionOne = $manager->make('connection-one');
+
+            // Now they don't exist
+            $manager->clearCache();
+
+            // So Manager will make and cache them
+            $this->assertEquals($connectionOne, $manager->fetch('connection-one'), "failed to return a new connection-one");
+            $this->assertEquals($connectionOne, $manager->get('cache.connection-one'), 'failed to cache connection-one');
+
+            $this->assertEquals($defaultConnection, $manager->fetch(), "failed to return default cached connection by default");
+            $this->assertEquals($defaultConnection, $manager->get('cache.default-connection'), 'failed to cache default-connection');
         });
     }
 }

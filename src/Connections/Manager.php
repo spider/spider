@@ -40,13 +40,48 @@ class Manager implements ManagesItemsInterface
      * @return Connection
      * @throws \Michaels\Manager\Exceptions\ItemNotFoundException
      */
-    public function make($connectionName = '')
+    public function make($connectionName = null)
     {
-        $connectionName = ($connectionName !== '') ? $connectionName : $this->get('connections.default');
+        $connectionName = $this->buildConnectionName($connectionName);
+        $connection = $this->buildConnection($connectionName);
+
+        $this->add("cache.$connectionName", $connection);
+        return $connection;
+    }
+
+    public function buildConnection($connectionName)
+    {
         $properties = $this->get("connections.$connectionName");
         $diverClassName = $properties['driver'];
         unset($properties['driver']);
 
         return new Connection(new $diverClassName, $properties, $this->get('config'));
+    }
+
+    /**
+     * @param $connectionName
+     * @return mixed
+     * @throws \Michaels\Manager\Exceptions\ItemNotFoundException
+     */
+    protected function buildConnectionName($connectionName = null)
+    {
+        return ($connectionName !== null) ? $connectionName : $this->get('connections.default');
+    }
+
+    public function clearCache()
+    {
+        $this->set('cache', []);
+        return $this;
+    }
+
+    public function fetch($connectionName = null)
+    {
+        $connectionName = $this->buildConnectionName($connectionName);
+
+        if ($this->has("cache.$connectionName")) {
+            return $this->get("cache.$connectionName");
+        }
+
+        return $this->make($connectionName);
     }
 }
