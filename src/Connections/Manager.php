@@ -123,7 +123,5 @@ class Manager implements ManagesItemsInterface
         }
 
         return $connectionName;
-
-//        return ($connectionName !== null) ? $connectionName : $this->get('connections.default');
     }
 }

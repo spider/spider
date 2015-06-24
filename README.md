@@ -115,7 +115,7 @@ $manager = new Michaels\Spider\Connections\Manager([
     'default' => 'default-connection',
     'default-connection' => [...]
     'config' => [
-        'return-object' => [Full\Class\Name\Here',
+        'return-object' => 'Full\Class\Name\Here',
     ]
 ]);
 ```
