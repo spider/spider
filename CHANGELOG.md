@@ -8,6 +8,7 @@ All Notable changes to `Spider` will be documented in this file
 - Register configs inside Connections\Manager
 - Define return object from Connections\Manager or Connection
 - Connection Manager caches and can return already instantiated connection
+- Throws `ConnectionNotFoundException` if make()ing a non-existent connection
 
 ## v0.1.1 - 4-28-2015
 ### Added

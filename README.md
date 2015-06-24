@@ -93,6 +93,16 @@ $manager->add('connection.new-connection', ['my' => 'connection']);
 //etc.
 ```
 
+### Fetching and Caching Connections
+Anytime you `make()` a connection it will be cached so you can draw the same connection again (say later in your application).
+
+You can get that cached connection via `fetch()` which will also create a new connection if it has not already been `make()`d
+
+```php
+$manager->fetch(); // Will return cached default connection, or create then cache it before returning
+$manager->fetch('connection-name'); // same
+```
+
 ### Configuration
 You store configuration inside of the Connection Manager and it will propagate through the system. Otherwise, you must pass a config array into the connection.
 
@@ -126,6 +136,9 @@ Lastly, you may also choose to get back the **native** response
         'return-object' => 'native'
     ]
 ```
+
+### Exceptions
+If you try to `make()` a connection that doesn't exist, a `ConnectionNotFoundException` will be thrown.
 
 ## Inspired By
   * [Eloquent ORM](http://laravel.com/docs/5.0/eloquent)

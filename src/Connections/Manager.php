@@ -11,7 +11,8 @@ use Michaels\Manager\Traits\ManagesItemsTrait;
  */
 class Manager implements ManagesItemsInterface
 {
-    /** @inherits from Michaels\Manager:
+    /**
+     * @inherits from Michaels\Manager:
      *      init(), add(), get(), getAll(), exists(), has(), set(),
      *      remove(), clear(), toJson, isEmpty(), __toString()
      */
@@ -34,12 +35,12 @@ class Manager implements ManagesItemsInterface
     }
 
     /**
-     * Builds and Returns a Connection, either default of other
+     * Builds, Caches, and Returns a Connection, either default of other
      *
      * @param string $connectionName
      *
      * @return Connection
-     * @throws \Michaels\Manager\Exceptions\ItemNotFoundException
+     * @throws \Michaels\Spider\Connections\ConnectionNotFoundException
      */
     public function make($connectionName = null)
     {
@@ -50,7 +51,42 @@ class Manager implements ManagesItemsInterface
         return $connection;
     }
 
-    public function buildConnection($connectionName)
+    /**
+     * Returns cached connection or makes a new one
+     *
+     * @param null $connectionName
+     * @return Connection|mixed
+     * @throws ConnectionNotFoundException
+     */
+    public function fetch($connectionName = null)
+    {
+        $connectionName = $this->buildConnectionName($connectionName);
+
+        if ($this->has("cache.$connectionName")) {
+            return $this->get("cache.$connectionName");
+        }
+
+        return $this->make($connectionName);
+    }
+
+    /**
+     * Clears connection cache
+     * @return $this
+     */
+    public function clearCache()
+    {
+        $this->set('cache', []);
+        return $this;
+    }
+
+    /**
+     * Build and returns the actual connection object
+     *
+     * @param $connectionName
+     * @return Connection
+     * @throws \Michaels\Spider\Connections\ConnectionNotFoundException
+     */
+    protected function buildConnection($connectionName)
     {
         $properties = $this->get("connections.$connectionName");
         $diverClassName = $properties['driver'];
@@ -60,9 +96,15 @@ class Manager implements ManagesItemsInterface
     }
 
     /**
+     * Checks for and builds the connection name
+     *
+     * Will return the default connection name if none is supplied
+     * Will throw and exception if the connection requested does not exist
+     *
      * @param $connectionName
      * @return mixed
-     * @throws \Michaels\Manager\Exceptions\ItemNotFoundException
+     * @throws \Michaels\Spider\Connections\ConnectionNotFoundException
+     * @todo Refactor: Exception should probably be thrown elsewhere
      */
     protected function buildConnectionName($connectionName = null)
     {
@@ -83,22 +125,5 @@ class Manager implements ManagesItemsInterface
         return $connectionName;
 
 //        return ($connectionName !== null) ? $connectionName : $this->get('connections.default');
-    }
-
-    public function clearCache()
-    {
-        $this->set('cache', []);
-        return $this;
-    }
-
-    public function fetch($connectionName = null)
-    {
-        $connectionName = $this->buildConnectionName($connectionName);
-
-        if ($this->has("cache.$connectionName")) {
-            return $this->get("cache.$connectionName");
-        }
-
-        return $this->make($connectionName);
     }
 }
