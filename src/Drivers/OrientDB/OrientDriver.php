@@ -4,6 +4,7 @@ namespace Michaels\Spider\Drivers\OrientDB;
 use Michaels\Spider\Connections\Manager;
 use Michaels\Spider\Drivers\ConnectionException;
 use Michaels\Spider\Drivers\DriverInterface;
+use Michaels\Spider\Graphs\Graph;
 use Michaels\Spider\Queries\QueryInterface;
 use PhpOrient\PhpOrient;
 use PhpOrient\Protocols\Binary\Data\ID;
@@ -79,7 +80,7 @@ class OrientDriver implements DriverInterface
      */
     public function listDbs()
     {
-        return $this->client->dbList();
+        return $this->client->dbList()['databases'];
     }
 
     /**
@@ -242,6 +243,34 @@ class OrientDriver implements DriverInterface
     }
 
     /**
+     * Map a raw result to the Spider Response
+     * @param $results
+     * @return Graph
+     */
+    public function mapToSpiderResponse($results)
+    {
+        // Map collection of results to graph if needed
+        if (is_array($results)) {
+            $newResults = [];
+            foreach ($results as $result) {
+                if ($result instanceof Record) {
+                    $newResults[] = $this->recordToGraph($result);
+                } else {
+                    $newResults[] = $result;
+                }
+            }
+
+            return new Graph($newResults);
+        }
+
+        // Map a single record to graph
+        $record = $this->recordToGraph($results);
+
+        // Fire it back
+        return $record;
+    }
+
+    /**
      * Transforms string RID into object RID
      * @param string $rid
      * @return ID
@@ -364,5 +393,22 @@ class OrientDriver implements DriverInterface
             // Do it through SQL
         }
         return $this->client->recordLoad($this->parseRid($rid))[0];
+    }
+
+    /**
+     * Map a Record to a Graph, preserving metadata
+     * @param $results
+     * @return Graph
+     */
+    protected function recordToGraph($results)
+    {
+        $record = new Graph($results->getOData());
+        $record->add([
+            'id' => $results->getRid()->jsonSerialize(),
+            'rid' => $results->getRid(),
+            'version' => $results->getVersion(),
+            'oClass' => $results->getOClass(),
+        ]);
+        return $record;
     }
 }

@@ -127,4 +127,11 @@ interface DriverInterface
      * @return mixed
      */
     public function query(QueryInterface $query);
+
+    /**
+     * Map a raw result to the Spider Response
+     * @param $results
+     * @return Graph
+     */
+    public function mapToSpiderResponse($results);
 }

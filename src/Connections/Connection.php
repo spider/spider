@@ -53,7 +53,12 @@ class Connection implements ConnectionInterface
     public function __call($name, $args)
     {
         $response = call_user_func_array([$this->driver, $name], $args);
-        return $this->mapToReturnObject($response);
+
+        if ((is_object($response) || is_array($response)) && !$response instanceof DriverInterface) {
+            return $this->mapToReturnObject($response);
+        }
+
+        return $response;
     }
 
     /**
@@ -73,7 +78,7 @@ class Connection implements ConnectionInterface
                 break;
 
             case 'graph':
-                return new Graph($response); // Return Graph by default
+                return $this->driver->mapToSpiderResponse($response); // Return Graph by default
                 break;
 
             default:

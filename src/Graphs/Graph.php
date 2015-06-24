@@ -1,31 +1,13 @@
 <?php
 namespace Michaels\Spider\Graphs;
 
-use Michaels\Manager\Traits\ManagesItemsTrait;
+use Michaels\Manager\Manager;
 
 /**
  * Class GraphCollection
  * @package Michaels\Spider\Graphs
  */
-class Graph implements GraphInterface
+class Graph extends Manager implements GraphInterface
 {
-    use ManagesItemsTrait;
 
-    /**
-     * Creates  new instance of a Graph
-     *
-     * @param $data
-     */
-    public function __construct($data)
-    {
-
-    }
-
-    /**
-     * Returns the raw data
-     */
-    public function getRaw()
-    {
-
-    }
 }
