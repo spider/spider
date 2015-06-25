@@ -176,4 +176,15 @@ class GenericDriver implements DriverInterface
     public function query(QueryInterface $query)
     {
         // TODO: Implement query() method.
-}}
+    }
+
+    /**
+     * Map a raw result to the Spider Response
+     * @param $results
+     * @return Graph
+     */
+    public function mapToSpiderResponse($results)
+    {
+        // TODO: Implement mapToSpiderResponse() method.
+    }
+}

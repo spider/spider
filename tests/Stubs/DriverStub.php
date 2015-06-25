@@ -3,6 +3,7 @@ namespace Michaels\Spider\Test\Stubs;
 
 use Michaels\Spider\Connections\Manager;
 use Michaels\Spider\Drivers\DriverInterface;
+use Michaels\Spider\Graphs\Graph;
 use Michaels\Spider\Queries\QueryInterface;
 
 class DriverStub implements DriverInterface
@@ -180,5 +181,15 @@ class DriverStub implements DriverInterface
     public function query(QueryInterface $query)
     {
         return $this->returnData();
+    }
+
+    /**
+     * Map a raw result to the Spider Response
+     * @param $results
+     * @return \Michaels\Spider\Graphs\Graph
+     */
+    public function mapToSpiderResponse($results)
+    {
+        return new Graph($results);
     }
 }
