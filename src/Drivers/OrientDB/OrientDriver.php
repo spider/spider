@@ -111,16 +111,22 @@ class OrientDriver implements DriverInterface
      *
      * @param array $properties
      *
-     * @return \Michaels\Spider\Graphs\GraphCollection Record Created
+     * @param null $class
+     * @return mixed Record Created
      */
-    public function addVertex($properties)
+    public function addVertex($properties, $class = null)
     {
+        if (!is_null($class)) {
+            $properties['class'] = $class;
+        }
+
         list($properties, $recordClass) = $this->parseOClass($properties);
 
-        $record = $this->buildRecord($properties, $recordClass);
-        $result = $this->client->recordCreate($record);
+        $sql = "INSERT INTO $recordClass CONTENT " . json_encode($properties);
 
-        return $result; // ToDo: Convert to GraphCollection
+        $result = $this->client->command($sql);
+
+        return $result;
     }
 
     /**

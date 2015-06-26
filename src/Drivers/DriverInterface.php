@@ -44,9 +44,10 @@ interface DriverInterface
      * Create a new Vertex (or node)
      * @param array $properties
      *
+     * @param null $class
      * @return mixed Record Created
      */
-    public function addVertex($properties);
+    public function addVertex($properties, $class = null);
 
     /**
      * Create a new edge (relationship)

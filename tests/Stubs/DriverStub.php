@@ -65,9 +65,10 @@ class DriverStub implements DriverInterface
      *
      * @param array $properties
      *
+     * @param null $class
      * @return mixed Record Created
      */
-    public function addVertex($properties)
+    public function addVertex($properties, $class = null)
     {
         return $this->returnData();
     }

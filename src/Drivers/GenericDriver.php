@@ -60,9 +60,10 @@ class GenericDriver implements DriverInterface
      *
      * @param array $properties
      *
+     * @param null $class
      * @return \Michaels\Spider\Graphs\GraphCollection Record Created
      */
-    public function addVertex($properties)
+    public function addVertex($properties, $class = null)
     {
         // TODO: Implement addVertex() method.
     }
