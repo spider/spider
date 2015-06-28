@@ -17,6 +17,8 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
 
     public function setup()
     {
+        $this->markTestSkipped('The Test Database is not installed');
+
         $this->config = [
             'hostname' => 'localhost',
             'port' => 2424,
