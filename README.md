@@ -40,19 +40,18 @@ It follows the milestones outlined in the proposal.
 The `develop` branch is a step ahead and may me unstable right now. As we near v0.5 and the first production ready (though feature incomplete) release, the develop branch will stabilize.
 
 ### Connections
-A connection holds the driver to a datastore and whatever settings that driver needs to connect (username, host, port, etc). All connections implement `Michaels\Spider\Connections\ConnectionInterface` and must be passed Driver Object and array of paremeters at creation.
+A connection holds the driver to a datastore and whatever settings that driver needs to connect (username, host, port, etc). 
+
+All connections implement `Michaels\Spider\Connections\ConnectionInterface` and must be passed Driver Object and array of credentials at creation. They may also be passed optional configuration.
 
 ```php
-$connection = new Connection(new SomeDriver(), ['username' => 'me', 'etc' => 'etc'], $optionalConfigs);
-```
+$credentials = [
+    'host' => 'localhost',
+    'port' => 1234,
+    // etc
+];
 
-The connection is not activated (does not connect) at creation. So, you may alter it:
-```php
-$connection->setDriver(new OtherDriver());
-$properties = $connection->getProperties();
-$connection->setProperties(['new' => 'properties']);
-$driverName = $connection->getDriverName(); // returns the classname of the current driver.
-$connection->set('config.whatever', 'value');
+$connection = new Connection(new SomeDriver(), $credentials);
 ```
 
 Connections also inherit from [michaels/data-manager](http://github.com/chrismichaels84/data-manager), so you have access to get(), set, has(), etc using dot notation for all properties.
@@ -73,10 +72,6 @@ $manager = new Michaels\Spider\Connections\Manager([
         'driver'      => 'Some\Driver\Two',
         'credentials' => 'whatever',
         'is'       => 'needed'
-    ],
-    'config' => [
-        'these' => 'are',
-        'optional' => true,
     ]
 ]);
 
@@ -103,38 +98,26 @@ $manager->fetch(); // Will return cached default connection, or create then cach
 $manager->fetch('connection-name'); // same
 ```
 
-### Configuration
-You store configuration inside of the Connection Manager and it will propagate through the system. Otherwise, you must pass a config array into the connection.
+### Using the Driver
+For now, the only supported driver is an `OrientDriver` for OrientDB. More are on the way.
 
-#### Return Objects
-By default, any `connection` will convert the driver's native response into an instance of `Michaels\Graphs\Graph`.
+You use the driver through the connection. Once you have a connection setup, you can `open()` it.
 
-You may specify a **different** return object:
+When sending queries or commands, be sure to use an instance of the `QueryInterface` to pass to the connection.
+The following methods work with the datastore:
 ```php
-$manager = new Michaels\Spider\Connections\Manager([
-    'default' => 'default-connection',
-    'default-connection' => [...]
-    'config' => [
-        'return-object' => 'Full\Class\Name\Here',
-    ]
-]);
-```
-which will pass the traversable response into the constructor.
+$query = new Michaels\Spider\Queries\Query("WHATEVER THE SCRIPT IS");
+//$query = new Michaels\Spider\Queries\Query("SELECT FROM Cats WHERE @rid = #13:1");
 
-If your return object needs to use a **specific method** to load/hydrate/fill
-```php
-    'config' => [
-        'return-object' => 'Full\Class\Name\Here',
-        'map-method' => 'methodName'
-    ]
-```
-which will pass the traversable response into that method after creating a new response object.
+$connection->open(); // uses the credentials given to the `Connection` when created
+$response = $connection->executeReadCommand(QueryInterface $query); // for read-only queryies like SELECT
+$response = $connection->executeWriteCommand(QueryInterface $query); // for write commands (INSERT, UPDATE, DELETE)
 
-Lastly, you may also choose to get back the **native** response
-```php
-    'config' => [
-        'return-object' => 'native'
-    ]
+// or you can run a command without waiting for a response
+$connection->runWriteCommand(QueryInterface $query);
+
+// Close the connection when you are done
+$connection->close();
 ```
 
 ### Exceptions
