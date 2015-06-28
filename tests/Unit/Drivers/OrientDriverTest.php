@@ -17,7 +17,7 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
 
     public function setup()
     {
-        $this->markTestSkipped('The Test Database is not installed');
+//        $this->markTestSkipped('The Test Database is not installed');
 
         $this->config = [
             'hostname' => 'localhost',
@@ -39,7 +39,7 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
 
     public function testReadCommands()
     {
-        $this->specify("it selects a single record and returns a Records", function () {
+        $this->specify("it selects a single record and returns an array of Records", function () {
             $driver = new OrientDriver();
             $driver->open($this->config);
 
@@ -49,8 +49,10 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
 
             $driver->close();
 
-            $this->assertInstanceOf('Michaels\Spider\Graphs\Record', $response, 'failed to return a Record');
-            $this->assertEquals("oreo", $response->name, "failed to return the correct names");
+            $this->assertTrue(is_array($response), 'failed to return an array');
+            $this->assertCount(1, $response, "failed to return 1 result");
+            $this->assertInstanceOf('Michaels\Spider\Graphs\Record', $response[0], 'failed to return a Record');
+            $this->assertEquals("oreo", $response[0]->name, "failed to return the correct names");
         });
 
         $this->specify("it selects multiple unrelated records and returns an array of Records", function () {

@@ -117,20 +117,21 @@ class OrientDriver implements DriverInterface
             return $this->orientToSpiderRecord($response);
         }
 
-        if (count($response) === 0) {
+        // We have an empty array
+        if (empty($response)) {
             return $response;
         }
 
         // For multiple records, map each to a Record
-        if (count($response) > 1) {
+//        if (count($response) > 1) {
             array_walk($response, function (&$orientRecord) {
                 $orientRecord = $this->orientToSpiderRecord($orientRecord);
             });
             return $response;
-        }
-
-        // This is an array of a single record, map to SpiderRecords
-        return $this->orientToSpiderRecord($response[0]);
+//        }
+//
+//         This is an array of a single record, map to SpiderRecords
+//        return $this->orientToSpiderRecord($response[0]);
     }
 
     /**
