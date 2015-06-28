@@ -3,6 +3,7 @@ namespace Michaels\Spider\Connections;
 
 use Michaels\Manager\Traits\ManagesItemsTrait;
 use Michaels\Spider\Drivers\DriverInterface;
+use Michaels\Spider\Graphs\Graph;
 
 /**
  * Facilitates two-way communication with a driver store
@@ -23,12 +24,38 @@ class Connection implements ConnectionInterface
      * Constructs a new connection with driver and properties
      *
      * @param DriverInterface $driver
-     * @param array           $properties Credentials, host, and the like
+     * @param array $credentials Credentials, host, and the like
+     * @param array $config
      */
-    public function __construct(DriverInterface $driver, array $properties)
+    public function __construct(DriverInterface $driver, array $credentials, array $config = [])
     {
+        $items = [
+            'credentials' => $credentials,
+            'config' => $config
+        ];
+
+        $this->initManager($items);
         $this->driver = $driver;
-        $this->initManager($properties);
+    }
+
+    /**
+     * Connects to the database
+     */
+    public function open()
+    {
+        return $this->driver->open($this->get('credentials'), $this->get('config'));
+    }
+
+    /**
+     * Passes through to driver
+     *
+     * @param $name
+     * @param $args
+     * @return Graph
+     */
+    public function __call($name, $args)
+    {
+        return call_user_func_array([$this->driver, $name], $args);
     }
 
     /**

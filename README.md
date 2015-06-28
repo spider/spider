@@ -40,18 +40,18 @@ It follows the milestones outlined in the proposal.
 The `develop` branch is a step ahead and may me unstable right now. As we near v0.5 and the first production ready (though feature incomplete) release, the develop branch will stabilize.
 
 ### Connections
-A connection holds the driver to a datastore and whatever settings that driver needs to connect (username, host, port, etc). All connections implement `Michaels\Spider\Connections\ConnectionInterface` and must be passed Driver Object and array of paremeters at creation.
+A connection holds the driver to a datastore and whatever settings that driver needs to connect (username, host, port, etc). 
+
+All connections implement `Michaels\Spider\Connections\ConnectionInterface` and must be passed Driver Object and array of credentials at creation. They may also be passed optional configuration.
 
 ```php
-$connection = new Connection(new SomeDriver(), ['username' => 'me', 'etc' => 'etc']);
-```
+$credentials = [
+    'host' => 'localhost',
+    'port' => 1234,
+    // etc
+];
 
-The connection is not activated (does not connect) at creation. So, you may alter it:
-```php
-$connection->setDriver(new OtherDriver());
-$properties = $connection->getProperties();
-$connection->setProperties(['new' => 'properties']);
-$driverName = $connection->getDriverName(); // returns the classname of the current driver.
+$connection = new Connection(new SomeDriver(), $credentials);
 ```
 
 Connections also inherit from [michaels/data-manager](http://github.com/chrismichaels84/data-manager), so you have access to get(), set, has(), etc using dot notation for all properties.
@@ -62,18 +62,16 @@ For convenience, a connection manager is included. This allows you to store mult
 ```php
 $manager = new Michaels\Spider\Connections\Manager([
     'default' => 'default-connection',
-    'connections' => [
-        'default-connection' => [
-            'driver'   => 'Full\Namespaced\Class\Name',
-            'whatever' => 'options',
-            'the' => 'driver',
-            'needs' => 'to connect'
-        ],
-        'connection-two'     => [
-            'driver'      => 'Some\Driver\Two',
-            'credentials' => 'whatever',
-            'is'       => 'needed'
-        ]
+    'default-connection' => [
+        'driver'   => 'Full\Namespaced\Class\Name',
+        'whatever' => 'options',
+        'the' => 'driver',
+        'needs' => 'to connect'
+    ],
+    'connection-two' => [
+        'driver'      => 'Some\Driver\Two',
+        'credentials' => 'whatever',
+        'is'       => 'needed'
     ]
 ]);
 
@@ -89,6 +87,41 @@ $manager->get('connections.default-connection');
 $manager->add('connection.new-connection', ['my' => 'connection']);
 //etc.
 ```
+
+### Fetching and Caching Connections
+Anytime you `make()` a connection it will be cached so you can draw the same connection again (say later in your application).
+
+You can get that cached connection via `fetch()` which will also create a new connection if it has not already been `make()`d
+
+```php
+$manager->fetch(); // Will return cached default connection, or create then cache it before returning
+$manager->fetch('connection-name'); // same
+```
+
+### Using the Driver
+For now, the only supported driver is an `OrientDriver` for OrientDB. More are on the way.
+
+You use the driver through the connection. Once you have a connection setup, you can `open()` it.
+
+When sending queries or commands, be sure to use an instance of the `QueryInterface` to pass to the connection.
+The following methods work with the datastore:
+```php
+$query = new Michaels\Spider\Queries\Query("WHATEVER THE SCRIPT IS");
+//$query = new Michaels\Spider\Queries\Query("SELECT FROM Cats WHERE @rid = #13:1");
+
+$connection->open(); // uses the credentials given to the `Connection` when created
+$response = $connection->executeReadCommand(QueryInterface $query); // for read-only queryies like SELECT
+$response = $connection->executeWriteCommand(QueryInterface $query); // for write commands (INSERT, UPDATE, DELETE)
+
+// or you can run a command without waiting for a response
+$connection->runWriteCommand(QueryInterface $query);
+
+// Close the connection when you are done
+$connection->close();
+```
+
+### Exceptions
+If you try to `make()` a connection that doesn't exist, a `ConnectionNotFoundException` will be thrown.
 
 ## Inspired By
   * [Eloquent ORM](http://laravel.com/docs/5.0/eloquent)
