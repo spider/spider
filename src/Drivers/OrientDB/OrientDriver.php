@@ -1,15 +1,12 @@
 <?php
 namespace Michaels\Spider\Drivers\OrientDB;
 
-use Michaels\Spider\Connections\Manager;
-use Michaels\Spider\Drivers\ConnectionException;
 use Michaels\Spider\Drivers\DriverInterface;
 use Michaels\Spider\Graphs\Graph;
+use Michaels\Spider\Graphs\Record as SpiderRecord;
 use Michaels\Spider\Queries\QueryInterface;
 use PhpOrient\PhpOrient;
-use PhpOrient\Protocols\Binary\Data\ID;
-use PhpOrient\Protocols\Binary\Data\Record;
-use Symfony\Component\Config\Definition\Exception\Exception;
+use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 
 /**
  * Driver for Native OrientDB (not using gremlin)
@@ -28,393 +25,124 @@ class OrientDriver implements DriverInterface
     /**
      * Connect to the database
      *
-     * @param Manager|array $properties Connection credentials
-     *
+     * @param array $properties credentials
      * @return $this
-     * @throws ConnectionException if connection is refused or broken
      */
-    public function connect(array $properties)
+    public function open(array $properties)
     {
         $this->client->configure($properties);
         $this->client->connect();
+        $this->client->dbOpen($properties['database']); // What if I *want* the cluster map?
     }
 
     /**
-     * Create a new database
-     * @param string $name
-     * @param null   $storageType
-     * @param null   $databaseType
-     *
-     * @return bool
-     */
-    public function createDb($name, $storageType = null, $databaseType = null)
-    {
-        return $this->client->dbCreate($name, $storageType, $databaseType);
-    }
-
-    /**
-     * Delete a database
-     * @param string $name
-     *
-     * @return bool
-     */
-    public function dropDb($name)
-    {
-        return $this->client->dbDrop($name);
-    }
-
-    /**
-     * Verify existence of a database
-     * @param string $name
-     *
-     * @return bool
-     */
-    public function dbExists($name)
-    {
-        return $this->client->dbExists($name);
-    }
-
-    /**
-     * List available databases
-     * @return array
-     */
-    public function listDbs()
-    {
-        return $this->client->dbList()['databases'];
-    }
-
-    /**
-     * Opens a specific database
-     *
-     * @param string $database
-     *
+     * Close the database connection
      * @return $this
      */
-    public function openDb($database)
-    {
-        $this->client->dbOpen($database); // What if I *want* the cluster map?
-        return $this;
-    }
-
-    /**
-     * Close the database
-     * @return $this
-     */
-    public function closeDb()
+    public function close()
     {
         $this->client->dbClose(); // returns int
         return $this;
     }
 
     /**
-     * Create a new Vertex (or node)
-     *
-     * @param array $properties
-     *
-     * @param null $class
-     * @return mixed Record Created
-     */
-    public function addVertex($properties, $class = null)
-    {
-        if (!is_null($class)) {
-            $properties['class'] = $class;
-        }
-
-        list($properties, $recordClass) = $this->parseOClass($properties);
-
-        $sql = "INSERT INTO $recordClass CONTENT " . json_encode($properties);
-
-        $result = $this->client->command($sql);
-
-        return $result;
-    }
-
-    /**
-     * Create a new edge (relationship)
-     *
-     * @param $from
-     * @param $to
-     * @param $properties
-     *
-     * @return \Michaels\Spider\Graphs\GraphCollection Edge Created
-     */
-    public function addEdge($from, $to, $properties)
-    {
-        $from = $this->parseRidToString($from);
-        $to = $this->parseRidToString($to);
-        list($properties, $class) = $this->parseOClass($properties, 'E');
-
-        $statement = "create edge $class from $from to $to content " . json_encode($properties);
-
-        return $this->client->command($statement); // ToDo: Convert to GraphCollection
-    }
-
-    /**
-     * Retrieve a vertex
-     *
-     * @param int|string $rid
-     *
-     * @return \Michaels\Spider\Graphs\GraphCollection Edge Created
-     */
-    public function getVertex($rid)
-    {
-        return $this->getRecord($rid); // ToDo: Convert to GraphCollection
-    }
-
-    /**
-     * Retrieve an Edge
-     *
-     * @param string|int $rid
-     *
-     * @return \Michaels\Spider\Graphs\GraphCollection Edge record
-     */
-    public function getEdge($rid)
-    {
-        return $this->getRecord($rid); // ToDo: Convert to GraphCollection
-    }
-
-    /**
-     * @param string|int $rid
-     * @param array      $properties
-     *
-     * @return \Michaels\Spider\Graphs\GraphCollection Vertex record
-     */
-    public function updateVertex($rid, $properties)
-    {
-        return $this->updateRecord($rid, $properties); // ToDo: Convert to GraphCollection
-    }
-
-    /**
-     * Update an edge
-     *
-     * @param string|int $rid
-     * @param array      $properties
-     *
-     * @return \Michaels\Spider\Graphs\GraphCollection Edge record
-     */
-    public function updateEdge($rid, $properties)
-    {
-        return $this->updateRecord($rid, $properties); // ToDo: Convert to GraphCollection
-    }
-
-    /**
-     * Delete a Vertex (node)
-     *
-     * @param string|int $rid
-     *
-     * @return $this
-     */
-    public function dropVertex($rid)
-    {
-        $this->dropRecord($rid); // returns RecordDelete|bool
-        return $this;
-    }
-
-    /**
-     * Delete an Edge (relationship)
-     *
-     * @param $rid
-     *
-     * @return $this
-     */
-    public function dropEdge($rid)
-    {
-        $this->dropRecord($rid); //returns RecordDelete|bool
-        return $this;
-    }
-
-    /**
-     * Execute a command in the graph database's native language (orient, sparql, cypher, etc)
-     *
-     * @param string $command
-     *
-     * @return mixed
-     */
-    public function command($command)
-    {
-        return $this->client->query($command);
-    }
-
-    /**
-     * Execute a query
-     * From the Queryies\QueryBuilder which translates to a native or gremlin statement
+     * Executes a Query or read command
      *
      * @param QueryInterface $query
-     *
-     * @return mixed
+     * @return array|Record|Graph
      */
-    public function query(QueryInterface $query)
+    public function executeReadCommand(QueryInterface $query)
     {
-        return $this->client->query($query->getScript());
-    }
+        $response = $this->client->query($query->getScript());
 
-    /**
-     * Map a raw result to the Spider Response
-     * @param $results
-     * @return Graph
-     */
-    public function mapToSpiderResponse($results)
-    {
-        // Map collection of results to graph if needed
-        if (is_array($results)) {
-            $newResults = [];
-            foreach ($results as $result) {
-                if ($result instanceof Record) {
-                    $newResults[] = $this->recordToGraph($result);
-                } else {
-                    $newResults[] = $result;
-                }
-            }
-
-            return new Graph($newResults);
+        if (is_array($response) || $response instanceof OrientRecord) {
+            return $this->mapResponse($response);
         }
 
-        // Map a single record to graph
-        $record = $this->recordToGraph($results);
-
-        // Fire it back
-        return $record;
+        return $response;
     }
 
     /**
-     * Transforms string RID into object RID
-     * @param string $rid
-     * @return ID
-     */
-    protected function parseRid($rid)
-    {
-        if ($rid instanceof ID) {
-            return $rid;
-        } elseif (is_string($rid)) {
-            $rid = trim($rid, "#");
-            $pieces = explode(':', $rid);
-            $cluster = $pieces[0];
-            $position = $pieces[1];
-
-            return new ID($cluster, $position);
-        } else {
-            throw new Exception("Not a valid ID");
-        }
-    }
-
-    /**
-     * Transforms RID object to RID string
-     * @param $rid
-     * @return string
-     */
-    protected function parseRidToString($rid)
-    {
-        if ($rid instanceof ID) {
-            return "#$rid->cluster:$rid->position";
-        } elseif (is_string($rid)) {
-            return $rid;
-        } else {
-            throw new Exception("Not a valid ID");
-        }
-    }
-
-    /**
-     * Separates orient CLASS from properties or returns default
-     * @param array $properties
-     * @param string $default
+     * Executes a write command
      *
-     * @return array
-     */
-    protected function parseOClass($properties, $default = 'V')
-    {
-        if (isset($properties['class'])) {
-            $recordClass = $properties['class'];
-            unset($properties['class']);
-            return array($properties, $recordClass);
-        } else {
-            $recordClass = $default;
-            return array($properties, $recordClass);
-        }
-    }
-
-    /**
-     * Builds a Record Object from properties
-     * @param         $properties
-     * @param         $recordClass
-     * @param bool|ID $rid
+     * These are the "CUD" in CRUD
      *
-     * @return Record
-     * @internal param $id
+     * @param QueryInterface $query
+     * @return Graph|Record|array|mixed mixed values for some write commands
      */
-    protected function buildRecord($properties, $recordClass, ID $rid = null)
+    public function executeWriteCommand(QueryInterface $query)
     {
-        if (is_null($rid)) {
-            $recordId = new ID(9);
-        } else {
-            $recordId = $rid;
+        $response = $this->client->command($query->getScript());
+
+        if (is_array($response) || $response instanceof OrientRecord) {
+            return $this->mapResponse($response);
         }
 
-        $record = (new Record())
-            ->setOData($properties)
-            ->setOClass($recordClass)
-            ->setRid($recordId);
-        return $record;
+        return $response;
     }
 
     /**
-     * Updates a record
-     * @param $rid
-     * @param $properties
+     * Executes a read command without waiting for a response
      *
-     * @return Record|\PhpOrient\Protocols\Binary\Operations\RecordUpdate
+     * @param QueryInterface $query
+     * @return $this
      */
-    protected function updateRecord($rid, $properties)
+    public function runReadCommand(QueryInterface $query)
     {
-        $id = $this->parseRid($rid);
-        list($properties, $recordClass) = $this->parseOClass($properties);
-
-        $updatedRecord = $this->buildRecord($properties, $recordClass, $id);
-
-        return $this->client->recordUpdate($updatedRecord);
+        $this->client->query($query->getScript());
+        return $this;
     }
 
     /**
-     * Deletes a record
-     * @param $rid
+     * Executes a write command without waiting for a response
      *
-     * @return bool|\PhpOrient\Protocols\Binary\Operations\RecordDelete
+     * @param QueryInterface $query
+     * @return $this
      */
-    protected function dropRecord($rid)
+    public function runWriteCommand(QueryInterface $query)
     {
-        $id = $this->parseRid($rid);
-
-        $delete = $this->client->recordDelete($id);
-        return $delete;
+        $this->client->command($query->getScript());
+        return $this;
     }
 
-    /**
-     * Retrieves a record
-     * @param $rid
-     *
-     * @return mixed
-     */
-    protected function getRecord($rid)
+    protected function mapResponse($response)
     {
-        if (is_array($rid)) {
-            // Do it through SQL
+        // If we have a solitary record, just map it
+        if ($response instanceof OrientRecord) {
+            return $this->orientToSpiderRecord($response);
         }
-        return $this->client->recordLoad($this->parseRid($rid))[0];
+
+        if (count($response) === 0) {
+            return $response;
+        }
+
+        // For multiple records, map each to a Record
+        if (count($response) > 1) {
+            array_walk($response, function (&$orientRecord) {
+                $orientRecord = $this->orientToSpiderRecord($orientRecord);
+            });
+            return $response;
+        }
+
+        // This is an array of a single record, map to SpiderRecords
+        return $this->orientToSpiderRecord($response[0]);
     }
 
     /**
-     * Map a Record to a Graph, preserving metadata
-     * @param $results
-     * @return Graph
+     * @param $orientRecord
+     * @return SpiderRecord
      */
-    protected function recordToGraph($results)
+    protected function orientToSpiderRecord(OrientRecord $orientRecord)
     {
-        $record = new Graph($results->getOData());
-        $record->add([
-            'id' => $results->getRid()->jsonSerialize(),
-            'rid' => $results->getRid(),
-            'version' => $results->getVersion(),
-            'oClass' => $results->getOClass(),
+        // Or we map a single record to a Spider Record
+        $spiderRecord = new SpiderRecord($orientRecord->getOData());
+        $spiderRecord->add([
+            'id' => $orientRecord->getRid()->jsonSerialize(),
+            'rid' => $orientRecord->getRid(),
+            'version' => $orientRecord->getVersion(),
+            'oClass' => $orientRecord->getOClass(),
         ]);
-        return $record;
+
+        return $spiderRecord;
     }
 }

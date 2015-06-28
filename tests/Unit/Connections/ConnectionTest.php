@@ -5,6 +5,7 @@ use Codeception\Specify;
 use Michaels\Spider\Connections\Connection;
 use Michaels\Spider\Drivers\GenericDriver;
 use Michaels\Spider\Test\Stubs\DriverStub;
+use Michaels\Spider\Test\Stubs\SecondDriverStub;
 
 /*
  * Tests Implementation against ConnectionInterface
@@ -29,9 +30,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
         $this->specify("it sets driver instance", function () {
             $connection = new Connection(new DriverStub(), ['one' => 'one']);
-            $connection->setDriver(new GenericDriver());
+            $connection->setDriver(new SecondDriverStub());
 
-            $this->assertInstanceOf('Michaels\Spider\Drivers\GenericDriver', $connection->getDriver(), 'failed to return new driver instance');
+            $this->assertInstanceOf('Michaels\Spider\Test\Stubs\SecondDriverStub', $connection->getDriver(), 'failed to return new driver instance');
         });
 
         $this->specify("it gets properties array", function () {
@@ -64,48 +65,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             $connection->set('three.four', 'four');
 
             $this->assertEquals(['one' => 'new-one', 'two' => 'two', 'three' => ['four' => 'four'], 'config' => []], $connection->getProperties(), "failed to set properties");
-        });
-    }
-
-    public function testMapReturnToObject()
-    {
-        $this->specify("it returns `Graph` by default", function () {
-            $connection = new Connection(new DriverStub(), []);
-            $response = $connection->getVertex(0); // Returns dummy Native Object
-
-            $this->assertInstanceOf('\Michaels\Spider\Graphs\Graph', $response, 'failed to return a Graph by default');
-        });
-
-        $this->specify("it returns `Graph` using `graph`", function () {
-            $connection = new Connection(new DriverStub(), [], ['return-object' => 'graph']);
-            $response = $connection->getVertex(0); // Returns dummy Native Object
-
-            $this->assertInstanceOf('\Michaels\Spider\Graphs\Graph', $response, 'failed to return a Graph by default');
-        });
-
-        $this->specify("it returns native object", function () {
-            $connection = new Connection(new DriverStub(), [], ['return-object' => 'native']);
-            $response = $connection->getVertex(0); // Returns dummy Native Object
-
-            $this->assertNotInstanceOf('\Michaels\Spider\Test\Stubs\SpecificReturnStub', $response, 'returned SpecificReturnStub');
-            $this->assertNotInstanceOf('\Michaels\Spider\Test\Stubs\SpecificReturnMapMethodStub', $response, 'returned SpecificReturnMapMethodStub');
-            $this->assertNotInstanceOf('\Michaels\Spider\Graphs\Graph', $response, 'returned Graph');
-
-            $this->assertInstanceOf('\Michaels\Spider\Test\Stubs\NativeReturnStub', $response, 'failed to return the native response');
-        });
-
-        $this->specify("it returns specified object using construct", function () {
-            $connection = new Connection(new DriverStub(), [], ['return-object' => '\Michaels\Spider\Test\Stubs\SpecificReturnStub']);
-            $response = $connection->getVertex(0);
-
-            $this->assertInstanceOf('\Michaels\Spider\Test\Stubs\SpecificReturnStub', $response, 'failed to return a specific object mapped using construct');
-        });
-
-        $this->specify("it returns specified object using custom `map` method", function () {
-            $connection = new Connection(new DriverStub(), [], ['return-object' => '\Michaels\Spider\Test\Stubs\SpecificReturnMapMethodStub', 'map-method' => 'map']);
-            $response = $connection->getVertex(0);
-
-            $this->assertInstanceOf('\Michaels\Spider\Test\Stubs\SpecificReturnMapMethodStub', $response, 'failed to return a specific object mapped using custom `map` method');
         });
     }
 }

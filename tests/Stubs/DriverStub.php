@@ -1,9 +1,8 @@
 <?php
 namespace Michaels\Spider\Test\Stubs;
 
-use Michaels\Spider\Connections\Manager;
 use Michaels\Spider\Drivers\DriverInterface;
-use Michaels\Spider\Graphs\Graph;
+use Michaels\Spider\Graphs\Record;
 use Michaels\Spider\Queries\QueryInterface;
 
 class DriverStub implements DriverInterface
@@ -11,7 +10,7 @@ class DriverStub implements DriverInterface
 
     protected function returnData()
     {
-        return new NativeReturnStub([
+        return new Record([
             'one' => 1,
             'two' => true,
             'three' => 'three',
@@ -21,176 +20,68 @@ class DriverStub implements DriverInterface
     /**
      * Connect to the database
      *
-     * @param Manager|array $properties credentials
-     *
+     * @param array $properties credentials
      * @return $this
      */
-    public function connect(array $properties)
+    public function open(array $properties)
     {
         return $this;
     }
 
     /**
-     * List available databases
-     * @return array
-     */
-    public function listDbs()
-    {
-        return ['dbOne', 'dbTwo'];
-    }
-
-    /**
-     * Opens a specific database
-     *
-     * @param string $database
-     *
+     * Close the database connection
      * @return $this
      */
-    public function openDb($database)
+    public function close()
     {
         return $this;
     }
 
     /**
-     * Close the database
-     * @return $this
-     */
-    public function closeDb()
-    {
-        return $this;
-    }
-
-    /**
-     * Create a new Vertex (or node)
+     * Executes a Query or read command
      *
-     * @param array $properties
-     *
-     * @param null $class
-     * @return mixed Record Created
-     */
-    public function addVertex($properties, $class = null)
-    {
-        return $this->returnData();
-    }
-
-    /**
-     * Create a new edge (relationship)
-     *
-     * @param $from
-     * @param $to
-     * @param $properties
-     *
-     * @return mixed Edge Created
-     */
-    public function addEdge($from, $to, $properties)
-    {
-        return $this->returnData();
-    }
-
-    /**
-     * Retrieve a vertex
-     *
-     * @param int|string $id
-     *
-     * @return mixed Edge Created
-     */
-    public function getVertex($id)
-    {
-        return $this->returnData();
-    }
-
-    /**
-     * Retrieve an Edge
-     *
-     * @param string|int $id
-     *
-     * @return mixed Edge record
-     */
-    public function getEdge($id)
-    {
-        return $this->returnData();
-    }
-
-    /**
-     * @param string|int $id
-     * @param array      $properties
-     *
-     * @return mixed Vertex record
-     */
-    public function updateVertex($id, $properties)
-    {
-        return $this->returnData();
-    }
-
-    /**
-     * Update an edge
-     *
-     * @param string|int $id
-     * @param array      $properties
-     *
-     * @return mixed Edge record
-     */
-    public function updateEdge($id, $properties)
-    {
-        return $this->returnData();
-    }
-
-    /**
-     * Delete a Vertex (node)
-     *
-     * @param string|int $id
-     *
-     * @return $this
-     */
-    public function dropVertex($id)
-    {
-        return $this;
-    }
-
-    /**
-     * Delete an Edge (relationship)
-     *
-     * @param $id
-     *
-     * @return $this
-     */
-    public function dropEdge($id)
-    {
-        return $this;
-    }
-
-    /**
-     * Execute a command in the graph database's native language (orient, sparql, cypher, etc)
-     *
-     * @param string $command
-     *
-     * @return mixed
-     */
-    public function command($command)
-    {
-        return $this->returnData();
-    }
-
-    /**
-     * Execute a query
-     * From the Queryies\QueryBuilder which translates to a native or gremlin statement
+     * This is the R in CRUD
      *
      * @param QueryInterface $query
-     *
-     * @return mixed
+     * @return array|Record|\Michaels\Spider\Drivers\Graph
      */
-    public function query(QueryInterface $query)
+    public function executeReadCommand(QueryInterface $query)
     {
         return $this->returnData();
     }
 
     /**
-     * Map a raw result to the Spider Response
-     * @param $results
-     * @return \Michaels\Spider\Graphs\Graph
+     * Executes a write command
+     *
+     * These are the "CUD" in CRUD
+     *
+     * @param QueryInterface $query
+     * @return \Michaels\Spider\Drivers\Graph|Record|array|mixed mixed values for some write commands
      */
-    public function mapToSpiderResponse($results)
+    public function executeWriteCommand(QueryInterface $query)
     {
-        return new Graph($results);
+        return $this->returnData();
+    }
+
+    /**
+     * Executes a read command without waiting for a response
+     *
+     * @param QueryInterface $query
+     * @return $this
+     */
+    public function runReadCommand(QueryInterface $query)
+    {
+        return $this;
+    }
+
+    /**
+     * Executes a write command without waiting for a response
+     *
+     * @param QueryInterface $query
+     * @return $this
+     */
+    public function runWriteCommand(QueryInterface $query)
+    {
+        return $this;
     }
 }

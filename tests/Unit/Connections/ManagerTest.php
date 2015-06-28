@@ -21,13 +21,13 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $this->connections = [
             'default'     => 'default-connection',
             'default-connection' => [
-                'driver' => 'Michaels\Spider\Drivers\GenericDriver',
+                'driver' => 'Michaels\Spider\Test\Stubs\DriverStub',
                 'username' => 'username',
                 'host' => 'host',
                 'pass' => 'pass'
             ],
             'connection-one' => [
-                'driver' => 'Michaels\Spider\Test\Stubs\DriverStub',
+                'driver' => 'Michaels\Spider\Test\Stubs\SecondDriverStub',
                 'credentials' => 'one-credentials',
                 'other' => 'one-other'
             ],

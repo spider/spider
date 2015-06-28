@@ -4,10 +4,8 @@ namespace Michaels\Spider\Drivers;
 use Michaels\Spider\Queries\QueryInterface;
 
 /**
- * Class OrientDriver
- * @package Michaels\Spider\Drivers\OrientDB
+ * Driver contract
  */
-/* ToDo: Transaction Support */
 
 interface DriverInterface
 {
@@ -15,124 +13,53 @@ interface DriverInterface
      * Connect to the database
      *
      * @param array $properties credentials
-     *
-*@return $this
-     */
-    public function connect(array $properties);
-
-    /**
-     * List available databases
-     * @return array
-     */
-    public function listDbs();
-
-    /**
-     * Opens a specific database
-     * @param string $database
-     *
      * @return $this
      */
-    public function openDb($database);
+    public function open(array $properties);
 
     /**
-     * Close the database
+     * Close the database connection
      * @return $this
      */
-    public function closeDb();
+    public function close();
 
     /**
-     * Create a new Vertex (or node)
-     * @param array $properties
+     * Executes a Query or read command
      *
-     * @param null $class
-     * @return mixed Record Created
-     */
-    public function addVertex($properties, $class = null);
-
-    /**
-     * Create a new edge (relationship)
-     *
-     * @param $from
-     * @param $to
-     * @param $properties
-     *
-     * @return mixed Edge Created
-     */
-    public function addEdge($from, $to, $properties);
-
-    /**
-     * Retrieve a vertex
-     * @param int|string $id
-     *
-     * @return mixed Edge Created
-     */
-    public function getVertex($id);
-
-    /**
-     * Retrieve an Edge
-     * @param string|int $id
-     *
-     * @return mixed Edge record
-     */
-    public function getEdge($id);
-
-    /**
-     * @param string|int $id
-     * @param array      $properties
-     *
-     * @return mixed Vertex record
-     */
-    public function updateVertex($id, $properties);
-
-    /**
-     * Update an edge
-     *
-     * @param string|int $id
-     * @param array      $properties
-     *
-     * @return mixed Edge record
-     */
-    public function updateEdge($id, $properties);
-
-    /**
-     * Delete a Vertex (node)
-     * @param string|int $id
-     *
-     * @return $this
-     */
-    public function dropVertex($id);
-
-    /**
-     * Delete an Edge (relationship)
-     * @param $id
-     *
-     * @return $this
-     */
-    public function dropEdge($id);
-
-    /**
-     * Execute a command in the graph database's native language (orient, sparql, cypher, etc)
-     *
-     * @param string $command
-     *
-     * @return mixed
-     */
-    public function command($command);
-
-    /**
-     * Execute a query
-     * From the Queryies\QueryBuilder which translates to a native or gremlin statement
+     * This is the R in CRUD
      *
      * @param QueryInterface $query
-     *
-     * @return mixed
+     * @return array|Record|Graph
      */
-    public function query(QueryInterface $query);
+    public function executeReadCommand(QueryInterface $query);
 
     /**
-     * Map a raw result to the Spider Response
-     * @param $results
-     * @return Graph
+     * Executes a write command
+     *
+     * These are the "CUD" in CRUD
+     *
+     * @param QueryInterface $query
+     * @return Graph|Record|array|mixed mixed values for some write commands
      */
-    public function mapToSpiderResponse($results);
+    public function executeWriteCommand(QueryInterface $query);
+
+    /**
+     * Executes a read command without waiting for a response
+     *
+     * @param QueryInterface $query
+     * @return $this
+     */
+    public function runReadCommand(QueryInterface $query);
+
+    /**
+     * Executes a write command without waiting for a response
+     *
+     * @param QueryInterface $query
+     * @return $this
+     */
+    public function runWriteCommand(QueryInterface $query);
+
+//    public function startTransaction();
+//
+//    public function stopTransaction();
 }
