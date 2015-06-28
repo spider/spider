@@ -144,6 +144,7 @@ If you discover any security related issues, please email phoenixlabsdev@gmail.c
 
 ## Credits
 - [Michael Wilson](https://github.com/chrismichaels84)
+- [PommeVerte](https://github.com/PommeVerte)
 - Open an issue to join in!
 
 ## License
