@@ -105,6 +105,11 @@ class OrientDriver implements DriverInterface
         return $this;
     }
 
+    /**
+     * Map a raw response to a SpiderResponse
+     * @param $response
+     * @return SpiderRecord
+     */
     protected function mapResponse($response)
     {
         // If we have a solitary record, just map it
@@ -129,6 +134,8 @@ class OrientDriver implements DriverInterface
     }
 
     /**
+     * Hydrate a SpiderRecord from an OrientRecord
+     *
      * @param $orientRecord
      * @return SpiderRecord
      */
