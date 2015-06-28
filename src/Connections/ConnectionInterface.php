@@ -13,7 +13,7 @@ interface ConnectionInterface extends ManagesItemsInterface
     /**
      * Connects to the database
      */
-    public function connect();
+    public function open();
 
     /**
      * Returns the properties array

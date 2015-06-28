@@ -66,9 +66,9 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             );
 
             // Connection is using the correct properties
-            $expected = $this->connections['default-connection'];
+            $expected['credentials'] = $this->connections['default-connection'];
             $expected['config'] = [];
-            unset($expected['driver']);
+            unset($expected['credentials']['driver']);
 
             $this->assertEquals(
                 $expected,
@@ -96,8 +96,8 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             );
 
             // Connection is using the correct properties
-            $expected = $this->connections['connection-one'];
-            unset($expected['driver']);
+            $expected['credentials'] = $this->connections['connection-one'];
+            unset($expected['credentials']['driver']);
             $expected['config'] = [];
 
             $this->assertEquals(

@@ -15,6 +15,11 @@ use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 class OrientDriver implements DriverInterface
 {
     /**
+     * @var array user-configuration passed from connection
+     */
+    protected $config;
+
+    /**
      * Create a new instance with a client
      */
     public function __construct()
@@ -23,16 +28,18 @@ class OrientDriver implements DriverInterface
     }
 
     /**
-     * Connect to the database
+     * Open a database connection
      *
-     * @param array $properties credentials
+     * @param array $credentials credentials
+     * @param array $config
      * @return $this
      */
-    public function open(array $properties)
+    public function open(array $credentials, array $config = [])
     {
-        $this->client->configure($properties);
+        $this->config = $config;
+        $this->client->configure($credentials);
         $this->client->connect();
-        $this->client->dbOpen($properties['database']); // What if I *want* the cluster map?
+        $this->client->dbOpen($credentials['database']); // What if I *want* the cluster map?
     }
 
     /**
@@ -123,15 +130,10 @@ class OrientDriver implements DriverInterface
         }
 
         // For multiple records, map each to a Record
-//        if (count($response) > 1) {
-            array_walk($response, function (&$orientRecord) {
-                $orientRecord = $this->orientToSpiderRecord($orientRecord);
-            });
-            return $response;
-//        }
-//
-//         This is an array of a single record, map to SpiderRecords
-//        return $this->orientToSpiderRecord($response[0]);
+        array_walk($response, function (&$orientRecord) {
+            $orientRecord = $this->orientToSpiderRecord($orientRecord);
+        });
+        return $response;
     }
 
     /**

@@ -88,11 +88,11 @@ class Manager implements ManagesItemsInterface
      */
     protected function buildConnection($connectionName)
     {
-        $properties = $this->get("connections.$connectionName");
-        $diverClassName = $properties['driver'];
-        unset($properties['driver']);
+        $credentials = $this->get("connections.$connectionName");
+        $diverClassName = $credentials['driver'];
+        unset($credentials['driver']);
 
-        return new Connection(new $diverClassName, $properties, $this->get('config'));
+        return new Connection(new $diverClassName, $credentials, $this->get('config'));
     }
 
     /**

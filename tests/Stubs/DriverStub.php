@@ -17,13 +17,20 @@ class DriverStub implements DriverInterface
         ]);
     }
 
+//    public function __construct($credentials, $config)
+//    {
+//        $this->credentials = $credentials;
+//        $this->config = $config;
+//    }
+
     /**
      * Connect to the database
      *
-     * @param array $properties credentials
+     * @param array $credentials credentials
+     * @param array $config
      * @return $this
      */
-    public function open(array $properties)
+    public function open(array $credentials, array $config = [])
     {
         return $this;
     }

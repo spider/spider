@@ -12,10 +12,11 @@ interface DriverInterface
     /**
      * Connect to the database
      *
-     * @param array $properties credentials
+     * @param array $credentials
+     * @param array $config
      * @return $this
      */
-    public function open(array $properties);
+    public function open(array $credentials, array $config = []);
 
     /**
      * Close the database connection

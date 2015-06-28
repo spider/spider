@@ -14,12 +14,13 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
     use Specify;
 
     protected $config;
+    protected $credentials;
 
     public function setup()
     {
 //        $this->markTestSkipped('The Test Database is not installed');
 
-        $this->config = [
+        $this->credentials = [
             'hostname' => 'localhost',
             'port' => 2424,
             'username' => 'root',
@@ -32,7 +33,7 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
     {
         $this->specify("it opens and closes the database without exception", function () {
             $driver = new OrientDriver();
-            $driver->open($this->config);
+            $driver->open($this->credentials);
             $driver->close();
         });
     }
@@ -41,7 +42,7 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
     {
         $this->specify("it selects a single record and returns an array of Records", function () {
             $driver = new OrientDriver();
-            $driver->open($this->config);
+            $driver->open($this->credentials);
 
             $response = $driver->executeReadCommand(new Query(
                 "SELECT FROM Cat WHERE @rid = #12:0"
@@ -57,7 +58,7 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
 
         $this->specify("it selects multiple unrelated records and returns an array of Records", function () {
             $driver = new OrientDriver();
-            $driver->open($this->config);
+            $driver->open($this->credentials);
 
             $response = $driver->executeReadCommand(new Query(
                 "SELECT FROM Cat"
@@ -75,7 +76,7 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
     public function testWriteCommands()
     {
         $driver = new OrientDriver();
-        $driver->open($this->config);
+        $driver->open($this->credentials);
 
         // Create new
         $sql = "INSERT INTO Owner CONTENT " . json_encode(['first_name' => 'nicole', 'last_name' => 'lowman']);
