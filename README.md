@@ -123,11 +123,31 @@ $connection->close();
 ### Exceptions
 If you try to `make()` a connection that doesn't exist, a `ConnectionNotFoundException` will be thrown.
 
+### Tests
+```bash
+phpunit
+```
+Note that the OrientDriver tests are disabled for the auto-build Travis CI process. They require a working database. Until a better way of mocking or seeding a test database is found, just allow these tests to be skipped. I am keeping up with them on my development machine. Any suggestions are welcome!
+
 ## Inspired By
   * [Eloquent ORM](http://laravel.com/docs/5.0/eloquent)
   * [Hibernate OGM](http://hibernate.org/ogm/)
   * [Propel ORM](http://propelorm.org)
   * [Neo4j Client](https://github.com/neoxygen/neo4j-neoclient)
   * [Bulbflow](http://bulbflow.com/)
+  
+## Contributing
+Contributions are welcome and will be fully credited. Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+
+## Security
+If you discover any security related issues, please email phoenixlabsdev@gmail.com instead of using the issue tracker.
+
+## Credits
+- [Michael Wilson](https://github.com/chrismichaels84)
+- Open an issue to join in!
+
+## License
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
   
   
