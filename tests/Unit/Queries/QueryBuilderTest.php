@@ -11,6 +11,9 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 {
     use Specify;
 
+    /**
+     * @var QueryBuilder
+     */
     protected $builder;
 
     public function setup()
@@ -86,7 +89,7 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("it throws exception if projections is not array or string", function () {
-            $actual = $this->builder
+            $this->builder
                 ->select()
                 ->record("#12:6767")// byId() alias
                 ->only(3)
@@ -308,6 +311,123 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getScript();
 
             $expected = "SELECT FROM V WHERE name = 'michael' OR price > 2";
+
+            $this->assertEquals($expected, $actual, "failed to return correct script");
+        });
+    }
+
+    public function testLimit()
+    {
+        $this->specify("it adds a specified limit", function () {
+            $actual = $this->builder
+                ->select()
+                ->from("V")
+                ->limit(2)
+                ->getScript();
+
+            $expected = "SELECT FROM V LIMIT 2";
+
+            $this->assertEquals($expected, $actual, "failed to return correct script");
+        });
+    }
+
+    public function testGroupBy()
+    {
+        $this->specify("it groups results by a single field", function () {
+            $actual = $this->builder
+                ->select()
+                ->from("V")
+                ->groupBy('certified')
+                ->getScript();
+
+            $expected = "SELECT FROM V GROUP BY certified";
+
+            $this->assertEquals($expected, $actual, "failed to return correct script");
+        });
+
+        $this->specify("it groups results by a multiple fields array", function () {
+            $actual = $this->builder
+                ->select()
+                ->from("V")
+                ->groupBy(['certified', 'price'])
+                ->getScript();
+
+            $expected = "SELECT FROM V GROUP BY certified, price";
+
+            $this->assertEquals($expected, $actual, "failed to return correct script");
+        });
+
+        $this->specify("it groups results by a multiple fields string", function () {
+            $actual = $this->builder
+                ->select()
+                ->from("V")
+                ->groupBy('certified, price')
+                ->getScript();
+
+            $expected = "SELECT FROM V GROUP BY certified, price";
+
+            $this->assertEquals($expected, $actual, "failed to return correct script");
+        });
+    }
+
+    function testOrderyBy()
+    {
+        $this->specify("it orders results by a field, asc by default", function () {
+            $actual = $this->builder
+                ->select()
+                ->from("V")
+                ->orderBy('price')
+                ->getScript();
+
+            $expected = "SELECT FROM V ORDER BY price ASC";
+
+            $this->assertEquals($expected, $actual, "failed to return correct script");
+        });
+
+        $this->specify("it orders results by a field, desc", function () {
+            $actual = $this->builder
+                ->select()
+                ->from("V")
+                ->orderBy('price')->desc()
+                ->getScript();
+
+            $expected = "SELECT FROM V ORDER BY price DESC";
+
+            $this->assertEquals($expected, $actual, "failed to return correct script");
+        });
+
+        $this->specify("it orders results by a field, asc", function () {
+            $actual = $this->builder
+                ->select()
+                ->from("V")
+                ->orderBy('price')->asc()
+                ->getScript();
+
+            $expected = "SELECT FROM V ORDER BY price ASC";
+
+            $this->assertEquals($expected, $actual, "failed to return correct script");
+        });
+
+        $this->specify("it orders results by multiple fields, array", function () {
+            $actual = $this->builder
+                ->select()
+                ->from("V")
+                ->orderBy(['price', 'owner'])
+                ->getScript();
+
+            $expected = "SELECT FROM V ORDER BY price, owner ASC";
+
+            $this->assertEquals($expected, $actual, "failed to return correct script");
+        });
+
+        $this->specify("it orders results by multiple fields, string", function () {
+            $actual = $this->builder
+                ->select()
+                ->from("V")
+                ->orderBy('price, owner')
+                ->getScript();
+
+            $expected = "SELECT FROM V ORDER BY price, owner ASC";
 
             $this->assertEquals($expected, $actual, "failed to return correct script");
         });

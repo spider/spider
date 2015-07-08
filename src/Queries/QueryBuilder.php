@@ -1,6 +1,7 @@
 <?php
 namespace Michaels\Spider\Queries;
 
+use InvalidArgumentException;
 use Michaels\Spider\Connections\ConnectionInterface;
 
 /**
@@ -10,10 +11,15 @@ use Michaels\Spider\Connections\ConnectionInterface;
 class QueryBuilder
 {
     protected $connection;
+    protected $currentScript;
+
     protected $command;
     protected $projections;
-    protected $currentScript;
     protected $from;
+    protected $limit;
+    protected $groupBy;
+    protected $orderBy;
+    protected $orderAsc = true;
 
     public function __construct(ConnectionInterface $connection = null)
     {
@@ -46,17 +52,27 @@ class QueryBuilder
         if (is_null($projections)) {
             $this->projections = [];
             return $this;
-
-        } elseif (is_array($projections)) {
-            $this->projections = $projections;
-            return $this;
-
-        } elseif (is_string($projections)) {
-            $this->projections = array_map('trim', explode(",", $projections));
-            return $this;
         }
 
-        throw new \InvalidArgumentException("Projections must be a comma-separated string or an array");
+        $this->projections = $this->fromCsv($projections, true);
+        return $this;
+    }
+
+    public function fromCsv($fields, $throwException = true)
+    {
+        if (is_array($fields)) {
+            return $fields;
+
+        } elseif (is_string($fields)) {
+            return array_map('trim', explode(",", $fields));
+        }
+
+        // We can't do anything with this value
+        if ($throwException) {
+            throw new InvalidArgumentException("Projections must be a comma-separated string or an array");
+        }
+
+        return $fields;
     }
 
     public function only($projections)
@@ -145,10 +161,48 @@ class QueryBuilder
         return $this;
     }
 
-    public function getScript()
+    public function limit($limit)
     {
-        $this->currentScript = $this->process();
-        return $this->currentScript;
+        $this->limit = $limit;
+        return $this;
+    }
+
+    public function groupBy($fields)
+    {
+        $fields = $this->fromCsv($fields);
+
+//        if (count($fields) > 1) {
+//            throw new InvalidArgumentException("Orient DB only allows one field in Group By");
+//        }
+
+        $this->groupBy = $fields;
+
+        return $this;
+    }
+
+    public function orderBy($fields)
+    {
+        $fields = $this->fromCsv($fields);
+
+//        if (count($fields) > 1) {
+//            throw new InvalidArgumentException("Orient DB only allows one field in Group By");
+//        }
+
+        $this->orderBy = $fields;
+
+        return $this;
+    }
+
+    public function asc()
+    {
+        $this->orderAsc = true;
+        return $this;
+    }
+
+    public function desc()
+    {
+        $this->orderAsc = false;
+        return $this;
     }
 
     protected function process()
@@ -179,6 +233,45 @@ class QueryBuilder
             }
         }
 
+        // GROUP BY
+        if (is_array($this->groupBy)) {
+            $script .= " GROUP BY";
+
+            foreach ($this->groupBy as $index => $field) {
+                if ($index !== 0) {
+                    $script .= ",";
+                }
+
+                $script .= " $field";
+            }
+        }
+
+        // ORDER BY
+        if (is_array($this->orderBy)) {
+            $script .= " ORDER BY";
+
+            foreach ($this->orderBy as $index => $field) {
+                if ($index !== 0) {
+                    $script .= ",";
+                }
+
+                $script .= " $field";
+            }
+
+            $script .= ($this->orderAsc) ? ' ASC' : ' DESC';
+        }
+
+        // LIMIT
+        if ($this->limit) {
+            $script .= " LIMIT " . (string)$this->limit;
+        }
+
         return $script;
+    }
+
+    public function getScript()
+    {
+        $this->currentScript = $this->process();
+        return $this->currentScript;
     }
 }
