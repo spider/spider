@@ -7,7 +7,6 @@ namespace Michaels\Spider\Queries;
  */
 interface QueryInterface
 {
-
     /**
      * New Query object with script
      * @param $script

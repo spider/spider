@@ -1,29 +1,46 @@
 <?php
 namespace Michaels\Spider\Queries;
 
-/**
- * This is just a placeholder for now, until work on the QueryBuilders begin
- * @package Michaels\Spider\Queries
- */
-interface QueryBuilderInterface extends QueryInterface
+interface QueryBuilderInterface
 {
-    /**
-     * Add a SELECT command to the query
-     * @return mixed
-     */
-    public function select();
+    /* Operations */
+    public function select($properties = []);
+//    public function update();
+//    public function delete();
+//    public function insert();
 
-    /**
-     * Reset the Query
-     * @return mixed
-     */
-    public function reset();
+    /* Constraints */
+    public function from();
 
-    /**
-     * Build the query into the designated script language
-     * @return mixed
-     */
-    public function buildScript();
+    public function where();
 
-    // More as this is fleshed out
+    public function andWhere();
+
+    public function notWhere();
+
+    public function limit();
+
+    public function notIn();
+
+    /* Traversals, sub queries */
+    public function also();
+
+    public function store();
+
+    public function out();
+
+    public function in();
+
+    public function edge(); // in or out
+
+    /* fetching */
+    public function tree($toLevel);
+
+    public function path();
+
+    public function all();
+
+    public function first();
+
+    public function get(); // fires query
 }
