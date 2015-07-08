@@ -20,6 +20,11 @@ class QueryBuilder
         $this->connection = $connection;
     }
 
+    public function reset()
+    {
+        return new static($this->connection);
+    }
+
     public function query($script)
     {
         $this->connection->open();
@@ -60,6 +65,70 @@ class QueryBuilder
         return $this;
     }
 
+    public $where = [];
+
+    public function orWhere($property, $value = null, $operator = '=')
+    {
+        return $this->where($property, $value, $operator, 'OR');
+    }
+
+    public function andWhere($property, $value = null, $operator = '=')
+    {
+        return $this->where($property, $value, $operator, 'AND');
+    }
+
+    public function where($property, $value = null, $operator = '=', $conjunction = 'AND')
+    {
+        if (is_array($property)) {
+            if (is_array($property[0])) { // We were handed an array of constraints
+                foreach ($property as $constraint) {
+                    $this->where(
+                        $constraint[0], // property
+                        $constraint[2] ?: $operator, // operator, default =
+                        $constraint[1], // value
+                        isset($constraint[3]) ? $constraint[3] : $conjunction // conjunction, default AND
+                    );
+                }
+                return $this;
+            }
+
+            $this->where(
+                $property[0], // property
+                $property[2] ?: $operator, // operator, default =
+                $property[1], // value
+                isset($property[3]) ? $property[3] : $conjunction // conjunction, default AND
+            );
+            return $this;
+        }
+
+        $this->where[] = [
+            $property,
+            $operator,
+            $this->castValue($value),
+            $conjunction
+        ];
+
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return string
+     */
+    protected function castValue($value)
+    {
+        if ($value === true) {
+            $value = 'true';
+
+        } elseif ($value === false) {
+            $value = 'false';
+
+        } elseif (is_string($value)) {
+            $value = "'$value'";
+        }
+        return (string)$value;
+    }
+
     public function record($id)
     {
         return $this->from($id);
@@ -96,6 +165,19 @@ class QueryBuilder
 
         // FROM
         $script .= " FROM " . $this->from;
+
+        // WHERE
+        if (!empty($this->where)) {
+            $script .= " WHERE";
+
+            foreach ($this->where as $index => $value) {
+                if ($index !== 0) { // dont add conjunction to the first clause
+                    $script .= " $value[3]";
+                }
+
+                $script .= " $value[0] $value[1] $value[2]";
+            }
+        }
 
         return $script;
     }
