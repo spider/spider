@@ -5,7 +5,7 @@ namespace Michaels\Spider\Queries;
  * Contract for Query Scripts
  * @package Michaels\Spider\Queries
  */
-interface QueryInterface
+interface CommandInterface
 {
     /**
      * New Query object with script

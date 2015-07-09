@@ -4,6 +4,7 @@ namespace Michaels\Spider\Connections;
 use Michaels\Manager\Traits\ManagesItemsTrait;
 use Michaels\Spider\Drivers\DriverInterface;
 use Michaels\Spider\Graphs\Graph;
+use Michaels\Spider\Queries\CommandInterface;
 
 /**
  * Facilitates two-way communication with a driver store
@@ -44,6 +45,14 @@ class Connection implements ConnectionInterface
     public function open()
     {
         return $this->driver->open($this->get('credentials'), $this->get('config'));
+    }
+
+    /**
+     * Closes database connection
+     */
+    public function close()
+    {
+        return $this->driver->close();
     }
 
     /**
@@ -103,5 +112,52 @@ class Connection implements ConnectionInterface
     public function setDriver(DriverInterface $driver)
     {
         $this->driver = $driver;
+    }
+
+    /**
+     * Passes to driver: executes a Query or read command
+     *
+     * @param CommandInterface $query
+     * @return array|Record|Graph
+     */
+    public function executeReadCommand(CommandInterface $query)
+    {
+        return $this->driver->executeReadCommand($query);
+    }
+
+    /**
+     * Passes to driver: executes a write command
+     *
+     * These are the "CUD" in CRUD
+     *
+     * @param CommandInterface $command
+     * @return array|Record|Graph|mixed mixed values for some write commands
+     * @internal param CommandInterface $query
+     */
+    public function executeWriteCommand(CommandInterface $command)
+    {
+        return $this->driver->executeWriteCommand($command);
+    }
+
+    /**
+     * Passes to driver: executes a read command without waiting for a response
+     *
+     * @param CommandInterface $query
+     * @return $this
+     */
+    public function runReadCommand(CommandInterface $query)
+    {
+        return $this->driver->runReadCommand($query);
+    }
+
+    /**
+     * Passes to driver: executes a write command without waiting for a response
+     *
+     * @param CommandInterface $command
+     * @return $this
+     */
+    public function runWriteCommand(CommandInterface $command)
+    {
+        return $this->driver->runWriteCommand($command);
     }
 }

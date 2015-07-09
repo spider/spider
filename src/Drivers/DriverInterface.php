@@ -1,7 +1,7 @@
 <?php
 namespace Michaels\Spider\Drivers;
 
-use Michaels\Spider\Queries\QueryInterface;
+use Michaels\Spider\Queries\CommandInterface;
 
 /**
  * Driver contract
@@ -29,36 +29,36 @@ interface DriverInterface
      *
      * This is the R in CRUD
      *
-     * @param QueryInterface $query
+     * @param CommandInterface $query
      * @return array|Record|Graph
      */
-    public function executeReadCommand(QueryInterface $query);
+    public function executeReadCommand(CommandInterface $query);
 
     /**
      * Executes a write command
      *
      * These are the "CUD" in CRUD
      *
-     * @param QueryInterface $query
+     * @param CommandInterface $command
      * @return Graph|Record|array|mixed mixed values for some write commands
      */
-    public function executeWriteCommand(QueryInterface $query);
+    public function executeWriteCommand(CommandInterface $command);
 
     /**
      * Executes a read command without waiting for a response
      *
-     * @param QueryInterface $query
+     * @param CommandInterface $query
      * @return $this
      */
-    public function runReadCommand(QueryInterface $query);
+    public function runReadCommand(CommandInterface $query);
 
     /**
      * Executes a write command without waiting for a response
      *
-     * @param QueryInterface $query
+     * @param CommandInterface $command
      * @return $this
      */
-    public function runWriteCommand(QueryInterface $query);
+    public function runWriteCommand(CommandInterface $command);
 
 //    public function startTransaction();
 //
