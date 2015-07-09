@@ -4,15 +4,16 @@ namespace Michaels\Spider\Test\Unit\Queries;
 use Codeception\Specify;
 use InvalidArgumentException;
 use Michaels\Spider\Connections\Connection;
-use Michaels\Spider\Drivers\OrientDB\OrientDriver;
-use Michaels\Spider\Queries\QueryBuilder;
+use Michaels\Spider\Drivers\OrientDB\Driver as OrientDriver;
+use Michaels\Spider\Drivers\OrientDB\QueryProcessor;
+use Michaels\Spider\Queries\Builder;
 
 class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 {
     use Specify;
 
     /**
-     * @var QueryBuilder
+     * @var Builder
      */
     protected $builder;
 
@@ -26,7 +27,7 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
             'database' => 'VehicleHistoryGraph'
         ]);
 
-        $this->builder = new QueryBuilder($connection);
+        $this->builder = new Builder(new QueryProcessor(), $connection);
     }
 
     public function testInstantiation()
@@ -137,7 +138,7 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected, $actual, "failed to return correct script");
 
             // False
-            $this->builder = $this->builder->reset();
+            $this->builder->clear();
             $actual = $this->builder
                 ->select()
                 ->from("V")
@@ -163,7 +164,7 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected, $actual, "failed to return correct script");
 
             // 0 (not false)
-            $this->builder = $this->builder->reset();
+            $this->builder->clear();
             $actual = $this->builder
                 ->select()
                 ->from("V")
@@ -175,7 +176,7 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected, $actual, "failed to return correct script");
 
             // Whole number
-            $this->builder = $this->builder->reset();
+            $this->builder->clear();
             $actual = $this->builder
                 ->select()
                 ->from("V")
@@ -187,7 +188,7 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected, $actual, "failed to return correct script");
 
             // Decimal (float)
-            $this->builder = $this->builder->reset();
+            $this->builder->clear();
             $actual = $this->builder
                 ->select()
                 ->from("V")

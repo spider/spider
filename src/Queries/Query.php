@@ -61,4 +61,13 @@ class Query implements QueryInterface
     {
         $this->language = $language;
     }
+
+    /**
+     * Returns the script if object is called as a string
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getScript();
+    }
 }

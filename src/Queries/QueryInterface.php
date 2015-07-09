@@ -24,7 +24,7 @@ interface QueryInterface
      *
      * @param $script
      *
-*@return $this
+     * @return $this
      */
     public function setScript($script);
 
@@ -42,4 +42,10 @@ interface QueryInterface
      * @return $this
      */
     public function setScriptLanguage($language);
+
+    /**
+     * Returns the script if object is called as a string
+     * @return string
+     */
+    public function __toString();
 }
