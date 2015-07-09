@@ -3,7 +3,7 @@ namespace Michaels\Spider\Test\Unit\Drivers;
 
 use Codeception\Specify;
 use Michaels\Spider\Drivers\OrientDB\Driver as OrientDriver;
-use Michaels\Spider\Queries\Query;
+use Michaels\Spider\Queries\Command;
 
 class OrientDriverTest extends \PHPUnit_Framework_TestCase
 {
@@ -40,7 +40,7 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
             $driver = new OrientDriver();
             $driver->open($this->credentials);
 
-            $response = $driver->executeReadCommand(new Query(
+            $response = $driver->executeReadCommand(new Command(
                 "SELECT FROM Cat WHERE @rid = #12:0"
             ));
 
@@ -56,7 +56,7 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
             $driver = new OrientDriver();
             $driver->open($this->credentials);
 
-            $response = $driver->executeReadCommand(new Query(
+            $response = $driver->executeReadCommand(new Command(
                 "SELECT FROM Cat"
             ));
 
@@ -76,7 +76,7 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
 
         // Create new
         $sql = "INSERT INTO Owner CONTENT " . json_encode(['first_name' => 'nicole', 'last_name' => 'lowman']);
-        $newRecord = $driver->executeWriteCommand(new Query($sql));
+        $newRecord = $driver->executeWriteCommand(new Command($sql));
 
         $this->assertInstanceOf('Michaels\Spider\Graphs\Record', $newRecord, 'failed to return a Record');
         $this->assertEquals("nicole", $newRecord->first_name, "failed to return the correct names");
@@ -84,7 +84,7 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
 
         // Update existing
         $sql = "UPDATE (SELECT FROM Owner WHERE @rid=$newRecord->id) MERGE " . json_encode(['last_name' => 'wilson']) . ' RETURN AFTER $current';
-        $updatedRecord = $driver->executeWriteCommand(new Query($sql));
+        $updatedRecord = $driver->executeWriteCommand(new Command($sql));
 
         $this->assertInstanceOf('Michaels\Spider\Graphs\Record', $updatedRecord, 'failed to return a Record');
         $this->assertEquals("wilson", $updatedRecord->last_name, "failed to return the correct names");
@@ -92,12 +92,12 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
 
         // Delete That one
         $sql = "DELETE VERTEX Owner WHERE @rid=$newRecord->id";
-        $updatedRecord = $driver->executeWriteCommand(new Query($sql));
+        $updatedRecord = $driver->executeWriteCommand(new Command($sql));
 
         $this->assertEquals("1", $updatedRecord, "failed to delete exactly one record");
 
         // And try to get it again
-        $response = $driver->executeReadCommand(new Query("SELECT FROM Owner WHERE @rid=$newRecord->id"));
+        $response = $driver->executeReadCommand(new Command("SELECT FROM Owner WHERE @rid=$newRecord->id"));
 
         $this->assertTrue(is_array($response), 'failed to return an array');
         $this->assertEmpty($response, "failed to return an EMPTY array");

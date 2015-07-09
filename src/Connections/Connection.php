@@ -4,7 +4,7 @@ namespace Michaels\Spider\Connections;
 use Michaels\Manager\Traits\ManagesItemsTrait;
 use Michaels\Spider\Drivers\DriverInterface;
 use Michaels\Spider\Graphs\Graph;
-use Michaels\Spider\Queries\QueryInterface;
+use Michaels\Spider\Queries\CommandInterface;
 
 /**
  * Facilitates two-way communication with a driver store
@@ -117,10 +117,10 @@ class Connection implements ConnectionInterface
     /**
      * Passes to driver: executes a Query or read command
      *
-     * @param QueryInterface $query
+     * @param CommandInterface $query
      * @return array|Record|Graph
      */
-    public function executeReadCommand(QueryInterface $query)
+    public function executeReadCommand(CommandInterface $query)
     {
         return $this->driver->executeReadCommand($query);
     }
@@ -130,21 +130,22 @@ class Connection implements ConnectionInterface
      *
      * These are the "CUD" in CRUD
      *
-     * @param QueryInterface $query
-     * @return Graph|Record|array|mixed mixed values for some write commands
+     * @param CommandInterface $command
+     * @return array|Record|Graph|mixed mixed values for some write commands
+     * @internal param CommandInterface $query
      */
-    public function executeWriteCommand(QueryInterface $query)
+    public function executeWriteCommand(CommandInterface $command)
     {
-        return $this->driver->executeWriteCommand($query);
+        return $this->driver->executeWriteCommand($command);
     }
 
     /**
      * Passes to driver: executes a read command without waiting for a response
      *
-     * @param QueryInterface $query
+     * @param CommandInterface $query
      * @return $this
      */
-    public function runReadCommand(QueryInterface $query)
+    public function runReadCommand(CommandInterface $query)
     {
         return $this->driver->runReadCommand($query);
     }
@@ -152,11 +153,11 @@ class Connection implements ConnectionInterface
     /**
      * Passes to driver: executes a write command without waiting for a response
      *
-     * @param QueryInterface $query
+     * @param CommandInterface $command
      * @return $this
      */
-    public function runWriteCommand(QueryInterface $query)
+    public function runWriteCommand(CommandInterface $command)
     {
-        return $this->driver->runWriteCommand($query);
+        return $this->driver->runWriteCommand($command);
     }
 }

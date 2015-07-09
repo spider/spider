@@ -11,6 +11,7 @@ All Notable changes to `Spider` will be documented in this file
 - Added: Connection Manager caches and can return already instantiated connection
 - Added: Throws `ConnectionNotFoundException` if make()ing a non-existent connection
 - Refactor: Change Driver class naming to follow a convention
+- Refactor: Rename QueryInterface to CommandInterface to better describe all commands
 
 ## v0.1.1 - 4-28-2015
 ### Added
