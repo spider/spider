@@ -142,7 +142,7 @@ class Builder
     public function query($script)
     {
         $this->connection->open();
-        $results = $this->connection->executeReadCommand(new Query($script));
+        $results = $this->connection->executeReadCommand(new Command($script));
         $this->connection->close();
 
         return $results;

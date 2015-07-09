@@ -2,7 +2,7 @@
 namespace Michaels\Spider\Drivers\OrientDB;
 
 use Michaels\Spider\Queries\Bag;
-use Michaels\Spider\Queries\Query;
+use Michaels\Spider\Queries\Command;
 use Michaels\Spider\Queries\QueryProcessorInterface;
 
 /**
@@ -95,6 +95,6 @@ class QueryProcessor implements QueryProcessorInterface
             $script .= " LIMIT " . (string)$bag->limit;
         }
 
-        return new Query($script);
+        return new Command($script);
     }
 }
