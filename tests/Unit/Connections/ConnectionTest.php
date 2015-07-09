@@ -3,9 +3,8 @@ namespace Michaels\Spider\Test\Unit\Connections;
 
 use Codeception\Specify;
 use Michaels\Spider\Connections\Connection;
-use Michaels\Spider\Drivers\GenericDriver;
-use Michaels\Spider\Test\Stubs\DriverStub;
-use Michaels\Spider\Test\Stubs\SecondDriverStub;
+use Michaels\Spider\Test\Stubs\FirstDriverStub\Driver as FirstDriver;
+use Michaels\Spider\Test\Stubs\SecondDriverStub\Driver as SecondDriver;
 
 /*
  * Tests Implementation against ConnectionInterface
@@ -17,26 +16,26 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function testGettersAndSetters()
     {
         $this->specify("it gets driver name", function () {
-            $connection = new Connection(new DriverStub(), ['one' => 'one']);
+            $connection = new Connection(new FirstDriver(), ['one' => 'one']);
 
-            $this->assertEquals('Michaels\Spider\Test\Stubs\DriverStub', $connection->getDriverName(), "fails to return driver class name");
+            $this->assertEquals('Michaels\Spider\Test\Stubs\FirstDriverStub\Driver', $connection->getDriverName(), "fails to return driver class name");
         });
 
         $this->specify("it gets driver instance", function () {
-            $connection = new Connection(new DriverStub(), ['one' => 'one']);
+            $connection = new Connection(new FirstDriver(), ['one' => 'one']);
 
-            $this->assertInstanceOf('Michaels\Spider\Test\Stubs\DriverStub', $connection->getDriver(), 'failed to return driver instance');
+            $this->assertInstanceOf('Michaels\Spider\Test\Stubs\FirstDriverStub\Driver', $connection->getDriver(), 'failed to return driver instance');
         });
 
         $this->specify("it sets driver instance", function () {
-            $connection = new Connection(new DriverStub(), ['one' => 'one']);
-            $connection->setDriver(new SecondDriverStub());
+            $connection = new Connection(new FirstDriver(), ['one' => 'one']);
+            $connection->setDriver(new SecondDriver());
 
-            $this->assertInstanceOf('Michaels\Spider\Test\Stubs\SecondDriverStub', $connection->getDriver(), 'failed to return new driver instance');
+            $this->assertInstanceOf('Michaels\Spider\Test\Stubs\SecondDriverStub\Driver', $connection->getDriver(), 'failed to return new driver instance');
         });
 
         $this->specify("it gets properties array", function () {
-            $connection = new Connection(new DriverStub(), ['one' => 'one']);
+            $connection = new Connection(new FirstDriver(), ['one' => 'one']);
             $expected = [
                 'credentials' => ['one' => 'one'],
                 'config' => [],
@@ -46,14 +45,14 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("it sets properties array", function () {
-            $connection = new Connection(new DriverStub(), ['one' => 'one']);
+            $connection = new Connection(new FirstDriver(), ['one' => 'one']);
             $connection->setProperties(['two' => 'two']);
 
             $this->assertEquals(['two' => 'two'], $connection->getProperties(), 'failed to update properties');
         });
 
         $this->specify("it gets individual properties", function () {
-            $connection = new Connection(new DriverStub(), ['one' => 'one', 'two' => 'two'], ['a' => 'a']);
+            $connection = new Connection(new FirstDriver(), ['one' => 'one', 'two' => 'two'], ['a' => 'a']);
 
             $one = $connection->get('credentials.one');
             $two = $connection->get('credentials.two');
@@ -65,7 +64,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("it sets individual properties", function () {
-            $connection = new Connection(new DriverStub(), ['one' => 'one']);
+            $connection = new Connection(new FirstDriver(), ['one' => 'one']);
             $connection->set('credentials.one', 'new-one');
             $connection->set('credentials.two', 'two');
             $connection->set('config.three.four', 'four');
@@ -82,7 +81,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function testPassesCredsToDriverOnOpen()
     {
         $this->specify("it passes credentials and configs to driver on open", function () {
-            $connection = new Connection(new SecondDriverStub(), ['port' => 1234], ['some-config' => 'set']);
+            $connection = new Connection(new SecondDriver(), ['port' => 1234], ['some-config' => 'set']);
             $passedToDriver = $connection->open();
             $expected = [
                 'credentials' => ['port' => 1234],
