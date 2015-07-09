@@ -1,11 +1,11 @@
 <?php
-namespace Michaels\Spider\Test\Stubs;
+namespace Michaels\Spider\Test\Stubs\FirstDriverStub;
 
 use Michaels\Spider\Drivers\DriverInterface;
 use Michaels\Spider\Graphs\Record;
-use Michaels\Spider\Queries\QueryInterface;
+use Michaels\Spider\Queries\CommandInterface;
 
-class DriverStub implements DriverInterface
+class Driver implements DriverInterface
 {
 
     protected function returnData()
@@ -16,12 +16,6 @@ class DriverStub implements DriverInterface
             'three' => 'three',
         ]);
     }
-
-//    public function __construct($credentials, $config)
-//    {
-//        $this->credentials = $credentials;
-//        $this->config = $config;
-//    }
 
     /**
      * Connect to the database
@@ -49,10 +43,10 @@ class DriverStub implements DriverInterface
      *
      * This is the R in CRUD
      *
-     * @param QueryInterface $query
+     * @param CommandInterface $query
      * @return array|Record|\Michaels\Spider\Drivers\Graph
      */
-    public function executeReadCommand(QueryInterface $query)
+    public function executeReadCommand(CommandInterface $query)
     {
         return $this->returnData();
     }
@@ -62,10 +56,10 @@ class DriverStub implements DriverInterface
      *
      * These are the "CUD" in CRUD
      *
-     * @param QueryInterface $query
+     * @param CommandInterface $command
      * @return \Michaels\Spider\Drivers\Graph|Record|array|mixed mixed values for some write commands
      */
-    public function executeWriteCommand(QueryInterface $query)
+    public function executeWriteCommand(CommandInterface $command)
     {
         return $this->returnData();
     }
@@ -73,10 +67,10 @@ class DriverStub implements DriverInterface
     /**
      * Executes a read command without waiting for a response
      *
-     * @param QueryInterface $query
+     * @param CommandInterface $command
      * @return $this
      */
-    public function runReadCommand(QueryInterface $query)
+    public function runReadCommand(CommandInterface $command)
     {
         return $this;
     }
@@ -84,10 +78,10 @@ class DriverStub implements DriverInterface
     /**
      * Executes a write command without waiting for a response
      *
-     * @param QueryInterface $query
+     * @param CommandInterface $query
      * @return $this
      */
-    public function runWriteCommand(QueryInterface $query)
+    public function runWriteCommand(CommandInterface $query)
     {
         return $this;
     }

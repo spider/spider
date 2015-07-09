@@ -5,7 +5,7 @@ namespace Michaels\Spider\Queries;
  * Class Query
  * @package Michaels\Spider\Queries
  */
-class Query implements QueryInterface
+class Command implements CommandInterface
 {
     protected $script;
     protected $language;

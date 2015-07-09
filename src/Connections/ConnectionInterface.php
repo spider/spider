@@ -3,6 +3,7 @@ namespace Michaels\Spider\Connections;
 
 use Michaels\Manager\Contracts\ManagesItemsInterface;
 use Michaels\Spider\Drivers\DriverInterface;
+use Michaels\Spider\Queries\CommandInterface;
 
 /**
  * Facilitates two-way communication with a data-store
@@ -14,6 +15,11 @@ interface ConnectionInterface extends ManagesItemsInterface
      * Connects to the database
      */
     public function open();
+
+    /**
+     * Closes database connection
+     */
+    public function close();
 
     /**
      * Returns the properties array
@@ -46,4 +52,38 @@ interface ConnectionInterface extends ManagesItemsInterface
      * @param DriverInterface $driver
      */
     public function setDriver(DriverInterface $driver);
+
+    /**
+     * Passes to driver: executes a Query or read command
+     *
+     * @param CommandInterface $query
+     * @return array|Graph|Record
+     */
+    public function executeReadCommand(CommandInterface $query);
+
+    /**
+     * Passes to driver: executes a write command
+     *
+     * These are the "CUD" in CRUD
+     *
+     * @param CommandInterface $command
+     * @return array|Graph|Record|mixed mixed values for some write commands
+     */
+    public function executeWriteCommand(CommandInterface $command);
+
+    /**
+     * Passes to driver: executes a read command without waiting for a response
+     *
+     * @param CommandInterface $query
+     * @return $this
+     */
+    public function runReadCommand(CommandInterface $query);
+
+    /**
+     * Passes to driver: executes a write command without waiting for a response
+     *
+     * @param CommandInterface $command
+     * @return $this
+     */
+    public function runWriteCommand(CommandInterface $command);
 }

@@ -5,7 +5,7 @@ namespace Michaels\Spider\Queries;
  * Contract for Query Scripts
  * @package Michaels\Spider\Queries
  */
-interface QueryInterface
+interface CommandInterface
 {
 
     /**
@@ -25,7 +25,7 @@ interface QueryInterface
      *
      * @param $script
      *
-*@return $this
+     * @return $this
      */
     public function setScript($script);
 

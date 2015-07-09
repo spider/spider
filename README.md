@@ -59,17 +59,23 @@ Connections also inherit from [michaels/data-manager](http://github.com/chrismic
 ### Managing Connections
 For convenience, a connection manager is included. This allows you to store multiple connections and create connections from that list at will.
 
+When using the connection manager, you must give it your database credentials. You can store multiple sets of credentials and create connections for each one.
+
+The credentials include *at least* a `default` driver name, and the credentials for that driver.
+
+Drivers follow a convention. Each driver has its own namespace and directly under that namespace is a class called `Driver` plus whatever other classes the driver needs. You don't have to worry about all this. All you have to include is the driver's namespace.
+
 ```php
 $manager = new Michaels\Spider\Connections\Manager([
     'default' => 'default-connection',
     'default-connection' => [
-        'driver'   => 'Full\Namespaced\Class\Name',
+        'driver'   => 'Drivers\Full\Namespace',
         'whatever' => 'options',
         'the' => 'driver',
         'needs' => 'to connect'
     ],
     'connection-two' => [
-        'driver'      => 'Some\Driver\Two',
+        'driver'      => 'Some\Other\Full\Namespace',
         'credentials' => 'whatever',
         'is'       => 'needed'
     ]
@@ -107,10 +113,10 @@ When sending queries or commands, be sure to use an instance of the `QueryInterf
 The following methods work with the datastore:
 ```php
 $query = new Michaels\Spider\Queries\Query("WHATEVER THE SCRIPT IS");
-//$query = new Michaels\Spider\Queries\Query("SELECT FROM Cats WHERE @rid = #13:1");
+//$query = new Michaels\Spider\Queries\Query("SELECT FROM Cats WHERE name = 'Oreo'");
 
 $connection->open(); // uses the credentials given to the `Connection` when created
-$response = $connection->executeReadCommand(QueryInterface $query); // for read-only queryies like SELECT
+$response = $connection->executeReadCommand(QueryInterface $query); // for read-only commands like SELECT
 $response = $connection->executeWriteCommand(QueryInterface $query); // for write commands (INSERT, UPDATE, DELETE)
 
 // or you can run a command without waiting for a response
@@ -119,6 +125,11 @@ $connection->runWriteCommand(QueryInterface $query);
 // Close the connection when you are done
 $connection->close();
 ```
+
+#### Making a Driver
+Making a driver is simple. Create a package with whatever namespace you want, e.g. `My\Awesome\Driver\For\Titan` and create a `Driver` class that implements the `DriverInterface`. You've only got a few methods to fill out. Take a look at OrientDriver for an example.
+
+And submit a PR to let us know!
 
 ### Exceptions
 If you try to `make()` a connection that doesn't exist, a `ConnectionNotFoundException` will be thrown.

@@ -4,7 +4,7 @@ namespace Michaels\Spider\Drivers\OrientDB;
 use Michaels\Spider\Drivers\DriverInterface;
 use Michaels\Spider\Graphs\Graph;
 use Michaels\Spider\Graphs\Record as SpiderRecord;
-use Michaels\Spider\Queries\QueryInterface;
+use Michaels\Spider\Queries\CommandInterface;
 use PhpOrient\PhpOrient;
 use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 
@@ -12,7 +12,7 @@ use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
  * Driver for Native OrientDB (not using gremlin)
  * @package Michaels\Spider\Drivers\OrientDB
  */
-class OrientDriver implements DriverInterface
+class Driver implements DriverInterface
 {
     /**
      * @var array user-configuration passed from connection
@@ -55,10 +55,10 @@ class OrientDriver implements DriverInterface
     /**
      * Executes a Query or read command
      *
-     * @param QueryInterface $query
+     * @param CommandInterface $query
      * @return array|Record|Graph
      */
-    public function executeReadCommand(QueryInterface $query)
+    public function executeReadCommand(CommandInterface $query)
     {
         $response = $this->client->query($query->getScript());
 
@@ -74,12 +74,12 @@ class OrientDriver implements DriverInterface
      *
      * These are the "CUD" in CRUD
      *
-     * @param QueryInterface $query
+     * @param CommandInterface $command
      * @return Graph|Record|array|mixed mixed values for some write commands
      */
-    public function executeWriteCommand(QueryInterface $query)
+    public function executeWriteCommand(CommandInterface $command)
     {
-        $response = $this->client->command($query->getScript());
+        $response = $this->client->command($command->getScript());
 
         if (is_array($response) || $response instanceof OrientRecord) {
             return $this->mapResponse($response);
@@ -91,10 +91,10 @@ class OrientDriver implements DriverInterface
     /**
      * Executes a read command without waiting for a response
      *
-     * @param QueryInterface $query
+     * @param CommandInterface $query
      * @return $this
      */
-    public function runReadCommand(QueryInterface $query)
+    public function runReadCommand(CommandInterface $query)
     {
         $this->client->query($query->getScript());
         return $this;
@@ -103,12 +103,12 @@ class OrientDriver implements DriverInterface
     /**
      * Executes a write command without waiting for a response
      *
-     * @param QueryInterface $query
+     * @param CommandInterface $command
      * @return $this
      */
-    public function runWriteCommand(QueryInterface $query)
+    public function runWriteCommand(CommandInterface $command)
     {
-        $this->client->command($query->getScript());
+        $this->client->command($command->getScript());
         return $this;
     }
 
