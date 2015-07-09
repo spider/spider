@@ -12,7 +12,7 @@ use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
  * Driver for Native OrientDB (not using gremlin)
  * @package Michaels\Spider\Drivers\OrientDB
  */
-class OrientDriver implements DriverInterface
+class Driver implements DriverInterface
 {
     /**
      * @var array user-configuration passed from connection

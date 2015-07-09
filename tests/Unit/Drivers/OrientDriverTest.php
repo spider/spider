@@ -2,12 +2,8 @@
 namespace Michaels\Spider\Test\Unit\Drivers;
 
 use Codeception\Specify;
-use Michaels\Spider\Drivers\OrientDB\OrientDriver;
+use Michaels\Spider\Drivers\OrientDB\Driver as OrientDriver;
 use Michaels\Spider\Queries\Query;
-
-/*
- * Still todo: Map to Graphs
- */
 
 class OrientDriverTest extends \PHPUnit_Framework_TestCase
 {

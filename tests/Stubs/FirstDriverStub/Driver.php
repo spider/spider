@@ -1,11 +1,11 @@
 <?php
-namespace Michaels\Spider\Test\Stubs;
+namespace Michaels\Spider\Test\Stubs\FirstDriverStub;
 
 use Michaels\Spider\Drivers\DriverInterface;
 use Michaels\Spider\Graphs\Record;
 use Michaels\Spider\Queries\QueryInterface;
 
-class DriverStub implements DriverInterface
+class Driver implements DriverInterface
 {
 
     protected function returnData()
@@ -16,12 +16,6 @@ class DriverStub implements DriverInterface
             'three' => 'three',
         ]);
     }
-
-//    public function __construct($credentials, $config)
-//    {
-//        $this->credentials = $credentials;
-//        $this->config = $config;
-//    }
 
     /**
      * Connect to the database
