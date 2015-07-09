@@ -2,7 +2,6 @@
 namespace Michaels\Spider\Commands;
 
 use InvalidArgumentException;
-use Michaels\Manager\Contracts\ManagesItemsInterface;
 use Michaels\Spider\Connections\ConnectionInterface;
 
 /**
@@ -15,12 +14,12 @@ class Builder
     protected $processor;
     protected $bag;
 
-    protected $currentScript;
+    protected $command;
 
     public function __construct(
         ProcessorInterface $processor,
         ConnectionInterface $connection = null,
-        ManagesItemsInterface $bag = null
+        Bag $bag = null
     )
     {
         $this->processor = $processor;
@@ -137,21 +136,56 @@ class Builder
     public function clear($properties = null)
     {
         $this->bag = new Bag($properties);
+        $this->command = null;
     }
 
-    public function query($script)
+    public function command($command)
     {
+        if ($command instanceof CommandInterface) {
+            return $this->dispatchCommand($command);
+        }
+
+        if (is_string($command)) {
+            return $this->dispatchCommand(new Command($command));
+        }
+
+        throw new InvalidArgumentException("`command()` only accepts strings or instances of `CommandInterface`");
+    }
+
+    public function all()
+    {
+        $this->bag->limit = false; // We want all records
+        $this->dispatchCommand();
+    }
+
+    protected function dispatchCommand(CommandInterface $command = null)
+    {
+        $command = $command ?: $this->getCommand();
+
         $this->connection->open();
-        $results = $this->connection->executeReadCommand(new Command($script));
+        $results = $this->connection->executeReadCommand($command);
         $this->connection->close();
 
         return $results;
     }
 
-    public function getScript()
+    public function getCommand()
     {
-        $this->currentScript = $this->processor->process($this->bag);
-        return $this->currentScript;
+        if (!$this->command) {
+            $this->buildCommand();
+        }
+
+        return $this->command;
+    }
+
+    public function getCommandBag()
+    {
+        return $this->bag;
+    }
+
+    protected function buildCommand()
+    {
+        $this->command = $this->processor->process($this->bag);
     }
 
     protected function setProjections($projections)

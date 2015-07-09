@@ -132,7 +132,7 @@ class Connection implements ConnectionInterface
      *
      * @param CommandInterface $command
      * @return array|Record|Graph|mixed mixed values for some write commands
-     * @internal param CommandInterface $query
+     * @internal param CommandInterface $sendCommand
      */
     public function executeWriteCommand(CommandInterface $command)
     {

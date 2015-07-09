@@ -7,7 +7,7 @@ interface ProcessorInterface
      * Process Query
      *
      * @param Bag $bag
-     * @return string
+     * @return CommandInterface
      */
     public function process(Bag $bag);
 }

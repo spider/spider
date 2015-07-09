@@ -42,7 +42,7 @@ class Command implements CommandInterface
     }
 
     /**
-     * Returns the language of the query script (set by implementer)
+     * Returns the language of the sendCommand script (set by implementer)
      * @return mixed
      */
     public function getScriptLanguage()
@@ -51,7 +51,7 @@ class Command implements CommandInterface
     }
 
     /**
-     * Sets the query language (eg OrientSQL, Cypher, etc)
+     * Sets the sendCommand language (eg OrientSQL, Cypher, etc)
      *
      * @param $language
      *

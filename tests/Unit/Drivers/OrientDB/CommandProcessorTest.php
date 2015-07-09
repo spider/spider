@@ -1,9 +1,9 @@
 <?php
-namespace Michaels\Spider\Test\Unit\Drivers;
+namespace Michaels\Spider\Test\Unit\Drivers\OrientDB;
 
 use Codeception\Specify;
 
-class OrientCommandBuilderTest extends \PHPUnit_Framework_TestCase
+class CommandProcessorTest extends \PHPUnit_Framework_TestCase
 {
     use Specify;
 
@@ -11,7 +11,7 @@ class OrientCommandBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->specify("it does something", function () {
 
-            $this->assertTrue(true);
+            $this->assertFalse(true);
         });
     }
 }

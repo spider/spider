@@ -1,11 +1,11 @@
 <?php
-namespace Michaels\Spider\Test\Unit\Drivers;
+namespace Michaels\Spider\Test\Unit\Drivers\OrientDB;
 
 use Codeception\Specify;
 use Michaels\Spider\Commands\Command;
 use Michaels\Spider\Drivers\OrientDB\Driver as OrientDriver;
 
-class OrientDriverTest extends \PHPUnit_Framework_TestCase
+class DriverTest extends \PHPUnit_Framework_TestCase
 {
     use Specify;
 

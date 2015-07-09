@@ -29,13 +29,13 @@ interface CommandInterface
     public function setScript($script);
 
     /**
-     * Returns the language of the query script (set by implementer)
+     * Returns the language of the sendCommand script (set by implementer)
      * @return mixed
      */
     public function getScriptLanguage();
 
     /**
-     * Sets the query language (eg OrientSQL, Cypher, etc)
+     * Sets the sendCommand language (eg OrientSQL, Cypher, etc)
      *
      * @param $language
      *
