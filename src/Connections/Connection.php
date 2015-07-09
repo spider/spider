@@ -4,6 +4,7 @@ namespace Michaels\Spider\Connections;
 use Michaels\Manager\Traits\ManagesItemsTrait;
 use Michaels\Spider\Drivers\DriverInterface;
 use Michaels\Spider\Graphs\Graph;
+use Michaels\Spider\Queries\QueryInterface;
 
 /**
  * Facilitates two-way communication with a driver store
@@ -44,6 +45,14 @@ class Connection implements ConnectionInterface
     public function open()
     {
         return $this->driver->open($this->get('credentials'), $this->get('config'));
+    }
+
+    /**
+     * Closes database connection
+     */
+    public function close()
+    {
+        return $this->driver->close();
     }
 
     /**
@@ -103,5 +112,51 @@ class Connection implements ConnectionInterface
     public function setDriver(DriverInterface $driver)
     {
         $this->driver = $driver;
+    }
+
+    /**
+     * Passes to driver: executes a Query or read command
+     *
+     * @param QueryInterface $query
+     * @return array|Record|Graph
+     */
+    public function executeReadCommand(QueryInterface $query)
+    {
+        return $this->driver->executeReadCommand($query);
+    }
+
+    /**
+     * Passes to driver: executes a write command
+     *
+     * These are the "CUD" in CRUD
+     *
+     * @param QueryInterface $query
+     * @return Graph|Record|array|mixed mixed values for some write commands
+     */
+    public function executeWriteCommand(QueryInterface $query)
+    {
+        return $this->driver->executeWriteCommand($query);
+    }
+
+    /**
+     * Passes to driver: executes a read command without waiting for a response
+     *
+     * @param QueryInterface $query
+     * @return $this
+     */
+    public function runReadCommand(QueryInterface $query)
+    {
+        return $this->driver->runReadCommand($query);
+    }
+
+    /**
+     * Passes to driver: executes a write command without waiting for a response
+     *
+     * @param QueryInterface $query
+     * @return $this
+     */
+    public function runWriteCommand(QueryInterface $query)
+    {
+        return $this->driver->runWriteCommand($query);
     }
 }
