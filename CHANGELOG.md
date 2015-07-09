@@ -2,7 +2,9 @@
 
 All Notable changes to `Spider` will be documented in this file
 
-## v0.2 - NEXT
+## v0.3 - NEXT
+
+## v0.2 - 7-9-2015
 - Updated: ConnectionInterface to mimic DriverInterface
 - Updated: DriverInterface to include full api
 - Added: First Party Driver for OrientDB (v2.*) with skipable tests (dependent on database installed)
