@@ -3,7 +3,7 @@ namespace Michaels\Spider\Test\Unit\Drivers;
 
 use Codeception\Specify;
 
-class OrientQueryBuilderTest extends \PHPUnit_Framework_TestCase
+class OrientCommandBuilderTest extends \PHPUnit_Framework_TestCase
 {
     use Specify;
 

@@ -1,5 +1,5 @@
 <?php
-namespace Michaels\Spider\Queries;
+namespace Michaels\Spider\Commands;
 
 /**
  * Contract for Query Scripts

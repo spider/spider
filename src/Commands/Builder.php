@@ -1,5 +1,5 @@
 <?php
-namespace Michaels\Spider\Queries;
+namespace Michaels\Spider\Commands;
 
 use InvalidArgumentException;
 use Michaels\Manager\Contracts\ManagesItemsInterface;
@@ -18,7 +18,7 @@ class Builder
     protected $currentScript;
 
     public function __construct(
-        QueryProcessorInterface $processor,
+        ProcessorInterface $processor,
         ConnectionInterface $connection = null,
         ManagesItemsInterface $bag = null
     )

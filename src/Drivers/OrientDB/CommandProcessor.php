@@ -1,15 +1,15 @@
 <?php
 namespace Michaels\Spider\Drivers\OrientDB;
 
-use Michaels\Spider\Queries\Bag;
-use Michaels\Spider\Queries\Command;
-use Michaels\Spider\Queries\QueryProcessorInterface;
+use Michaels\Spider\Commands\Bag;
+use Michaels\Spider\Commands\Command;
+use Michaels\Spider\Commands\ProcessorInterface;
 
 /**
  * Class QueryProcessor
  * @package Michaels\Spider\Drivers\OrientDB
  */
-class QueryProcessor implements QueryProcessorInterface
+class CommandProcessor implements ProcessorInterface
 {
 
     protected $commands = [

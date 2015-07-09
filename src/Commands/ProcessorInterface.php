@@ -1,7 +1,7 @@
 <?php
-namespace Michaels\Spider\Queries;
+namespace Michaels\Spider\Commands;
 
-interface QueryProcessorInterface
+interface ProcessorInterface
 {
     /**
      * Process Query

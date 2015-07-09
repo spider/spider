@@ -2,8 +2,8 @@
 namespace Michaels\Spider\Connections;
 
 use Michaels\Manager\Contracts\ManagesItemsInterface;
+use Michaels\Spider\Commands\CommandInterface;
 use Michaels\Spider\Drivers\DriverInterface;
-use Michaels\Spider\Queries\CommandInterface;
 
 /**
  * Facilitates two-way communication with a data-store

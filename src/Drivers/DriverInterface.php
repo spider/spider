@@ -1,7 +1,7 @@
 <?php
 namespace Michaels\Spider\Drivers;
 
-use Michaels\Spider\Queries\CommandInterface;
+use Michaels\Spider\Commands\CommandInterface;
 
 /**
  * Driver contract

@@ -1,10 +1,10 @@
 <?php
 namespace Michaels\Spider\Drivers\OrientDB;
 
+use Michaels\Spider\Commands\CommandInterface;
 use Michaels\Spider\Drivers\DriverInterface;
 use Michaels\Spider\Graphs\Graph;
 use Michaels\Spider\Graphs\Record as SpiderRecord;
-use Michaels\Spider\Queries\CommandInterface;
 use PhpOrient\PhpOrient;
 use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 

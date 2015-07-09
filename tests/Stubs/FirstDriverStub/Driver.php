@@ -1,9 +1,9 @@
 <?php
 namespace Michaels\Spider\Test\Stubs\FirstDriverStub;
 
+use Michaels\Spider\Commands\CommandInterface;
 use Michaels\Spider\Drivers\DriverInterface;
 use Michaels\Spider\Graphs\Record;
-use Michaels\Spider\Queries\CommandInterface;
 
 class Driver implements DriverInterface
 {

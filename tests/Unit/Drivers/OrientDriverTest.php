@@ -2,8 +2,8 @@
 namespace Michaels\Spider\Test\Unit\Drivers;
 
 use Codeception\Specify;
+use Michaels\Spider\Commands\Command;
 use Michaels\Spider\Drivers\OrientDB\Driver as OrientDriver;
-use Michaels\Spider\Queries\Command;
 
 class OrientDriverTest extends \PHPUnit_Framework_TestCase
 {

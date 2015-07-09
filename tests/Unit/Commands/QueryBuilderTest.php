@@ -3,10 +3,10 @@ namespace Michaels\Spider\Test\Unit\Queries;
 
 use Codeception\Specify;
 use InvalidArgumentException;
+use Michaels\Spider\Commands\Builder;
 use Michaels\Spider\Connections\Connection;
+use Michaels\Spider\Drivers\OrientDB\CommandProcessor;
 use Michaels\Spider\Drivers\OrientDB\Driver as OrientDriver;
-use Michaels\Spider\Drivers\OrientDB\QueryProcessor;
-use Michaels\Spider\Queries\Builder;
 
 class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,7 +27,7 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
             'database' => 'VehicleHistoryGraph'
         ]);
 
-        $this->builder = new Builder(new QueryProcessor(), $connection);
+        $this->builder = new Builder(new CommandProcessor(), $connection);
     }
 
     public function testInstantiation()
