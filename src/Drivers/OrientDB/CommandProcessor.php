@@ -46,7 +46,7 @@ class CommandProcessor implements ProcessorInterface
                     $script .= " $value[3]";
                 }
 
-                $script .= " $value[0] $value[1] $value[2]";
+                $script .= " $value[0] $value[1] " . $this->castValue($value[2]);
             }
         }
 
@@ -96,5 +96,23 @@ class CommandProcessor implements ProcessorInterface
         }
 
         return new Command($script);
+    }
+
+    /**
+     * @param $value
+     * @return string
+     */
+    protected function castValue($value)
+    {
+//        if ($value === true) {
+//            $value = 'true';
+//
+//        } elseif ($value === false) {
+//            $value = 'false';
+//
+//        } elseif (is_string($value)) {
+//            $value = "'$value'";
+//        }
+        return (string)$value;
     }
 }

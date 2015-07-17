@@ -83,7 +83,7 @@ class Builder
         $this->bag->where[] = [
             $property,
             $operator,
-            $this->castValue($value),
+            $value,
             $conjunction
         ];
 
@@ -155,7 +155,19 @@ class Builder
     public function all()
     {
         $this->bag->limit = false; // We want all records
-        $this->dispatchCommand();
+        return $this->dispatchCommand();
+    }
+
+    public function one()
+    {
+        $this->bag->limit = 1;
+        return $this->dispatchCommand();
+    }
+
+    public function first()
+    {
+        $this->bag->limit = 1;
+        return $this->dispatchCommand();
     }
 
     protected function dispatchCommand(CommandInterface $command = null)
@@ -214,23 +226,5 @@ class Builder
         }
 
         return $fields;
-    }
-
-    /**
-     * @param $value
-     * @return string
-     */
-    protected function castValue($value)
-    {
-        if ($value === true) {
-            $value = 'true';
-
-        } elseif ($value === false) {
-            $value = 'false';
-
-        } elseif (is_string($value)) {
-            $value = "'$value'";
-        }
-        return (string)$value;
     }
 }

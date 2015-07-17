@@ -7,7 +7,17 @@ use Michaels\Spider\Commands\Bag;
 use Michaels\Spider\Commands\Builder;
 use Michaels\Spider\Test\Stubs\CommandProcessorStub;
 
-class CommandBuilderTest extends \PHPUnit_Framework_TestCase
+/**
+ * This tests the fluent part of the command builder.
+ * It only checks to see if the Commands\Bag was correctly built
+ * from method chaining (->select()->from->etc...)
+ *
+ * This does not test the end script, only the build CommandBag
+ *
+ * The retrieval mechanisms are tested in `ConnectedCommandBuilderTest`
+ * @package Michaels\Spider\Test\Unit\Commands
+ */
+class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
 {
     use Specify;
 
@@ -164,7 +174,7 @@ class CommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['certified', '=', "true", 'AND']
+                    ['certified', '=', true, 'AND']
                 ]
             ]);
 
@@ -183,7 +193,7 @@ class CommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['certified', '=', "false", 'AND']
+                    ['certified', '=', false, 'AND']
                 ]
             ]);
 
@@ -204,7 +214,7 @@ class CommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['certified', '=', "1", 'AND']
+                    ['certified', '=', 1, 'AND']
                 ]
             ]);
 
@@ -223,7 +233,7 @@ class CommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['certified', '=', "0", 'AND']
+                    ['certified', '=', 0, 'AND']
                 ]
             ]);
 
@@ -242,7 +252,7 @@ class CommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['certified', '=', "13", 'AND']
+                    ['certified', '=', 13, 'AND']
                 ]
             ]);
 
@@ -261,7 +271,7 @@ class CommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['certified', '=', "1.77", 'AND']
+                    ['certified', '=', 1.77, 'AND']
                 ]
             ]);
 
@@ -280,7 +290,7 @@ class CommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['certified', '=', "'yes'", 'AND']
+                    ['certified', '=', "yes", 'AND']
                 ]
             ]);
 
@@ -304,9 +314,9 @@ class CommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['name', '=', "'michael'", 'AND'],
-                    ['last', '=', "'wilson'", 'AND'],
-                    ['certified', '=', "true", 'AND']
+                    ['name', '=', "michael", 'AND'],
+                    ['last', '=', "wilson", 'AND'],
+                    ['certified', '=', true, 'AND']
                 ]
             ]);
 
@@ -327,9 +337,9 @@ class CommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['name', '=', "'michael'", 'AND'],
-                    ['last', '=', "'wilson'", 'AND'],
-                    ['certified', '=', "true", 'AND']
+                    ['name', '=', "michael", 'AND'],
+                    ['last', '=', "wilson", 'AND'],
+                    ['certified', '=', true, 'AND']
                 ]
             ]);
 
@@ -349,8 +359,8 @@ class CommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['name', '=', "'michael'", 'AND'],
-                    ['certified', '=', "true", 'AND']
+                    ['name', '=', "michael", 'AND'],
+                    ['certified', '=', true, 'AND']
                 ]
             ]);
 
@@ -372,8 +382,8 @@ class CommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['name', '=', "'michael'", 'AND'],
-                    ['price', '>', "2", 'AND']
+                    ['name', '=', "michael", 'AND'],
+                    ['price', '>', 2, 'AND']
                 ]
             ]);
 
@@ -397,9 +407,9 @@ class CommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['name', '=', "'michael'", 'AND'],
-                    ['last', '=', "'wilson'", 'OR'],
-                    ['certified', '=', "true", 'OR']
+                    ['name', '=', "michael", 'AND'],
+                    ['last', '=', "wilson", 'OR'],
+                    ['certified', '=', true, 'OR']
                 ]
             ]);
 
@@ -419,8 +429,8 @@ class CommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['certified', '=', "true", 'AND'],
-                    ['name', '=', "'michael'", 'OR'],
+                    ['certified', '=', true, 'AND'],
+                    ['name', '=', "michael", 'OR'],
 
                 ]
             ]);
@@ -438,15 +448,13 @@ class CommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ])
                 ->getCommand();
 
-            $expected = "SELECT FROM V WHERE name = 'michael' OR price > 2";
-
             $expected = $this->buildExpected([
                 'command' => 'select',
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['name', '=', "'michael'", 'AND'],
-                    ['price', '>', "2", 'OR']
+                    ['name', '=', "michael", 'AND'],
+                    ['price', '>', 2, 'OR']
                 ]
             ]);
 

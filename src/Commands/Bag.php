@@ -7,12 +7,12 @@ namespace Michaels\Spider\Commands;
  */
 class Bag
 {
-    public $command;
-    public $projections;
-    public $from;
-    public $limit;
-    public $groupBy;
-    public $orderBy;
+    public $command = null;
+    public $projections = [];
+    public $from = null;
+    public $limit = null;
+    public $groupBy = null;
+    public $orderBy = null;
     public $orderAsc = true;
     public $where = [];
 
