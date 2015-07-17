@@ -16,6 +16,23 @@ class CommandProcessor implements ProcessorInterface
         'select' => 'SELECT'
     ];
 
+    public $token = [
+        Bag::COMPARATOR_EQUAL => '=',
+        Bag::COMPARATOR_GT => '>',
+        Bag::COMPARATOR_LT => '<',
+        Bag::COMPARATOR_LE => '<=',
+        Bag::COMPARATOR_GE => '>=',
+        Bag::COMPARATOR_NE => '<>',
+
+        Bag::CONJUNCTION_AND => 'AND',
+        Bag::CONJUNCTION_OR => 'OR',
+    ];
+
+    public function toToken($operator)
+    {
+        return $this->token[$operator];
+    }
+
     /**
      * Process Query
      *
@@ -42,11 +59,13 @@ class CommandProcessor implements ProcessorInterface
             $script .= " WHERE";
 
             foreach ($bag->where as $index => $value) {
-                if ($index !== 0) { // dont add conjunction to the first clause
-                    $script .= " $value[3]";
+                if ($index !== 0) { // don't add conjunction to the first clause
+                    $script .= " " . (string)$this->toToken($value[3]);
                 }
 
-                $script .= " $value[0] $value[1] " . $this->castValue($value[2]);
+                $script .= " " . (string)$value[0]; // field
+                $script .= " " . (string)$this->toToken($value[1]); // operator
+                $script .= " " . $this->castValue($value[2]); // value
             }
         }
 
@@ -104,15 +123,16 @@ class CommandProcessor implements ProcessorInterface
      */
     protected function castValue($value)
     {
-//        if ($value === true) {
-//            $value = 'true';
-//
-//        } elseif ($value === false) {
-//            $value = 'false';
-//
-//        } elseif (is_string($value)) {
-//            $value = "'$value'";
-//        }
+        if ($value === true) {
+            $value = 'true';
+
+        } elseif ($value === false) {
+            $value = 'false';
+
+        } elseif (is_string($value)) {
+            $value = "'$value'";
+        }
+
         return (string)$value;
     }
 }

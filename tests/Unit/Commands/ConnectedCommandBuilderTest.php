@@ -38,6 +38,7 @@ class ConnectedCommandBuilderTest extends \PHPUnit_Framework_TestCase
         return json_encode($expected);
     }
 
+    /* Begin Tests */
     public function testRetrievalMethods()
     {
         $this->specify("it gets all records", function () {

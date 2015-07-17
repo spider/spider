@@ -89,7 +89,6 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Michaels\Spider\Graphs\Record', $updatedRecord, 'failed to return a Record');
         $this->assertEquals("wilson", $updatedRecord->last_name, "failed to return the correct names");
 
-
         // Delete That one
         $sql = "DELETE VERTEX Owner WHERE @rid=$newRecord->id";
         $updatedRecord = $driver->executeWriteCommand(new Command($sql));

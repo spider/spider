@@ -24,15 +24,15 @@ class CommandProcessorTest extends \PHPUnit_Framework_TestCase
             $bag->orderBy = ['orderField'];
             $bag->orderAsc = false;
             $bag->where = [
-                ['one', '=', '1', 'AND'],
-                ['two', '>', '2', 'AND'],
-                ['three', '<', '3', 'OR'],
-                ['four', '>=', '4', 'AND']
+                ['one', Bag::COMPARATOR_EQUAL, 'one', Bag::CONJUNCTION_AND],
+                ['two', Bag::COMPARATOR_GT, 2, Bag::CONJUNCTION_AND],
+                ['three', Bag::COMPARATOR_LT, 3, Bag::CONJUNCTION_OR],
+                ['four', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_AND]
             ];
 
             $query = 'SELECT field1, field2';
             $query .= ' FROM target';
-            $query .= ' WHERE one = 1 AND two > 2 OR three < 3 AND four >= 4';
+            $query .= " WHERE one = 'one' AND two > 2 OR three < 3 AND four = true";
             $query .= ' GROUP BY groupField';
             $query .= ' ORDER BY orderField DESC';
             $query .= ' LIMIT 3';

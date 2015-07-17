@@ -174,7 +174,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['certified', '=', true, 'AND']
+                    ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_AND]
                 ]
             ]);
 
@@ -193,7 +193,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['certified', '=', false, 'AND']
+                    ['certified', Bag::COMPARATOR_EQUAL, false, Bag::CONJUNCTION_AND]
                 ]
             ]);
 
@@ -214,7 +214,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['certified', '=', 1, 'AND']
+                    ['certified', Bag::COMPARATOR_EQUAL, 1, Bag::CONJUNCTION_AND]
                 ]
             ]);
 
@@ -233,7 +233,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['certified', '=', 0, 'AND']
+                    ['certified', Bag::COMPARATOR_EQUAL, 0, Bag::CONJUNCTION_AND]
                 ]
             ]);
 
@@ -252,7 +252,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['certified', '=', 13, 'AND']
+                    ['certified', Bag::COMPARATOR_EQUAL, 13, Bag::CONJUNCTION_AND]
                 ]
             ]);
 
@@ -271,7 +271,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['certified', '=', 1.77, 'AND']
+                    ['certified', Bag::COMPARATOR_EQUAL, 1.77, Bag::CONJUNCTION_AND]
                 ]
             ]);
 
@@ -290,7 +290,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['certified', '=', "yes", 'AND']
+                    ['certified', Bag::COMPARATOR_EQUAL, "yes", Bag::CONJUNCTION_AND]
                 ]
             ]);
 
@@ -314,9 +314,9 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['name', '=', "michael", 'AND'],
-                    ['last', '=', "wilson", 'AND'],
-                    ['certified', '=', true, 'AND']
+                    ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
+                    ['last', Bag::COMPARATOR_EQUAL, "wilson", Bag::CONJUNCTION_AND],
+                    ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_AND]
                 ]
             ]);
 
@@ -337,9 +337,9 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['name', '=', "michael", 'AND'],
-                    ['last', '=', "wilson", 'AND'],
-                    ['certified', '=', true, 'AND']
+                    ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
+                    ['last', Bag::COMPARATOR_EQUAL, "wilson", Bag::CONJUNCTION_AND],
+                    ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_AND]
                 ]
             ]);
 
@@ -359,8 +359,8 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['name', '=', "michael", 'AND'],
-                    ['certified', '=', true, 'AND']
+                    ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
+                    ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_AND]
                 ]
             ]);
 
@@ -382,8 +382,8 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['name', '=', "michael", 'AND'],
-                    ['price', '>', 2, 'AND']
+                    ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
+                    ['price', Bag::COMPARATOR_GT, 2, Bag::CONJUNCTION_AND]
                 ]
             ]);
 
@@ -407,9 +407,9 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['name', '=', "michael", 'AND'],
-                    ['last', '=', "wilson", 'OR'],
-                    ['certified', '=', true, 'OR']
+                    ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
+                    ['last', Bag::COMPARATOR_EQUAL, "wilson", 'OR'],
+                    ['certified', Bag::COMPARATOR_EQUAL, true, 'OR']
                 ]
             ]);
 
@@ -429,8 +429,8 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['certified', '=', true, 'AND'],
-                    ['name', '=', "michael", 'OR'],
+                    ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_AND],
+                    ['name', Bag::COMPARATOR_EQUAL, "michael", 'OR'],
 
                 ]
             ]);
@@ -453,8 +453,8 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'projections' => [],
                 'from' => "V",
                 'where' => [
-                    ['name', '=', "michael", 'AND'],
-                    ['price', '>', 2, 'OR']
+                    ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
+                    ['price', Bag::COMPARATOR_GT, 2, 'OR']
                 ]
             ]);
 
