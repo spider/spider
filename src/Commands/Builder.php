@@ -16,6 +16,18 @@ class Builder
 
     protected $command;
 
+    public $operators = [
+        '=' => Bag::COMPARATOR_EQUAL,
+        '>' => Bag::COMPARATOR_GT,
+        '<' => Bag::COMPARATOR_LT,
+        '<=' => Bag::COMPARATOR_LE,
+        '>=' => Bag::COMPARATOR_GE,
+        '<>' => Bag::COMPARATOR_NE,
+
+        'AND' => Bag::CONJUNCTION_AND,
+        'OR' => Bag::CONJUNCTION_OR
+    ];
+
     public function __construct(
         ProcessorInterface $processor,
         ConnectionInterface $connection = null,
@@ -88,23 +100,6 @@ class Builder
         ];
 
         return $this;
-    }
-
-    public $sign = [
-        '=' => Bag::COMPARATOR_EQUAL,
-        '>' => Bag::COMPARATOR_GT,
-        '<' => Bag::COMPARATOR_LT,
-        '<=' => Bag::COMPARATOR_LE,
-        '>=' => Bag::COMPARATOR_GE,
-        '<>' => Bag::COMPARATOR_NE,
-
-        'AND' => Bag::CONJUNCTION_AND,
-        'OR' => Bag::CONJUNCTION_OR
-    ];
-
-    public function toConstant($sign)
-    {
-        return $this->sign[$sign];
     }
 
     public function orWhere($property, $value = null, $operator = '=')
@@ -243,5 +238,10 @@ class Builder
         }
 
         return $fields;
+    }
+
+    public function toConstant($sign)
+    {
+        return $this->operators[$sign];
     }
 }

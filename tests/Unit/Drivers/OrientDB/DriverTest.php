@@ -14,7 +14,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
     public function setup()
     {
-//        $this->markTestSkipped('The Test Database is not installed');
+        $this->markTestSkipped('The Test Database is not installed');
 
         $this->credentials = [
             'hostname' => 'localhost',
@@ -80,7 +80,6 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Michaels\Spider\Graphs\Record', $newRecord, 'failed to return a Record');
         $this->assertEquals("nicole", $newRecord->first_name, "failed to return the correct names");
-
 
         // Update existing
         $sql = "UPDATE (SELECT FROM Owner WHERE @rid=$newRecord->id) MERGE " . json_encode(['last_name' => 'wilson']) . ' RETURN AFTER $current';

@@ -26,6 +26,7 @@ class ConnectedCommandBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function setup()
     {
+        // For the tests, all executed commands are just sent back as commands
         $this->builder = new Builder(new CommandProcessorStub(), new ConnectionStub());
     }
 
@@ -46,7 +47,6 @@ class ConnectedCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->select()
                 ->from('v')
                 ->all();
-
 
             $expected = $this->buildExpected([
                 'command' => 'select',
