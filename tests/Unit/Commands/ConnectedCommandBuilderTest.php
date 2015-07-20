@@ -8,8 +8,12 @@ use Michaels\Spider\Test\Stubs\CommandProcessorStub;
 use Michaels\Spider\Test\Stubs\ConnectionStub;
 
 /**
- * This tests the retrieval mechanisms of the builder.
+ * This tests the retrieval mechanisms of the Commands\Builder.
  * (->all()->one()->first()...)
+ *
+ * This test mocks both the Connection and CommandProcessor so that
+ * when calling a retrieval method, the return value should be the command
+ * that was sent.
  *
  * The fluent builder aspects are tested in `FluentCommandBuilderTest`
  * @package Michaels\Spider\Test\Unit\Commands
@@ -49,7 +53,7 @@ class ConnectedCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->all();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "v",
                 'limit' => false // Start here -- is this how I want to handle limits?

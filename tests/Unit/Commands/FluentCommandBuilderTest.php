@@ -12,7 +12,7 @@ use Michaels\Spider\Test\Stubs\CommandProcessorStub;
  * It only checks to see if the Commands\Bag was correctly built
  * from method chaining (->select()->from->etc...)
  *
- * This does not test the end script, only the build CommandBag
+ * This does not test the end script, only the Command Bag that was built
  *
  * The retrieval mechanisms are tested in `ConnectedCommandBuilderTest`
  * @package Michaels\Spider\Test\Unit\Commands
@@ -61,7 +61,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "#12:6767"
             ]);
@@ -79,7 +79,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => ['price', 'certified'],
                 'from' => "#12:6767"
             ]);
@@ -95,7 +95,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => ['price', 'certified'],
                 'from' => "#12:6767"
             ]);
@@ -112,7 +112,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => ['price', 'certified'],
                 'from' => "#12:6767"
             ]);
@@ -149,7 +149,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V"
             ]);
@@ -170,7 +170,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expectedTrue = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'where' => [
@@ -189,7 +189,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expectedFalse = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'where' => [
@@ -210,7 +210,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'where' => [
@@ -229,7 +229,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'where' => [
@@ -248,7 +248,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'where' => [
@@ -267,7 +267,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'where' => [
@@ -286,7 +286,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'where' => [
@@ -310,7 +310,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'where' => [
@@ -333,7 +333,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'where' => [
@@ -355,7 +355,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'where' => [
@@ -378,7 +378,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'where' => [
@@ -403,7 +403,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'where' => [
@@ -425,7 +425,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'where' => [
@@ -449,7 +449,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'where' => [
@@ -472,7 +472,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'limit' => 2
@@ -492,7 +492,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'groupBy' => ['certified']
@@ -509,7 +509,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'groupBy' => ['certified', 'price']
@@ -526,7 +526,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'groupBy' => ['certified', 'price']
@@ -546,7 +546,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'orderBy' => ['price']
@@ -563,7 +563,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'orderBy' => ['price'],
@@ -581,7 +581,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'orderBy' => ['price'],
@@ -599,7 +599,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'orderBy' => ['price', 'owner'],
@@ -617,7 +617,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 ->getCommand();
 
             $expected = $this->buildExpected([
-                'command' => 'select',
+                'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'from' => "V",
                 'orderBy' => ['price', 'owner'],

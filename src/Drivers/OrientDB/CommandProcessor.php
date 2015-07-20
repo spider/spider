@@ -3,6 +3,7 @@ namespace Michaels\Spider\Drivers\OrientDB;
 
 use Michaels\Spider\Commands\Bag;
 use Michaels\Spider\Commands\Command;
+use Michaels\Spider\Commands\CommandInterface;
 use Michaels\Spider\Commands\ProcessorInterface;
 
 /**
@@ -12,11 +13,21 @@ use Michaels\Spider\Commands\ProcessorInterface;
 class CommandProcessor implements ProcessorInterface
 {
 
-    protected $commands = [
-        'select' => 'SELECT'
+    /**
+     * A map of commands from the Command Bag to Orient SQL
+     * @var array
+     */
+    protected $commandsMap = [
+        Bag::COMMAND_CREATE => 'INSERT',
+        Bag::COMMAND_RETRIEVE => 'SELECT',
+        Bag::COMMAND_UPDATE => 'UPDATE',
+        Bag::COMMAND_DELETE => 'DROP',
     ];
 
-    public $token = [
+    /**A map of opperators from the Command Bag to Orient SQL
+     * @var array
+     */
+    public $operatorsMap = [
         Bag::COMPARATOR_EQUAL => '=',
         Bag::COMPARATOR_GT => '>',
         Bag::COMPARATOR_LT => '<',
@@ -28,23 +39,25 @@ class CommandProcessor implements ProcessorInterface
         Bag::CONJUNCTION_OR => 'OR',
     ];
 
-    public function toToken($operator)
-    {
-        return $this->token[$operator];
-    }
-
     /**
-     * Process Query
+     * Command Processor
+     *
+     * Receives a Commands\Bag instance and returns a valid
+     * Commands\CommandInterface instance with a native command
+     * script for whichever driver is specified
      *
      * @param Bag $bag
-     * @return string
+     * @return CommandInterface
      */
+    /* ToDo: Divide this into multiple methods */
+    /* ToDo: Throw orient specific exceptions when needed */
     public function process(Bag $bag)
     {
         // NOTE: the whitespace should be placed by the new clause at beginning, not the previous clause at the end
 
         // COMMAND
-        $script = $this->commands[$bag->command];
+//        die(var_dump($bag->command));
+        $script = $this->commandsMap[$bag->command];
 
         // <projections>
         if (!empty($bag->projections)) {
@@ -60,11 +73,11 @@ class CommandProcessor implements ProcessorInterface
 
             foreach ($bag->where as $index => $value) {
                 if ($index !== 0) { // don't add conjunction to the first clause
-                    $script .= " " . (string)$this->toToken($value[3]);
+                    $script .= " " . (string)$this->toSqlOperator($value[3]);
                 }
 
                 $script .= " " . (string)$value[0]; // field
-                $script .= " " . (string)$this->toToken($value[1]); // operator
+                $script .= " " . (string)$this->toSqlOperator($value[1]); // operator
                 $script .= " " . $this->castValue($value[2]); // value
             }
         }
@@ -118,6 +131,8 @@ class CommandProcessor implements ProcessorInterface
     }
 
     /**
+     * Cast a value from the Command Bag to one
+     * usable by Orient SQL (a string)
      * @param $value
      * @return string
      */
@@ -134,5 +149,15 @@ class CommandProcessor implements ProcessorInterface
         }
 
         return (string)$value;
+    }
+
+    /**
+     * Map a Command Bag operator to its Orient SQL counterpart
+     * @param $operator
+     * @return mixed
+     */
+    public function toSqlOperator($operator)
+    {
+        return $this->operatorsMap[$operator];
     }
 }

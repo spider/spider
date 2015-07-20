@@ -2,50 +2,39 @@
 namespace Michaels\Spider\Commands;
 
 /**
- * Contract for Query Scripts
- * @package Michaels\Spider\Queries
+ * Command: Contains the command script to be executed by the driver
+ *
+ * For instance, a Command object may contain the OrientDB query
+ *      "SELECT FROM users WHERE username = 'michael'"
+ *
+ * You may create a Command explicitly or use the Command Builder and
+ * a driver specific Command Processor.
  */
 interface CommandInterface
 {
     /**
-     * New Query object with script
-     * @param $script
-     */
-    public function __construct($script = '');
-
-    /**
-     * Returns the current Query Script
+     * Returns the current Command Script
      * @return string
      */
     public function getScript();
 
     /**
-     * Sets the Query Script
-     *
+     * Sets the Command Script
      * @param $script
-     *
      * @return $this
      */
     public function setScript($script);
 
     /**
-     * Returns the language of the sendCommand script (set by implementer)
+     * Returns the language of the current command script script
      * @return mixed
      */
     public function getScriptLanguage();
 
     /**
-     * Sets the sendCommand language (eg OrientSQL, Cypher, etc)
-     *
+     * Sets the current script language (eg OrientSQL, Cypher, etc)
      * @param $language
-     *
      * @return $this
      */
     public function setScriptLanguage($language);
-
-    /**
-     * Returns the script if object is called as a string
-     * @return string
-     */
-    public function __toString();
 }

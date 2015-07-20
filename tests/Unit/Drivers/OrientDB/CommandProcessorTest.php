@@ -16,7 +16,7 @@ class CommandProcessorTest extends \PHPUnit_Framework_TestCase
         $this->specify("it processes a complex CommandBag", function () {
 
             $bag = new Bag();
-            $bag->command = 'select';
+            $bag->command = Bag::COMMAND_RETRIEVE;
             $bag->projections = ['field1', 'field2'];
             $bag->from = 'target';
             $bag->limit = 3;
