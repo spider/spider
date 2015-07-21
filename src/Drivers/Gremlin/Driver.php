@@ -1,47 +1,67 @@
 <?php
-namespace Michaels\Spider\Drivers\Gremlin;
+namespace Spider\Drivers\Gremlin;
 
 use brightzone\rexpro\Connection;
-use Michaels\Spider\Drivers\DriverInterface;
-use Michaels\Spider\Graphs\Record as SpiderRecord;
-use Michaels\Spider\Queries\CommandInterface;
+use Spider\Drivers\DriverInterface;
+use Spider\Drivers\AbstractDriver;
+use Spider\Graphs\Record as SpiderRecord;
+use Spider\Commands\CommandInterface;
 
 
 /**
  * Driver for Gremlin Server
  * @package Michaels\Spider\Drivers\Gremlin
  */
-class Driver implements DriverInterface
+class Driver extends AbstractDriver implements DriverInterface
 {
     /**
-     * @var array user-configuration passed from connection
+     * @var string server hostname. Defaults to "localhost"
      */
-    protected $config;
+    protected $hostname = "localhost";
+
+    /**
+     * @var int server port. Defaults to 8182.
+     */
+    protected $port = 8182;
+
+    /**
+     * @var string Database name or otherwise known as graph name. Defaults to "graph"
+     */
+    public $graph = "graph";
+
+    /**
+     * @var string The traversal object to use. Defaults to "g"
+     */
+    public $traversal = "g";
 
     /**
      * Create a new instance with a client
+     *
+     * @param array $properties an array of the properties to set for this class
+     *
+     * @return void
      */
-    public function __construct()
+    public function __construct(array $properties)
     {
+        parent::__construct($properties);
         $this->client = new Connection();
     }
 
     /**
      * Open a database connection
      *
-     * @param array $credentials credentials
-     * @param array $config
-     * @return $this
+     * @return Driver $this
      */
-    public function open(array $credentials, array $config = [])
+    public function open()
     {
-        $this->config = $config;
-        $this->client->open($credentials['hostname'], $credentials['graph']);
+        $this->client->open($this->hostname, $this->graph);
+        return $this;
     }
 
     /**
      * Close the database connection
-     * @return $this
+     *
+     * @return Driver $this
      */
     public function close()
     {
@@ -53,6 +73,7 @@ class Driver implements DriverInterface
      * Executes a Query or read command
      *
      * @param CommandInterface $query
+     *
      * @return array|Record|Graph
      */
     public function executeReadCommand(CommandInterface $query)
@@ -60,6 +81,7 @@ class Driver implements DriverInterface
         try {
             $response = $this->client->send($query->getScript());
         } catch(\Exception $e) {
+            //Check for empty return error from server.
             if (($e instanceof \brightzone\rexpro\ServerException) && ($e->getCode() == 204)) {
                 $response = [];
             } else {
@@ -80,6 +102,7 @@ class Driver implements DriverInterface
      * These are the "CUD" in CRUD
      *
      * @param CommandInterface $command
+     *
      * @return Graph|Record|array|mixed mixed values for some write commands
      */
     public function executeWriteCommand(CommandInterface $command)
@@ -91,13 +114,15 @@ class Driver implements DriverInterface
      * Executes a read command without waiting for a response
      *
      * @param CommandInterface $query
+     *
      * @return $this
      */
     public function runReadCommand(CommandInterface $query)
     {
         try {
-        $this->client->send($query->getScript());
+            $this->client->send($query->getScript());
         } catch(\Exception $e) {
+            //Check for empty return error from server.
             if (!($e instanceof \brightzone\rexpro\ServerException) || ($e->getCode() != 204)) {
                 throw $e;
             }
@@ -110,6 +135,7 @@ class Driver implements DriverInterface
      * Executes a write command without waiting for a response
      *
      * @param CommandInterface $command
+     *
      * @return $this
      */
     public function runWriteCommand(CommandInterface $command)
@@ -119,10 +145,12 @@ class Driver implements DriverInterface
 
     /**
      * Map a raw response to a SpiderResponse
-     * @param $response
+     *
+     * @param array $response
+     *
      * @return SpiderRecord
      */
-    protected function mapResponse($response)
+    protected function mapResponse(array $response)
     {
         if (count($response) == 1) {
             return $this->arrayToSpiderRecord($response[0]);
@@ -144,22 +172,23 @@ class Driver implements DriverInterface
     /**
      * Hydrate a SpiderRecord from an OrientRecord
      *
-     * @param $orientRecord
+     * @param array $row a single row from result set to map.
+     *
      * @return SpiderRecord
      */
-    protected function arrayToSpiderRecord($array)
+    protected function arrayToSpiderRecord(array $row)
     {
         // Or we map a single record to a Spider Record
         $spiderRecord = new SpiderRecord();
         $properties = [];
-        foreach($array['properties'] as $key => $value)
+        foreach($row['properties'] as $key => $value)
         {
             $properties[$key] = $value[0]['value'];
         }
 
         $spiderRecord->add([
-            'id' => $array['id'],
-            'label' => $array['label'],
+            'id' => $row['id'],
+            'label' => $row['label'],
             'properties' => $properties,
         ]);
         return $spiderRecord;
