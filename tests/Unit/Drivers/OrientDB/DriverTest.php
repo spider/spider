@@ -14,7 +14,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
     public function setup()
     {
-        $this->markTestSkipped('The Test Database is not installed');
+//        $this->markTestSkipped('The Test Database is not installed');
 
         $this->credentials = [
             'hostname' => 'localhost',
@@ -28,8 +28,8 @@ class DriverTest extends \PHPUnit_Framework_TestCase
     public function testConnections()
     {
         $this->specify("it opens and closes the database without exception", function () {
-            $driver = new OrientDriver();
-            $driver->open($this->credentials);
+            $driver = new OrientDriver($this->credentials);
+            $driver->open();
             $driver->close();
         });
     }
@@ -37,8 +37,8 @@ class DriverTest extends \PHPUnit_Framework_TestCase
     public function testReadCommands()
     {
         $this->specify("it selects a single record and returns an array of Records", function () {
-            $driver = new OrientDriver();
-            $driver->open($this->credentials);
+            $driver = new OrientDriver($this->credentials);
+            $driver->open();
 
             $response = $driver->executeReadCommand(new Command(
                 "SELECT FROM Cat WHERE @rid = #12:0"
@@ -53,8 +53,8 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("it selects multiple unrelated records and returns an array of Records", function () {
-            $driver = new OrientDriver();
-            $driver->open($this->credentials);
+            $driver = new OrientDriver($this->credentials);
+            $driver->open();
 
             $response = $driver->executeReadCommand(new Command(
                 "SELECT FROM Cat"
@@ -71,8 +71,8 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
     public function testWriteCommands()
     {
-        $driver = new OrientDriver();
-        $driver->open($this->credentials);
+        $driver = new OrientDriver($this->credentials);
+        $driver->open();
 
         // Create new
         $sql = "INSERT INTO Owner CONTENT " . json_encode(['first_name' => 'nicole', 'last_name' => 'lowman']);

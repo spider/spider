@@ -2,6 +2,7 @@
 namespace Michaels\Spider\Drivers\OrientDB;
 
 use Michaels\Spider\Commands\CommandInterface;
+use Michaels\Spider\Drivers\AbstractDriver;
 use Michaels\Spider\Drivers\DriverInterface;
 use Michaels\Spider\Graphs\Graph;
 use Michaels\Spider\Graphs\Record as SpiderRecord;
@@ -12,34 +13,57 @@ use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
  * Driver for Native OrientDB (not using gremlin)
  * @package Michaels\Spider\Drivers\OrientDB
  */
-class Driver implements DriverInterface
+class Driver extends AbstractDriver implements DriverInterface
 {
-    /**
-     * @var array user-configuration passed from connection
-     */
-    protected $config;
+    /* Driver Credentials */
+    /** @var  string OrientDB server hostname */
+    protected $hostname;
+
+    /** @var  int OrientDB server port */
+    protected $port;
+
+    /** @var  string OrientDB username for specified database */
+    protected $username;
+
+    /** @var  string Password for current OrientDB user */
+    protected $password;
+
+    /** @var  string Database name */
+    protected $database;
+
+    /* Internals */
+    /** @var PhpOrient Language Binding */
+    protected $client;
 
     /**
      * Create a new instance with a client
+     * @param array $properties Configuration properties
      */
-    public function __construct()
+    public function __construct($properties)
     {
+        // Populate configuration
+        parent::__construct($properties);
+
+        // Initialize the language binding client
         $this->client = new PhpOrient();
     }
 
     /**
-     * Open a database connection
-     *
-     * @param array $credentials credentials
-     * @param array $config
+     * Connect to the database using already set, internal credentials
      * @return $this
      */
-    public function open(array $credentials, array $config = [])
+    public function open()
     {
-        $this->config = $config;
-        $this->client->configure($credentials);
+        $config = [];
+        foreach ($this as $property => $value) {
+            if ($property !== 'client') {
+                $config[$property] = $value;
+            }
+        }
+
+        $this->client->configure($config);
         $this->client->connect();
-        $this->client->dbOpen($credentials['database']); // What if I *want* the cluster map?
+        $this->client->dbOpen($config['database']); // What if I *want* the cluster map?
     }
 
     /**

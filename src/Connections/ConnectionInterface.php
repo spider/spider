@@ -22,19 +22,6 @@ interface ConnectionInterface extends ManagesItemsInterface
     public function close();
 
     /**
-     * Returns the properties array
-     * @return array
-     */
-    public function getProperties();
-
-    /**
-     * Updates the entire properties array
-     *
-     * @param array $properties
-     */
-    public function setProperties(array $properties);
-
-    /**
      * Returns the class name of the active driver
      * @return string
      */

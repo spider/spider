@@ -36,27 +36,24 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
         $this->specify("it gets properties array", function () {
             $connection = new Connection(new FirstDriver(), ['one' => 'one']);
-            $expected = [
-                'credentials' => ['one' => 'one'],
-                'config' => [],
-            ];
+            $expected = ['one' => 'one'];
 
-            $this->assertEquals($expected, $connection->getProperties(), 'failed to return properties');
+            $this->assertEquals($expected, $connection->getAll(), 'failed to return properties');
         });
 
         $this->specify("it sets properties array", function () {
             $connection = new Connection(new FirstDriver(), ['one' => 'one']);
-            $connection->setProperties(['two' => 'two']);
+            $connection->reset(['two' => 'two']);
 
-            $this->assertEquals(['two' => 'two'], $connection->getProperties(), 'failed to update properties');
+            $this->assertEquals(['two' => 'two'], $connection->getAll(), 'failed to update properties');
         });
 
         $this->specify("it gets individual properties", function () {
-            $connection = new Connection(new FirstDriver(), ['one' => 'one', 'two' => 'two'], ['a' => 'a']);
+            $connection = new Connection(new FirstDriver(), ['one' => 'one', 'two' => 'two', 'a' => 'a']);
 
-            $one = $connection->get('credentials.one');
-            $two = $connection->get('credentials.two');
-            $three = $connection->get('config.a');
+            $one = $connection->get('one');
+            $two = $connection->get('two');
+            $three = $connection->get('a');
 
             $this->assertEquals('one', $one, "fails to get first credential");
             $this->assertEquals('two', $two, "fails to get second credential");
@@ -65,28 +62,30 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
         $this->specify("it sets individual properties", function () {
             $connection = new Connection(new FirstDriver(), ['one' => 'one']);
-            $connection->set('credentials.one', 'new-one');
-            $connection->set('credentials.two', 'two');
-            $connection->set('config.three.four', 'four');
+            $connection->set('one', 'new-one');
+            $connection->set('two', 'two');
+            $connection->set('three.four', 'four');
 
             $expected = [
-                'credentials' => ['one' => 'new-one', 'two' => 'two'],
-                'config' => ['three' => ['four' => 'four']],
+                'one' => 'new-one',
+                'two' => 'two',
+                'three' => ['four' => 'four'],
             ];
 
-            $this->assertEquals($expected, $connection->getProperties(), "failed to set properties");
+            $this->assertEquals($expected, $connection->getAll(), "failed to set properties");
         });
     }
 
     public function testPassesCredsToDriverOnOpen()
     {
-        $this->specify("it passes credentials and configs to driver on open", function () {
-            $connection = new Connection(new SecondDriver(), ['port' => 1234], ['some-config' => 'set']);
-            $passedToDriver = $connection->open();
+        $this->specify("it passes credentials and configs to driver", function () {
             $expected = [
-                'credentials' => ['port' => 1234],
-                'config' => ['some-config' => 'set'],
+                'port' => 1234,
+                'hostname' => 'host',
             ];
+
+            $connection = new Connection(new SecondDriver(), $expected);
+            $passedToDriver = $connection->open();
 
             $this->assertEquals($expected, $passedToDriver, "failed to pass creds and config to driver");
         });

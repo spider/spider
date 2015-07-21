@@ -2,10 +2,11 @@
 namespace Michaels\Spider\Test\Stubs\FirstDriverStub;
 
 use Michaels\Spider\Commands\CommandInterface;
+use Michaels\Spider\Drivers\AbstractDriver;
 use Michaels\Spider\Drivers\DriverInterface;
 use Michaels\Spider\Graphs\Record;
 
-class Driver implements DriverInterface
+class Driver extends AbstractDriver implements DriverInterface
 {
 
     protected function returnData()
@@ -19,12 +20,9 @@ class Driver implements DriverInterface
 
     /**
      * Connect to the database
-     *
-     * @param array $credentials credentials
-     * @param array $config
      * @return $this
      */
-    public function open(array $credentials, array $config = [])
+    public function open()
     {
         return $this;
     }

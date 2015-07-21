@@ -1,9 +1,12 @@
 # Changelog
-
 All Notable changes to `Spider` will be documented in this file
 
 ## v0.3 - NEXT
-- Basic Query Builder
+- Basic Query Builder (without traversals)
+  - Where filters
+  - limit and group
+  - targets and projections
+- Basic OrientDB CommandProcessor
 - Rename all `Query` to `Command`
 
 ## v0.2.1 - 7-9-2015

@@ -37,11 +37,6 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
                 'other' => 'two-other'
             ]
         ];
-
-        $this->config = [
-            'something' => 'something-value',
-            'return-object' => false, // return native object
-        ];
     }
 
     /* Inherits from Michaels\Manager\Traits\ManagesItemsTrait, which is self-tested */
@@ -66,13 +61,12 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             );
 
             // Connection is using the correct properties
-            $expected['credentials'] = $this->connections['default-connection'];
-            $expected['config'] = [];
-            unset($expected['credentials']['driver']);
+            $expected = $this->connections['default-connection'];
+            unset($expected['driver']);
 
             $this->assertEquals(
                 $expected,
-                $connection->getProperties(),
+                $connection->getAll(),
                 "failed to set correct properties"
             );
         });
@@ -96,13 +90,12 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             );
 
             // Connection is using the correct properties
-            $expected['credentials'] = $this->connections['connection-one'];
-            unset($expected['credentials']['driver']);
-            $expected['config'] = [];
+            $expected = $this->connections['connection-one'];
+            unset($expected['driver']);
 
             $this->assertEquals(
                 $expected,
-                $connection->getProperties(),
+                $connection->getAll(),
                 "failed to set correct properties"
             );
         });
@@ -116,13 +109,6 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             $manager = new Manager($this->connections);
             $manager->make('doesnotexist');
         }, ['throws' => new ConnectionNotFoundException()]);
-
-        $this->specify("it sets config correctly", function () {
-            $manager = new Manager($this->connections, $this->config);
-            $connection = $manager->make('connection-one');
-
-            $this->assertEquals($this->config['something'], $connection->get('config.something'), 'failed to set and return config value');
-        });
     }
 
     public function testCacheConnections()
