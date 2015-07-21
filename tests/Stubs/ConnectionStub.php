@@ -1,16 +1,16 @@
 <?php
-namespace Michaels\Spider\Test\Stubs;
+namespace Spider\Test\Stubs;
 
 use Michaels\Manager\Traits\ManagesItemsTrait;
-use Michaels\Spider\Commands\CommandInterface;
-use Michaels\Spider\Connections\ConnectionInterface;
-use Michaels\Spider\Connections\Graph;
-use Michaels\Spider\Connections\Record;
-use Michaels\Spider\Drivers\DriverInterface;
+use Spider\Commands\CommandInterface;
+use Spider\Connections\ConnectionInterface;
+use Spider\Connections\Graph;
+use Spider\Connections\Record;
+use Spider\Drivers\DriverInterface;
 
 /**
  * Class ConnectionStuf
- * @package Michaels\Spider\Test\Stubs
+ * @package Spider\Test\Stubs
  */
 class ConnectionStub implements ConnectionInterface
 {

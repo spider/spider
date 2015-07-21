@@ -1,9 +1,9 @@
 <?php
-namespace Michaels\Spider\Test\Unit\Drivers\OrientDB;
+namespace Spider\Test\Unit\Drivers\OrientDB;
 
 use Codeception\Specify;
-use Michaels\Spider\Commands\Command;
-use Michaels\Spider\Drivers\OrientDB\Driver as OrientDriver;
+use Spider\Commands\Command;
+use Spider\Drivers\OrientDB\Driver as OrientDriver;
 
 class DriverTest extends \PHPUnit_Framework_TestCase
 {
@@ -48,7 +48,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
             $this->assertTrue(is_array($response), 'failed to return an array');
             $this->assertCount(1, $response, "failed to return 1 result");
-            $this->assertInstanceOf('Michaels\Spider\Graphs\Record', $response[0], 'failed to return a Record');
+            $this->assertInstanceOf('Spider\Graphs\Record', $response[0], 'failed to return a Record');
             $this->assertEquals("oreo", $response[0]->name, "failed to return the correct names");
         });
 
@@ -65,7 +65,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             $this->assertTrue(is_array($response), "failed to return an array");
             $this->assertCount(2, $response, "failed to return 2 results");
             $this->assertEquals("oreo", $response[0]->name, "failed to return the correct names");
-            $this->assertInstanceOf('Michaels\Spider\Graphs\Record', $response[0], 'failed to return records');
+            $this->assertInstanceOf('Spider\Graphs\Record', $response[0], 'failed to return records');
         });
     }
 
@@ -78,14 +78,14 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         $sql = "INSERT INTO Owner CONTENT " . json_encode(['first_name' => 'nicole', 'last_name' => 'lowman']);
         $newRecord = $driver->executeWriteCommand(new Command($sql));
 
-        $this->assertInstanceOf('Michaels\Spider\Graphs\Record', $newRecord, 'failed to return a Record');
+        $this->assertInstanceOf('Spider\Graphs\Record', $newRecord, 'failed to return a Record');
         $this->assertEquals("nicole", $newRecord->first_name, "failed to return the correct names");
 
         // Update existing
         $sql = "UPDATE (SELECT FROM Owner WHERE @rid=$newRecord->id) MERGE " . json_encode(['last_name' => 'wilson']) . ' RETURN AFTER $current';
         $updatedRecord = $driver->executeWriteCommand(new Command($sql));
 
-        $this->assertInstanceOf('Michaels\Spider\Graphs\Record', $updatedRecord, 'failed to return a Record');
+        $this->assertInstanceOf('Spider\Graphs\Record', $updatedRecord, 'failed to return a Record');
         $this->assertEquals("wilson", $updatedRecord->last_name, "failed to return the correct names");
 
         // Delete That one

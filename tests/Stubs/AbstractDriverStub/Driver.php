@@ -1,11 +1,11 @@
 <?php
-namespace Michaels\Spider\Test\Stubs\AbstractDriverStub;
+namespace Spider\Test\Stubs\AbstractDriverStub;
 
-use Michaels\Spider\Commands\CommandInterface;
-use Michaels\Spider\Drivers\AbstractDriver;
-use Michaels\Spider\Drivers\DriverInterface;
-use Michaels\Spider\Drivers\Graph;
-use Michaels\Spider\Drivers\Record;
+use Spider\Commands\CommandInterface;
+use Spider\Drivers\AbstractDriver;
+use Spider\Drivers\DriverInterface;
+use Spider\Drivers\Graph;
+use Spider\Drivers\Record;
 
 class Driver extends AbstractDriver implements DriverInterface
 {

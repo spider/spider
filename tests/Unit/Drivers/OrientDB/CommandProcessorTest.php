@@ -1,10 +1,10 @@
 <?php
-namespace Michaels\Spider\Test\Unit\Drivers\OrientDB;
+namespace Spider\Test\Unit\Drivers\OrientDB;
 
 use Codeception\Specify;
-use Michaels\Spider\Commands\Bag;
-use Michaels\Spider\Commands\Command;
-use Michaels\Spider\Drivers\OrientDB\CommandProcessor;
+use Spider\Commands\Bag;
+use Spider\Commands\Command;
+use Spider\Drivers\OrientDB\CommandProcessor;
 
 /* ToDo: split this into more bite sized tests */
 class CommandProcessorTest extends \PHPUnit_Framework_TestCase

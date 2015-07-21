@@ -1,14 +1,14 @@
 <?php
-namespace Michaels\Spider\Drivers\OrientDB;
+namespace Spider\Drivers\OrientDB;
 
-use Michaels\Spider\Commands\Bag;
-use Michaels\Spider\Commands\Command;
-use Michaels\Spider\Commands\CommandInterface;
-use Michaels\Spider\Commands\ProcessorInterface;
+use Spider\Commands\Bag;
+use Spider\Commands\Command;
+use Spider\Commands\CommandInterface;
+use Spider\Commands\ProcessorInterface;
 
 /**
  * Class QueryProcessor
- * @package Michaels\Spider\Drivers\OrientDB
+ * @package Spider\Drivers\OrientDB
  */
 class CommandProcessor implements ProcessorInterface
 {

@@ -1,5 +1,5 @@
 <?php
-namespace Michaels\Spider\Drivers;
+namespace Spider\Drivers;
 
 abstract class AbstractDriver implements DriverInterface
 {

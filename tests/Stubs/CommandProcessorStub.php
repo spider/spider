@@ -1,12 +1,13 @@
 <?php
-namespace Michaels\Spider\Test\Stubs;
-use Michaels\Spider\Commands\ProcessorInterface;
-use Michaels\Spider\Commands\Bag;
-use Michaels\Spider\Commands\Command;
+namespace Spider\Test\Stubs;
+
+use Spider\Commands\Bag;
+use Spider\Commands\Command;
+use Spider\Commands\ProcessorInterface;
 
 /**
  * Class CommandProcessorStub
- * @package Michaels\Spider\Test\Stubs
+ * @package Spider\Test\Stubs
  */
 class CommandProcessorStub implements ProcessorInterface
 {

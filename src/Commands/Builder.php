@@ -1,8 +1,8 @@
 <?php
-namespace Michaels\Spider\Commands;
+namespace Spider\Commands;
 
 use InvalidArgumentException;
-use Michaels\Spider\Connections\ConnectionInterface;
+use Spider\Connections\ConnectionInterface;
 
 /**
  * Fluent Command Builder with optional connected driver

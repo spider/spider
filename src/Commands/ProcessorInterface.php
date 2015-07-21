@@ -1,5 +1,5 @@
 <?php
-namespace Michaels\Spider\Commands;
+namespace Spider\Commands;
 
 /**
  * Command Processor Contract

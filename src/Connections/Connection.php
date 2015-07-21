@@ -1,14 +1,14 @@
 <?php
-namespace Michaels\Spider\Connections;
+namespace Spider\Connections;
 
 use Michaels\Manager\Traits\ManagesItemsTrait;
-use Michaels\Spider\Commands\CommandInterface;
-use Michaels\Spider\Drivers\DriverInterface;
-use Michaels\Spider\Graphs\Graph;
+use Spider\Commands\CommandInterface;
+use Spider\Drivers\DriverInterface;
+use Spider\Graphs\Graph;
 
 /**
  * Facilitates two-way communication with a driver store
- * @package Michaels\Spider\Test\Unit\Connections
+ * @package Spider\Test\Unit\Connections
  */
 class Connection implements ConnectionInterface
 {

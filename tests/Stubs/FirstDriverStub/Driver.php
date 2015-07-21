@@ -1,10 +1,10 @@
 <?php
-namespace Michaels\Spider\Test\Stubs\FirstDriverStub;
+namespace Spider\Test\Stubs\FirstDriverStub;
 
-use Michaels\Spider\Commands\CommandInterface;
-use Michaels\Spider\Drivers\AbstractDriver;
-use Michaels\Spider\Drivers\DriverInterface;
-use Michaels\Spider\Graphs\Record;
+use Spider\Commands\CommandInterface;
+use Spider\Drivers\AbstractDriver;
+use Spider\Drivers\DriverInterface;
+use Spider\Graphs\Record;
 
 class Driver extends AbstractDriver implements DriverInterface
 {
@@ -42,7 +42,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is the R in CRUD
      *
      * @param CommandInterface $query
-     * @return array|Record|\Michaels\Spider\Drivers\Graph
+     * @return array|Record|\Spider\Drivers\Graph
      */
     public function executeReadCommand(CommandInterface $query)
     {
@@ -55,7 +55,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * These are the "CUD" in CRUD
      *
      * @param CommandInterface $command
-     * @return \Michaels\Spider\Drivers\Graph|Record|array|mixed mixed values for some write commands
+     * @return \Spider\Drivers\Graph|Record|array|mixed mixed values for some write commands
      */
     public function executeWriteCommand(CommandInterface $command)
     {

@@ -1,7 +1,7 @@
 <?php
-namespace Michaels\Spider\Drivers;
+namespace Spider\Drivers;
 
-use Michaels\Spider\Commands\CommandInterface;
+use Spider\Commands\CommandInterface;
 
 /**
  * Driver contract
@@ -12,7 +12,7 @@ interface DriverInterface
     /**
      * Sets the credentials from a properties array
      *
-     * Satisfied by Michaels\Spider\Drivers\AbstractDriver
+     * Satisfied by Spider\Drivers\AbstractDriver
      *
      * @param array $properties
      */
@@ -21,7 +21,7 @@ interface DriverInterface
     /**
      * Sets and individual credential configuration item
      *
-     * Satisfied by Michaels\Spider\Drivers\AbstractDriver
+     * Satisfied by Spider\Drivers\AbstractDriver
      *
      * @param $property
      * @param $value
@@ -34,7 +34,7 @@ interface DriverInterface
      *
      * Throws exception if nothing is found and no fallback
      *
-     * Satisfied by Michaels\Spider\Drivers\AbstractDriver
+     * Satisfied by Spider\Drivers\AbstractDriver
      *
      * @param $property
      * @param null $fallback

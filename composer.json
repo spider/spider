@@ -29,12 +29,12 @@
     },
     "autoload": {
         "psr-4": {
-          "Michaels\\Spider\\": "src"
+          "Spider\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-          "Michaels\\Spider\\Test\\": "tests"
+          "Spider\\Test\\": "tests"
         }
     },
     "extra": {

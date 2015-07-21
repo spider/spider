@@ -1,17 +1,17 @@
 <?php
-namespace Michaels\Spider\Drivers\OrientDB;
+namespace Spider\Drivers\OrientDB;
 
-use Michaels\Spider\Commands\CommandInterface;
-use Michaels\Spider\Drivers\AbstractDriver;
-use Michaels\Spider\Drivers\DriverInterface;
-use Michaels\Spider\Graphs\Graph;
-use Michaels\Spider\Graphs\Record as SpiderRecord;
 use PhpOrient\PhpOrient;
 use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
+use Spider\Commands\CommandInterface;
+use Spider\Drivers\AbstractDriver;
+use Spider\Drivers\DriverInterface;
+use Spider\Graphs\Graph;
+use Spider\Graphs\Record as SpiderRecord;
 
 /**
  * Driver for Native OrientDB (not using gremlin)
- * @package Michaels\Spider\Drivers\OrientDB
+ * @package Spider\Drivers\OrientDB
  */
 class Driver extends AbstractDriver implements DriverInterface
 {

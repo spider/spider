@@ -1,10 +1,10 @@
 <?php
-namespace Michaels\Spider\Test\Unit\Connections;
+namespace Spider\Test\Unit\Connections;
 
 use Codeception\Specify;
-use Michaels\Spider\Connections\Connection;
-use Michaels\Spider\Test\Stubs\FirstDriverStub\Driver as FirstDriver;
-use Michaels\Spider\Test\Stubs\SecondDriverStub\Driver as SecondDriver;
+use Spider\Connections\Connection;
+use Spider\Test\Stubs\FirstDriverStub\Driver as FirstDriver;
+use Spider\Test\Stubs\SecondDriverStub\Driver as SecondDriver;
 
 /*
  * Tests Implementation against ConnectionInterface
@@ -18,20 +18,20 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->specify("it gets driver name", function () {
             $connection = new Connection(new FirstDriver(), ['one' => 'one']);
 
-            $this->assertEquals('Michaels\Spider\Test\Stubs\FirstDriverStub\Driver', $connection->getDriverName(), "fails to return driver class name");
+            $this->assertEquals('Spider\Test\Stubs\FirstDriverStub\Driver', $connection->getDriverName(), "fails to return driver class name");
         });
 
         $this->specify("it gets driver instance", function () {
             $connection = new Connection(new FirstDriver(), ['one' => 'one']);
 
-            $this->assertInstanceOf('Michaels\Spider\Test\Stubs\FirstDriverStub\Driver', $connection->getDriver(), 'failed to return driver instance');
+            $this->assertInstanceOf('Spider\Test\Stubs\FirstDriverStub\Driver', $connection->getDriver(), 'failed to return driver instance');
         });
 
         $this->specify("it sets driver instance", function () {
             $connection = new Connection(new FirstDriver(), ['one' => 'one']);
             $connection->setDriver(new SecondDriver());
 
-            $this->assertInstanceOf('Michaels\Spider\Test\Stubs\SecondDriverStub\Driver', $connection->getDriver(), 'failed to return new driver instance');
+            $this->assertInstanceOf('Spider\Test\Stubs\SecondDriverStub\Driver', $connection->getDriver(), 'failed to return new driver instance');
         });
 
         $this->specify("it gets properties array", function () {

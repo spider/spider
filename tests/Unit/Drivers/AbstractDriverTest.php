@@ -1,8 +1,8 @@
 <?php
-namespace Michaels\Spider\Test\Unit\Drivers;
+namespace Spider\Test\Unit\Drivers;
 
 use Codeception\Specify;
-use Michaels\Spider\Test\Stubs\AbstractDriverStub\Driver;
+use Spider\Test\Stubs\AbstractDriverStub\Driver;
 
 class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 {

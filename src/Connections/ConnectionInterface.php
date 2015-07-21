@@ -1,13 +1,13 @@
 <?php
-namespace Michaels\Spider\Connections;
+namespace Spider\Connections;
 
 use Michaels\Manager\Contracts\ManagesItemsInterface;
-use Michaels\Spider\Commands\CommandInterface;
-use Michaels\Spider\Drivers\DriverInterface;
+use Spider\Commands\CommandInterface;
+use Spider\Drivers\DriverInterface;
 
 /**
  * Facilitates two-way communication with a data-store
- * @package Michaels\Spider\Test\Unit\Connections
+ * @package Spider\Test\Unit\Connections
  */
 interface ConnectionInterface extends ManagesItemsInterface
 {

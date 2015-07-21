@@ -1,5 +1,5 @@
 <?php
-namespace Michaels\Spider\Connections;
+namespace Spider\Connections;
 
 use Michaels\Manager\Contracts\ManagesItemsInterface;
 use Michaels\Manager\Exceptions\ItemNotFoundException;
@@ -7,7 +7,7 @@ use Michaels\Manager\Traits\ManagesItemsTrait;
 
 /**
  * Manages and Builds Connections from a stored list
- * @package Michaels\Spider\Connections
+ * @package Spider\Connections
  */
 class Manager implements ManagesItemsInterface
 {
@@ -40,7 +40,7 @@ class Manager implements ManagesItemsInterface
      * @param string $connectionName
      *
      * @return Connection
-     * @throws \Michaels\Spider\Connections\ConnectionNotFoundException
+     * @throws \Spider\Connections\ConnectionNotFoundException
      */
     public function make($connectionName = null)
     {
@@ -84,7 +84,7 @@ class Manager implements ManagesItemsInterface
      *
      * @param $connectionName
      * @return Connection
-     * @throws \Michaels\Spider\Connections\ConnectionNotFoundException
+     * @throws \Spider\Connections\ConnectionNotFoundException
      */
     protected function buildConnection($connectionName)
     {
@@ -103,7 +103,7 @@ class Manager implements ManagesItemsInterface
      *
      * @param $connectionName
      * @return mixed
-     * @throws \Michaels\Spider\Connections\ConnectionNotFoundException
+     * @throws \Spider\Connections\ConnectionNotFoundException
      * @todo Refactor: Exception should probably be thrown elsewhere
      */
     protected function buildConnectionName($connectionName = null)

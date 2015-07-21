@@ -1,10 +1,10 @@
 <?php
-namespace Michaels\Spider\Test\Unit\Connections;
+namespace Spider\Test\Unit\Connections;
 
 use Codeception\Specify;
 use Michaels\Manager\Exceptions\ItemNotFoundException;
-use Michaels\Spider\Connections\ConnectionNotFoundException;
-use Michaels\Spider\Connections\Manager;
+use Spider\Connections\ConnectionNotFoundException;
+use Spider\Connections\Manager;
 
 /*
  * Tests Connection Manager. Does not test methods covered in Michaels\Manager
@@ -21,13 +21,13 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $this->connections = [
             'default'     => 'default-connection',
             'default-connection' => [
-                'driver' => 'Michaels\Spider\Test\Stubs\FirstDriverStub',
+                'driver' => 'Spider\Test\Stubs\FirstDriverStub',
                 'username' => 'username',
                 'host' => 'host',
                 'pass' => 'pass'
             ],
             'connection-one' => [
-                'driver' => 'Michaels\Spider\Test\Stubs\SecondDriverStub',
+                'driver' => 'Spider\Test\Stubs\SecondDriverStub',
                 'credentials' => 'one-credentials',
                 'other' => 'one-other'
             ],
@@ -48,7 +48,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
             // Connection is a valid instance of Connection
             $this->assertInstanceOf(
-                'Michaels\Spider\Connections\ConnectionInterface',
+                'Spider\Connections\ConnectionInterface',
                 $connection,
                 "failed to return an valid connection"
             );
@@ -77,7 +77,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
             // Connection is a valid instance of Connection
             $this->assertInstanceOf(
-                'Michaels\Spider\Connections\ConnectionInterface',
+                'Spider\Connections\ConnectionInterface',
                 $connection,
                 "failed to return an valid connection"
             );

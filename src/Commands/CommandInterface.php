@@ -1,5 +1,5 @@
 <?php
-namespace Michaels\Spider\Commands;
+namespace Spider\Commands;
 
 /**
  * Command: Contains the command script to be executed by the driver

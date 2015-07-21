@@ -1,12 +1,12 @@
 <?php
-//namespace Michaels\Spider\Test\Unit\Queries;
+//namespace Spider\Test\Unit\Queries;
 //
 //use Codeception\Specify;
 //use InvalidArgumentException;
-//use Michaels\Spider\Commands\Builder;
-//use Michaels\Spider\Connections\Connection;
-//use Michaels\Spider\Drivers\OrientDB\CommandProcessor;
-//use Michaels\Spider\Drivers\OrientDB\Driver as OrientDriver;
+//use Spider\Commands\Builder;
+//use Spider\Connections\Connection;
+//use Spider\Drivers\OrientDB\CommandProcessor;
+//use Spider\Drivers\OrientDB\Driver as OrientDriver;
 //
 //class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 //{

@@ -1,11 +1,11 @@
 <?php
-namespace Michaels\Spider\Test\Unit\Commands;
+namespace Spider\Test\Unit\Commands;
 
 use Codeception\Specify;
 use InvalidArgumentException;
-use Michaels\Spider\Commands\Bag;
-use Michaels\Spider\Commands\Builder;
-use Michaels\Spider\Test\Stubs\CommandProcessorStub;
+use Spider\Commands\Bag;
+use Spider\Commands\Builder;
+use Spider\Test\Stubs\CommandProcessorStub;
 
 /**
  * This tests the fluent part of the command builder.
@@ -15,7 +15,7 @@ use Michaels\Spider\Test\Stubs\CommandProcessorStub;
  * This does not test the end script, only the Command Bag that was built
  *
  * The retrieval mechanisms are tested in `ConnectedCommandBuilderTest`
- * @package Michaels\Spider\Test\Unit\Commands
+ * @package Spider\Test\Unit\Commands
  */
 class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
 {

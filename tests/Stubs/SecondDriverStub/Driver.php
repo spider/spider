@@ -1,7 +1,7 @@
 <?php
-namespace Michaels\Spider\Test\Stubs\SecondDriverStub;
+namespace Spider\Test\Stubs\SecondDriverStub;
 
-use Michaels\Spider\Test\Stubs\FirstDriverStub\Driver as FirstDriver;
+use Spider\Test\Stubs\FirstDriverStub\Driver as FirstDriver;
 
 class Driver extends FirstDriver
 {
