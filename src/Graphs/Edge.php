@@ -1,9 +1,9 @@
 <?php
-namespace Michaels\Spider\Graphs;
+namespace Spider\Graphs;
 
 /**
  * Class Edge
- * @package Michaels\Spider\Graphs
+ * @package Spider\Graphs
  */
 class Edge extends Record
 {

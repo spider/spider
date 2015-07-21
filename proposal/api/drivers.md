@@ -25,8 +25,8 @@ $connection->dropEdge($id);
 | dbList        |  X      | listDbs      | extract to trait |
 | dbOpen        | (on create) | openDb       | extract to trait |
 | dbSize        |  X       | sizeOfDb     | extract to trait |
-| query         | new Query() | query        |
-| query         | new Query()           | statement    |
+| sendCommand         | new Query() | sendCommand        |
+| sendCommand         | new Query()           | statement    |
 | gremlin       | new Grm\Query() | X | make into a trait? |
 | queryAsync    |  X       | ---         |
 | recordLoad    |  getNode   | getVertex    |

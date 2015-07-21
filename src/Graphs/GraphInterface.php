@@ -1,5 +1,5 @@
 <?php
-namespace Michaels\Spider\Graphs;
+namespace Spider\Graphs;
 
 use Michaels\Manager\Contracts\ManagesItemsInterface;
 

@@ -1,11 +1,11 @@
 <?php
-namespace Michaels\Spider\Test\Unit\Drivers;
+namespace Spider\Test\Unit\Drivers\OrientDB;
 
 use Codeception\Specify;
-use Michaels\Spider\Drivers\OrientDB\Driver as OrientDriver;
-use Michaels\Spider\Queries\Command;
+use Spider\Commands\Command;
+use Spider\Drivers\OrientDB\Driver as OrientDriver;
 
-class OrientDriverTest extends \PHPUnit_Framework_TestCase
+class DriverTest extends \PHPUnit_Framework_TestCase
 {
     use Specify;
 
@@ -28,8 +28,8 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
     public function testConnections()
     {
         $this->specify("it opens and closes the database without exception", function () {
-            $driver = new OrientDriver();
-            $driver->open($this->credentials);
+            $driver = new OrientDriver($this->credentials);
+            $driver->open();
             $driver->close();
         });
     }
@@ -37,8 +37,8 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
     public function testReadCommands()
     {
         $this->specify("it selects a single record and returns an array of Records", function () {
-            $driver = new OrientDriver();
-            $driver->open($this->credentials);
+            $driver = new OrientDriver($this->credentials);
+            $driver->open();
 
             $response = $driver->executeReadCommand(new Command(
                 "SELECT FROM Cat WHERE @rid = #12:0"
@@ -48,13 +48,13 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
 
             $this->assertTrue(is_array($response), 'failed to return an array');
             $this->assertCount(1, $response, "failed to return 1 result");
-            $this->assertInstanceOf('Michaels\Spider\Graphs\Record', $response[0], 'failed to return a Record');
+            $this->assertInstanceOf('Spider\Graphs\Record', $response[0], 'failed to return a Record');
             $this->assertEquals("oreo", $response[0]->name, "failed to return the correct names");
         });
 
         $this->specify("it selects multiple unrelated records and returns an array of Records", function () {
-            $driver = new OrientDriver();
-            $driver->open($this->credentials);
+            $driver = new OrientDriver($this->credentials);
+            $driver->open();
 
             $response = $driver->executeReadCommand(new Command(
                 "SELECT FROM Cat"
@@ -65,30 +65,28 @@ class OrientDriverTest extends \PHPUnit_Framework_TestCase
             $this->assertTrue(is_array($response), "failed to return an array");
             $this->assertCount(2, $response, "failed to return 2 results");
             $this->assertEquals("oreo", $response[0]->name, "failed to return the correct names");
-            $this->assertInstanceOf('Michaels\Spider\Graphs\Record', $response[0], 'failed to return records');
+            $this->assertInstanceOf('Spider\Graphs\Record', $response[0], 'failed to return records');
         });
     }
 
     public function testWriteCommands()
     {
-        $driver = new OrientDriver();
-        $driver->open($this->credentials);
+        $driver = new OrientDriver($this->credentials);
+        $driver->open();
 
         // Create new
         $sql = "INSERT INTO Owner CONTENT " . json_encode(['first_name' => 'nicole', 'last_name' => 'lowman']);
         $newRecord = $driver->executeWriteCommand(new Command($sql));
 
-        $this->assertInstanceOf('Michaels\Spider\Graphs\Record', $newRecord, 'failed to return a Record');
+        $this->assertInstanceOf('Spider\Graphs\Record', $newRecord, 'failed to return a Record');
         $this->assertEquals("nicole", $newRecord->first_name, "failed to return the correct names");
-
 
         // Update existing
         $sql = "UPDATE (SELECT FROM Owner WHERE @rid=$newRecord->id) MERGE " . json_encode(['last_name' => 'wilson']) . ' RETURN AFTER $current';
         $updatedRecord = $driver->executeWriteCommand(new Command($sql));
 
-        $this->assertInstanceOf('Michaels\Spider\Graphs\Record', $updatedRecord, 'failed to return a Record');
+        $this->assertInstanceOf('Spider\Graphs\Record', $updatedRecord, 'failed to return a Record');
         $this->assertEquals("wilson", $updatedRecord->last_name, "failed to return the correct names");
-
 
         // Delete That one
         $sql = "DELETE VERTEX Owner WHERE @rid=$newRecord->id";

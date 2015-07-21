@@ -41,7 +41,7 @@ In theory, you could even create a simple (one class) driver that works with a M
 ### Gremlin
 [Tinkerpop](http://www.tinkerpop.com/) is an open-source organization that aims to standardize all these wonderful graph datastores.
 **Spider** builds on this standardization, taking full advantage of the language and workflows that already work (why re-invent the wheel?)
-Even cooler, Tinkerpop has created a Server API with its own, flexible query language that sits on top of nearly all graph databases. This allows you to use gremlin with [OrientDB](http://www.orientechnologies.com/), [Neo4j](http://neo4j.com), etc.
+Even cooler, Tinkerpop has created a Server API with its own, flexible sendCommand language that sits on top of nearly all graph databases. This allows you to use gremlin with [OrientDB](http://www.orientechnologies.com/), [Neo4j](http://neo4j.com), etc.
 Spider includes a driver to connect to these databases, so in 90 percent of the cases, all you have to do is `composer require` Spider and off you go :)
 
 ## The Proposal
@@ -55,7 +55,7 @@ This is a living proposal. The more feedback the better.
   * An easy transition from SQL or Mongo
   * Simple, fluent, and consistent API
   * An Object-Graph-Mapper and Models inspired by Eloquent, Propel, and Monga.
-  * A filter/query builder that doesn't make your mind go nuts.
+  * A filter/sendCommand builder that doesn't make your mind go nuts.
   * Simple drivers to connect to specific graph databases (orient, neo4j, titat, etc) or other datastores
   * Handle multiple connections
   * Validation, filtering, security, and performance.
@@ -70,7 +70,7 @@ This is a living proposal. The more feedback the better.
   * **Api**: Fleshing out the *public* api for the different components.
     * [Connections, Managers, and Drivers](api/connections-drivers.md)
     * [Graphs and Models](api/graphs-models.md)
-    * [QueryBuilder](api/query-builder.md)
+    * [QueryBuilder](api/sendCommand-builder.md)
     * [Spider and Utilities](api/spider.md)
   * **[Meta](meta.md)**: Other thoughts.
 

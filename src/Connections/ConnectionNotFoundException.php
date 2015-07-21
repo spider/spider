@@ -1,11 +1,11 @@
 <?php
-namespace Michaels\Spider\Connections;
+namespace Spider\Connections;
 
 use Michaels\Manager\Exceptions\ItemNotFoundException;
 
 /**
  * Class ConnectionNotFoundException
- * @package Michaels\Spider\Connections
+ * @package Spider\Connections
  */
 class ConnectionNotFoundException extends ItemNotFoundException
 {

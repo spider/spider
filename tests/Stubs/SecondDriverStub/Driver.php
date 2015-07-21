@@ -1,15 +1,20 @@
 <?php
-namespace Michaels\Spider\Test\Stubs\SecondDriverStub;
+namespace Spider\Test\Stubs\SecondDriverStub;
 
-use Michaels\Spider\Test\Stubs\FirstDriverStub\Driver as FirstDriver;
+use Spider\Test\Stubs\FirstDriverStub\Driver as FirstDriver;
 
 class Driver extends FirstDriver
 {
-    public function open(array $credentials, array $config = [])
+    protected $port;
+    protected $hostname;
+
+    public function open()
     {
-        return [
-            'credentials' => $credentials,
-            'config' => $config
-        ];
+        $config = [];
+        foreach ($this as $property => $value) {
+            $config[$property] = $value;
+        }
+
+        return $config;
     }
 }

@@ -19,7 +19,8 @@
     "require": {
       "php" : ">=5.4.0",
       "michaels/data-manager": "dev-develop",
-      "ostico/phporient": "dev-master"
+      "ostico/phporient": "dev-master",
+    "brightzone/gremlin-php": "*"
 
     },
     "require-dev": {
@@ -29,12 +30,12 @@
     },
     "autoload": {
         "psr-4": {
-          "Michaels\\Spider\\": "src"
+          "Spider\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-          "Michaels\\Spider\\Test\\": "tests"
+          "Spider\\Test\\": "tests"
         }
     },
     "extra": {

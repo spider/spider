@@ -1,14 +1,14 @@
 <?php
-namespace Michaels\Spider\Connections;
+namespace Spider\Connections;
 
 use Michaels\Manager\Traits\ManagesItemsTrait;
-use Michaels\Spider\Drivers\DriverInterface;
-use Michaels\Spider\Graphs\Graph;
-use Michaels\Spider\Queries\CommandInterface;
+use Spider\Commands\CommandInterface;
+use Spider\Drivers\DriverInterface;
+use Spider\Graphs\Graph;
 
 /**
  * Facilitates two-way communication with a driver store
- * @package Michaels\Spider\Test\Unit\Connections
+ * @package Spider\Test\Unit\Connections
  */
 class Connection implements ConnectionInterface
 {
@@ -25,17 +25,11 @@ class Connection implements ConnectionInterface
      * Constructs a new connection with driver and properties
      *
      * @param DriverInterface $driver
-     * @param array $credentials Credentials, host, and the like
-     * @param array $config
+     * @param array $properties Credentials and configuration
      */
-    public function __construct(DriverInterface $driver, array $credentials, array $config = [])
+    public function __construct(DriverInterface $driver, array $properties = [])
     {
-        $items = [
-            'credentials' => $credentials,
-            'config' => $config
-        ];
-
-        $this->initManager($items);
+        $this->initManager($properties);
         $this->driver = $driver;
     }
 
@@ -44,7 +38,8 @@ class Connection implements ConnectionInterface
      */
     public function open()
     {
-        return $this->driver->open($this->get('credentials'), $this->get('config'));
+        $this->driver->setCredentials($this->getAll()); // from given properties
+        return $this->driver->open();
     }
 
     /**
@@ -65,25 +60,6 @@ class Connection implements ConnectionInterface
     public function __call($name, $args)
     {
         return call_user_func_array([$this->driver, $name], $args);
-    }
-
-    /**
-     * Returns the properties array
-     * @return array
-     */
-    public function getProperties()
-    {
-        return $this->getAll();
-    }
-
-    /**
-     * Updates the entire properties array
-     *
-     * @param array $properties
-     */
-    public function setProperties(array $properties)
-    {
-        $this->reset($properties);
     }
 
     /**
@@ -132,7 +108,7 @@ class Connection implements ConnectionInterface
      *
      * @param CommandInterface $command
      * @return array|Record|Graph|mixed mixed values for some write commands
-     * @internal param CommandInterface $query
+     * @internal param CommandInterface $sendCommand
      */
     public function executeWriteCommand(CommandInterface $command)
     {

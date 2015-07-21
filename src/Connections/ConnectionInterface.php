@@ -1,13 +1,13 @@
 <?php
-namespace Michaels\Spider\Connections;
+namespace Spider\Connections;
 
 use Michaels\Manager\Contracts\ManagesItemsInterface;
-use Michaels\Spider\Drivers\DriverInterface;
-use Michaels\Spider\Queries\CommandInterface;
+use Spider\Commands\CommandInterface;
+use Spider\Drivers\DriverInterface;
 
 /**
  * Facilitates two-way communication with a data-store
- * @package Michaels\Spider\Test\Unit\Connections
+ * @package Spider\Test\Unit\Connections
  */
 interface ConnectionInterface extends ManagesItemsInterface
 {
@@ -20,19 +20,6 @@ interface ConnectionInterface extends ManagesItemsInterface
      * Closes database connection
      */
     public function close();
-
-    /**
-     * Returns the properties array
-     * @return array
-     */
-    public function getProperties();
-
-    /**
-     * Updates the entire properties array
-     *
-     * @param array $properties
-     */
-    public function setProperties(array $properties);
 
     /**
      * Returns the class name of the active driver

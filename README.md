@@ -22,7 +22,7 @@ Please browse through the [proposal](proposal/overview.md) to see the work in pr
   * An easy transition from SQL or Mongo
   * Simple, fluent, and consistent API
   * An Object-Graph-Mapper and Models inspired by Eloquent, Propel, and Monga.
-  * A filter/query builder that doesn't make your mind go nuts.
+  * A filter/sendCommand builder that doesn't make your mind go nuts.
   * Simple drivers to connect to specific graph databases (orient, neo4j, titat, etc) or other datastores
   * Handle multiple connections
   * Validation, filtering, security, and performance.
@@ -42,7 +42,7 @@ The `develop` branch is a step ahead and may me unstable right now. As we near v
 ### Connections
 A connection holds the driver to a datastore and whatever settings that driver needs to connect (username, host, port, etc). 
 
-All connections implement `Michaels\Spider\Connections\ConnectionInterface` and must be passed Driver Object and array of credentials at creation. They may also be passed optional configuration.
+All connections implement `Spider\Connections\ConnectionInterface` and must be passed Driver Object and array of credentials at creation. They may also be passed optional configuration.
 
 ```php
 $credentials = [
@@ -66,7 +66,7 @@ The credentials include *at least* a `default` driver name, and the credentials 
 Drivers follow a convention. Each driver has its own namespace and directly under that namespace is a class called `Driver` plus whatever other classes the driver needs. You don't have to worry about all this. All you have to include is the driver's namespace.
 
 ```php
-$manager = new Michaels\Spider\Connections\Manager([
+$manager = new Spider\Connections\Manager([
     'default' => 'default-connection',
     'default-connection' => [
         'driver'   => 'Drivers\Full\Namespace',
@@ -112,15 +112,15 @@ You use the driver through the connection. Once you have a connection setup, you
 When sending queries or commands, be sure to use an instance of the `QueryInterface` to pass to the connection.
 The following methods work with the datastore:
 ```php
-$query = new Michaels\Spider\Queries\Query("WHATEVER THE SCRIPT IS");
-//$query = new Michaels\Spider\Queries\Query("SELECT FROM Cats WHERE name = 'Oreo'");
+$sendCommand = new Spider\Queries\Query("WHATEVER THE SCRIPT IS");
+//$sendCommand = new Spider\Queries\Query("SELECT FROM Cats WHERE name = 'Oreo'");
 
 $connection->open(); // uses the credentials given to the `Connection` when created
-$response = $connection->executeReadCommand(QueryInterface $query); // for read-only commands like SELECT
-$response = $connection->executeWriteCommand(QueryInterface $query); // for write commands (INSERT, UPDATE, DELETE)
+$response = $connection->executeReadCommand(QueryInterface $sendCommand); // for read-only commands like SELECT
+$response = $connection->executeWriteCommand(QueryInterface $sendCommand); // for write commands (INSERT, UPDATE, DELETE)
 
 // or you can run a command without waiting for a response
-$connection->runWriteCommand(QueryInterface $query);
+$connection->runWriteCommand(QueryInterface $sendCommand);
 
 // Close the connection when you are done
 $connection->close();

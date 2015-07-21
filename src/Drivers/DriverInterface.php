@@ -1,7 +1,7 @@
 <?php
-namespace Michaels\Spider\Drivers;
+namespace Spider\Drivers;
 
-use Michaels\Spider\Queries\CommandInterface;
+use Spider\Commands\CommandInterface;
 
 /**
  * Driver contract
@@ -10,13 +10,43 @@ use Michaels\Spider\Queries\CommandInterface;
 interface DriverInterface
 {
     /**
-     * Connect to the database
+     * Sets the credentials from a properties array
      *
-     * @param array $credentials
-     * @param array $config
+     * Satisfied by Spider\Drivers\AbstractDriver
+     *
+     * @param array $properties
+     */
+    public function setCredentials(array $properties = []);
+
+    /**
+     * Sets and individual credential configuration item
+     *
+     * Satisfied by Spider\Drivers\AbstractDriver
+     *
+     * @param $property
+     * @param $value
      * @return $this
      */
-    public function open(array $credentials, array $config = []);
+    public function setCredential($property, $value);
+
+    /**
+     * Returns an individual configuration item or fallback
+     *
+     * Throws exception if nothing is found and no fallback
+     *
+     * Satisfied by Spider\Drivers\AbstractDriver
+     *
+     * @param $property
+     * @param null $fallback
+     * @return null
+     */
+    public function getCredential($property, $fallback = null);
+
+    /**
+     * Connect to the database using already set, internal credentials
+     * @return $this
+     */
+    public function open();
 
     /**
      * Close the database connection

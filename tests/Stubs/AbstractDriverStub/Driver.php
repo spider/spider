@@ -1,30 +1,20 @@
 <?php
-namespace Spider\Test\Stubs\FirstDriverStub;
+namespace Spider\Test\Stubs\AbstractDriverStub;
 
 use Spider\Commands\CommandInterface;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
-use Spider\Graphs\Record;
+use Spider\Drivers\Graph;
+use Spider\Drivers\Record;
 
 class Driver extends AbstractDriver implements DriverInterface
 {
+    protected $port;
+    protected $hostname = 'default';
 
-    protected function returnData()
-    {
-        return new Record([
-            'one' => 1,
-            'two' => true,
-            'three' => 'three',
-        ]);
-    }
-
-    /**
-     * Connect to the database
-     * @return $this
-     */
     public function open()
     {
-        return $this;
+        // Nothing
     }
 
     /**
@@ -33,7 +23,7 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function close()
     {
-        return $this;
+        // Nothing
     }
 
     /**
@@ -42,11 +32,11 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is the R in CRUD
      *
      * @param CommandInterface $query
-     * @return array|Record|\Spider\Drivers\Graph
+     * @return array|Record|Graph
      */
     public function executeReadCommand(CommandInterface $query)
     {
-        return $this->returnData();
+        // Nothing
     }
 
     /**
@@ -55,32 +45,32 @@ class Driver extends AbstractDriver implements DriverInterface
      * These are the "CUD" in CRUD
      *
      * @param CommandInterface $command
-     * @return \Spider\Drivers\Graph|Record|array|mixed mixed values for some write commands
+     * @return Graph|Record|array|mixed mixed values for some write commands
      */
     public function executeWriteCommand(CommandInterface $command)
     {
-        return $this->returnData();
+        // Nothing
     }
 
     /**
      * Executes a read command without waiting for a response
      *
-     * @param CommandInterface $command
+     * @param CommandInterface $query
      * @return $this
      */
-    public function runReadCommand(CommandInterface $command)
+    public function runReadCommand(CommandInterface $query)
     {
-        return $this;
+        // Nothing
     }
 
     /**
      * Executes a write command without waiting for a response
      *
-     * @param CommandInterface $query
+     * @param CommandInterface $command
      * @return $this
      */
-    public function runWriteCommand(CommandInterface $query)
+    public function runWriteCommand(CommandInterface $command)
     {
-        return $this;
+        // Nothing
     }
 }
