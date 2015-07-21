@@ -2,6 +2,7 @@
 All Notable changes to `Spider` will be documented in this file
 
 ## v0.3 - NEXT
+- Refactor Drivers to hold configuration internally instead of by array
 - Basic Query Builder (without traversals)
   - Where filters
   - limit and group
