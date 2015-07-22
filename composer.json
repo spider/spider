@@ -19,7 +19,8 @@
     "require": {
       "php" : ">=5.4.0",
       "michaels/data-manager": "dev-develop",
-      "ostico/phporient": "dev-master"
+      "ostico/phporient": "dev-master",
+    "brightzone/gremlin-php": "*"
 
     },
     "require-dev": {
