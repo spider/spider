@@ -31,6 +31,12 @@ class Bag
      */
     public $where = [];
 
+    /** @var array Data to be inserted/updated */
+    public $data = [];
+
+    /** @var mixed What to return after CUD command. Defaults to nothing */
+    public $return = false;
+
     /** @var bool|int How many results to return. `false` no limit */
     public $limit = false;
 

@@ -56,11 +56,10 @@ class ConnectedCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
                 'target' => "v",
-                'limit' => false // Start here -- is this how I want to handle limits?
+                'limit' => false
             ]);
 
             $this->assertEquals($expected, $actual->getScript(), 'failed to return correct command');
         });
     }
 }
-

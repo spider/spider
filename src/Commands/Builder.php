@@ -82,6 +82,30 @@ class Builder
         return $this->retrieve($projections);
     }
 
+    public function insert(array $data)
+    {
+        $this->bag->command = Bag::COMMAND_CREATE;
+        $this->bag->data = $data;
+
+        return $this->dispatchCommand();
+    }
+
+    public function returnResponse($wanted = null)
+    {
+        $this->bag->return = (is_null($wanted)) ? true : $this->csvToArray($wanted);
+        return $this;
+    }
+
+    public function __call($name, $args)
+    {
+        /* Required so public api can be return() */
+        if ($name === 'return') {
+            return call_user_func_array([$this, 'returnResponse'], $args);
+        }
+
+        throw new \BadMethodCallException("$name does not exist");
+    }
+
     /**
      * Add specific projections to the current Command Bag
      * @param $projections
@@ -117,13 +141,18 @@ class Builder
 
     /**
      * Set the target in the current Command Bag
-     * @param $from
+     * @param $target
      * @return $this
      */
-    public function from($from)
+    public function from($target)
     {
-        $this->bag->target = $from;
+        $this->bag->target = $target;
         return $this;
+    }
+
+    public function into($target)
+    {
+        return $this->from($target);
     }
 
     /**
@@ -382,35 +411,31 @@ class Builder
             return $this;
         }
 
-        $this->bag->projections = $this->csvToArray($projections, true);
+        // Ensure $projects is usable
+        if (!is_string($projections) && !is_array($projections)) {
+            throw new InvalidArgumentException("Projections must be a comma-separated string or an array");
+        }
+
+        $this->bag->projections = $this->csvToArray($projections);
         return $this;
     }
 
     /**
-     * Turns a Comma Seperated Sting into an array. Used to set projections.
+     * Turns a Comma Separated Sting into an array. Used to set projections.
      *
      * If $throwException is not null|false, an exception will be thrown with
      * the string value of $throwException
      *
-     * @param $fields
-     * @param bool|string $throwException `false` to throw no exception. A string message to throw exception.
+     * @param $string
      * @return array
      */
-    protected function csvToArray($fields, $throwException = "Projections must be a comma-separated string or an array")
+    protected function csvToArray($string)
     {
-        if (is_array($fields)) {
-            return $fields;
-
-        } elseif (is_string($fields)) {
-            return array_map('trim', explode(",", $fields));
+        if (is_string($string)) {
+            return array_map('trim', explode(",", $string));
         }
 
-        // We can't do anything with this value
-        if ($throwException) {
-            throw new InvalidArgumentException($throwException);
-        }
-
-        return $fields;
+        return $string;
     }
 
     /**

@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use Spider\Commands\Bag;
 use Spider\Commands\Builder;
 use Spider\Test\Stubs\CommandProcessorStub;
+use Spider\Test\Stubs\ConnectionStub;
 
 /**
  * This tests the fluent part of the command builder.
@@ -29,7 +30,9 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function setup()
     {
-        $this->builder = new Builder(new CommandProcessorStub());
+//        $this->builder = new Builder(new CommandProcessorStub());
+        $this->builder = new Builder(new CommandProcessorStub(), new ConnectionStub());
+
     }
 
     public function buildExpected(array $properties)
@@ -631,25 +634,131 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /* Create Tests */
-//    public function testCreateRecords()
-//    {
-//        $this->specify("it inserts a single record and returns nothing", function () {
-//            $actual = $this->builder
-//                ->into('target')
-//                ->insert([
-//                    'first_property' => 'first-value',
-//                    'second_property' => 'second-value'
-//                ])
-//                ->getCommand();
-//
-//            $expected = $this->buildExpected([
-//                'command' => Bag::COMMAND_CREATE,
-//                'target' => "",
-//                'orderBy' => ['price', 'owner'],
-//                'orderAsc' => true,
-//            ]);
-//
-//            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
-//        });
-//    }
+    public function testCreateRecords()
+    {
+        $this->specify("it inserts a single record and returns nothing", function () {
+            $record = [
+                'first' => 'first-value',
+                'second' => 'second-value'
+            ];
+
+            $actual = $this->builder
+                ->into('target')
+                ->insert($record);
+
+            $expected = $this->buildExpected([
+                'command' => Bag::COMMAND_CREATE,
+                'target' => "target",
+                'data' => $record
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+
+        $this->specify("it inserts a single record and returns nothing", function () {
+            $record = [
+                ['first' => 'first-value', 'A', 'a'],
+                ['first' => 'second-value', 'B', 'b']
+            ];
+
+            $actual = $this->builder
+                ->into('target')
+                ->insert($record);
+
+            $expected = $this->buildExpected([
+                'command' => Bag::COMMAND_CREATE,
+                'target' => "target",
+                'data' => $record
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+    }
+
+    /* Return tests for CUD */
+    public function testReturnValuesOnCUD()
+    {
+        $this->specify("it returns nothing by default", function () {
+            $actual = $this->builder
+                ->getCommand();
+
+            $expected = $this->buildExpected([
+                'return' => false
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+
+        $this->specify("it returns a whole object", function () {
+            $actual = $this->builder
+                ->return()
+                ->getCommand();
+
+            $expected = $this->buildExpected([
+                'return' => true
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+
+        $this->specify("it returns a single value", function () {
+            $actual = $this->builder
+                ->return('username')
+                ->getCommand();
+
+            $expected = $this->buildExpected([
+                'return' => ['username']
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+
+        $this->specify("it several properties from array", function () {
+            $actual = $this->builder
+                ->return(['username', 'password'])
+                ->getCommand();
+
+            $expected = $this->buildExpected([
+                'return' => ['username', 'password']
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+
+        $this->specify("it several properties from csv string (one space)", function () {
+            $actual = $this->builder
+                ->return('username, password')
+                ->getCommand();
+
+            $expected = $this->buildExpected([
+                'return' => ['username', 'password']
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+
+        $this->specify("it several properties from csv string (no spaces)", function () {
+            $actual = $this->builder
+                ->return('username,password')
+                ->getCommand();
+
+            $expected = $this->buildExpected([
+                'return' => ['username', 'password']
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+
+        $this->specify("it several properties from csv string (many spaces)", function () {
+            $actual = $this->builder
+                ->return('username,           password')
+                ->getCommand();
+
+            $expected = $this->buildExpected([
+                'return' => ['username', 'password']
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+    }
 }
