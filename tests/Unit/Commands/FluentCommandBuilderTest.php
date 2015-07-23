@@ -9,6 +9,11 @@ use Spider\Commands\TargetID;
 use Spider\Test\Stubs\CommandProcessorStub;
 use Spider\Test\Stubs\ConnectionStub;
 
+/* ToDo: Test record() and data() independently */
+/* ToDo: Combine and simplify Connected and Fluent Builder Tests */
+/* ToDo: Split Command Builder into Base, Create, Update, Delete */
+
+
 /**
  * This tests the fluent part of the command builder.
  * It only checks to see if the Commands\Bag was correctly built
@@ -31,9 +36,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function setup()
     {
-//        $this->builder = new Builder(new CommandProcessorStub());
         $this->builder = new Builder(new CommandProcessorStub(), new ConnectionStub());
-
     }
 
     public function buildExpected(array $properties)
@@ -765,6 +768,68 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'limit' => 1,
                 'where' => [['username', Bag::COMPARATOR_EQUAL, 'chrismichaels84', 'AND']],
                 'data' => ['name' => 'chris']
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+    }
+
+    public function testDrop()
+    {
+        $this->specify("it drops a single record dispatching from `drop()`", function () {
+            $actual = $this->builder
+                ->drop(3); // dispatches command by itself
+
+            $expected = $this->buildExpected([
+                'command' => Bag::COMMAND_DELETE,
+                'target' => new TargetID(3)
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+
+        $this->specify("it drops a single record via `record()`", function () {
+            $actual = $this->builder
+                ->drop()
+                ->record(3)
+                ->getCommand();
+
+            $expected = $this->buildExpected([
+                'command' => Bag::COMMAND_DELETE,
+                'target' => new TargetID(3)
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+
+        $this->specify("it drops multiple records via ids", function () {
+            $actual = $this->builder
+                ->drop([1, 2, 3]);
+
+            $expected = $this->buildExpected([
+                'command' => Bag::COMMAND_DELETE,
+                'target' => [
+                    new TargetID(1),
+                    new TargetID(2),
+                    new TargetID(3),
+                ],
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+
+        $this->specify("it drops multiple records via constraints", function () {
+            $actual = $this->builder
+                ->drop()
+                ->from('target')
+                ->where('birthday', 'apr')
+                ->all(); // dispatch from all
+
+            $expected = $this->buildExpected([
+                'command' => Bag::COMMAND_DELETE,
+                'target' => 'target',
+                'where' => [['birthday', Bag::COMPARATOR_EQUAL, 'apr', 'AND']],
+                'limit' => false,
             ]);
 
             $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");

@@ -109,6 +109,18 @@ class Builder
         return $this;
     }
 
+    public function drop($record = null)
+    {
+        $this->bag->command = Bag::COMMAND_DELETE;
+
+        if (!is_null($record)) {
+            $this->record($record);
+            return $this->dispatchCommand();
+        }
+
+        return $this;
+    }
+
     public function data($property, $value = null)
     {
         if (is_array($property)) {
@@ -163,6 +175,14 @@ class Builder
      */
     public function record($id)
     {
+        if (is_array($id)) {
+            $ids = array_map(function ($value) {
+                return new TargetID($value);
+            }, $id);
+
+            return $this->from($ids);
+        }
+
         return $this->from(new TargetID($id));
     }
 
