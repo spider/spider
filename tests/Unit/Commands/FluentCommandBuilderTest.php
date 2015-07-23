@@ -5,6 +5,7 @@ use Codeception\Specify;
 use InvalidArgumentException;
 use Spider\Commands\Bag;
 use Spider\Commands\Builder;
+use Spider\Commands\TargetID;
 use Spider\Test\Stubs\CommandProcessorStub;
 use Spider\Test\Stubs\ConnectionStub;
 
@@ -68,7 +69,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
             $expected = $this->buildExpected([
                 'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
-                'target' => "#12:6767"
+                'target' => new TargetID("#12:6767")
             ]);
 
             $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
@@ -86,7 +87,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
             $expected = $this->buildExpected([
                 'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => ['price', 'certified'],
-                'target' => "#12:6767"
+                'target' => new TargetID("#12:6767")
             ]);
 
             $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
@@ -102,7 +103,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
             $expected = $this->buildExpected([
                 'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => ['price', 'certified'],
-                'target' => "#12:6767"
+                'target' => new TargetID("#12:6767")
             ]);
 
             $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
@@ -119,7 +120,7 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
             $expected = $this->buildExpected([
                 'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => ['price', 'certified'],
-                'target' => "#12:6767"
+                'target' => new TargetID("#12:6767")
             ]);
 
             $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
@@ -669,6 +670,101 @@ class FluentCommandBuilderTest extends \PHPUnit_Framework_TestCase
                 'command' => Bag::COMMAND_CREATE,
                 'target' => "target",
                 'data' => $record
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+    }
+
+    /* Update Tests */
+    public function testUpdateRecords()
+    {
+        $this->specify("it updates a single record with a single value by ID", function () {
+            $actual = $this->builder
+                ->update('name', 'chris')
+                ->record(3)
+                ->getCommand();
+
+            $expected = $this->buildExpected([
+                'command' => Bag::COMMAND_UPDATE,
+                'target' => new TargetID(3),
+                'data' => ['name' => 'chris']
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+
+        $this->specify("it updates a single record with a target and constraint", function () {
+            $actual = $this->builder
+                ->update('name', 'chris')
+                ->where('username', 'chrismichaels84')
+                ->from('users')
+                ->limit(1)
+                ->getCommand();
+
+            $expected = $this->buildExpected([
+                'command' => Bag::COMMAND_UPDATE,
+                'target' => 'users',
+                'limit' => 1,
+                'where' => [['username', Bag::COMPARATOR_EQUAL, 'chrismichaels84', 'AND']],
+                'data' => ['name' => 'chris']
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+
+        $this->specify("it updates multiple properties", function () {
+            $actual = $this->builder
+                ->update([
+                    'name' => 'chris',
+                    'birthday' => 'april'
+                ])
+                ->record(3)
+                ->getCommand();
+
+            $expected = $this->buildExpected([
+                'command' => Bag::COMMAND_UPDATE,
+                'data' => ['name' => 'chris', 'birthday' => 'april'],
+                'target' => new TargetID(3)
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+
+        $this->specify("it updates multiple properties using data", function () {
+            $data = [
+                'name' => 'chris',
+                'birthday' => 'april'
+            ];
+
+            $actual = $this->builder
+                ->update()
+                ->record(3)
+                ->data($data) // alias withData()
+                ->getCommand();
+
+            $expected = $this->buildExpected([
+                'command' => Bag::COMMAND_UPDATE,
+                'data' => ['name' => 'chris', 'birthday' => 'april'],
+                'target' => new TargetID(3)
+            ]);
+
+            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+        });
+
+        $this->specify("it updates a single record using updateFirst and data", function () {
+            $actual = $this->builder
+                ->updateFirst('users')
+                ->where('username', 'chrismichaels84')
+                ->data('name', 'chris')
+                ->getCommand();
+
+            $expected = $this->buildExpected([
+                'command' => Bag::COMMAND_UPDATE,
+                'target' => 'users',
+                'limit' => 1,
+                'where' => [['username', Bag::COMPARATOR_EQUAL, 'chrismichaels84', 'AND']],
+                'data' => ['name' => 'chris']
             ]);
 
             $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");

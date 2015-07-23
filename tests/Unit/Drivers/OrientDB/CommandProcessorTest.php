@@ -18,7 +18,7 @@ class CommandProcessorTest extends \PHPUnit_Framework_TestCase
             $bag = new Bag();
             $bag->command = Bag::COMMAND_RETRIEVE;
             $bag->projections = ['field1', 'field2'];
-            $bag->target = 'target';
+            $bag->target = 'target'; // don't forget about TargetID
             $bag->limit = 3;
             $bag->groupBy = ['groupField'];
             $bag->orderBy = ['orderField'];

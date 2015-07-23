@@ -90,6 +90,42 @@ class Builder
         return $this->dispatchCommand();
     }
 
+    public function update($property = null, $value = null)
+    {
+        $this->bag->command = Bag::COMMAND_UPDATE;
+
+        if (!is_null($property)) {
+            $this->data($property, $value);
+        }
+
+        return $this;
+    }
+
+    public function updateFirst($target)
+    {
+        $this->limit(1);
+        $this->from($target);
+        $this->bag->command = Bag::COMMAND_UPDATE;
+        return $this;
+    }
+
+    public function data($property, $value = null)
+    {
+        if (is_array($property)) {
+            foreach ($property as $key => $value) {
+                $this->data($key, $value);
+            }
+        } else {
+            $this->bag->data[$property] = $value;
+        }
+        return $this;
+    }
+
+    public function withData($property, $value = null)
+    {
+        return $this->data($property, $value);
+    }
+
     public function returnResponse($wanted = null)
     {
         $this->bag->return = (is_null($wanted)) ? true : $this->csvToArray($wanted);
@@ -103,7 +139,10 @@ class Builder
             return call_user_func_array([$this, 'returnResponse'], $args);
         }
 
-        throw new \BadMethodCallException("$name does not exist");
+        $class = get_called_class();
+        throw new \BadMethodCallException(
+            "Call to undefined method $class::$name()"
+        );
     }
 
     /**
@@ -124,7 +163,7 @@ class Builder
      */
     public function record($id)
     {
-        return $this->from($id);
+        return $this->from(new TargetID($id));
     }
 
     /**

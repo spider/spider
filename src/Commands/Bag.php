@@ -13,7 +13,14 @@ class Bag
     /** @var string Create, Retrieve, Update, Delete */
     public $command = null;
 
-    /** @var string Target */
+    /**
+     * Target of the command.
+     * Either a string for a label or instance of Commands\TargetID for a specific record
+     *
+     * ToDo: Make TargetID a generic ID (and maybe Label) class
+     *
+     * @var string|TargetID
+     */
     public $target = null;
 
     /* Optional Bag Contents with defaults */

@@ -5,6 +5,7 @@ use Spider\Commands\Bag;
 use Spider\Commands\Command;
 use Spider\Commands\CommandInterface;
 use Spider\Commands\ProcessorInterface;
+use Spider\Commands\TargetID;
 
 /**
  * Class QueryProcessor
@@ -65,7 +66,13 @@ class CommandProcessor implements ProcessorInterface
         }
 
         // FROM
-        $script .= " FROM " . $bag->target;
+        if ($bag->target instanceof TargetID) {
+            $target = $bag->target->id;
+        } else {
+            $target = $bag->target;
+        }
+
+        $script .= " FROM " . $target;
 
         // WHERE
         if (!empty($bag->where)) {
