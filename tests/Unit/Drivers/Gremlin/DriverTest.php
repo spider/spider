@@ -1,5 +1,5 @@
 <?php
-namespace Spider\Test\Unit\Drivers;
+namespace Spider\Test\Unit\Drivers\Gremlin;
 
 use Codeception\Specify;
 

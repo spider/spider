@@ -2,11 +2,10 @@
 namespace Spider\Drivers\Gremlin;
 
 use brightzone\rexpro\Connection;
-use Spider\Drivers\DriverInterface;
-use Spider\Drivers\AbstractDriver;
-use Spider\Graphs\Record as SpiderRecord;
 use Spider\Commands\CommandInterface;
-
+use Spider\Drivers\AbstractDriver;
+use Spider\Drivers\DriverInterface;
+use Spider\Graphs\Record as SpiderRecord;
 
 /**
  * Driver for Gremlin Server
@@ -80,7 +79,7 @@ class Driver extends AbstractDriver implements DriverInterface
     {
         try {
             $response = $this->client->send($query->getScript());
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             //Check for empty return error from server.
             if (($e instanceof \brightzone\rexpro\ServerException) && ($e->getCode() == 204)) {
                 $response = [];
@@ -121,7 +120,7 @@ class Driver extends AbstractDriver implements DriverInterface
     {
         try {
             $this->client->send($query->getScript());
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             //Check for empty return error from server.
             if (!($e instanceof \brightzone\rexpro\ServerException) || ($e->getCode() != 204)) {
                 throw $e;
@@ -181,8 +180,7 @@ class Driver extends AbstractDriver implements DriverInterface
         // Or we map a single record to a Spider Record
         $spiderRecord = new SpiderRecord();
         $properties = [];
-        foreach($row['properties'] as $key => $value)
-        {
+        foreach ($row['properties'] as $key => $value) {
             $properties[$key] = $value[0]['value'];
         }
 

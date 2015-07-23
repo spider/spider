@@ -122,7 +122,7 @@ class Builder
      */
     public function from($from)
     {
-        $this->bag->from = $from;
+        $this->bag->target = $from;
         return $this;
     }
 

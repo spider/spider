@@ -14,7 +14,7 @@ class Bag
     public $command = null;
 
     /** @var string Target */
-    public $from = null;
+    public $target = null;
 
     /* Optional Bag Contents with defaults */
     /**

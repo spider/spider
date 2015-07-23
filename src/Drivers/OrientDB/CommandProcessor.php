@@ -65,7 +65,7 @@ class CommandProcessor implements ProcessorInterface
         }
 
         // FROM
-        $script .= " FROM " . $bag->from;
+        $script .= " FROM " . $bag->target;
 
         // WHERE
         if (!empty($bag->where)) {

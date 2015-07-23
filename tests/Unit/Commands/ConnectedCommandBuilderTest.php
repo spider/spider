@@ -55,7 +55,7 @@ class ConnectedCommandBuilderTest extends \PHPUnit_Framework_TestCase
             $expected = $this->buildExpected([
                 'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
-                'from' => "v",
+                'target' => "v",
                 'limit' => false // Start here -- is this how I want to handle limits?
             ]);
 
