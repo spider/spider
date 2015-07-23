@@ -6,6 +6,8 @@ use Spider\Drivers\DriverInterface;
 use Spider\Drivers\AbstractDriver;
 use Spider\Graphs\Record as SpiderRecord;
 use Spider\Commands\CommandInterface;
+use Spider\Drivers\Response;
+use Spider\Base\Collection;
 
 
 /**
@@ -41,7 +43,7 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @return void
      */
-    public function __construct(array $properties)
+    public function __construct(array $properties = [])
     {
         parent::__construct($properties);
         $this->client = new Connection();
@@ -89,11 +91,7 @@ class Driver extends AbstractDriver implements DriverInterface
             }
         }
 
-        if (is_array($response)) {
-            return $this->mapResponse($response);
-        }
-
-        return $response;
+        return new Response(['_raw' => $response, '_driver' => $this]);
     }
 
     /**
@@ -148,7 +146,7 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @param array $response
      *
-     * @return SpiderRecord
+     * @return array
      */
     protected function mapResponse(array $response)
     {
@@ -179,18 +177,100 @@ class Driver extends AbstractDriver implements DriverInterface
     protected function arrayToSpiderRecord(array $row)
     {
         // Or we map a single record to a Spider Record
-        $spiderRecord = new SpiderRecord();
-        $properties = [];
+        $collection = new Collection();
         foreach($row['properties'] as $key => $value)
         {
-            $properties[$key] = $value[0]['value'];
+            $collection->add($key, $value[0]['value']);
         }
 
-        $spiderRecord->add([
-            'id' => $row['id'],
-            'label' => $row['label'],
-            'properties' => $properties,
-        ]);
-        return $spiderRecord;
+        foreach ($row as $key => $value)
+        {
+            if ($key != "properties")
+            {
+                $collection->add('meta.'.$key, $value);
+            }
+        }
+
+        return $collection;
+    }
+
+    /**
+     * Opens a transaction
+     *
+     * @return bool
+     */
+    public function startTransaction()
+    {
+        $this->client->transactionStart();
+        $this->inTransaction = TRUE;
+    }
+
+    /**
+     * Closes a transaction
+     *
+     * @param bool $commit whether this is a commit (TRUE) or a rollback (FALSE)
+     *
+     * @return bool
+     */
+    public function stopTransaction($commit = TRUE)
+    {
+        $this->client->transactionStop($commit);
+        $this->inTransaction = FALSE;
+    }
+
+    /**
+     * Format a raw response to a set of collections
+     * This is for cases where a set of Vertices or Edges is expected in the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatToSet($response)
+    {
+        return $this->mapResponse($response);
+    }
+
+    /**
+     * Format a raw response to a tree of collections
+     * This is for cases where a set of Vertices or Edges is expected in tree format from the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatToTree($response)
+    {
+        throw new \Exception(__FUNCTION__ . "is not currently supported for the Gremlin Driver");
+    }
+
+    /**
+     * Format a raw response to a path of collections
+     * This is for cases where a set of Vertices or Edges is expected in path format from the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatToPath($response)
+    {
+        foreach($response as &$path)
+        {
+            $path = $this->formatToSet($path['objects']);
+        }
+        return $response;
+    }
+
+    /**
+     * Format a raw response to a scalar
+     * This is for cases where a scalar result is expected
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatToScalar($response)
+    {
+        return $response[0];
     }
 }

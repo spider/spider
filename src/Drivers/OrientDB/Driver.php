@@ -39,7 +39,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * Create a new instance with a client
      * @param array $properties Configuration properties
      */
-    public function __construct($properties)
+    public function __construct(array $properties = [])
     {
         // Populate configuration
         parent::__construct($properties);
@@ -178,5 +178,29 @@ class Driver extends AbstractDriver implements DriverInterface
         ]);
 
         return $spiderRecord;
+    }
+
+
+    /**
+     * Opens a transaction
+     *
+     * @return bool
+     */
+    public function startTransaction()
+    {
+        throw new \Exception(__FUNCTION__ . " is not currently supported for OrientDB driver");
+    }
+
+
+    /**
+     * Closes a transaction
+     *
+     * @param bool $commit whether this is a commit (TRUE) or a rollback (FALSE)
+     *
+     * @return bool
+     */
+    public function stopTransaction(boolean $commit)
+    {
+        throw new \Exception(__FUNCTION__ . " is not currently supported for OrientDB driver");
     }
 }

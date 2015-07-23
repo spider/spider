@@ -38,7 +38,7 @@ class Connection implements ConnectionInterface
      */
     public function open()
     {
-        $this->driver->setCredentials($this->getAll()); // from given properties
+        $this->driver->setProperties($this->getAll()); // from given properties
         return $this->driver->open();
     }
 
