@@ -5,7 +5,7 @@ use Spider\Commands\Bag;
 use Spider\Commands\Command;
 use Spider\Commands\CommandInterface;
 use Spider\Commands\ProcessorInterface;
-use Spider\Commands\TargetID;
+use Spider\Graphs\ID as TargetID;
 
 /**
  * Class QueryProcessor

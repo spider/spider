@@ -41,6 +41,9 @@ class Bag
     /** @var array Data to be inserted/updated */
     public $data = [];
 
+    /** @var int How many records to create */
+    public $createCount = 0;
+
     /** @var mixed What to return after CUD command. Defaults to nothing */
     public $return = false;
 

@@ -3,6 +3,8 @@ namespace Spider\Commands;
 
 use InvalidArgumentException;
 use Spider\Connections\ConnectionInterface;
+use Spider\Graphs\ID as TargetID;
+use Symfony\Component\Config\Definition\Exception\Exception;
 
 /**
  * Fluent Command Builder with optional connected driver
@@ -85,27 +87,52 @@ class Builder
     public function insert(array $data)
     {
         $this->bag->command = Bag::COMMAND_CREATE;
+
+        if (isset($data[0]) && is_array($data[0])) {
+            $this->bag->createCount = count($data);
+        } else {
+            $this->bag->createCount = 1;
+        }
+
         $this->bag->data = $data;
 
-        return $this->dispatchCommand();
+        return $this->dispatch();
     }
 
     public function update($property = null, $value = null)
     {
         $this->bag->command = Bag::COMMAND_UPDATE;
 
-        if (!is_null($property)) {
-            $this->data($property, $value);
+        // We're just setting the command
+        if (is_null($property)) {
+            return $this;
         }
 
-        return $this;
+        // Or, We're adding a single bit of data as well
+        if (!is_null($value)) {
+            $this->data($property, $value);
+            return $this;
+        }
+
+        // Okay, so we only have a $property. That leaves us with 2 possibilities
+        // First, the $property is an array of data to be added
+        if (is_array($property)) {
+            $this->data($property, $value);
+            return $this;
+
+        // Second, the $property is a target
+        } else {
+            $this->from($property);
+            return $this;
+        }
     }
 
     public function updateFirst($target)
     {
+        $this->bag->command = Bag::COMMAND_UPDATE;
         $this->limit(1);
         $this->from($target);
-        $this->bag->command = Bag::COMMAND_UPDATE;
+
         return $this;
     }
 
@@ -115,7 +142,7 @@ class Builder
 
         if (!is_null($record)) {
             $this->record($record);
-            return $this->dispatchCommand();
+            return $this->dispatch();
         }
 
         return $this;
@@ -184,6 +211,11 @@ class Builder
         }
 
         return $this->from(new TargetID($id));
+    }
+
+    public function records($ids)
+    {
+        return $this->record($ids);
     }
 
     /**
@@ -360,11 +392,11 @@ class Builder
     public function command($command)
     {
         if ($command instanceof CommandInterface) {
-            return $this->dispatchCommand($command);
+            return $this->dispatch($command);
         }
 
         if (is_string($command)) {
-            return $this->dispatchCommand(new Command($command));
+            return $this->dispatch(new Command($command));
         }
 
         throw new InvalidArgumentException("`command()` only accepts strings or instances of `CommandInterface`");
@@ -378,7 +410,7 @@ class Builder
     public function all()
     {
         $this->bag->limit = false; // We want all records
-        return $this->dispatchCommand();
+        return $this->dispatch();
     }
 
     /**
@@ -388,7 +420,7 @@ class Builder
     public function one()
     {
         $this->bag->limit = 1;
-        return $this->dispatchCommand();
+        return $this->dispatch();
     }
 
     /**
@@ -410,7 +442,7 @@ class Builder
      * @param CommandInterface|null $command
      * @return mixed Results from the command
      */
-    protected function dispatchCommand(CommandInterface $command = null)
+    public function dispatch(CommandInterface $command = null)
     {
         $command = $command ?: $this->getCommand();
 
