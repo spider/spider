@@ -35,7 +35,7 @@ class Response extends Collection
      */
     public function getSet()
     {
-        return $this->_driver->formatToSet($this->_raw);
+        return $this->_driver->formatAsSet($this->_raw);
     }
 
     /**
@@ -45,7 +45,7 @@ class Response extends Collection
      */
     public function getTree()
     {
-        return $this->_driver->formatToTree($this->_raw);
+        return $this->_driver->formatAsTree($this->_raw);
     }
 
     /**
@@ -55,7 +55,7 @@ class Response extends Collection
      */
     public function getPath()
     {
-        return $this->_driver->formatToPath($this->_raw);
+        return $this->_driver->formatAsPath($this->_raw);
     }
 
     /**
@@ -65,6 +65,6 @@ class Response extends Collection
      */
     public function getScalar()
     {
-        return $this->_driver->formatToScalar($this->_raw);
+        return $this->_driver->formatAsScalar($this->_raw);
     }
 }

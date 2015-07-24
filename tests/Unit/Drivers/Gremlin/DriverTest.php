@@ -50,6 +50,8 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             $response = $response->getSet();
             $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return a Record');
             $this->assertEquals("marko", $response->name, "failed to return the correct names");
+            $this->assertEquals("vertex", $response->label, "failed to return the correct label");
+            $this->assertEquals(1, $response->id, "failed to return the correct id");
         });
 
         $this->specify("it selects multiple unrelated records and returns an array of Records", function () {
@@ -231,11 +233,11 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         $driver = new GremlinDriver();
 
         $response = [10];
-        $consistent = $driver->formatToScalar($response);
+        $consistent = $driver->formatAsScalar($response);
         $this->assertEquals(10, $consistent, 'Scalar formating did not properly work with Int');
 
         $response = ['string'];
-        $consistent = $driver->formatToScalar($response);
+        $consistent = $driver->formatAsScalar($response);
         $this->assertEquals('string', $consistent, 'Scalar formating did not properly work with String');
 
     }
@@ -260,7 +262,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
                 ],
             ]
         ];
-        $consistent = $driver->formatToSet($response);
+        $consistent = $driver->formatAsSet($response);
         $this->assertInstanceOf('Spider\Base\Collection', $consistent, 'Set formating did not properly work for single entry');
         $this->assertEquals(430, $consistent->meta()->id, "id wasn't properly populated");
         $this->assertEquals('user', $consistent->meta()->label, "label wasn't properly populated");
@@ -296,7 +298,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
                 ],
             ]
         ];
-        $consistent = $driver->formatToSet($response);
+        $consistent = $driver->formatAsSet($response);
         $this->assertTrue(is_array($consistent), 'the formatted response is not an array');
 
         $this->assertInstanceOf('Spider\Base\Collection', $consistent[0], 'Set formating did not properly work for single entry');
@@ -382,7 +384,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ];
-        $consistent = $driver->formatToPath($response);
+        $consistent = $driver->formatAsPath($response);
         $this->assertTrue(is_array($consistent), 'the formatted response is not an array');
 
         //First path
@@ -420,5 +422,56 @@ class DriverTest extends \PHPUnit_Framework_TestCase
     public function testFormatTree()
     {
         $this->markTestSkipped("Tree is not yet implemented as gremlin-server doesn't curently support it");
+    }
+
+    /**
+     * Check the id and label in Response are protected.
+     */
+    public function testProtectedResponse()
+    {
+        $this->specify("it throws an Exception when a modifying protected id", function () {
+            $driver = new GremlinDriver($this->credentials);
+            $driver->open();
+            $response = $driver->executeReadCommand(new Command(
+                $driver->traversal.".V().has('name', 'marko').limit(1)"
+            ));
+            $consistent = $response->getSet();
+            $this->assertEquals(1, $consistent->id, "incorrect id found");
+            $this->assertEquals("vertex", $consistent->label, "incorrect label found");
+
+            $consistent->id = 100; // should throw an error
+
+            $driver->close();
+        }, ['throws'=> new \Michaels\Manager\Exceptions\ModifyingProtectedValueException]);
+
+        $this->specify("it throws an Exception when a modifying protected label", function () {
+            $driver = new GremlinDriver($this->credentials);
+            $driver->open();
+            $response = $driver->executeReadCommand(new Command(
+                $driver->traversal.".V().has('name', 'marko').limit(1)"
+            ));
+            $consistent = $response->getSet();
+            $this->assertEquals(1, $consistent->id, "incorrect id found");
+            $this->assertEquals("vertex", $consistent->label, "incorrect label found");
+
+            $consistent->label = 100; // should throw an error
+
+            $driver->close();
+        }, ['throws'=> new \Michaels\Manager\Exceptions\ModifyingProtectedValueException]);
+
+        $this->specify("it throws an Exception when a modifying protected meta", function () {
+            $driver = new GremlinDriver($this->credentials);
+            $driver->open();
+            $response = $driver->executeReadCommand(new Command(
+                $driver->traversal.".V().has('name', 'marko').limit(1)"
+            ));
+            $consistent = $response->getSet();
+            $this->assertEquals(1, $consistent->id, "incorrect id found");
+            $this->assertEquals("vertex", $consistent->label, "incorrect label found");
+
+            $consistent->meta()->id = 100; // should throw an error
+
+            $driver->close();
+        }, ['throws'=> new \Michaels\Manager\Exceptions\ModifyingProtectedValueException]);
     }
 }

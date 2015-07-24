@@ -113,7 +113,7 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @return Response Spider consistent response
      */
-    public function formatToSet($response)
+    public function formatAsSet($response)
     {
     }
 
@@ -125,7 +125,7 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @return Response Spider consistent response
      */
-    public function formatToTree($response)
+    public function formatAsTree($response)
     {
     }
 
@@ -137,7 +137,7 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @return Response Spider consistent response
      */
-    public function formatToPath($response)
+    public function formatAsPath($response)
     {
     }
 
@@ -149,7 +149,7 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @return Response Spider consistent response
      */
-    public function formatToScalar($response)
+    public function formatAsScalar($response)
     {
     }
 }

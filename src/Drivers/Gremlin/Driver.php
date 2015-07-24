@@ -8,6 +8,7 @@ use Spider\Graphs\Record as SpiderRecord;
 use Spider\Commands\CommandInterface;
 use Spider\Drivers\Response;
 use Spider\Base\Collection;
+use Spider\Exceptions\FormattingException;
 
 
 /**
@@ -178,17 +179,34 @@ class Driver extends AbstractDriver implements DriverInterface
     {
         // Or we map a single record to a Spider Record
         $collection = new Collection();
-        foreach($row['properties'] as $key => $value)
-        {
-            $collection->add($key, $value[0]['value']);
-        }
 
-        foreach ($row as $key => $value)
+        //If we're in a classic vertex/edge scenario lets do the following:
+        if(isset($row['properties']))
         {
-            if ($key != "properties")
+            foreach($row['properties'] as $key => $value)
             {
-                $collection->add('meta.'.$key, $value);
+                $collection->add($key, $value[0]['value']);
             }
+
+            foreach ($row as $key => $value)
+            {
+                if ($key != "properties")
+                {
+                    $collection->add('meta.'.$key, $value);
+                }
+            }
+            $collection->add([
+                                'id' => $collection->meta()->id,
+                                'label' => $collection->meta()->label,
+                            ]);
+            $collection->protect('id');
+            $collection->protect('label');
+            $collection->protect('meta');
+        }
+        else
+        {
+            //in any other situation lets just map directly to the collection.
+            $collection->add($row);
         }
 
         return $collection;
@@ -226,8 +244,12 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @return Response Spider consistent response
      */
-    public function formatToSet($response)
+    public function formatAsSet($response)
     {
+        if(!empty($response) && $this->responseFormat($response) !== self::FORMAT_SET)
+        {
+            throw new FormattingException("The response from the database was incorrectly formatted for this operation");
+        }
         return $this->mapResponse($response);
     }
 
@@ -239,7 +261,7 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @return Response Spider consistent response
      */
-    public function formatToTree($response)
+    public function formatAsTree($response)
     {
         throw new \Exception(__FUNCTION__ . "is not currently supported for the Gremlin Driver");
     }
@@ -252,11 +274,16 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @return Response Spider consistent response
      */
-    public function formatToPath($response)
+    public function formatAsPath($response)
     {
+        if(!empty($response) && $this->responseFormat($response) !== self::FORMAT_PATH)
+        {
+            throw new FormattingException("The response from the database was incorrectly formatted for this operation");
+        }
+
         foreach($response as &$path)
         {
-            $path = $this->formatToSet($path['objects']);
+            $path = $this->formatAsSet($path['objects']);
         }
         return $response;
     }
@@ -269,8 +296,45 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @return Response Spider consistent response
      */
-    public function formatToScalar($response)
+    public function formatAsScalar($response)
     {
+        if(!empty($response) && $this->responseFormat($response) !== self::FORMAT_SCALAR)
+        {
+            throw new FormattingException("The response from the database was incorrectly formatted for this operation");
+        }
         return $response[0];
+    }
+
+    /**
+     * Checks a response's format whenever possible
+     *
+     * @param mixed $response the response we want to get the format for
+     *
+     * @return int the format (FORMAT_X const) for the response
+     */
+    protected function responseFormat($response)
+    {
+        if(!is_array($response))
+        {
+            return self::FORMAT_CUSTOM;
+        }
+
+        if(isset($response[0]) && count($response[0]) == 1 && !is_array($response[0]))
+        {
+            return self::FORMAT_SCALAR;
+        }
+
+        if(isset($response[0]['id']))
+        {
+            return self::FORMAT_SET;
+        }
+
+        if(isset($response[0]['objects']))
+        {
+            return self::FORMAT_PATH;
+        }
+        //@todo support tree.
+
+        return self::FORMAT_CUSTOM;
     }
 }

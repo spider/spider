@@ -27,7 +27,7 @@ class AbstractDriverTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals('hostname', $driver->hostname, "failed to get correct hostname");
         });
 
-        $this->specify("it populates configuration credentials from setCredentials", function () {
+        $this->specify("it populates configuration credentials from setProperties", function () {
             $driver = new Driver();
             $driver->setProperties($this->config);
 
