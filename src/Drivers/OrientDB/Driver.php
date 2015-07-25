@@ -6,6 +6,7 @@ use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 use Spider\Commands\CommandInterface;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
+use Spider\Drivers\Response;
 use Spider\Graphs\Graph;
 use Spider\Graphs\Record as SpiderRecord;
 
@@ -34,6 +35,9 @@ class Driver extends AbstractDriver implements DriverInterface
     /* Internals */
     /** @var PhpOrient Language Binding */
     protected $client;
+
+    /** @var  bool Is connection open, flag */
+    protected $isOpen = false;
 
     /**
      * Create a new instance with a client
@@ -64,6 +68,9 @@ class Driver extends AbstractDriver implements DriverInterface
         $this->client->configure($config);
         $this->client->connect();
         $this->client->dbOpen($config['database']); // What if I *want* the cluster map?
+
+        // Flag as an open connection
+        $this->isOpen = true;
     }
 
     /**
@@ -72,7 +79,11 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function close()
     {
-        $this->client->dbClose(); // returns int
+        if ($this->isOpen) {
+            $this->client->dbClose(); // returns int
+            $this->isOpen = false;
+        }
+
         return $this;
     }
 
@@ -196,11 +207,63 @@ class Driver extends AbstractDriver implements DriverInterface
      * Closes a transaction
      *
      * @param bool $commit whether this is a commit (TRUE) or a rollback (FALSE)
-     *
      * @return bool
+     * @throws \Exception
      */
-    public function stopTransaction(boolean $commit)
+    public function stopTransaction($commit = TRUE)
     {
         throw new \Exception(__FUNCTION__ . " is not currently supported for OrientDB driver");
+    }
+
+    /**
+     * Format a raw response to a set of collections
+     * This is for cases where a set of Vertices or Edges is expected in the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsSet($response)
+    {
+        // TODO: Implement formatAsSet() method.
+    }
+
+    /**
+     * Format a raw response to a tree of collections
+     * This is for cases where a set of Vertices or Edges is expected in tree format from the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsTree($response)
+    {
+        // TODO: Implement formatAsTree() method.
+    }
+
+    /**
+     * Format a raw response to a path of collections
+     * This is for cases where a set of Vertices or Edges is expected in path format from the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsPath($response)
+    {
+        // TODO: Implement formatAsPath() method.
+    }
+
+    /**
+     * Format a raw response to a scalar
+     * This is for cases where a scalar result is expected
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsScalar($response)
+    {
+        // TODO: Implement formatAsScalar() method.
     }
 }
