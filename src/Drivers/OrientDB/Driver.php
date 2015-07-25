@@ -1,8 +1,10 @@
 <?php
 namespace Spider\Drivers\OrientDB;
 
+use PhpOrient\Exceptions\PhpOrientException;
 use PhpOrient\PhpOrient;
 use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
+use Spider\Base\Collection;
 use Spider\Commands\CommandInterface;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
@@ -97,11 +99,7 @@ class Driver extends AbstractDriver implements DriverInterface
     {
         $response = $this->client->query($query->getScript());
 
-        if (is_array($response) || $response instanceof OrientRecord) {
-            return $this->mapResponse($response);
-        }
-
-        return $response;
+        return new Response(['_raw' => $response, '_driver' => $this]);
     }
 
     /**
@@ -116,11 +114,13 @@ class Driver extends AbstractDriver implements DriverInterface
     {
         $response = $this->client->command($command->getScript());
 
-        if (is_array($response) || $response instanceof OrientRecord) {
-            return $this->mapResponse($response);
+        // For now, manually check if command was DELETE
+        /* ToDo: Find a better way to do this */
+        if (is_string($response)) {
+            return new Response(['_raw' => [], '_driver' => $this]);
         }
 
-        return $response;
+        return new Response(['_raw' => $response, '_driver' => $this]);
     }
 
     /**
@@ -154,9 +154,17 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     protected function mapResponse($response)
     {
-        // If we have a solitary record, just map it
-        if ($response instanceof OrientRecord) {
-            return $this->orientToSpiderRecord($response);
+        if (is_string($response)) {
+            return new Collection([]);
+        }
+
+        // We have a single record
+        if (count($response) == 1) {
+            if (is_array($response)) {
+                return $this->orientToSpiderRecord($response[0]);
+            } elseif ($response instanceof OrientRecord) {
+                return $this->orientToSpiderRecord($response);
+            }
         }
 
         // We have an empty array
@@ -180,22 +188,29 @@ class Driver extends AbstractDriver implements DriverInterface
     protected function orientToSpiderRecord(OrientRecord $orientRecord)
     {
         // Or we map a single record to a Spider Record
-        $spiderRecord = new SpiderRecord($orientRecord->getOData());
-        $spiderRecord->add([
+        $collection = new \Spider\Base\Collection($orientRecord->getOData());
+
+        $collection->add([
             'id' => $orientRecord->getRid()->jsonSerialize(),
-            'rid' => $orientRecord->getRid(),
-            'version' => $orientRecord->getVersion(),
-            'oClass' => $orientRecord->getOClass(),
+            'label' => $orientRecord->getOClass(),
+
+            'meta.rid' => $orientRecord->getRid(),
+            'meta.version' => $orientRecord->getVersion(),
+            'meta.oClass' => $orientRecord->getOClass(),
         ]);
 
-        return $spiderRecord;
+        $collection->protect('id');
+        $collection->protect('label');
+        $collection->protect('meta');
+
+        return $collection;
     }
 
 
     /**
      * Opens a transaction
-     *
      * @return bool
+     * @throws \Exception
      */
     public function startTransaction()
     {
@@ -225,7 +240,14 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function formatAsSet($response)
     {
-        // TODO: Implement formatAsSet() method.
+//        if (!empty($response) && $this->responseFormat($response) !== self::FORMAT_SET) {
+//            throw new FormattingException("The response from the database was incorrectly formatted for this operation");
+//        }
+        if ($response === "1") {
+            return [];
+        }
+
+        return $this->mapResponse($response);
     }
 
     /**
