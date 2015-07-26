@@ -9,6 +9,7 @@ use Spider\Commands\CommandInterface;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
 use Spider\Drivers\Response;
+use Spider\Exceptions\FormattingException;
 use Spider\Graphs\Graph;
 use Spider\Graphs\Record as SpiderRecord;
 
@@ -235,17 +236,15 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in the response
      *
      * @param mixed $response the raw DB response
-     *
      * @return Response Spider consistent response
+     * @throws FormattingException
      */
     public function formatAsSet($response)
     {
+        /* ToDo: Implement format checking in formatAsSet() */
 //        if (!empty($response) && $this->responseFormat($response) !== self::FORMAT_SET) {
 //            throw new FormattingException("The response from the database was incorrectly formatted for this operation");
 //        }
-        if ($response === "1") {
-            return [];
-        }
 
         return $this->mapResponse($response);
     }
@@ -281,11 +280,44 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a scalar result is expected
      *
      * @param mixed $response the raw DB response
-     *
      * @return Response Spider consistent response
+     * @throws FormattingException
      */
     public function formatAsScalar($response)
     {
-        // TODO: Implement formatAsScalar() method.
+        if (!empty($response) && $this->responseFormat($response) !== self::FORMAT_SCALAR) {
+            throw new FormattingException("The response from the database was incorrectly formatted for this operation");
+        }
+
+        return $response[0];
+
+    }
+    /**
+     * Checks a response's format whenever possible
+     *
+     * @param mixed $response the response we want to get the format for
+     *
+     * @return int the format (FORMAT_X const) for the response
+     */
+    protected function responseFormat($response)
+    {
+        if (!is_array($response)) {
+            return self::FORMAT_CUSTOM;
+        }
+
+        if (isset($response[0]) && count($response[0]) == 1 && !is_array($response[0])) {
+            return self::FORMAT_SCALAR;
+        }
+
+        if (isset($response[0]['id'])) {
+            return self::FORMAT_SET;
+        }
+
+        if (isset($response[0]['objects'])) {
+            return self::FORMAT_PATH;
+        }
+        //@todo support tree.
+
+        return self::FORMAT_CUSTOM;
     }
 }
