@@ -21,7 +21,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             'port' => 2424,
             'username' => 'root',
             'password' => "root",
-            'database' => 'spider-test'
+            'database' => 'GratefulDeadConcerts'
         ];
     }
 
@@ -41,7 +41,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             $driver->open();
 
             $response = $driver->executeReadCommand(new Command(
-                "SELECT FROM Cat WHERE @rid = #12:0"
+                "SELECT FROM V WHERE @rid = #9:1"
             ));
 
             $driver->close();
@@ -49,9 +49,9 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
             $response = $response->getSet();
             $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return a Record');
-            $this->assertEquals("oreo", $response->name, "failed to return the correct names");
-            $this->assertEquals("Cat", $response->label, "failed to return the correct label");
-            $this->assertEquals('#12:0', $response->id, "failed to return the correct id");
+            $this->assertEquals("HEY BO DIDDLEY", $response->name, "failed to return the correct names");
+            $this->assertEquals("V", $response->label, "failed to return the correct label");
+            $this->assertEquals('#9:1', $response->id, "failed to return the correct id");
         });
 
         $this->specify("it selects multiple unrelated records and returns an array of Records", function () {
@@ -59,7 +59,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             $driver->open();
 
             $response = $driver->executeReadCommand(new Command(
-                "SELECT FROM Cat"
+                "SELECT FROM V WHERE song_type = 'cover' LIMIT 3"
             ));
 
             $driver->close();
@@ -68,7 +68,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             $response = $response->getSet();
 
             $this->assertTrue(is_array($response), "failed to return an array");
-            $this->assertCount(2, $response, "failed to return 2 results");
+            $this->assertCount(3, $response, "failed to return 3 results");
             $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return Response Object');
         });
     }
@@ -79,28 +79,30 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         $driver->open();
 
         // Create new
-        $query = "INSERT INTO Owner CONTENT " . json_encode(['first_name' => 'nicole', 'last_name' => 'lowman']);
+        $query = "CREATE Vertex CONTENT " . json_encode(['song_type' => 'cover', 'name' => 'New Song']);
         $response = $driver->executeWriteCommand(new Command($query));
 
         $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
         $newRecord = $response->getSet();
 
         $this->assertInstanceOf('Spider\Base\Collection', $newRecord, 'failed to return a Record');
-        $this->assertEquals("nicole", $newRecord->first_name, "failed to return the correct names");
+        $this->assertEquals("New Song", $newRecord->name, "failed to return the correct names");
 
         // Update existing
-        $query = "UPDATE (SELECT FROM Owner WHERE @rid=$newRecord->id) MERGE " . json_encode(['last_name' => 'wilson']) . ' RETURN AFTER $current';
+        $query = "UPDATE (SELECT FROM V WHERE @rid=$newRecord->id) ";
+        $query .= "MERGE " . json_encode(['name' => 'Updated Song']) . ' RETURN AFTER $current';
+
         $response = $driver->executeWriteCommand(new Command($query));
 
         $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
         $updatedRecord = $response->getSet();
 
         $this->assertInstanceOf('Spider\Base\Collection', $updatedRecord, 'failed to return a Record');
-        $this->assertEquals("wilson", $updatedRecord->last_name, "failed to return the correct names");
+        $this->assertEquals("Updated Song", $updatedRecord->name, "failed to return the correct names");
 
 
         // Delete That one
-        $query = "DELETE VERTEX Owner WHERE @rid=$newRecord->id";
+        $query = "DELETE VERTEX WHERE @rid=$newRecord->id";
         $response = $driver->executeWriteCommand(new Command($query));
 
         $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
@@ -109,7 +111,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([], $updatedRecord, "failed to delete");
 
         // And try to get it again
-        $response = $driver->executeReadCommand(new Command("SELECT FROM Owner WHERE @rid=$newRecord->id"));
+        $response = $driver->executeReadCommand(new Command("SELECT FROM V WHERE @rid=$newRecord->id"));
 
         $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
         $response = $response->getSet();
