@@ -4,7 +4,9 @@ namespace Spider\Drivers\OrientDB;
 use PhpOrient\Exceptions\PhpOrientException;
 use PhpOrient\PhpOrient;
 use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
+use PhpOrient\Protocols\Binary\Data\Record;
 use Spider\Base\Collection;
+use Spider\Commands\Command;
 use Spider\Commands\CommandInterface;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
@@ -98,9 +100,7 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function executeReadCommand(CommandInterface $query)
     {
-        $response = $this->client->query($query->getScript());
-
-        return new Response(['_raw' => $response, '_driver' => $this]);
+        return $this->executeCommand($query, 'query');
     }
 
     /**
@@ -113,15 +113,30 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function executeWriteCommand(CommandInterface $command)
     {
-        $response = $this->client->command($command->getScript());
+        /* ToDo: DELETE is very sloppy */
+        $response = $this->executeCommand($command, 'command');
 
-        // For now, manually check if command was DELETE
-        /* ToDo: Find a better way to do this */
-        if (is_string($response)) {
+        if (strpos(strtolower($command->getScript()), "delete") === 0) {
             return new Response(['_raw' => [], '_driver' => $this]);
         }
 
+        return $response;
+    }
+
+    protected function executeCommand(CommandInterface $command, $method)
+    {
+        $response = $this->client->$method($command->getScript());
+        $response = $this->rawResponseToArray($response);
         return new Response(['_raw' => $response, '_driver' => $this]);
+    }
+
+    public function rawResponseToArray($response)
+    {
+        if (is_array($response)) {
+            return $response;
+        }
+
+        return [$response];
     }
 
     /**
@@ -153,30 +168,23 @@ class Driver extends AbstractDriver implements DriverInterface
      * @param $response
      * @return SpiderRecord
      */
-    protected function mapResponse($response)
+    protected function mapResponse(array $response)
     {
-        if (is_string($response)) {
-            return new Collection([]);
-        }
-
-        // We have a single record
-        if (count($response) == 1) {
-            if (is_array($response)) {
-                return $this->orientToSpiderRecord($response[0]);
-            } elseif ($response instanceof OrientRecord) {
-                return $this->orientToSpiderRecord($response);
-            }
-        }
-
-        // We have an empty array
+        // Return an empty array immediately
         if (empty($response)) {
             return $response;
         }
 
+        // Receive array with single scalar
+        if (!$response[0] instanceof Record) {
+            return $response[0];
+        }
+
         // For multiple records, map each to a Record
         array_walk($response, function (&$orientRecord) {
-            $orientRecord = $this->orientToSpiderRecord($orientRecord);
+            $orientRecord = $this->orientToCollection($orientRecord);
         });
+
         return $response;
     }
 
@@ -186,7 +194,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * @param $orientRecord
      * @return SpiderRecord
      */
-    protected function orientToSpiderRecord(OrientRecord $orientRecord)
+    protected function orientToCollection(OrientRecord $orientRecord)
     {
         // Or we map a single record to a Spider Record
         $collection = new \Spider\Base\Collection($orientRecord->getOData());
@@ -241,12 +249,15 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function formatAsSet($response)
     {
-        /* ToDo: Implement format checking in formatAsSet() */
-//        if (!empty($response) && $this->responseFormat($response) !== self::FORMAT_SET) {
-//            throw new FormattingException("The response from the database was incorrectly formatted for this operation");
-//        }
+        $this->canFormatAsSet($response);
 
-        return $this->mapResponse($response);
+        $mapped = $this->mapResponse($response);
+
+        if (count($mapped) === 1) {
+            return $mapped[0];
+        }
+
+        return $mapped;
     }
 
     /**
@@ -285,13 +296,52 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function formatAsScalar($response)
     {
-        if (!empty($response) && $this->responseFormat($response) !== self::FORMAT_SCALAR) {
-            throw new FormattingException("The response from the database was incorrectly formatted for this operation");
+        $message = "The response from the database was incorrectly formatted for this operation";
+
+        // Throw exception if response does not meet the criteria for scalar formatting
+        $this->canFormatAsScalar($response);
+
+        // The response is a single record with one property
+        if ($response[0] instanceof Record) {
+            $scalar = [];
+            foreach ($response[0]->getOData() as $key => $value) {
+                array_push($scalar, $value);
+            }
+            return $scalar[0];
         }
 
+        // This is an array with a single scalar value (like number of rows affected)
         return $response[0];
-
     }
+
+    protected function canFormatAsSet($response)
+    {
+        if (is_array($response) && isset($response[0]) && !$response[0] instanceof Record) {
+            throw new FormattingException();
+        }
+    }
+
+    protected function canFormatAsScalar($response)
+    {
+        if (count($response) > 1) {
+            throw new FormattingException();
+        }
+
+        if (!is_string($response[0])
+            && !is_bool($response[0])
+            && !is_int($response[0])
+            && !$response[0] instanceof Record
+        ) {
+            throw new FormattingException();
+        }
+
+        if ($response[0] instanceof Record && count($response[0]->getOData()) !== 1) {
+            throw new FormattingException();
+        }
+
+        return true;
+    }
+
     /**
      * Checks a response's format whenever possible
      *
@@ -305,17 +355,14 @@ class Driver extends AbstractDriver implements DriverInterface
             return self::FORMAT_CUSTOM;
         }
 
-        if (isset($response[0]) && count($response[0]) == 1 && !is_array($response[0])) {
-            return self::FORMAT_SCALAR;
-        }
-
-        if (isset($response[0]['id'])) {
+        /* Set */
+        if ($response[0] instanceof Record) {
             return self::FORMAT_SET;
         }
 
-        if (isset($response[0]['objects'])) {
-            return self::FORMAT_PATH;
-        }
+//        if (isset($response[0]['objects'])) {
+//            return self::FORMAT_PATH;
+//        }
         //@todo support tree.
 
         return self::FORMAT_CUSTOM;
