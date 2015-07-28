@@ -17,14 +17,13 @@ abstract class AbstractDriver extends Collection implements DriverInterface
     /**
      * @var bool whether or not the driver is currently handling an open transaction
      */
-    public $inTransaction = FALSE;
+    public $inTransaction = false;
 
     public function __destruct()
     {
         //rollback changes
-        if($this->inTransaction)
-        {
-            $this->StopTransaction(FALSE);
+        if ($this->inTransaction) {
+            $this->StopTransaction(false);
         }
         //close driver
         $this->close();

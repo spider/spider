@@ -6,7 +6,6 @@ use Spider\Commands\CommandInterface;
 /**
  * Driver contract
  */
-
 interface DriverInterface
 {
     /**
@@ -27,7 +26,7 @@ interface DriverInterface
      * This is the R in CRUD
      *
      * @param CommandInterface $query
-     * @return array|Record|Graph
+     * @return Response
      */
     public function executeReadCommand(CommandInterface $query);
 
@@ -37,7 +36,7 @@ interface DriverInterface
      * These are the "CUD" in CRUD
      *
      * @param CommandInterface $command
-     * @return Graph|Record|array|mixed mixed values for some write commands
+     * @return Response
      */
     public function executeWriteCommand(CommandInterface $command);
 
@@ -67,11 +66,11 @@ interface DriverInterface
     /**
      * Closes a transaction
      *
-     * @param bool $commit whether this is a commit (TRUE) or a rollback (FALSE)
+     * @param bool $commit whether this is a commit (true) or a rollback (false)
      *
      * @return bool
      */
-    public function stopTransaction($commit = TRUE);
+    public function stopTransaction($commit = true);
 
     /**
      * Format a raw response to a set of collections

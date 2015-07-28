@@ -5,7 +5,7 @@ use Michaels\Manager\Traits\ManagesItemsTrait;
 use Michaels\Manager\Traits\ChainsNestedItemsTrait;
 
 /**
- * Class Colection
+ * Class Collection
  * @package Spider\Base
  */
 class Collection extends Object

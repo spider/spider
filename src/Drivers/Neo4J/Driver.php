@@ -2,17 +2,16 @@
 
 namespace Spider\Drivers\Neo4J;
 
-use Spider\Drivers\DriverInterface;
-use Spider\Drivers\AbstractDriver;
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Cypher\Query;
-use Spider\Commands\CommandInterface;
-use Spider\Drivers\Response;
 use Spider\Base\Collection;
+use Spider\Commands\CommandInterface;
+use Spider\Drivers\AbstractDriver;
+use Spider\Drivers\DriverInterface;
+use Spider\Drivers\Response;
 use Spider\Exceptions\FormattingException;
-use Spider\Exceptions\NotSupportedException;
 use Spider\Exceptions\InvalidCommandException;
-
+use Spider\Exceptions\NotSupportedException;
 
 class Driver extends AbstractDriver implements DriverInterface
 {
@@ -49,10 +48,9 @@ class Driver extends AbstractDriver implements DriverInterface
     public function open()
     {
         $this->client = new Client($this->hostname, $this->port);
-        if(isset($this->username))
-        {
+        if (isset($this->username)) {
             $this->client->getTransport()
-                          ->setAuth($this->username, $this->password);
+                ->setAuth($this->username, $this->password);
         }
         return $this;
     }
@@ -77,12 +75,9 @@ class Driver extends AbstractDriver implements DriverInterface
     public function executeReadCommand(CommandInterface $query)
     {
         $neoQuery = new Query($this->client, $query->getScript());
-        if($this->inTransaction)
-        {
+        if ($this->inTransaction) {
             $response = $this->transaction->addStatements($neoQuery);
-        }
-        else
-        {
+        } else {
             $response = $neoQuery->getResultSet();
         }
         return new Response(['_raw' => $response, '_driver' => $this]);
@@ -110,12 +105,9 @@ class Driver extends AbstractDriver implements DriverInterface
     public function runReadCommand(CommandInterface $query)
     {
         $neoQuery = new Query($this->client, $query->getScript());
-        if($this->inTransaction)
-        {
+        if ($this->inTransaction) {
             $response = $this->transaction->addStatements($neoQuery);
-        }
-        else
-        {
+        } else {
             $response = $neoQuery->getResultSet();
         }
     }
@@ -134,41 +126,36 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Opens a transaction
      *
-     * @return void
+     * @throws InvalidCommandException
      */
     public function startTransaction()
     {
-        if($this->inTransaction)
-        {
+        if ($this->inTransaction) {
             throw new InvalidCommandException("A Transaction already exists. You can not nest transactions");
         }
         $this->transaction = $this->client->beginTransaction();
-        $this->inTransaction = TRUE;
+        $this->inTransaction = true;
     }
 
     /**
      * Closes a transaction
      *
-     * @param bool $commit whether this is a commit (TRUE) or a rollback (FALSE)
-     *
-     * @return void
+     * @param bool $commit whether this is a commit (true) or a rollback (false)
+     * @return bool|void
+     * @throws InvalidCommandException
      */
-    public function stopTransaction($commit = TRUE)
+    public function stopTransaction($commit = true)
     {
-        if(!$this->inTransaction)
-        {
+        if (!$this->inTransaction) {
             throw new InvalidCommandException("No transaction was started");
         }
-        if($commit)
-        {
+        if ($commit) {
             $this->transaction->commit();
-        }
-        else
-        {
+        } else {
             $this->transaction->rollback();
         }
-        $this->inTransaction = FALSE;
-        $this->transaction = NULL;
+        $this->inTransaction = false;
+        $this->transaction = null;
     }
 
     /**
@@ -176,19 +163,19 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in the response
      *
      * @param mixed $response the raw DB response
-     *
      * @return Response Spider consistent response
+     * @throws FormattingException
      */
     public function formatAsSet($response)
     {
-        if(!empty($response[0]) && $this->responseFormat($response) !== self::FORMAT_SET)
-        {
-            throw new FormattingException("The response from the database was incorrectly formatted for this operation");
+        if (!empty($response[0]) && $this->responseFormat($response) !== self::FORMAT_SET) {
+            throw new FormattingException(
+                "The response from the database was incorrectly formatted for this operation"
+            );
         }
         $return = [];
 
-        foreach($response as $row)
-        {
+        foreach ($response as $row) {
             $return[] = $this->nodeToCollection($row[0]);
         }
 
@@ -200,8 +187,8 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in tree format from the response
      *
      * @param mixed $response the raw DB response
-     *
      * @return Response Spider consistent response
+     * @throws NotSupportedException
      */
     public function formatAsTree($response)
     {
@@ -213,22 +200,21 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in path format from the response
      *
      * @param mixed $response the raw DB response
-     *
      * @return Response Spider consistent response
+     * @throws FormattingException
      */
     public function formatAsPath($response)
     {
-        if(!empty($response[0]) && $this->responseFormat($response) !== self::FORMAT_PATH)
-        {
-            throw new FormattingException("The response from the database was incorrectly formatted for this operation");
+        if (!empty($response[0]) && $this->responseFormat($response) !== self::FORMAT_PATH) {
+            throw new FormattingException(
+                "The response from the database was incorrectly formatted for this operation"
+            );
         }
         $return = [];
-        foreach($response as $row)
-        {
+        foreach ($response as $row) {
             $collection = [];
             echo "I";
-            foreach($row[0] as $node)
-            {
+            foreach ($row[0] as $node) {
                 echo 'L';
                 $collection[] = $this->nodeToCollection($node);
             }
@@ -243,14 +229,15 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a scalar result is expected
      *
      * @param mixed $response the raw DB response
-     *
      * @return Response Spider consistent response
+     * @throws FormattingException
      */
     public function formatAsScalar($response)
     {
-        if(!empty($response[0]) && $this->responseFormat($response) !== self::FORMAT_SCALAR)
-        {
-            throw new FormattingException("The response from the database was incorrectly formatted for this operation");
+        if (!empty($response[0]) && $this->responseFormat($response) !== self::FORMAT_SCALAR) {
+            throw new FormattingException(
+                "The response from the database was incorrectly formatted for this operation"
+            );
         }
         return $response[0][0];
     }
@@ -258,33 +245,30 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Hydrate a Collection from an Neo4J Node
      *
-     * @param array $row a single row from result set to map.
-     *
+     * @param array|\EveryMan\Neo4j\Node $row a single row from result set to map.
      * @return Collection
      */
     protected function nodeToCollection(\EveryMan\Neo4j\Node $row)
     {
         // Or we map a single record to a Spider Record
         $collection = new Collection();
-        foreach($row->getProperties() as $key => $value)
-        {
+        foreach ($row->getProperties() as $key => $value) {
             $collection->add($key, $value);
         }
 
         //handle labels
         $labels = $row->getLabels();
-        if(!empty($labels))
-        {
-             $collection->add([
-                            'meta.label' => $labels[0]->getName(),
-                            'label' => $labels[0]->getName(),
-                        ]);
+        if (!empty($labels)) {
+            $collection->add([
+                'meta.label' => $labels[0]->getName(),
+                'label' => $labels[0]->getName(),
+            ]);
         }
 
         $collection->add([
-                            'meta.id' => $row->getId(),
-                            'id' => $row->getId(),
-                        ]);
+            'meta.id' => $row->getId(),
+            'id' => $row->getId(),
+        ]);
         $collection->protect('meta');
         $collection->protect('id');
         $collection->protect('label');
@@ -301,18 +285,15 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     protected function responseFormat($response)
     {
-        if(isset($response[0][0]) && ($response[0][0] instanceof \Everyman\Neo4j\Node || ($response[0][0] instanceof \Everyman\Neo4j\Relationship)))
-        {
+        if (isset($response[0][0]) && ($response[0][0] instanceof \Everyman\Neo4j\Node || ($response[0][0] instanceof \Everyman\Neo4j\Relationship))) {
             return self::FORMAT_SET;
         }
 
-        if(isset($response[0][0]) && $response[0][0] instanceof \Everyman\Neo4j\Path)
-        {
+        if (isset($response[0][0]) && $response[0][0] instanceof \Everyman\Neo4j\Path) {
             return self::FORMAT_PATH;
         }
 
-        if(isset($response[0][0]) && count($response[0][0]) == 1 && !is_array($response[0][0]))
-        {
+        if (isset($response[0][0]) && count($response[0][0]) == 1 && !is_array($response[0][0])) {
             return self::FORMAT_SCALAR;
         }
 

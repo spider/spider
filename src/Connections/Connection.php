@@ -1,23 +1,18 @@
 <?php
 namespace Spider\Connections;
 
-use Michaels\Manager\Traits\ManagesItemsTrait;
+use Spider\Base\Collection;
 use Spider\Commands\CommandInterface;
 use Spider\Drivers\DriverInterface;
+use Spider\Drivers\Response;
 use Spider\Graphs\Graph;
 
 /**
  * Facilitates two-way communication with a driver store
  * @package Spider\Test\Unit\Connections
  */
-class Connection implements ConnectionInterface
+class Connection extends Collection implements ConnectionInterface
 {
-    /** @inherits from Michaels\Manager:
-     *      init(), add(), get(), getAll(), exists(), has(), set(),
-     *      remove(), clear(), toJson, isEmpty(), __toString()
-     */
-    use ManagesItemsTrait;
-
     /** @var  DriverInterface Instance of the driver */
     protected $driver;
 
@@ -94,7 +89,7 @@ class Connection implements ConnectionInterface
      * Passes to driver: executes a Query or read command
      *
      * @param CommandInterface $query
-     * @return array|Record|Graph
+     * @return Response
      */
     public function executeReadCommand(CommandInterface $query)
     {
@@ -107,7 +102,7 @@ class Connection implements ConnectionInterface
      * These are the "CUD" in CRUD
      *
      * @param CommandInterface $command
-     * @return array|Record|Graph|mixed mixed values for some write commands
+     * @return Response
      * @internal param CommandInterface $sendCommand
      */
     public function executeWriteCommand(CommandInterface $command)

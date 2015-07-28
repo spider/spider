@@ -2,15 +2,14 @@
 namespace Spider\Drivers\Gremlin;
 
 use brightzone\rexpro\Connection;
-use Spider\Drivers\DriverInterface;
-use Spider\Drivers\AbstractDriver;
-use Spider\Commands\CommandInterface;
-use Spider\Drivers\Response;
 use Spider\Base\Collection;
+use Spider\Commands\CommandInterface;
+use Spider\Drivers\AbstractDriver;
+use Spider\Drivers\DriverInterface;
+use Spider\Drivers\Response;
 use Spider\Exceptions\FormattingException;
-use Spider\Exceptions\NotSupportedException;
 use Spider\Exceptions\InvalidCommandException;
-
+use Spider\Exceptions\NotSupportedException;
 
 /**
  * Driver for Gremlin Server
@@ -42,8 +41,6 @@ class Driver extends AbstractDriver implements DriverInterface
      * Create a new instance with a client
      *
      * @param array $properties an array of the properties to set for this class
-     *
-     * @return void
      */
     public function __construct(array $properties = [])
     {
@@ -58,7 +55,7 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function open()
     {
-        $this->client->open($this->hostname.':'.$this->port, $this->graph);
+        $this->client->open($this->hostname . ':' . $this->port, $this->graph);
         return $this;
     }
 
@@ -77,14 +74,15 @@ class Driver extends AbstractDriver implements DriverInterface
      * Executes a Query or read command
      *
      * @param CommandInterface $query
-     *
-     * @return array|Record|Graph
+     * @return Response
+     * @throws \Exception
+     * @throws \brightzone\rexpro\ServerException
      */
     public function executeReadCommand(CommandInterface $query)
     {
         try {
             $response = $this->client->send($query->getScript());
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             //Check for empty return error from server.
             if (($e instanceof \brightzone\rexpro\ServerException) && ($e->getCode() == 204)) {
                 $response = [];
@@ -103,7 +101,7 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @param CommandInterface $command
      *
-     * @return Graph|Record|array|mixed mixed values for some write commands
+     * @return Response
      */
     public function executeWriteCommand(CommandInterface $command)
     {
@@ -114,14 +112,15 @@ class Driver extends AbstractDriver implements DriverInterface
      * Executes a read command without waiting for a response
      *
      * @param CommandInterface $query
-     *
      * @return $this
+     * @throws \Exception
+     * @throws \brightzone\rexpro\ServerException
      */
     public function runReadCommand(CommandInterface $query)
     {
         try {
             $this->client->send($query->getScript());
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             //Check for empty return error from server.
             if (!($e instanceof \brightzone\rexpro\ServerException) || ($e->getCode() != 204)) {
                 throw $e;
@@ -182,18 +181,14 @@ class Driver extends AbstractDriver implements DriverInterface
         $collection = new Collection();
 
         //If we're in a classic vertex/edge scenario lets do the following:
-        if(isset($row['properties']))
-        {
-            foreach($row['properties'] as $key => $value)
-            {
+        if (isset($row['properties'])) {
+            foreach ($row['properties'] as $key => $value) {
                 $collection->add($key, $value[0]['value']);
             }
 
-            foreach ($row as $key => $value)
-            {
-                if ($key != "properties")
-                {
-                    $collection->add('meta.'.$key, $value);
+            foreach ($row as $key => $value) {
+                if ($key != "properties") {
+                    $collection->add('meta.' . $key, $value);
                 }
             }
             $collection->add([
@@ -203,9 +198,7 @@ class Driver extends AbstractDriver implements DriverInterface
             $collection->protect('id');
             $collection->protect('label');
             $collection->protect('meta');
-        }
-        else
-        {
+        } else {
             //in any other situation lets just map directly to the collection.
             $collection->add($row);
         }
@@ -216,33 +209,32 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Opens a transaction
      *
-     * @return void
+     * @throws InvalidCommandException
      */
     public function startTransaction()
     {
-        if($this->inTransaction)
-        {
+        if ($this->inTransaction) {
             throw new InvalidCommandException("A Transaction already exists. You can not nest transactions");
         }
         $this->client->transactionStart();
-        $this->inTransaction = TRUE;
+        $this->inTransaction = true;
     }
 
     /**
      * Closes a transaction
      *
-     * @param bool $commit whether this is a commit (TRUE) or a rollback (FALSE)
+     * @param bool $commit whether this is a commit (true) or a rollback (false)
      *
-     * @return void
+     * @return bool|void
+     * @throws InvalidCommandException
      */
-    public function stopTransaction($commit = TRUE)
+    public function stopTransaction($commit = true)
     {
-        if(!$this->inTransaction)
-        {
+        if (!$this->inTransaction) {
             throw new InvalidCommandException("No transaction was started");
         }
         $this->client->transactionStop($commit);
-        $this->inTransaction = FALSE;
+        $this->inTransaction = false;
     }
 
     /**
@@ -250,14 +242,15 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in the response
      *
      * @param mixed $response the raw DB response
-     *
      * @return Response Spider consistent response
+     * @throws FormattingException
      */
     public function formatAsSet($response)
     {
-        if(!empty($response) && $this->responseFormat($response) !== self::FORMAT_SET)
-        {
-            throw new FormattingException("The response from the database was incorrectly formatted for this operation");
+        if (!empty($response) && $this->responseFormat($response) !== self::FORMAT_SET) {
+            throw new FormattingException(
+                "The response from the database was incorrectly formatted for this operation"
+            );
         }
         return $this->mapResponse($response);
     }
@@ -267,8 +260,8 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in tree format from the response
      *
      * @param mixed $response the raw DB response
-     *
      * @return Response Spider consistent response
+     * @throws NotSupportedException
      */
     public function formatAsTree($response)
     {
@@ -280,18 +273,18 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in path format from the response
      *
      * @param mixed $response the raw DB response
-     *
      * @return Response Spider consistent response
+     * @throws FormattingException
      */
     public function formatAsPath($response)
     {
-        if(!empty($response) && $this->responseFormat($response) !== self::FORMAT_PATH)
-        {
-            throw new FormattingException("The response from the database was incorrectly formatted for this operation");
+        if (!empty($response) && $this->responseFormat($response) !== self::FORMAT_PATH) {
+            throw new FormattingException(
+                "The response from the database was incorrectly formatted for this operation"
+            );
         }
 
-        foreach($response as &$path)
-        {
+        foreach ($response as &$path) {
             $path = $this->formatAsSet($path['objects']);
         }
         return $response;
@@ -302,14 +295,15 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a scalar result is expected
      *
      * @param mixed $response the raw DB response
-     *
      * @return Response Spider consistent response
+     * @throws FormattingException
      */
     public function formatAsScalar($response)
     {
-        if(!empty($response) && $this->responseFormat($response) !== self::FORMAT_SCALAR)
-        {
-            throw new FormattingException("The response from the database was incorrectly formatted for this operation");
+        if (!empty($response) && $this->responseFormat($response) !== self::FORMAT_SCALAR) {
+            throw new FormattingException(
+                "The response from the database was incorrectly formatted for this operation"
+            );
         }
         return $response[0];
     }
@@ -323,23 +317,19 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     protected function responseFormat($response)
     {
-        if(!is_array($response))
-        {
+        if (!is_array($response)) {
             return self::FORMAT_CUSTOM;
         }
 
-        if(isset($response[0]) && count($response[0]) == 1 && !is_array($response[0]))
-        {
+        if (isset($response[0]) && count($response[0]) == 1 && !is_array($response[0])) {
             return self::FORMAT_SCALAR;
         }
 
-        if(isset($response[0]['id']))
-        {
+        if (isset($response[0]['id'])) {
             return self::FORMAT_SET;
         }
 
-        if(isset($response[0]['objects']))
-        {
+        if (isset($response[0]['objects'])) {
             return self::FORMAT_PATH;
         }
         //@todo support tree.

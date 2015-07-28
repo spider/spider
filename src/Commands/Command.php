@@ -20,11 +20,13 @@ class Command implements CommandInterface
 
     /**
      * Create a new Command from a text string
-     * @param $script
+     * @param string $script
+     * @param null $language
      */
-    public function __construct($script = '')
+    public function __construct($script = '', $language = null)
     {
         $this->setScript($script);
+        $this->setScriptLanguage($language);
     }
 
     /**

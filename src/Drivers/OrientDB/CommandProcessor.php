@@ -12,7 +12,6 @@ use Spider\Commands\ProcessorInterface;
  */
 class CommandProcessor implements ProcessorInterface
 {
-
     /**
      * A map of commands from the Command Bag to Orient SQL
      * @var array
@@ -56,7 +55,6 @@ class CommandProcessor implements ProcessorInterface
         // NOTE: the whitespace should be placed by the new clause at beginning, not the previous clause at the end
 
         // COMMAND
-//        die(var_dump($bag->command));
         $script = $this->commandsMap[$bag->command];
 
         // <projections>

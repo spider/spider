@@ -5,14 +5,13 @@ namespace Spider\Base;
  * Class Object
  * @package Spider\Base
  */
-class Object {
+class Object
+{
 
     /**
      * Overriding construct to map configuration to properties
      *
      * @param array $configuration the properties to populate
-     *
-     * @return void
      */
     public function __construct(array $configuration = [])
     {
@@ -28,8 +27,7 @@ class Object {
      */
     public function setProperties(array $properties)
     {
-        foreach($properties as $key => $value)
-        {
+        foreach ($properties as $key => $value) {
             $this->setProperty($key, $value);
         }
     }
@@ -37,8 +35,8 @@ class Object {
     /**
      * Set a class property
      *
-     * @param String|Int $name  the name of the property to set
-     * @param mixed      $value the value of the property
+     * @param String|Int $name the name of the property to set
+     * @param mixed $value the value of the property
      *
      * @return void
      */

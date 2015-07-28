@@ -11,7 +11,6 @@ use Spider\Drivers\Response;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\NotSupportedException;
 use Spider\Graphs\Graph;
-use Spider\Graphs\Record as SpiderRecord;
 
 /**
  * Driver for Native OrientDB (not using gremlin)
@@ -188,7 +187,7 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Map a raw response to a SpiderResponse
      * @param $response
-     * @return SpiderRecord
+     * @return Response
      */
     protected function mapRawResponse(array $response)
     {
@@ -214,7 +213,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * Hydrate a SpiderRecord from an OrientRecord
      *
      * @param $orientRecord
-     * @return SpiderRecord
+     * @return Response
      */
     protected function mapOrientRecordToCollection(OrientRecord $orientRecord)
     {
@@ -278,8 +277,8 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in tree format from the response
      *
      * @param mixed $response the raw DB response
-     *
      * @return Response Spider consistent response
+     * @throws NotSupportedException
      */
     public function formatAsTree($response)
     {
@@ -292,8 +291,8 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in path format from the response
      *
      * @param mixed $response the raw DB response
-     *
      * @return Response Spider consistent response
+     * @throws NotSupportedException
      */
     public function formatAsPath($response)
     {
@@ -313,7 +312,7 @@ class Driver extends AbstractDriver implements DriverInterface
     {
         // In case we are fetching a scalar from one record with one property
 //        try {
-            $this->canFormat($response, self::FORMAT_SCALAR);
+        $this->canFormat($response, self::FORMAT_SCALAR);
 //        } catch (FormattingException $e) {
 //            if ($this->canBeScalar($response, $e)) {
 //                foreach ($response[0]->getOData() as $key => $value) {
@@ -363,7 +362,7 @@ class Driver extends AbstractDriver implements DriverInterface
             return self::FORMAT_SET;
         }
 
-        if (count($response) == 1 && !is_array($response[0]) ) {
+        if (count($response) == 1 && !is_array($response[0])) {
             return self::FORMAT_SCALAR;
         }
 
