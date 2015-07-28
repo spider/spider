@@ -9,6 +9,7 @@ use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
 use Spider\Drivers\Response;
 use Spider\Exceptions\FormattingException;
+use Spider\Exceptions\NotSupportedException;
 use Spider\Graphs\Graph;
 use Spider\Graphs\Record as SpiderRecord;
 
@@ -98,7 +99,7 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function startTransaction()
     {
-        throw new \Exception(__FUNCTION__ . " is not currently supported for OrientDB driver");
+        throw new NotSupportedException(__FUNCTION__ . " is not currently supported for OrientDB driver");
     }
 
     /**
@@ -110,7 +111,7 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function stopTransaction($commit = TRUE)
     {
-        throw new \Exception(__FUNCTION__ . " is not currently supported for OrientDB driver");
+        throw new NotSupportedException(__FUNCTION__ . " is not currently supported for OrientDB driver");
     }
 
     /**
@@ -283,6 +284,7 @@ class Driver extends AbstractDriver implements DriverInterface
     public function formatAsTree($response)
     {
         // TODO: Implement formatAsTree() method.
+        throw new NotSupportedException(__FUNCTION__ . " is not currently supported for OrientDB driver");
     }
 
     /**
@@ -296,6 +298,7 @@ class Driver extends AbstractDriver implements DriverInterface
     public function formatAsPath($response)
     {
         // TODO: Implement formatAsPath() method.
+        throw new NotSupportedException(__FUNCTION__ . " is not currently supported for OrientDB driver");
     }
 
     /**
