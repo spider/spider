@@ -309,15 +309,17 @@ class Driver extends AbstractDriver implements DriverInterface
     public function formatAsScalar($response)
     {
         // In case we are fetching a scalar from one record with one property
-        try {
+//        try {
             $this->canFormat($response, self::FORMAT_SCALAR);
-        } catch (FormattingException $e) {
-            if ($this->canBeScalar($response, $e)) {
-                foreach ($response[0]->getOData() as $key => $value) {
-                    return $value;
-                }
-            }
-        }
+//        } catch (FormattingException $e) {
+//            if ($this->canBeScalar($response, $e)) {
+//                foreach ($response[0]->getOData() as $key => $value) {
+//                    return $value;
+//                }
+//            } else {
+//                throw $e; // Rethrow the exception
+//            }
+//        }
 
         // Otherwise, its a single scalar
         return $response[0];
@@ -358,7 +360,7 @@ class Driver extends AbstractDriver implements DriverInterface
             return self::FORMAT_SET;
         }
 
-        if (count($response) == 1 && !is_array($response[0]) ) {// && !$response[0] instanceof Record) {
+        if (count($response) == 1 && !is_array($response[0]) ) {
             return self::FORMAT_SCALAR;
         }
 
