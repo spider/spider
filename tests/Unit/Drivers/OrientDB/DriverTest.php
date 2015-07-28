@@ -50,6 +50,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             $driver->close();
 
             $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
+//            die('here');
             $response = $response->getSet();
             $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return a Record');
             $this->assertEquals("HEY BO DIDDLEY", $response->name, "failed to return the correct names");
@@ -159,52 +160,52 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(true, $consistent, 'Scalar formatting did not properly work with Bool');
     }
 
-    public function testThrowsFormattingExceptionForScalar()
-    {
-        $this->specify("it throws an exception for record with more than one item", function () {
-            $driver = new OrientDriver();
-
-            $record = new Record();
-            $record->setOData(['item' => 10, 'two' => 2]);
-            $response = [$record];
-
-            $driver->formatAsScalar($response);
-        }, ['throws' => new FormattingException()]);
-
-        $this->specify("it throws an exception for multiple records", function () {
-            $driver = new OrientDriver();
-
-            $record = new Record();
-            $another = new Record();
-            $response = [$record, $another];
-
-            $driver->formatAsScalar($response);
-        }, ['throws' => new FormattingException()]);
-
-        $this->specify("it throws an exception for multiple scalar values", function () {
-            $driver = new OrientDriver();
-
-            $response = [1,2];
-
-            $driver->formatAsScalar($response);
-        }, ['throws' => new FormattingException()]);
-
-        $this->specify("it throws an exception for a non-array", function () {
-            $driver = new OrientDriver();
-
-            $response = 3;
-
-            $driver->formatAsScalar($response);
-        }, ['throws' => new FormattingException()]);
-
-        $this->specify("it throws an exception for an array of invalid objects", function () {
-            $driver = new OrientDriver();
-
-            $response = [[1]];
-
-            $driver->formatAsScalar($response);
-        }, ['throws' => new FormattingException()]);
-    }
+//    public function testThrowsFormattingExceptionForScalar()
+//    {
+//        $this->specify("it throws an exception for record with more than one item", function () {
+//            $driver = new OrientDriver();
+//
+//            $record = new Record();
+//            $record->setOData(['item' => 10, 'two' => 2]);
+//            $response = [$record];
+//
+//            $driver->formatAsScalar($response);
+//        }, ['throws' => new FormattingException()]);
+//
+//        $this->specify("it throws an exception for multiple records", function () {
+//            $driver = new OrientDriver();
+//
+//            $record = new Record();
+//            $another = new Record();
+//            $response = [$record, $another];
+//
+//            $driver->formatAsScalar($response);
+//        }, ['throws' => new FormattingException()]);
+//
+//        $this->specify("it throws an exception for multiple scalar values", function () {
+//            $driver = new OrientDriver();
+//
+//            $response = [1,2];
+//
+//            $driver->formatAsScalar($response);
+//        }, ['throws' => new FormattingException()]);
+//
+//        $this->specify("it throws an exception for a non-array", function () {
+//            $driver = new OrientDriver();
+//
+//            $response = 3;
+//
+//            $driver->formatAsScalar($response);
+//        }, ['throws' => new FormattingException()]);
+//
+//        $this->specify("it throws an exception for an array of invalid objects", function () {
+//            $driver = new OrientDriver();
+//
+//            $response = [[1]];
+//
+//            $driver->formatAsScalar($response);
+//        }, ['throws' => new FormattingException()]);
+//    }
 
     public function testFormatSet()
     {

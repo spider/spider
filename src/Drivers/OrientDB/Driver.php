@@ -261,7 +261,7 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function formatAsSet($response)
     {
-        $this->canFormatAsSet($response);
+        $this->canFormat($response, self::FORMAT_SET);
 
         $mapped = $this->mapRawResponse($response);
 
@@ -270,18 +270,6 @@ class Driver extends AbstractDriver implements DriverInterface
         }
 
         return $mapped;
-    }
-
-    /**
-     * Throws an exception if formatting invalid data to set
-     * @param $response
-     * @throws FormattingException
-     */
-    protected function canFormatAsSet($response)
-    {
-        if (is_array($response) && isset($response[0]) && !$response[0] instanceof Record) {
-            throw new FormattingException();
-        }
     }
 
     /**
@@ -320,43 +308,77 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function formatAsScalar($response)
     {
-        // Throw exception if response does not meet the criteria for scalar formatting
-        $this->canFormatAsScalar($response);
-
-        // The response is a single record with one property
-        if ($response[0] instanceof Record) {
-            $scalar = [];
-            foreach ($response[0]->getOData() as $key => $value) {
-                array_push($scalar, $value);
+        // In case we are fetching a scalar from one record with one property
+        try {
+            $this->canFormat($response, self::FORMAT_SCALAR);
+        } catch (FormattingException $e) {
+            if ($this->canBeScalar($response, $e)) {
+                foreach ($response[0]->getOData() as $key => $value) {
+                    return $value;
+                }
             }
-            return $scalar[0];
         }
 
-        // This is an array with a single scalar value (like number of rows affected)
+        // Otherwise, its a single scalar
         return $response[0];
     }
 
     /**
-     * Throws an exception if response cannot be formatted as a scalar
+     * Ensure that a response can be formatted as desired
      * @param $response
+     * @param $desiredFormat
      * @throws FormattingException
      */
-    protected function canFormatAsScalar($response)
+    protected function canFormat($response, $desiredFormat)
     {
-        if (count($response) > 1) {
-            throw new FormattingException();
+        $format = $this->responseFormat($response);
+        if (!empty($response) && $format !== $desiredFormat) {
+            $message = "The response from the database was incorrectly formatted for this operation";
+            $exception = new FormattingException($message);
+            $exception->setFormat($format);
+
+            throw $exception;
+        }
+    }
+
+    /**
+     * Checks a response's format whenever possible
+     *
+     * @param mixed $response the response we want to get the format for
+     *
+     * @return int the format (FORMAT_X const) for the response
+     */
+    protected function responseFormat($response)
+    {
+        if (!is_array($response)) {
+            return self::FORMAT_CUSTOM;
         }
 
-        if (!is_string($response[0])
-            && !is_bool($response[0])
-            && !is_int($response[0])
-            && !$response[0] instanceof Record
-        ) {
-            throw new FormattingException();
+        if (!empty($response) && $response[0] instanceof Record) {
+            return self::FORMAT_SET;
         }
 
-        if ($response[0] instanceof Record && count($response[0]->getOData()) !== 1) {
-            throw new FormattingException();
+        if (count($response) == 1 && !is_array($response[0]) ) {// && !$response[0] instanceof Record) {
+            return self::FORMAT_SCALAR;
         }
+
+        //@todo support path
+        //@todo support tree.
+
+        return self::FORMAT_CUSTOM;
+    }
+
+    /**
+     * Can a response set be formatted as a scalar?
+     * @param $response
+     * @param $e
+     * @return bool
+     */
+    protected function canBeScalar($response, $e)
+    {
+        // returns true if all conditions are met
+        return $e->getFormat() === self::FORMAT_SET
+        && count($response) === 1
+        && count($response[0]->getOData()) === 1;
     }
 }
