@@ -2,10 +2,14 @@
 namespace Spider\Drivers\OrientDB;
 
 use PhpOrient\PhpOrient;
+use PhpOrient\Protocols\Binary\Data\Record;
 use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 use Spider\Commands\CommandInterface;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
+use Spider\Drivers\Response;
+use Spider\Exceptions\FormattingException;
+use Spider\Exceptions\NotSupportedException;
 use Spider\Graphs\Graph;
 use Spider\Graphs\Record as SpiderRecord;
 
@@ -35,11 +39,16 @@ class Driver extends AbstractDriver implements DriverInterface
     /** @var PhpOrient Language Binding */
     protected $client;
 
+    /** @var  bool Is connection open, flag */
+    protected $isOpen = false;
+
+    protected $formatMessage = "The response from the database was incorrectly formatted for this operation";
+
     /**
      * Create a new instance with a client
      * @param array $properties Configuration properties
      */
-    public function __construct($properties)
+    public function __construct(array $properties = [])
     {
         // Populate configuration
         parent::__construct($properties);
@@ -64,6 +73,9 @@ class Driver extends AbstractDriver implements DriverInterface
         $this->client->configure($config);
         $this->client->connect();
         $this->client->dbOpen($config['database']); // What if I *want* the cluster map?
+
+        // Flag as an open connection
+        $this->isOpen = true;
     }
 
     /**
@@ -72,8 +84,34 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function close()
     {
-        $this->client->dbClose(); // returns int
+        if ($this->isOpen) {
+            $this->client->dbClose(); // returns int
+            $this->isOpen = false;
+        }
+
         return $this;
+    }
+
+    /**
+     * Opens a transaction
+     * @return bool
+     * @throws \Exception
+     */
+    public function startTransaction()
+    {
+        throw new NotSupportedException(__FUNCTION__ . " is not currently supported for OrientDB driver");
+    }
+
+    /**
+     * Closes a transaction
+     *
+     * @param bool $commit whether this is a commit (TRUE) or a rollback (FALSE)
+     * @return bool
+     * @throws \Exception
+     */
+    public function stopTransaction($commit = TRUE)
+    {
+        throw new NotSupportedException(__FUNCTION__ . " is not currently supported for OrientDB driver");
     }
 
     /**
@@ -84,13 +122,7 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function executeReadCommand(CommandInterface $query)
     {
-        $response = $this->client->query($query->getScript());
-
-        if (is_array($response) || $response instanceof OrientRecord) {
-            return $this->mapResponse($response);
-        }
-
-        return $response;
+        return $this->executeCommand($query, 'query');
     }
 
     /**
@@ -103,13 +135,30 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function executeWriteCommand(CommandInterface $command)
     {
-        $response = $this->client->command($command->getScript());
+        /* ToDo: DELETE is very sloppy */
+        /* DELETE VERTEX returns an int. DELETE returns either int or before Record */
+        /* Drivers expect an empty array upon successful delete */
+        /* This needs to be reconciled in a better way */
+        $response = $this->executeCommand($command, 'command');
 
-        if (is_array($response) || $response instanceof OrientRecord) {
-            return $this->mapResponse($response);
+        if (strpos(strtolower($command->getScript()), "delete") === 0) {
+            return new Response(['_raw' => [], '_driver' => $this]);
         }
 
         return $response;
+    }
+
+    /**
+     * Executes actual command or query
+     * @param CommandInterface $command
+     * @param $method
+     * @return Response
+     */
+    protected function executeCommand(CommandInterface $command, $method)
+    {
+        $response = $this->client->$method($command->getScript());
+        $response = $this->rawResponseToArray($response);
+        return new Response(['_raw' => $response, '_driver' => $this]);
     }
 
     /**
@@ -141,22 +190,23 @@ class Driver extends AbstractDriver implements DriverInterface
      * @param $response
      * @return SpiderRecord
      */
-    protected function mapResponse($response)
+    protected function mapRawResponse(array $response)
     {
-        // If we have a solitary record, just map it
-        if ($response instanceof OrientRecord) {
-            return $this->orientToSpiderRecord($response);
-        }
-
-        // We have an empty array
+        // Return an empty array immediately
         if (empty($response)) {
             return $response;
         }
 
+        // Receive array with single scalar
+        if (!$response[0] instanceof Record) {
+            return $response[0];
+        }
+
         // For multiple records, map each to a Record
         array_walk($response, function (&$orientRecord) {
-            $orientRecord = $this->orientToSpiderRecord($orientRecord);
+            $orientRecord = $this->mapOrientRecordToCollection($orientRecord);
         });
+
         return $response;
     }
 
@@ -166,17 +216,174 @@ class Driver extends AbstractDriver implements DriverInterface
      * @param $orientRecord
      * @return SpiderRecord
      */
-    protected function orientToSpiderRecord(OrientRecord $orientRecord)
+    protected function mapOrientRecordToCollection(OrientRecord $orientRecord)
     {
         // Or we map a single record to a Spider Record
-        $spiderRecord = new SpiderRecord($orientRecord->getOData());
-        $spiderRecord->add([
+        $collection = new \Spider\Base\Collection($orientRecord->getOData());
+
+        $collection->add([
             'id' => $orientRecord->getRid()->jsonSerialize(),
-            'rid' => $orientRecord->getRid(),
-            'version' => $orientRecord->getVersion(),
-            'oClass' => $orientRecord->getOClass(),
+            'label' => $orientRecord->getOClass(),
+
+            'meta.rid' => $orientRecord->getRid(),
+            'meta.version' => $orientRecord->getVersion(),
+            'meta.oClass' => $orientRecord->getOClass(),
         ]);
 
-        return $spiderRecord;
+        $collection->protect('id');
+        $collection->protect('label');
+        $collection->protect('meta');
+
+        return $collection;
+    }
+
+    /**
+     * Ensures that an OrientDB response is an array,
+     * even if only an array of one Record
+     * @param $response
+     * @return array
+     */
+    protected function rawResponseToArray($response)
+    {
+        if (is_array($response)) {
+            return $response;
+        }
+
+        return [$response];
+    }
+
+    /**
+     * Format a raw response to a set of collections
+     * This is for cases where a set of Vertices or Edges is expected in the response
+     *
+     * @param mixed $response the raw DB response
+     * @return Response Spider consistent response
+     * @throws FormattingException
+     */
+    public function formatAsSet($response)
+    {
+        $this->canFormat($response, self::FORMAT_SET);
+
+        $mapped = $this->mapRawResponse($response);
+
+        if (count($mapped) === 1) {
+            return $mapped[0];
+        }
+
+        return $mapped;
+    }
+
+    /**
+     * Format a raw response to a tree of collections
+     * This is for cases where a set of Vertices or Edges is expected in tree format from the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsTree($response)
+    {
+        // TODO: Implement formatAsTree() method.
+        throw new NotSupportedException(__FUNCTION__ . " is not currently supported for OrientDB driver");
+    }
+
+    /**
+     * Format a raw response to a path of collections
+     * This is for cases where a set of Vertices or Edges is expected in path format from the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsPath($response)
+    {
+        // TODO: Implement formatAsPath() method.
+        throw new NotSupportedException(__FUNCTION__ . " is not currently supported for OrientDB driver");
+    }
+
+    /**
+     * Format a raw response to a scalar
+     * This is for cases where a scalar result is expected
+     *
+     * @param mixed $response the raw DB response
+     * @return Response Spider consistent response
+     * @throws FormattingException
+     */
+    public function formatAsScalar($response)
+    {
+        // In case we are fetching a scalar from one record with one property
+//        try {
+            $this->canFormat($response, self::FORMAT_SCALAR);
+//        } catch (FormattingException $e) {
+//            if ($this->canBeScalar($response, $e)) {
+//                foreach ($response[0]->getOData() as $key => $value) {
+//                    return $value;
+//                }
+//            } else {
+//                throw $e; // Rethrow the exception
+//            }
+//        }
+
+        // Otherwise, its a single scalar
+        return $response[0];
+    }
+
+    /**
+     * Ensure that a response can be formatted as desired
+     * @param $response
+     * @param $desiredFormat
+     * @throws FormattingException
+     */
+    protected function canFormat($response, $desiredFormat)
+    {
+        $format = $this->responseFormat($response);
+        if (!empty($response) && $format !== $desiredFormat) {
+            $message = "The response from the database was incorrectly formatted for this operation";
+            $exception = new FormattingException($message);
+            $exception->setFormat($format);
+
+            throw $exception;
+        }
+    }
+
+    /**
+     * Checks a response's format whenever possible
+     *
+     * @param mixed $response the response we want to get the format for
+     *
+     * @return int the format (FORMAT_X const) for the response
+     */
+    protected function responseFormat($response)
+    {
+        if (!is_array($response)) {
+            return self::FORMAT_CUSTOM;
+        }
+
+        if (!empty($response) && $response[0] instanceof Record) {
+            return self::FORMAT_SET;
+        }
+
+        if (count($response) == 1 && !is_array($response[0]) ) {
+            return self::FORMAT_SCALAR;
+        }
+
+        //@todo support path
+        //@todo support tree.
+
+        return self::FORMAT_CUSTOM;
+    }
+
+    /**
+     * Can a response set be formatted as a scalar?
+     * @param $response
+     * @param $e
+     * @return bool
+     */
+    protected function canBeScalar($response, $e)
+    {
+        // returns true if all conditions are met
+        return $e->getFormat() === self::FORMAT_SET
+        && count($response) === 1
+        && count($response[0]->getOData()) === 1;
     }
 }

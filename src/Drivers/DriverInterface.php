@@ -10,39 +10,6 @@ use Spider\Commands\CommandInterface;
 interface DriverInterface
 {
     /**
-     * Sets the credentials from a properties array
-     *
-     * Satisfied by Spider\Drivers\AbstractDriver
-     *
-     * @param array $properties
-     */
-    public function setCredentials(array $properties = []);
-
-    /**
-     * Sets and individual credential configuration item
-     *
-     * Satisfied by Spider\Drivers\AbstractDriver
-     *
-     * @param $property
-     * @param $value
-     * @return $this
-     */
-    public function setCredential($property, $value);
-
-    /**
-     * Returns an individual configuration item or fallback
-     *
-     * Throws exception if nothing is found and no fallback
-     *
-     * Satisfied by Spider\Drivers\AbstractDriver
-     *
-     * @param $property
-     * @param null $fallback
-     * @return null
-     */
-    public function getCredential($property, $fallback = null);
-
-    /**
      * Connect to the database using already set, internal credentials
      * @return $this
      */
@@ -90,7 +57,60 @@ interface DriverInterface
      */
     public function runWriteCommand(CommandInterface $command);
 
-//    public function startTransaction();
-//
-//    public function stopTransaction();
+    /**
+     * Opens a transaction
+     *
+     * @return bool
+     */
+    public function startTransaction();
+
+    /**
+     * Closes a transaction
+     *
+     * @param bool $commit whether this is a commit (TRUE) or a rollback (FALSE)
+     *
+     * @return bool
+     */
+    public function stopTransaction($commit = TRUE);
+
+    /**
+     * Format a raw response to a set of collections
+     * This is for cases where a set of Vertices or Edges is expected in the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsSet($response);
+
+    /**
+     * Format a raw response to a tree of collections
+     * This is for cases where a set of Vertices or Edges is expected in tree format from the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsTree($response);
+
+    /**
+     * Format a raw response to a path of collections
+     * This is for cases where a set of Vertices or Edges is expected in path format from the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsPath($response);
+
+
+    /**
+     * Format a raw response to a scalar
+     * This is for cases where a scalar result is expected
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsScalar($response);
 }

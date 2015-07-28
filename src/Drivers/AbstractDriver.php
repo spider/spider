@@ -1,58 +1,32 @@
 <?php
 namespace Spider\Drivers;
 
-abstract class AbstractDriver implements DriverInterface
+use Spider\Base\Collection;
+
+abstract class AbstractDriver extends Collection implements DriverInterface
 {
     /**
-     * Constructs a driver from a properties array
-     * @param array $properties
+     * set of possible formats for responses.
      */
-    public function __construct(array $properties = [])
-    {
-        $this->setCredentials($properties);
-    }
+    const FORMAT_SET = 10;
+    const FORMAT_TREE = 20;
+    const FORMAT_PATH = 30;
+    const FORMAT_SCALAR = 40;
+    const FORMAT_CUSTOM = 50;
 
     /**
-     * Sets the credentials from a properties array
-     * @param array $properties
+     * @var bool whether or not the driver is currently handling an open transaction
      */
-    public function setCredentials(array $properties = [])
+    public $inTransaction = FALSE;
+
+    public function __destruct()
     {
-        foreach ($properties as $property => $value) {
-            $this->setCredential($property, $value);
+        //rollback changes
+        if($this->inTransaction)
+        {
+            $this->StopTransaction(FALSE);
         }
-    }
-
-    /**
-     * Sets and individual credential configuration item
-     * @param $property
-     * @param $value
-     * @return $this
-     */
-    public function setCredential($property, $value)
-    {
-        $this->$property = $value;
-        return $this;
-    }
-
-    /**
-     * Returns an individual configuration item or fallback
-     *
-     * Throws exception if nothing is found and no fallback
-     * @param $property
-     * @param null $fallback
-     * @return null
-     */
-    public function getCredential($property, $fallback = null)
-    {
-        if ($this->$property) {
-            return $this->$property;
-        }
-
-        if ($fallback) {
-            return $fallback;
-        }
-
-        throw new \InvalidArgumentException("$property does not exist in this driver");
+        //close driver
+        $this->close();
     }
 }

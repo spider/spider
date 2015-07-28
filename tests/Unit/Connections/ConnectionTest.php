@@ -87,7 +87,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             $connection = new Connection(new SecondDriver(), $expected);
             $passedToDriver = $connection->open();
 
-            $this->assertEquals($expected, $passedToDriver, "failed to pass creds and config to driver");
+            $this->assertArraySubset($expected, $passedToDriver, "failed to pass creds and config to driver");
         });
     }
 }
