@@ -1,12 +1,9 @@
 <?php
 namespace Spider\Drivers\OrientDB;
 
-use PhpOrient\Exceptions\PhpOrientException;
 use PhpOrient\PhpOrient;
-use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 use PhpOrient\Protocols\Binary\Data\Record;
-use Spider\Base\Collection;
-use Spider\Commands\Command;
+use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 use Spider\Commands\CommandInterface;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
@@ -43,6 +40,8 @@ class Driver extends AbstractDriver implements DriverInterface
 
     /** @var  bool Is connection open, flag */
     protected $isOpen = false;
+
+    protected $formatMessage = "The response from the database was incorrectly formatted for this operation";
 
     /**
      * Create a new instance with a client
@@ -93,6 +92,28 @@ class Driver extends AbstractDriver implements DriverInterface
     }
 
     /**
+     * Opens a transaction
+     * @return bool
+     * @throws \Exception
+     */
+    public function startTransaction()
+    {
+        throw new \Exception(__FUNCTION__ . " is not currently supported for OrientDB driver");
+    }
+
+    /**
+     * Closes a transaction
+     *
+     * @param bool $commit whether this is a commit (TRUE) or a rollback (FALSE)
+     * @return bool
+     * @throws \Exception
+     */
+    public function stopTransaction($commit = TRUE)
+    {
+        throw new \Exception(__FUNCTION__ . " is not currently supported for OrientDB driver");
+    }
+
+    /**
      * Executes a Query or read command
      *
      * @param CommandInterface $query
@@ -114,6 +135,9 @@ class Driver extends AbstractDriver implements DriverInterface
     public function executeWriteCommand(CommandInterface $command)
     {
         /* ToDo: DELETE is very sloppy */
+        /* DELETE VERTEX returns an int. DELETE returns either int or before Record */
+        /* Drivers expect an empty array upon successful delete */
+        /* This needs to be reconciled in a better way */
         $response = $this->executeCommand($command, 'command');
 
         if (strpos(strtolower($command->getScript()), "delete") === 0) {
@@ -123,20 +147,17 @@ class Driver extends AbstractDriver implements DriverInterface
         return $response;
     }
 
+    /**
+     * Executes actual command or query
+     * @param CommandInterface $command
+     * @param $method
+     * @return Response
+     */
     protected function executeCommand(CommandInterface $command, $method)
     {
         $response = $this->client->$method($command->getScript());
         $response = $this->rawResponseToArray($response);
         return new Response(['_raw' => $response, '_driver' => $this]);
-    }
-
-    public function rawResponseToArray($response)
-    {
-        if (is_array($response)) {
-            return $response;
-        }
-
-        return [$response];
     }
 
     /**
@@ -168,7 +189,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * @param $response
      * @return SpiderRecord
      */
-    protected function mapResponse(array $response)
+    protected function mapRawResponse(array $response)
     {
         // Return an empty array immediately
         if (empty($response)) {
@@ -182,7 +203,7 @@ class Driver extends AbstractDriver implements DriverInterface
 
         // For multiple records, map each to a Record
         array_walk($response, function (&$orientRecord) {
-            $orientRecord = $this->orientToCollection($orientRecord);
+            $orientRecord = $this->mapOrientRecordToCollection($orientRecord);
         });
 
         return $response;
@@ -194,7 +215,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * @param $orientRecord
      * @return SpiderRecord
      */
-    protected function orientToCollection(OrientRecord $orientRecord)
+    protected function mapOrientRecordToCollection(OrientRecord $orientRecord)
     {
         // Or we map a single record to a Spider Record
         $collection = new \Spider\Base\Collection($orientRecord->getOData());
@@ -215,28 +236,19 @@ class Driver extends AbstractDriver implements DriverInterface
         return $collection;
     }
 
-
     /**
-     * Opens a transaction
-     * @return bool
-     * @throws \Exception
+     * Ensures that an OrientDB response is an array,
+     * even if only an array of one Record
+     * @param $response
+     * @return array
      */
-    public function startTransaction()
+    protected function rawResponseToArray($response)
     {
-        throw new \Exception(__FUNCTION__ . " is not currently supported for OrientDB driver");
-    }
+        if (is_array($response)) {
+            return $response;
+        }
 
-
-    /**
-     * Closes a transaction
-     *
-     * @param bool $commit whether this is a commit (TRUE) or a rollback (FALSE)
-     * @return bool
-     * @throws \Exception
-     */
-    public function stopTransaction($commit = TRUE)
-    {
-        throw new \Exception(__FUNCTION__ . " is not currently supported for OrientDB driver");
+        return [$response];
     }
 
     /**
@@ -251,13 +263,25 @@ class Driver extends AbstractDriver implements DriverInterface
     {
         $this->canFormatAsSet($response);
 
-        $mapped = $this->mapResponse($response);
+        $mapped = $this->mapRawResponse($response);
 
         if (count($mapped) === 1) {
             return $mapped[0];
         }
 
         return $mapped;
+    }
+
+    /**
+     * Throws an exception if formatting invalid data to set
+     * @param $response
+     * @throws FormattingException
+     */
+    protected function canFormatAsSet($response)
+    {
+        if (is_array($response) && isset($response[0]) && !$response[0] instanceof Record) {
+            throw new FormattingException();
+        }
     }
 
     /**
@@ -296,8 +320,6 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function formatAsScalar($response)
     {
-        $message = "The response from the database was incorrectly formatted for this operation";
-
         // Throw exception if response does not meet the criteria for scalar formatting
         $this->canFormatAsScalar($response);
 
@@ -314,13 +336,11 @@ class Driver extends AbstractDriver implements DriverInterface
         return $response[0];
     }
 
-    protected function canFormatAsSet($response)
-    {
-        if (is_array($response) && isset($response[0]) && !$response[0] instanceof Record) {
-            throw new FormattingException();
-        }
-    }
-
+    /**
+     * Throws an exception if response cannot be formatted as a scalar
+     * @param $response
+     * @throws FormattingException
+     */
     protected function canFormatAsScalar($response)
     {
         if (count($response) > 1) {
@@ -338,33 +358,5 @@ class Driver extends AbstractDriver implements DriverInterface
         if ($response[0] instanceof Record && count($response[0]->getOData()) !== 1) {
             throw new FormattingException();
         }
-
-        return true;
-    }
-
-    /**
-     * Checks a response's format whenever possible
-     *
-     * @param mixed $response the response we want to get the format for
-     *
-     * @return int the format (FORMAT_X const) for the response
-     */
-    protected function responseFormat($response)
-    {
-        if (!is_array($response)) {
-            return self::FORMAT_CUSTOM;
-        }
-
-        /* Set */
-        if ($response[0] instanceof Record) {
-            return self::FORMAT_SET;
-        }
-
-//        if (isset($response[0]['objects'])) {
-//            return self::FORMAT_PATH;
-//        }
-        //@todo support tree.
-
-        return self::FORMAT_CUSTOM;
     }
 }
