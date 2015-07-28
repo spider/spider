@@ -1,9 +1,11 @@
 <?php
-namespace Spider\Drivers\Gremlin;
 
-use brightzone\rexpro\Connection;
+namespace Spider\Drivers\Neo4J;
+
 use Spider\Drivers\DriverInterface;
 use Spider\Drivers\AbstractDriver;
+use Everyman\Neo4j\Client;
+use Everyman\Neo4j\Cypher\Query;
 use Spider\Commands\CommandInterface;
 use Spider\Drivers\Response;
 use Spider\Base\Collection;
@@ -12,10 +14,6 @@ use Spider\Exceptions\NotSupportedException;
 use Spider\Exceptions\InvalidCommandException;
 
 
-/**
- * Driver for Gremlin Server
- * @package Michaels\Spider\Drivers\Gremlin
- */
 class Driver extends AbstractDriver implements DriverInterface
 {
     /**
@@ -26,30 +24,22 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * @var int server port. Defaults to 8182.
      */
-    protected $port = 8182;
+    protected $port = 7474;
 
     /**
-     * @var string Database name or otherwise known as graph name. Defaults to "graph"
+     * @var string authentication username
      */
-    public $graph = "graph";
+    public $username;
 
     /**
-     * @var string The traversal object to use. Defaults to "g"
+     * @var string authentication password
      */
-    public $traversal = "g";
+    public $password;
 
     /**
-     * Create a new instance with a client
-     *
-     * @param array $properties an array of the properties to set for this class
-     *
-     * @return void
+     * @var Transaction the client transaction object if it is set
      */
-    public function __construct(array $properties = [])
-    {
-        parent::__construct($properties);
-        $this->client = new Connection();
-    }
+    protected $transaction;
 
     /**
      * Open a database connection
@@ -58,41 +48,43 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function open()
     {
-        $this->client->open($this->hostname.':'.$this->port, $this->graph);
+        $this->client = new Client($this->hostname, $this->port);
+        if(isset($this->username))
+        {
+            $this->client->getTransport()
+                          ->setAuth($this->username, $this->password);
+        }
         return $this;
     }
 
     /**
      * Close the database connection
-     *
-     * @return Driver $this
+     * @return $this
      */
     public function close()
     {
-        $this->client->close();
-        return $this;
+        //nothing
     }
 
     /**
      * Executes a Query or read command
      *
-     * @param CommandInterface $query
+     * This is the R in CRUD
      *
+     * @param CommandInterface $query
      * @return array|Record|Graph
      */
     public function executeReadCommand(CommandInterface $query)
     {
-        try {
-            $response = $this->client->send($query->getScript());
-        } catch(\Exception $e) {
-            //Check for empty return error from server.
-            if (($e instanceof \brightzone\rexpro\ServerException) && ($e->getCode() == 204)) {
-                $response = [];
-            } else {
-                throw $e;
-            }
+        $neoQuery = new Query($this->client, $query->getScript());
+        if($this->inTransaction)
+        {
+            $response = $this->transaction->addStatements($neoQuery);
         }
-
+        else
+        {
+            $response = $neoQuery->getResultSet();
+        }
         return new Response(['_raw' => $response, '_driver' => $this]);
     }
 
@@ -102,7 +94,6 @@ class Driver extends AbstractDriver implements DriverInterface
      * These are the "CUD" in CRUD
      *
      * @param CommandInterface $command
-     *
      * @return Graph|Record|array|mixed mixed values for some write commands
      */
     public function executeWriteCommand(CommandInterface $command)
@@ -114,103 +105,30 @@ class Driver extends AbstractDriver implements DriverInterface
      * Executes a read command without waiting for a response
      *
      * @param CommandInterface $query
-     *
      * @return $this
      */
     public function runReadCommand(CommandInterface $query)
     {
-        try {
-            $this->client->send($query->getScript());
-        } catch(\Exception $e) {
-            //Check for empty return error from server.
-            if (!($e instanceof \brightzone\rexpro\ServerException) || ($e->getCode() != 204)) {
-                throw $e;
-            }
+        $neoQuery = new Query($this->client, $query->getScript());
+        if($this->inTransaction)
+        {
+            $response = $this->transaction->addStatements($neoQuery);
         }
-        return $this;
+        else
+        {
+            $response = $neoQuery->getResultSet();
+        }
     }
-
 
     /**
      * Executes a write command without waiting for a response
      *
      * @param CommandInterface $command
-     *
      * @return $this
      */
     public function runWriteCommand(CommandInterface $command)
     {
-        return $this->runReadCommand($command);
-    }
-
-    /**
-     * Map a raw response to a SpiderResponse
-     *
-     * @param array $response
-     *
-     * @return array
-     */
-    protected function mapResponse(array $response)
-    {
-        if (count($response) == 1) {
-            return $this->arrayToCollection($response[0]);
-        }
-
-        // We have an empty array
-        if (empty($response)) {
-            return $response;
-        }
-
-        // For multiple records, map each to a Record
-        array_walk($response, function (&$array) {
-            $array = $this->arrayToCollection($array);
-        });
-        return $response;
-    }
-
-
-    /**
-     * Hydrate a Collection from an Gremlin response
-     *
-     * @param array $row a single row from result set to map.
-     *
-     * @return Collection
-     */
-    protected function arrayToCollection(array $row)
-    {
-        // Or we map a single record to a Spider Record
-        $collection = new Collection();
-
-        //If we're in a classic vertex/edge scenario lets do the following:
-        if(isset($row['properties']))
-        {
-            foreach($row['properties'] as $key => $value)
-            {
-                $collection->add($key, $value[0]['value']);
-            }
-
-            foreach ($row as $key => $value)
-            {
-                if ($key != "properties")
-                {
-                    $collection->add('meta.'.$key, $value);
-                }
-            }
-            $collection->add([
-                                'id' => $collection->meta()->id,
-                                'label' => $collection->meta()->label,
-                            ]);
-            $collection->protect('id');
-            $collection->protect('label');
-            $collection->protect('meta');
-        }
-        else
-        {
-            //in any other situation lets just map directly to the collection.
-            $collection->add($row);
-        }
-
-        return $collection;
+        $this->runReadCommand($command);
     }
 
     /**
@@ -224,7 +142,7 @@ class Driver extends AbstractDriver implements DriverInterface
         {
             throw new InvalidCommandException("A Transaction already exists. You can not nest transactions");
         }
-        $this->client->transactionStart();
+        $this->transaction = $this->client->beginTransaction();
         $this->inTransaction = TRUE;
     }
 
@@ -241,8 +159,16 @@ class Driver extends AbstractDriver implements DriverInterface
         {
             throw new InvalidCommandException("No transaction was started");
         }
-        $this->client->transactionStop($commit);
+        if($commit)
+        {
+            $this->transaction->commit();
+        }
+        else
+        {
+            $this->transaction->rollback();
+        }
         $this->inTransaction = FALSE;
+        $this->transaction = NULL;
     }
 
     /**
@@ -255,11 +181,18 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function formatAsSet($response)
     {
-        if(!empty($response) && $this->responseFormat($response) !== self::FORMAT_SET)
+        if(!empty($response[0]) && $this->responseFormat($response) !== self::FORMAT_SET)
         {
             throw new FormattingException("The response from the database was incorrectly formatted for this operation");
         }
-        return $this->mapResponse($response);
+        $return = [];
+
+        foreach($response as $row)
+        {
+            $return[] = $this->nodeToCollection($row[0]);
+        }
+
+        return count($return) == 1 ? $return[0] : $return;
     }
 
     /**
@@ -285,17 +218,25 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function formatAsPath($response)
     {
-        if(!empty($response) && $this->responseFormat($response) !== self::FORMAT_PATH)
+        if(!empty($response[0]) && $this->responseFormat($response) !== self::FORMAT_PATH)
         {
             throw new FormattingException("The response from the database was incorrectly formatted for this operation");
         }
-
-        foreach($response as &$path)
+        $return = [];
+        foreach($response as $row)
         {
-            $path = $this->formatAsSet($path['objects']);
+            $collection = [];
+            echo "I";
+            foreach($row[0] as $node)
+            {
+                echo 'L';
+                $collection[] = $this->nodeToCollection($node);
+            }
+            $return[] = $collection;
         }
-        return $response;
+        return $return;
     }
+
 
     /**
      * Format a raw response to a scalar
@@ -307,11 +248,48 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function formatAsScalar($response)
     {
-        if(!empty($response) && $this->responseFormat($response) !== self::FORMAT_SCALAR)
+        if(!empty($response[0]) && $this->responseFormat($response) !== self::FORMAT_SCALAR)
         {
             throw new FormattingException("The response from the database was incorrectly formatted for this operation");
         }
-        return $response[0];
+        return $response[0][0];
+    }
+
+    /**
+     * Hydrate a Collection from an Neo4J Node
+     *
+     * @param array $row a single row from result set to map.
+     *
+     * @return Collection
+     */
+    protected function nodeToCollection(\EveryMan\Neo4j\Node $row)
+    {
+        // Or we map a single record to a Spider Record
+        $collection = new Collection();
+        foreach($row->getProperties() as $key => $value)
+        {
+            $collection->add($key, $value);
+        }
+
+        //handle labels
+        $labels = $row->getLabels();
+        if(!empty($labels))
+        {
+             $collection->add([
+                            'meta.label' => $labels[0]->getName(),
+                            'label' => $labels[0]->getName(),
+                        ]);
+        }
+
+        $collection->add([
+                            'meta.id' => $row->getId(),
+                            'id' => $row->getId(),
+                        ]);
+        $collection->protect('meta');
+        $collection->protect('id');
+        $collection->protect('label');
+
+        return $collection;
     }
 
     /**
@@ -323,25 +301,21 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     protected function responseFormat($response)
     {
-        if(!is_array($response))
-        {
-            return self::FORMAT_CUSTOM;
-        }
-
-        if(isset($response[0]) && count($response[0]) == 1 && !is_array($response[0]))
-        {
-            return self::FORMAT_SCALAR;
-        }
-
-        if(isset($response[0]['id']))
+        if(isset($response[0][0]) && ($response[0][0] instanceof \Everyman\Neo4j\Node || ($response[0][0] instanceof \Everyman\Neo4j\Relationship)))
         {
             return self::FORMAT_SET;
         }
 
-        if(isset($response[0]['objects']))
+        if(isset($response[0][0]) && $response[0][0] instanceof \Everyman\Neo4j\Path)
         {
             return self::FORMAT_PATH;
         }
+
+        if(isset($response[0][0]) && count($response[0][0]) == 1 && !is_array($response[0][0]))
+        {
+            return self::FORMAT_SCALAR;
+        }
+
         //@todo support tree.
 
         return self::FORMAT_CUSTOM;

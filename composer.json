@@ -20,7 +20,8 @@
       "php" : ">=5.4.0",
       "michaels/data-manager": "dev-develop",
       "ostico/phporient": "dev-master",
-    "brightzone/gremlin-php": "*"
+    "brightzone/gremlin-php": "*",
+    "everyman/neo4jphp": "dev-master"
 
     },
     "require-dev": {

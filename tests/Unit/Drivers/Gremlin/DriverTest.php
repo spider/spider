@@ -1,5 +1,5 @@
 <?php
-namespace Spider\Test\Unit\Drivers;
+namespace Spider\Test\Unit\Drivers\Gremlin;
 
 use Codeception\Specify;
 
@@ -211,7 +211,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             $driver->StartTransaction();
             $driver->StartTransaction();
             $driver->close();
-        }, ['throws'=> new \brightzone\rexpro\InternalException('')]);
+        }, ['throws'=> new \Spider\Exceptions\InvalidCommandException]);
 
         $this->specify("it throws an Exception when a non existing transaction is stopped", function () {
             $credentials = [
@@ -225,7 +225,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             $driver->open();
             $driver->StopTransaction();
             $driver->close();
-        }, ['throws'=> new \brightzone\rexpro\InternalException('')]);
+        }, ['throws'=> new \Spider\Exceptions\InvalidCommandException]);
     }
 
     public function testFormatScalar()
