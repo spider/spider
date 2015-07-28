@@ -2,6 +2,7 @@
 namespace Spider\Test\Unit\Drivers;
 
 use Codeception\Specify;
+
 use Spider\Drivers\Gremlin\Driver as GremlinDriver;
 use Spider\Commands\Command;
 

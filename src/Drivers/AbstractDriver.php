@@ -27,6 +27,6 @@ abstract class AbstractDriver extends Collection implements DriverInterface
             $this->StopTransaction(FALSE);
         }
         //close driver
-//        $this->close();
+        $this->close();
     }
 }

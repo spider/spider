@@ -2,13 +2,13 @@
 namespace Spider\Drivers\Gremlin;
 
 use brightzone\rexpro\Connection;
-use Spider\Base\Collection;
-use Spider\Commands\CommandInterface;
-use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
-use Spider\Drivers\Response;
-use Spider\Exceptions\FormattingException;
+use Spider\Drivers\AbstractDriver;
 use Spider\Graphs\Record as SpiderRecord;
+use Spider\Commands\CommandInterface;
+use Spider\Drivers\Response;
+use Spider\Base\Collection;
+use Spider\Exceptions\FormattingException;
 
 
 /**
@@ -83,7 +83,7 @@ class Driver extends AbstractDriver implements DriverInterface
     {
         try {
             $response = $this->client->send($query->getScript());
-        } catch (\Exception $e) {
+        } catch(\Exception $e) {
             //Check for empty return error from server.
             if (($e instanceof \brightzone\rexpro\ServerException) && ($e->getCode() == 204)) {
                 $response = [];
@@ -120,7 +120,7 @@ class Driver extends AbstractDriver implements DriverInterface
     {
         try {
             $this->client->send($query->getScript());
-        } catch (\Exception $e) {
+        } catch(\Exception $e) {
             //Check for empty return error from server.
             if (!($e instanceof \brightzone\rexpro\ServerException) || ($e->getCode() != 204)) {
                 throw $e;
@@ -181,14 +181,18 @@ class Driver extends AbstractDriver implements DriverInterface
         $collection = new Collection();
 
         //If we're in a classic vertex/edge scenario lets do the following:
-        if (isset($row['properties'])) {
-            foreach ($row['properties'] as $key => $value) {
+        if(isset($row['properties']))
+        {
+            foreach($row['properties'] as $key => $value)
+            {
                 $collection->add($key, $value[0]['value']);
             }
 
-            foreach ($row as $key => $value) {
-                if ($key != "properties") {
-                    $collection->add('meta.' . $key, $value);
+            foreach ($row as $key => $value)
+            {
+                if ($key != "properties")
+                {
+                    $collection->add('meta.'.$key, $value);
                 }
             }
             $collection->add([
@@ -198,7 +202,9 @@ class Driver extends AbstractDriver implements DriverInterface
             $collection->protect('id');
             $collection->protect('label');
             $collection->protect('meta');
-        } else {
+        }
+        else
+        {
             //in any other situation lets just map directly to the collection.
             $collection->add($row);
         }
@@ -240,7 +246,8 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function formatAsSet($response)
     {
-        if (!empty($response) && $this->responseFormat($response) !== self::FORMAT_SET) {
+        if(!empty($response) && $this->responseFormat($response) !== self::FORMAT_SET)
+        {
             throw new FormattingException("The response from the database was incorrectly formatted for this operation");
         }
         return $this->mapResponse($response);
@@ -269,11 +276,13 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function formatAsPath($response)
     {
-        if (!empty($response) && $this->responseFormat($response) !== self::FORMAT_PATH) {
+        if(!empty($response) && $this->responseFormat($response) !== self::FORMAT_PATH)
+        {
             throw new FormattingException("The response from the database was incorrectly formatted for this operation");
         }
 
-        foreach ($response as &$path) {
+        foreach($response as &$path)
+        {
             $path = $this->formatAsSet($path['objects']);
         }
         return $response;
@@ -289,7 +298,8 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function formatAsScalar($response)
     {
-        if (!empty($response) && $this->responseFormat($response) !== self::FORMAT_SCALAR) {
+        if(!empty($response) && $this->responseFormat($response) !== self::FORMAT_SCALAR)
+        {
             throw new FormattingException("The response from the database was incorrectly formatted for this operation");
         }
         return $response[0];
@@ -304,19 +314,23 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     protected function responseFormat($response)
     {
-        if (!is_array($response)) {
+        if(!is_array($response))
+        {
             return self::FORMAT_CUSTOM;
         }
 
-        if (isset($response[0]) && count($response[0]) == 1 && !is_array($response[0])) {
+        if(isset($response[0]) && count($response[0]) == 1 && !is_array($response[0]))
+        {
             return self::FORMAT_SCALAR;
         }
 
-        if (isset($response[0]['id'])) {
+        if(isset($response[0]['id']))
+        {
             return self::FORMAT_SET;
         }
 
-        if (isset($response[0]['objects'])) {
+        if(isset($response[0]['objects']))
+        {
             return self::FORMAT_PATH;
         }
         //@todo support tree.

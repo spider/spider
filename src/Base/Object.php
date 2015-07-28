@@ -12,6 +12,7 @@ class Object {
      *
      * @param array $configuration the properties to populate
      *
+     * @return void
      */
     public function __construct(array $configuration = [])
     {
