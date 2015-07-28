@@ -197,9 +197,9 @@ class Driver extends AbstractDriver implements DriverInterface
                 }
             }
             $collection->add([
-                                'id' => $collection->meta()->id,
-                                'label' => $collection->meta()->label,
-                            ]);
+                'id' => $collection->meta()->id,
+                'label' => $collection->meta()->label,
+            ]);
             $collection->protect('id');
             $collection->protect('label');
             $collection->protect('meta');
