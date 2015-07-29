@@ -6,42 +6,8 @@ use Spider\Commands\CommandInterface;
 /**
  * Driver contract
  */
-
 interface DriverInterface
 {
-    /**
-     * Sets the credentials from a properties array
-     *
-     * Satisfied by Spider\Drivers\AbstractDriver
-     *
-     * @param array $properties
-     */
-    public function setCredentials(array $properties = []);
-
-    /**
-     * Sets and individual credential configuration item
-     *
-     * Satisfied by Spider\Drivers\AbstractDriver
-     *
-     * @param $property
-     * @param $value
-     * @return $this
-     */
-    public function setCredential($property, $value);
-
-    /**
-     * Returns an individual configuration item or fallback
-     *
-     * Throws exception if nothing is found and no fallback
-     *
-     * Satisfied by Spider\Drivers\AbstractDriver
-     *
-     * @param $property
-     * @param null $fallback
-     * @return null
-     */
-    public function getCredential($property, $fallback = null);
-
     /**
      * Connect to the database using already set, internal credentials
      * @return $this
@@ -60,7 +26,7 @@ interface DriverInterface
      * This is the R in CRUD
      *
      * @param CommandInterface $query
-     * @return array|Record|Graph
+     * @return Response
      */
     public function executeReadCommand(CommandInterface $query);
 
@@ -70,7 +36,7 @@ interface DriverInterface
      * These are the "CUD" in CRUD
      *
      * @param CommandInterface $command
-     * @return Graph|Record|array|mixed mixed values for some write commands
+     * @return Response
      */
     public function executeWriteCommand(CommandInterface $command);
 
@@ -90,7 +56,60 @@ interface DriverInterface
      */
     public function runWriteCommand(CommandInterface $command);
 
-//    public function startTransaction();
-//
-//    public function stopTransaction();
+    /**
+     * Opens a transaction
+     *
+     * @return bool
+     */
+    public function startTransaction();
+
+    /**
+     * Closes a transaction
+     *
+     * @param bool $commit whether this is a commit (true) or a rollback (false)
+     *
+     * @return bool
+     */
+    public function stopTransaction($commit = true);
+
+    /**
+     * Format a raw response to a set of collections
+     * This is for cases where a set of Vertices or Edges is expected in the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsSet($response);
+
+    /**
+     * Format a raw response to a tree of collections
+     * This is for cases where a set of Vertices or Edges is expected in tree format from the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsTree($response);
+
+    /**
+     * Format a raw response to a path of collections
+     * This is for cases where a set of Vertices or Edges is expected in path format from the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsPath($response);
+
+
+    /**
+     * Format a raw response to a scalar
+     * This is for cases where a scalar result is expected
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsScalar($response);
 }

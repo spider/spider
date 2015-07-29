@@ -51,8 +51,7 @@ class Builder
         ProcessorInterface $processor,
         ConnectionInterface $connection = null,
         Bag $bag = null
-    )
-    {
+    ) {
         $this->processor = $processor;
         $this->connection = $connection;
         $this->bag = $bag ?: new Bag();
@@ -372,9 +371,9 @@ class Builder
 
     /**
      * Clear the current Command Bag
-     * @param null $properties
+     * @param array $properties
      */
-    public function clear($properties = null)
+    public function clear($properties = [])
     {
         $this->bag = new Bag($properties);
         $this->command = null;

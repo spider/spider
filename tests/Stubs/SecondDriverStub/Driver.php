@@ -5,8 +5,8 @@ use Spider\Test\Stubs\FirstDriverStub\Driver as FirstDriver;
 
 class Driver extends FirstDriver
 {
-    protected $port;
-    protected $hostname;
+    public $port;
+    public $hostname;
 
     public function open()
     {

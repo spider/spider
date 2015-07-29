@@ -1,5 +1,5 @@
 <?php
-namespace Spider\Connections;
+namespace Spider\Exceptions;
 
 use Michaels\Manager\Exceptions\ItemNotFoundException;
 

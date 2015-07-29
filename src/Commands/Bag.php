@@ -1,13 +1,15 @@
 <?php
 namespace Spider\Commands;
 
+use Spider\Base\Object;
+
 /**
  * Command Bag
  *
  * Holds the parameters for a command to be processed by a
  * Driver specific Command Processor
  */
-class Bag
+class Bag extends Object
 {
     /* Required Bag Contents */
     /** @var string Create, Retrieve, Update, Delete */
@@ -63,36 +65,23 @@ class Bag
     /* ToDo: Is it best to move the constants to their own class? */
 
     /* Comparators for constraints */
-    const COMPARATOR_EQUAL = 'EQUAL'; // =
-    const COMPARATOR_LT = 'LT'; // <
-    const COMPARATOR_GT = 'GT'; // >
-    const COMPARATOR_GE = 'GE'; // >=
-    const COMPARATOR_LE = 'LE'; // <=
-    const COMPARATOR_NE = 'NE'; // not equal
-    const COMPARATOR_WITHOUT = 'WITHOUT';
+    const COMPARATOR_EQUAL = 10; // =
+    const COMPARATOR_LT = 20; // <
+    const COMPARATOR_GT = 30; // >
+    const COMPARATOR_GE = 40; // >=
+    const COMPARATOR_LE = 50; // <=
+    const COMPARATOR_NE = 60; // not equal
+    const COMPARATOR_WITHOUT = 70;
 
     /* Conjunctions for constraints */
-    const CONJUNCTION_AND = 'AND';
-    const CONJUNCTION_OR = 'OR';
+    const CONJUNCTION_AND = 100;
+    const CONJUNCTION_OR = 110;
 
     /* CRUD commands (equivalent to SELECT, UPDATE, INSERT, DROP) */
-    const COMMAND_CREATE = 'CREATE';
-    const COMMAND_RETRIEVE = 'RETRIEVE';
-    const COMMAND_UPDATE = 'UPDATE';
-    const COMMAND_DELETE = 'DELETE';
-
-    /**
-     * Create a new Command Bag
-     * @param array|null $properties
-     */
-    public function __construct(array $properties = null)
-    {
-        if ($properties) {
-            foreach ($properties as $key => $value) {
-                $this->$key = $value;
-            }
-        }
-    }
+    const COMMAND_CREATE = 200;
+    const COMMAND_RETRIEVE = 210;
+    const COMMAND_UPDATE = 220;
+    const COMMAND_DELETE = 230;
 
     /**
      * Return a new instance of a Command Bag

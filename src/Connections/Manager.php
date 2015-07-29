@@ -3,20 +3,20 @@ namespace Spider\Connections;
 
 use Michaels\Manager\Contracts\ManagesItemsInterface;
 use Michaels\Manager\Exceptions\ItemNotFoundException;
-use Michaels\Manager\Traits\ManagesItemsTrait;
+use Spider\Base\Collection;
+use Spider\Exceptions\ConnectionNotFoundException;
 
 /**
  * Manages and Builds Connections from a stored list
  * @package Spider\Connections
  */
-class Manager implements ManagesItemsInterface
+class Manager extends Collection implements ManagesItemsInterface
 {
     /**
-     * @inherits from Michaels\Manager:
+     * @inherits from Collection:
      *      init(), add(), get(), getAll(), exists(), has(), set(),
      *      remove(), clear(), toJson, isEmpty(), __toString()
      */
-    use ManagesItemsTrait;
 
     /**
      * Build a new manager instance
@@ -40,7 +40,7 @@ class Manager implements ManagesItemsInterface
      * @param string $connectionName
      *
      * @return Connection
-     * @throws \Spider\Connections\ConnectionNotFoundException
+     * @throws \Spider\Exceptions\ConnectionNotFoundException
      */
     public function make($connectionName = null)
     {
@@ -84,7 +84,7 @@ class Manager implements ManagesItemsInterface
      *
      * @param $connectionName
      * @return Connection
-     * @throws \Spider\Connections\ConnectionNotFoundException
+     * @throws \Spider\Exceptions\ConnectionNotFoundException
      */
     protected function buildConnection($connectionName)
     {
@@ -103,7 +103,7 @@ class Manager implements ManagesItemsInterface
      *
      * @param $connectionName
      * @return mixed
-     * @throws \Spider\Connections\ConnectionNotFoundException
+     * @throws ConnectionNotFoundException
      * @todo Refactor: Exception should probably be thrown elsewhere
      */
     protected function buildConnectionName($connectionName = null)

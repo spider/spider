@@ -3,7 +3,7 @@ namespace Spider\Test\Unit\Connections;
 
 use Codeception\Specify;
 use Michaels\Manager\Exceptions\ItemNotFoundException;
-use Spider\Connections\ConnectionNotFoundException;
+use Spider\Exceptions\ConnectionNotFoundException;
 use Spider\Connections\Manager;
 
 /*

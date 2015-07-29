@@ -349,8 +349,8 @@ class RetrieveTest extends TestSetup
                 'target' => "V",
                 'where' => [
                     ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
-                    ['last', Bag::COMPARATOR_EQUAL, "wilson", 'OR'],
-                    ['certified', Bag::COMPARATOR_EQUAL, true, 'OR']
+                    ['last', Bag::COMPARATOR_EQUAL, "wilson", Bag::CONJUNCTION_OR],
+                    ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_OR]
                 ]
             ]);
 
@@ -371,7 +371,7 @@ class RetrieveTest extends TestSetup
                 'target' => "V",
                 'where' => [
                     ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_AND],
-                    ['name', Bag::COMPARATOR_EQUAL, "michael", 'OR'],
+                    ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_OR],
 
                 ]
             ]);
@@ -395,7 +395,7 @@ class RetrieveTest extends TestSetup
                 'target' => "V",
                 'where' => [
                     ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
-                    ['price', Bag::COMPARATOR_GT, 2, 'OR']
+                    ['price', Bag::COMPARATOR_GT, 2, Bag::CONJUNCTION_OR]
                 ]
             ]);
 

@@ -9,8 +9,8 @@ use Spider\Drivers\Record;
 
 class Driver extends AbstractDriver implements DriverInterface
 {
-    protected $port;
-    protected $hostname = 'default';
+    public $port;
+    public $hostname = 'default';
 
     public function open()
     {
@@ -72,5 +72,72 @@ class Driver extends AbstractDriver implements DriverInterface
     public function runWriteCommand(CommandInterface $command)
     {
         // Nothing
+    }
+        /**
+     * Opens a transaction
+     *
+     * @return bool
+     */
+    public function startTransaction()
+    {
+    }
+
+    /**
+     * Closes a transaction
+     *
+     * @param bool $commit whether this is a commit (TRUE) or a rollback (FALSE)
+     *
+     * @return bool
+     */
+    public function stopTransaction($commit = TRUE)
+    {
+    }
+
+    /**
+     * Format a raw response to a set of collections
+     * This is for cases where a set of Vertices or Edges is expected in the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsSet($response)
+    {
+    }
+
+    /**
+     * Format a raw response to a tree of collections
+     * This is for cases where a set of Vertices or Edges is expected in tree format from the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsTree($response)
+    {
+    }
+
+    /**
+     * Format a raw response to a path of collections
+     * This is for cases where a set of Vertices or Edges is expected in path format from the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsPath($response)
+    {
+    }
+
+    /**
+     * Format a raw response to a scalar
+     * This is for cases where a scalar result is expected
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsScalar($response)
+    {
     }
 }

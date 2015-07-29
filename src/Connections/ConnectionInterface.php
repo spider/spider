@@ -4,6 +4,7 @@ namespace Spider\Connections;
 use Michaels\Manager\Contracts\ManagesItemsInterface;
 use Spider\Commands\CommandInterface;
 use Spider\Drivers\DriverInterface;
+use Spider\Drivers\Response;
 
 /**
  * Facilitates two-way communication with a data-store
@@ -44,7 +45,7 @@ interface ConnectionInterface extends ManagesItemsInterface
      * Passes to driver: executes a Query or read command
      *
      * @param CommandInterface $query
-     * @return array|Graph|Record
+     * @return Response
      */
     public function executeReadCommand(CommandInterface $query);
 
@@ -54,7 +55,7 @@ interface ConnectionInterface extends ManagesItemsInterface
      * These are the "CUD" in CRUD
      *
      * @param CommandInterface $command
-     * @return array|Graph|Record|mixed mixed values for some write commands
+     * @return Response
      */
     public function executeWriteCommand(CommandInterface $command);
 
