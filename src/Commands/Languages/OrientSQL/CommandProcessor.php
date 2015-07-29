@@ -4,7 +4,7 @@ namespace Spider\Commands\Languages\OrientSQL;
 use Spider\Commands\Bag;
 use Spider\Commands\Command;
 use Spider\Commands\CommandInterface;
-use Spider\Commands\ProcessorInterface;
+use Spider\Commands\Languages\ProcessorInterface;
 use Spider\Exceptions\NotSupportedException;
 use Spider\Graphs\ID as TargetID;
 
@@ -64,7 +64,7 @@ class CommandProcessor implements ProcessorInterface
         call_user_func([$this, $this->getBagsCommand()]);
 
         $command = new Command($this->script);
-        $command->setScriptLanguage('OrientSql');
+        $command->setScriptLanguage('OrientSQL');
         return $command;
     }
 

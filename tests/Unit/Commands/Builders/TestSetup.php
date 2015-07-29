@@ -1,11 +1,10 @@
 <?php
-namespace Spider\Test\Unit\Commands\Builder;
+namespace Spider\Test\Unit\Commands\Builders;
 
 use Codeception\Specify;
 use Spider\Commands\Bag;
+use Spider\Commands\BaseBuilder;
 use Spider\Commands\Builder;
-use Spider\Test\Stubs\CommandProcessorStub;
-use Spider\Test\Stubs\ConnectionStub;
 
 /**
  * Class CommandBuilderTestSetup
@@ -23,7 +22,7 @@ class TestSetup extends \PHPUnit_Framework_TestCase
 
     public function setup()
     {
-        $this->builder = new Builder(new CommandProcessorStub(), new ConnectionStub());
+        $this->builder = new BaseBuilder();
     }
 
     // To test a JSON representation of the Command passed through a mock processor (for dispatched commands)

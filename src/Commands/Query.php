@@ -58,7 +58,7 @@ class Query extends Builder
         return $this;
     }
 
-    public function insert($data)
+    public function insert($data = null)
     {
         parent::create($data);
         return $this->dispatch();

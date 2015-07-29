@@ -3,7 +3,7 @@ namespace Spider\Test\Stubs;
 
 use Spider\Commands\Bag;
 use Spider\Commands\Command;
-use Spider\Commands\ProcessorInterface;
+use Spider\Commands\Languages\ProcessorInterface;
 
 /**
  * Class CommandProcessorStub

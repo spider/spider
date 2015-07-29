@@ -1,8 +1,9 @@
 <?php
-namespace Spider\Test\Unit\Commands\Builder;
+namespace Spider\Test\Unit\Commands\Builders\BaseBuilder;
 
 use Codeception\Specify;
 use Spider\Commands\Bag;
+use Spider\Test\Unit\Commands\Builders\TestSetup;
 
 class CreateTest extends TestSetup
 {
@@ -18,17 +19,18 @@ class CreateTest extends TestSetup
             ];
 
             $actual = $this->builder
-                ->into('target')
-                ->insert($record);
+                ->target('target')
+                ->create($record)
+                ->getCommandBag();
 
-            $expected = $this->buildExpectedCommand([
+            $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_CREATE,
                 'target' => "target",
                 'data' => $record,
                 'createCount' => 1
             ]);
 
-            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
         });
 
         $this->specify("it inserts multiple records", function () {
@@ -38,17 +40,18 @@ class CreateTest extends TestSetup
             ];
 
             $actual = $this->builder
-                ->into('target')
-                ->insert($records);
+                ->target('target')
+                ->create($records)
+                ->getCommandBag();
 
-            $expected = $this->buildExpectedCommand([
+            $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_CREATE,
                 'target' => "target",
                 'data' => $records,
                 'createCount' => 2
             ]);
 
-            $this->assertEquals($expected, $actual->getScript(), "failed to return correct command bag");
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
         });
     }
 }

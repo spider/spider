@@ -29,12 +29,12 @@ class Builder extends BaseBuilder
      *
      * Alias of retrieve
      *
-     * @param null $projections
+     * @param null $data
      * @return Builder
      */
-    public function insert($projections = null)
+    public function insert($data = null)
     {
-        return $this->create($projections);
+        return $this->create($data);
     }
 
     /**
@@ -85,7 +85,7 @@ class Builder extends BaseBuilder
      */
     public function only($projections)
     {
-        $this->setProjections($projections);
+        $this->projections($projections);
         return $this;
     }
 
@@ -184,6 +184,7 @@ class Builder extends BaseBuilder
     public function all()
     {
         $this->bag->limit = false; // We want all records
+        return $this;
     }
 
     /**
@@ -193,6 +194,7 @@ class Builder extends BaseBuilder
     public function one()
     {
         $this->bag->limit = 1;
+        return $this;
     }
 
     /**

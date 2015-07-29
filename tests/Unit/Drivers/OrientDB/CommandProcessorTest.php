@@ -4,7 +4,7 @@ namespace Spider\Test\Unit\Drivers\OrientDB;
 use Codeception\Specify;
 use Spider\Commands\Bag;
 use Spider\Commands\Command;
-use Spider\Drivers\OrientDB\CommandProcessor;
+use Spider\Commands\Languages\OrientSQL\CommandProcessor;
 use Spider\Graphs\ID;
 
 class CommandProcessorTest extends \PHPUnit_Framework_TestCase
@@ -45,7 +45,9 @@ class CommandProcessorTest extends \PHPUnit_Framework_TestCase
             $query .= ' CONTENT ' . json_encode($bag->data);
             $query .= ' RETURN @this';
 
-            $expected = new Command($query);
+            $command = new Command($query);
+            $command->setScriptLanguage('OrientSQL');
+            $expected = $command;
 
             $actual = (new CommandProcessor())->process($bag);
             $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
@@ -65,7 +67,9 @@ class CommandProcessorTest extends \PHPUnit_Framework_TestCase
             $query .= ' MERGE ' . json_encode($bag->data);
             $query .= ' RETURN AFTER';
 
-            $expected = new Command($query);
+            $command = new Command($query);
+            $command->setScriptLanguage('OrientSQL');
+            $expected = $command;
 
             $actual = (new CommandProcessor())->process($bag);
             $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
@@ -86,7 +90,9 @@ class CommandProcessorTest extends \PHPUnit_Framework_TestCase
             $query .= ' LIMIT 10';
             $query .= ' RETURN AFTER';
 
-            $expected = new Command($query);
+            $command = new Command($query);
+            $command->setScriptLanguage('OrientSQL');
+            $expected = $command;
 
             $actual = (new CommandProcessor())->process($bag);
             $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
@@ -104,7 +110,9 @@ class CommandProcessorTest extends \PHPUnit_Framework_TestCase
 
             $query = 'DELETE VERTEX #12:1';
 
-            $expected = new Command($query);
+            $command = new Command($query);
+            $command->setScriptLanguage('OrientSQL');
+            $expected = $command;
 
             $actual = (new CommandProcessor())->process($bag);
             $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
@@ -122,7 +130,9 @@ class CommandProcessorTest extends \PHPUnit_Framework_TestCase
             $query .= $this->getWhereSql();
             $query .= ' LIMIT 10';
 
-            $expected = new Command($query);
+            $command = new Command($query);
+            $command->setScriptLanguage('OrientSQL');
+            $expected = $command;
 
             $actual = (new CommandProcessor())->process($bag);
             $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
@@ -140,7 +150,9 @@ class CommandProcessorTest extends \PHPUnit_Framework_TestCase
             $query = 'SELECT';
             $query .= ' FROM target';
 
-            $expected = new Command($query);
+            $command = new Command($query);
+            $command->setScriptLanguage('OrientSQL');
+            $expected = $command;
 
             $actual = (new CommandProcessor())->process($bag);
             $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
@@ -157,7 +169,9 @@ class CommandProcessorTest extends \PHPUnit_Framework_TestCase
             $query .= ' FROM target';
             $query .= $this->getWhereSql();
 
-            $expected = new Command($query);
+            $command = new Command($query);
+            $command->setScriptLanguage('OrientSQL');
+            $expected = $command;
 
             $actual = (new CommandProcessor())->process($bag);
             $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
@@ -182,7 +196,9 @@ class CommandProcessorTest extends \PHPUnit_Framework_TestCase
             $query .= ' ORDER BY orderField DESC';
             $query .= ' LIMIT 3';
 
-            $expected = new Command($query);
+            $command = new Command($query);
+            $command->setScriptLanguage('OrientSQL');
+            $expected = $command;
 
             $actual = (new CommandProcessor())->process($bag);
             $this->assertEquals($expected, $actual, 'failed to return expected Command');

@@ -68,7 +68,7 @@ class BaseBuilder
     public function retrieve($projections = null)
     {
         $this->bag->command = Bag::COMMAND_RETRIEVE;
-        $this->setProjections($projections);
+        $this->projections($projections);
         return $this;
     }
 
@@ -142,6 +142,31 @@ class BaseBuilder
     public function target($target)
     {
         $this->bag->target = $target;
+        return $this;
+    }
+
+    /**
+     * Set the projection fields in the current Command Bag
+     *
+     * This is used by `only()`, `select()`, and others. A projection is
+     * a field affected by the current command. Like `SELECT fieldname` in SQL
+     *
+     * @param $projections
+     * @return $this
+     */
+    public function projections($projections)
+    {
+        if (is_null($projections)) {
+            $this->bag->projections = [];
+            return $this;
+        }
+
+        // Ensure $projects is usable
+        if (!is_string($projections) && !is_array($projections)) {
+            throw new InvalidArgumentException("Projections must be a comma-separated string or an array");
+        }
+
+        $this->bag->projections = $this->csvToArray($projections);
         return $this;
     }
 
@@ -263,31 +288,6 @@ class BaseBuilder
     }
 
     /* Internals */
-    /**
-     * Set the projection fields in the current Command Bag
-     *
-     * This is used by `only()`, `select()`, and others. A projection is
-     * a field affected by the current command. Like `SELECT fieldname` in SQL
-     *
-     * @param $projections
-     * @return $this
-     */
-    protected function setProjections($projections)
-    {
-        if (is_null($projections)) {
-            $this->bag->projections = [];
-            return $this;
-        }
-
-        // Ensure $projects is usable
-        if (!is_string($projections) && !is_array($projections)) {
-            throw new InvalidArgumentException("Projections must be a comma-separated string or an array");
-        }
-
-        $this->bag->projections = $this->csvToArray($projections);
-        return $this;
-    }
-
     /**
      * Turns a Comma Separated Sting into an array. Used to set projections.
      *

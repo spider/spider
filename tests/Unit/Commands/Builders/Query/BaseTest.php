@@ -1,5 +1,5 @@
 <?php
-namespace Spider\Test\Unit\Commands\Builder;
+namespace Spider\Test\Unit\Commands\Builders\Query;
 
 use Codeception\Specify;
 use Spider\Commands\Bag;
@@ -143,25 +143,24 @@ class BaseTest extends TestSetup
         });
     }
 
-    /* Begin Tests */
-    public function testRetrievalMethods()
-    {
-        $this->specify("it gets all records", function () {
-            $actual = $this->builder
-                ->select()
-                ->from('v')
-                ->all();
-
-            $expected = $this->buildExpectedCommand([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => "v",
-                'limit' => false
-            ]);
-
-            $this->assertEquals($expected, $actual->getScript(), 'failed to return correct command');
-        });
-    }
+//    public function testRetrievalMethods()
+//    {
+//        $this->specify("it gets all records", function () {
+//            $actual = $this->builder
+//                ->select()
+//                ->from('v')
+//                ->all();
+//
+//            $expected = $this->buildExpectedCommand([
+//                'command' => Bag::COMMAND_RETRIEVE,
+//                'projections' => [],
+//                'target' => "v",
+//                'limit' => false
+//            ]);
+//
+//            $this->assertEquals($expected, $actual->getScript(), 'failed to return correct command');
+//        });
+//    }
 
     /* ToDo: first(), dispatch(), one() */
 }

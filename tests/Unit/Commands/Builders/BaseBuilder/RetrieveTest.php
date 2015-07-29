@@ -1,28 +1,28 @@
 <?php
-namespace Spider\Test\Unit\Commands\Builder;
+namespace Spider\Test\Unit\Commands\Builders\BaseBuilder;
 
 use Codeception\Specify;
 use Spider\Commands\Bag;
-use Spider\Graphs\ID as TargetID;
 use InvalidArgumentException;
+use Spider\Test\Unit\Commands\Builders\TestSetup;
 
 class RetrieveTest extends TestSetup
 {
     use Specify;
 
     /* Retrieval Tests */
-    public function testProjections()
+    public function testTargetAndProjections()
     {
         $this->specify("it returns specified data using a SELECT projections array", function () {
             $actual = $this->builder
-                ->select(['price', 'certified'])
-                ->record("#12:6767")// byId() alias
+                ->retrieve(['price', 'certified'])
+                ->target("target")// byId() alias
                 ->getCommandBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => ['price', 'certified'],
-                'target' => new TargetID("#12:6767")
+                'target' => 'target'
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -31,72 +31,43 @@ class RetrieveTest extends TestSetup
 
         $this->specify("it returns specified data using a SELECT projections string", function () {
             $actual = $this->builder
-                ->select('price, certified')
-                ->record("#12:6767")// byId() alias
+                ->retrieve('price, certified')
+                ->target('target')// byId() alias
                 ->getCommandBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => ['price', 'certified'],
-                'target' => new TargetID("#12:6767")
+                'target' => 'target'
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
-
         });
 
         $this->specify("it returns specified data using a only", function () {
             $actual = $this->builder
-                ->select()
-                ->record("#12:6767")// byId() alias
-                ->only(['price', 'certified'])
+                ->retrieve()
+                ->target('target')// byId() alias
+                ->projections(['price', 'certified'])
                 ->getCommandBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => ['price', 'certified'],
-                'target' => new TargetID("#12:6767")
+                'target' => 'target'
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
-
         });
 
         $this->specify("it throws exception if projections is not array or string", function () {
             $this->builder
-                ->select()
-                ->record("#12:6767")// byId() alias
-                ->only(3)
+                ->retrieve()
+                ->target('target')// byId() alias
+                ->projections(3)
                 ->getCommandBag();
 
         }, ['throws' => new InvalidArgumentException("Projections must be a comma-separated string or an array")]);
-
-        /*$this->specify("it throws exception if projections is an invalid string", function() {
-            $actual = $this->builder
-                ->select()
-                ->record("#12:6767") // byId() alias
-                ->only('only|this|one')
-                ->getCommandBag();
-
-        }, ['throws' => new InvalidArgumentException("Projections must be a comma-separated string or an array")]);*/
-    }
-
-    public function testFrom()
-    {
-        $this->specify("it returns all records using `from()`", function () {
-            $actual = $this->builder
-                ->select()
-                ->from("V")
-                ->getCommandBag();
-
-            $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => "V"
-            ]);
-
-            $this->assertEquals($expected, $actual, "failed to return correct command bag");
-        });
     }
 
     public function testSingleWhereFiltersAndCastValues() //todo: split this into two tests
@@ -105,8 +76,8 @@ class RetrieveTest extends TestSetup
 
             // True
             $actualTrue = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->where('certified', true)
                 ->getCommandBag();
 
@@ -124,8 +95,8 @@ class RetrieveTest extends TestSetup
             // False
             $this->builder->clear();
             $actualFalse = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->where('certified', false)
                 ->getCommandBag();
 
@@ -145,8 +116,8 @@ class RetrieveTest extends TestSetup
 
             // 1 (not true)
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->where('certified', 1)
                 ->getCommandBag();
 
@@ -164,8 +135,8 @@ class RetrieveTest extends TestSetup
             // 0 (not false)
             $this->builder->clear();
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->where('certified', 0)
                 ->getCommandBag();
 
@@ -183,8 +154,8 @@ class RetrieveTest extends TestSetup
             // Whole number
             $this->builder->clear();
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->where('certified', 13)
                 ->getCommandBag();
 
@@ -202,8 +173,8 @@ class RetrieveTest extends TestSetup
             // Decimal (float)
             $this->builder->clear();
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->where('certified', 1.77)
                 ->getCommandBag();
 
@@ -221,8 +192,8 @@ class RetrieveTest extends TestSetup
 
         $this->specify("it filters by a single where equals constraint: string", function () {
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->where('certified', 'yes')
                 ->getCommandBag();
 
@@ -243,8 +214,8 @@ class RetrieveTest extends TestSetup
     {
         $this->specify("it adds several AND WHERE constraints", function () {
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->where('name', 'michael')
                 ->where('last', 'wilson')
                 ->where('certified', true)
@@ -264,33 +235,10 @@ class RetrieveTest extends TestSetup
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
         });
 
-        $this->specify("it adds several AND WHERE constraints", function () {
-            $actual = $this->builder
-                ->select()
-                ->from("V")
-                ->where('name', 'michael')
-                ->andWhere('last', 'wilson')
-                ->andWhere('certified', true)
-                ->getCommandBag();
-
-            $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => "V",
-                'where' => [
-                    ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
-                    ['last', Bag::COMPARATOR_EQUAL, "wilson", Bag::CONJUNCTION_AND],
-                    ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_AND]
-                ]
-            ]);
-
-            $this->assertEquals($expected, $actual, "failed to return correct command bag");
-        });
-
         $this->specify("it adds an array of WHERE AND constraints", function () {
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->where(['name', '=', 'michael'])
                 ->where('certified', true)
                 ->getCommandBag();
@@ -310,8 +258,8 @@ class RetrieveTest extends TestSetup
 
         $this->specify("it adds an array of an array of WHERE AND constraints", function () {
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->where([
                     ['name', '=', 'michael'],
                     ['price', '>', 2]
@@ -334,33 +282,10 @@ class RetrieveTest extends TestSetup
 
     public function testMultipleOrWhereFilters()
     {
-        $this->specify("it adds several OR WHERE constraints", function () {
-            $actual = $this->builder
-                ->select()
-                ->from("V")
-                ->where('name', 'michael')
-                ->orWhere('last', 'wilson')
-                ->orWhere('certified', true)
-                ->getCommandBag();
-
-            $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => "V",
-                'where' => [
-                    ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
-                    ['last', Bag::COMPARATOR_EQUAL, "wilson", Bag::CONJUNCTION_OR],
-                    ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_OR]
-                ]
-            ]);
-
-            $this->assertEquals($expected, $actual, "failed to return correct command bag");
-        });
-
         $this->specify("it adds an array of WHERE OR constraints", function () {
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->where('certified', true)
                 ->where(['name', '=', 'michael', 'OR'])
                 ->getCommandBag();
@@ -381,8 +306,8 @@ class RetrieveTest extends TestSetup
 
         $this->specify("it adds an array of an array of WHERE AND constraints", function () {
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->where([
                     ['name', '=', 'michael'],
                     ['price', '>', 2, 'OR']
@@ -407,8 +332,8 @@ class RetrieveTest extends TestSetup
     {
         $this->specify("it adds a specified limit", function () {
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->limit(2)
                 ->getCommandBag();
 
@@ -427,8 +352,8 @@ class RetrieveTest extends TestSetup
     {
         $this->specify("it groups results by a single field", function () {
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->groupBy('certified')
                 ->getCommandBag();
 
@@ -444,8 +369,8 @@ class RetrieveTest extends TestSetup
 
         $this->specify("it groups results by a multiple fields array", function () {
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->groupBy(['certified', 'price'])
                 ->getCommandBag();
 
@@ -461,8 +386,8 @@ class RetrieveTest extends TestSetup
 
         $this->specify("it groups results by a multiple fields string", function () {
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->groupBy('certified, price')
                 ->getCommandBag();
 
@@ -481,8 +406,8 @@ class RetrieveTest extends TestSetup
     {
         $this->specify("it orders results by a field, asc by default", function () {
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->orderBy('price')
                 ->getCommandBag();
 
@@ -498,8 +423,8 @@ class RetrieveTest extends TestSetup
 
         $this->specify("it orders results by a field, desc", function () {
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->orderBy('price')->desc()
                 ->getCommandBag();
 
@@ -516,8 +441,8 @@ class RetrieveTest extends TestSetup
 
         $this->specify("it orders results by a field, asc", function () {
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->orderBy('price')->asc()
                 ->getCommandBag();
 
@@ -534,8 +459,8 @@ class RetrieveTest extends TestSetup
 
         $this->specify("it orders results by multiple fields, array", function () {
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->orderBy(['price', 'owner'])
                 ->getCommandBag();
 
@@ -552,8 +477,8 @@ class RetrieveTest extends TestSetup
 
         $this->specify("it orders results by multiple fields, string", function () {
             $actual = $this->builder
-                ->select()
-                ->from("V")
+                ->retrieve()
+                ->target("V")
                 ->orderBy('price, owner')
                 ->getCommandBag();
 
