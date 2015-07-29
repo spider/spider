@@ -81,7 +81,7 @@ class DeleteTest extends TestSetup
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_DELETE,
                 'target' => 'target',
-                'where' => [['birthday', Bag::COMPARATOR_EQUAL, 'apr', 'AND']],
+                'where' => [['birthday', Bag::COMPARATOR_EQUAL, 'apr', Bag::CONJUNCTION_AND]],
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");

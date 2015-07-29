@@ -39,7 +39,7 @@ class UpdateTest extends TestSetup
                 'command' => Bag::COMMAND_UPDATE,
                 'target' => 'users',
                 'limit' => 1,
-                'where' => [['username', Bag::COMPARATOR_EQUAL, 'chrismichaels84', 'AND']],
+                'where' => [['username', Bag::COMPARATOR_EQUAL, 'chrismichaels84', Bag::CONJUNCTION_AND]],
                 'data' => ['name' => 'chris']
             ]);
 
@@ -94,7 +94,7 @@ class UpdateTest extends TestSetup
                 'command' => Bag::COMMAND_UPDATE,
                 'target' => 'users',
                 'limit' => 1,
-                'where' => [['username', Bag::COMPARATOR_EQUAL, 'chrismichaels84', 'AND']],
+                'where' => [['username', Bag::COMPARATOR_EQUAL, 'chrismichaels84', Bag::CONJUNCTION_AND]],
                 'data' => ['name' => 'chris']
             ]);
 
@@ -117,7 +117,7 @@ class UpdateTest extends TestSetup
                 'command' => Bag::COMMAND_UPDATE,
                 'target' => 'users',
                 'limit' => false,
-                'where' => [['birth_month', Bag::COMPARATOR_EQUAL, 'apr', 'AND']],
+                'where' => [['birth_month', Bag::COMPARATOR_EQUAL, 'apr', Bag::CONJUNCTION_AND]],
                 'data' => $data
             ]);
 
