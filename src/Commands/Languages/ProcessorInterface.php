@@ -1,5 +1,6 @@
 <?php
-namespace Spider\Commands;
+namespace Spider\Commands\Languages;
+use Spider\Commands\Bag;
 
 /**
  * Command Processor Contract
@@ -14,8 +15,8 @@ interface ProcessorInterface
      * Commands\CommandInterface instance with a native command
      * script for whichever driver is specified
      *
-     * @param Bag $bag
-     * @return CommandInterface
+     * @param \Spider\Commands\Bag $bag
+     * @return \Spider\Commands\CommandInterface
      */
     public function process(Bag $bag);
 }

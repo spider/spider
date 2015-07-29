@@ -1,5 +1,5 @@
 <?php
-namespace Spider\Drivers\OrientDB;
+namespace Spider\Commands\Languages\OrientSQL;
 
 use Spider\Commands\Bag;
 use Spider\Commands\Command;
@@ -63,7 +63,9 @@ class CommandProcessor implements ProcessorInterface
         // Process the command using select(), insert(), update(), delete()
         call_user_func([$this, $this->getBagsCommand()]);
 
-        return new Command($this->script);
+        $command = new Command($this->script);
+        $command->setScriptLanguage('OrientSql');
+        return $command;
     }
 
     /**
