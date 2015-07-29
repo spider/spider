@@ -39,6 +39,9 @@ class Builder
         'OR' => Bag::CONJUNCTION_OR
     ];
 
+    /** @var string The response format desired. set, path, scalar, or tree  */
+    protected $format = 'set';
+
     /**
      * Creates a new instance of the Command Builder
      *
@@ -50,8 +53,7 @@ class Builder
         ProcessorInterface $processor,
         ConnectionInterface $connection = null,
         Bag $bag = null
-    )
-    {
+    ) {
         $this->processor = $processor;
         $this->connection = $connection;
         $this->bag = $bag ?: new Bag();
@@ -446,6 +448,31 @@ class Builder
     }
 
 
+    /* Response formats */
+    public function set()
+    {
+        $this->format = 'set';
+        return $this;
+    }
+
+    public function tree()
+    {
+        $this->format = 'tree';
+        return $this;
+    }
+
+    public function path()
+    {
+        $this->format = 'path';
+        return $this;
+    }
+
+    public function scalar()
+    {
+        $this->format = 'scalar';
+        return $this;
+    }
+
     /* Manage the Builder itself */
     /**
      * Clear the current Command Bag
@@ -496,7 +523,9 @@ class Builder
         $results = $this->connection->executeReadCommand($command);
         $this->connection->close();
 
-        return $results;
+        $formatMethod = "formatAs".ucfirst($this->format);
+
+        return $results->$formatMethod();
     }
 
     /**
