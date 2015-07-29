@@ -56,7 +56,8 @@ class BaseTest extends TestSetup
     }
 
     /* Return tests */
-    public function testReturnValuesOnCUD()
+    /* Also thoroughly tests csvToArray() */
+    public function testFromDbValuesOnCUD()
     {
         $this->specify("it returns nothing by default", function () {
             $actual = $this->builder
@@ -71,7 +72,7 @@ class BaseTest extends TestSetup
 
         $this->specify("it returns a whole object", function () {
             $actual = $this->builder
-                ->return()
+                ->fromDb()
                 ->getCommandBag();
 
             $expected = $this->buildExpectedBag([
@@ -83,7 +84,7 @@ class BaseTest extends TestSetup
 
         $this->specify("it returns a single value", function () {
             $actual = $this->builder
-                ->return('username')
+                ->fromDb('username')
                 ->getCommandBag();
 
             $expected = $this->buildExpectedBag([
@@ -95,7 +96,7 @@ class BaseTest extends TestSetup
 
         $this->specify("it several properties from array", function () {
             $actual = $this->builder
-                ->return(['username', 'password'])
+                ->fromDb(['username', 'password'])
                 ->getCommandBag();
 
             $expected = $this->buildExpectedBag([
@@ -107,7 +108,7 @@ class BaseTest extends TestSetup
 
         $this->specify("it several properties from csv string (one space)", function () {
             $actual = $this->builder
-                ->return('username, password')
+                ->fromDb('username, password')
                 ->getCommandBag();
 
             $expected = $this->buildExpectedBag([
@@ -117,9 +118,9 @@ class BaseTest extends TestSetup
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
         });
 
-        $this->specify("it several properties from csv string (no spaces)", function () {
+        $this->specify("it returns several properties from csv string (no spaces)", function () {
             $actual = $this->builder
-                ->return('username,password')
+                ->fromDb('username,password')
                 ->getCommandBag();
 
             $expected = $this->buildExpectedBag([
@@ -129,9 +130,9 @@ class BaseTest extends TestSetup
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
         });
 
-        $this->specify("it several properties from csv string (many spaces)", function () {
+        $this->specify("it returns several properties from csv string (many spaces)", function () {
             $actual = $this->builder
-                ->return('username,           password')
+                ->fromDb('username,           password')
                 ->getCommandBag();
 
             $expected = $this->buildExpectedBag([

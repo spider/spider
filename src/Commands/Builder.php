@@ -4,7 +4,6 @@ namespace Spider\Commands;
 use InvalidArgumentException;
 use Spider\Connections\ConnectionInterface;
 use Spider\Graphs\ID as TargetID;
-use Symfony\Component\Config\Definition\Exception\Exception;
 
 /**
  * Fluent Command Builder with optional connected driver
@@ -51,12 +50,14 @@ class Builder
         ProcessorInterface $processor,
         ConnectionInterface $connection = null,
         Bag $bag = null
-    ) {
+    )
+    {
         $this->processor = $processor;
         $this->connection = $connection;
         $this->bag = $bag ?: new Bag();
     }
 
+    /* Fluent Methods for building queries */
     /**
      * Add a `retrieve` clause to the current Command Bag
      *
@@ -83,6 +84,11 @@ class Builder
         return $this->retrieve($projections);
     }
 
+    /**
+     * Add an `insert` clause to the current command bag
+     * @param array $data
+     * @return mixed
+     */
     public function insert(array $data)
     {
         $this->bag->command = Bag::COMMAND_CREATE;
@@ -98,6 +104,12 @@ class Builder
         return $this->dispatch();
     }
 
+    /**
+     * An an `update` clause to the current command bag
+     * @param null $property
+     * @param null $value
+     * @return $this
+     */
     public function update($property = null, $value = null)
     {
         $this->bag->command = Bag::COMMAND_UPDATE;
@@ -119,13 +131,18 @@ class Builder
             $this->data($property, $value);
             return $this;
 
-        // Second, the $property is a target
+            // Second, the $property is a target
         } else {
             $this->from($property);
             return $this;
         }
     }
 
+    /**
+     * Update only the first record
+     * @param $target
+     * @return $this
+     */
     public function updateFirst($target)
     {
         $this->bag->command = Bag::COMMAND_UPDATE;
@@ -135,6 +152,11 @@ class Builder
         return $this;
     }
 
+    /**
+     * Add a `delete` clause to the current command bag
+     * @param null $record
+     * @return $this|mixed
+     */
     public function drop($record = null)
     {
         $this->bag->command = Bag::COMMAND_DELETE;
@@ -147,6 +169,12 @@ class Builder
         return $this;
     }
 
+    /**
+     * Add data to the current command bag (for insert and update)
+     * @param $property
+     * @param null $value
+     * @return $this
+     */
     public function data($property, $value = null)
     {
         if (is_array($property)) {
@@ -159,28 +187,33 @@ class Builder
         return $this;
     }
 
+    /**
+     * Alias of `data()`
+     * @param $property
+     * @param null $value
+     * @return Builder
+     */
     public function withData($property, $value = null)
     {
         return $this->data($property, $value);
     }
 
-    public function returnResponse($wanted = null)
+    /**
+     * In some cases, choose what the database sends back
+     * after the operation. For instance, if deleting
+     * Do you want the records affected, record
+     * before, or a simple `true` for success?
+     *
+     * $builder->drop(3)->fromDb('AFTER')
+     *
+     * @note NOT IMPLEMENTED YET see PR #21
+     * @param null $wanted
+     * @return $this
+     */
+    public function fromDb($wanted = null)
     {
         $this->bag->return = (is_null($wanted)) ? true : $this->csvToArray($wanted);
         return $this;
-    }
-
-    public function __call($name, $args)
-    {
-        /* Required so public api can be return() */
-        if ($name === 'return') {
-            return call_user_func_array([$this, 'returnResponse'], $args);
-        }
-
-        $class = get_called_class();
-        throw new \BadMethodCallException(
-            "Call to undefined method $class::$name()"
-        );
     }
 
     /**
@@ -195,7 +228,7 @@ class Builder
     }
 
     /**
-     * Add `retrieve` clause to the current Command Bag for a single record
+     * Add a record id to the current Command Bag as target
      * @param string|int $id The id of the record
      * @return Builder
      */
@@ -212,13 +245,18 @@ class Builder
         return $this->from(new TargetID($id));
     }
 
+    /**
+     * Add several records as target
+     * @param $ids
+     * @return Builder
+     */
     public function records($ids)
     {
         return $this->record($ids);
     }
 
     /**
-     * Add `retrieve` clause to the current Command Bag for a single record
+     * Alias of record
      * Alias of `record()`
      *
      * @param string|int $id The id of the record
@@ -240,6 +278,11 @@ class Builder
         return $this;
     }
 
+    /**
+     * Alias of from, used for fluency
+     * @param $target
+     * @return Builder
+     */
     public function into($target)
     {
         return $this->from($target);
@@ -369,38 +412,8 @@ class Builder
         return $this;
     }
 
-    /**
-     * Clear the current Command Bag
-     * @param array $properties
-     */
-    public function clear($properties = [])
-    {
-        $this->bag = new Bag($properties);
-        $this->command = null;
-    }
 
-    /**
-     * Dispatch a command
-     *
-     * Accepts either a CommandInterface or a string with
-     * the native script which is converted to a CommandInterface
-     *
-     * @param $command
-     * @return mixed Results from Command
-     */
-    public function command($command)
-    {
-        if ($command instanceof CommandInterface) {
-            return $this->dispatch($command);
-        }
-
-        if (is_string($command)) {
-            return $this->dispatch(new Command($command));
-        }
-
-        throw new InvalidArgumentException("`command()` only accepts strings or instances of `CommandInterface`");
-    }
-
+    /* Execute a command with limits */
     /**
      * Dispatch a retrieve command with no limit.
      * Return all the results
@@ -430,6 +443,40 @@ class Builder
     public function first()
     {
         return $this->one();
+    }
+
+
+    /* Manage the Builder itself */
+    /**
+     * Clear the current Command Bag
+     * @param array $properties
+     */
+    public function clear($properties = [])
+    {
+        $this->bag = new Bag($properties);
+        $this->command = null;
+    }
+
+    /**
+     * Execute a command directly from the public api
+     *
+     * Accepts either a CommandInterface or a string with
+     * the native script which is converted to a CommandInterface
+     *
+     * @param $command
+     * @return mixed Results from Command
+     */
+    public function command($command)
+    {
+        if ($command instanceof CommandInterface) {
+            return $this->dispatch($command);
+        }
+
+        if (is_string($command)) {
+            return $this->dispatch(new Command($command));
+        }
+
+        throw new InvalidArgumentException("`command()` only accepts strings or instances of `CommandInterface`");
     }
 
     /**
@@ -476,6 +523,8 @@ class Builder
         return $this->bag;
     }
 
+
+    /* Internals */
     /**
      * Process the current Command Bag through the
      * current Command Processor
@@ -529,7 +578,7 @@ class Builder
     }
 
     /**
-     * Turns a user-inputed sign into a constant
+     * Turns a user-inputted sign into a constant
      *
      * Used to turn things like '=' into Bag::COMPARATOR_EQUAL
      * in where constraints
@@ -537,7 +586,7 @@ class Builder
      * @param $sign
      * @return mixed
      */
-    public function signToConstant($sign)
+    protected function signToConstant($sign)
     {
         return $this->operators[$sign];
     }

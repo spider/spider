@@ -37,6 +37,7 @@ class Bag extends Object
      *
      * `[projection, operator, value, conjunction]`
      * `['username', static::COMPARATOR_EQUAL, 'michael', 'AND']`
+     * AND WHERE username = 'michael' for example
      */
     public $where = [];
 
@@ -46,16 +47,28 @@ class Bag extends Object
     /** @var int How many records to create */
     public $createCount = 0;
 
-    /** @var mixed What Response Format to return after CUD command. Defaults to nothing */
+    /**
+     * What do you want after an operation is complete?
+     *
+     * In some cases, choose what the database sends back
+     * after the operation. For instance, if deleting
+     * Do you want the records affected, record
+     * before, or a simple `true` for success?
+     *
+     * defaults to `false`, to be handled accordingly by processor
+     *
+     * $builder->drop(3)->fromDb('AFTER')
+     * @var mixed
+     */
     public $return = false;
 
     /** @var bool|int How many results to return. `false` no limit */
     public $limit = false;
 
-    /** @var bool|string Which field to group results by. `false` no grouping */
+    /** @var bool|string|array Which field to group results by. `false` no grouping */
     public $groupBy = false;
 
-    /** @var bool|string Which field to order results by. `false` no ordering */
+    /** @var bool|string|array Which field to order results by. `false` no ordering */
     public $orderBy = false;
 
     /** @var bool Order results Ascending (true) or Descending (false) */
