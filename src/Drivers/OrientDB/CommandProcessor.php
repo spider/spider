@@ -5,10 +5,11 @@ use Spider\Commands\Bag;
 use Spider\Commands\Command;
 use Spider\Commands\CommandInterface;
 use Spider\Commands\ProcessorInterface;
+use Spider\Exceptions\NotSupportedException;
 use Spider\Graphs\ID as TargetID;
 
 /**
- * Class QueryProcessor
+ * Class CommandProcessor
  * @package Spider\Drivers\OrientDB
  */
 class CommandProcessor implements ProcessorInterface
@@ -21,10 +22,10 @@ class CommandProcessor implements ProcessorInterface
         Bag::COMMAND_CREATE => 'INSERT',
         Bag::COMMAND_RETRIEVE => 'SELECT',
         Bag::COMMAND_UPDATE => 'UPDATE',
-        Bag::COMMAND_DELETE => 'DROP',
+        Bag::COMMAND_DELETE => 'DELETE',
     ];
 
-    /**A map of opperators from the Command Bag to Orient SQL
+    /**A map of operators from the Command Bag to Orient SQL
      * @var array
      */
     public $operatorsMap = [
@@ -39,6 +40,12 @@ class CommandProcessor implements ProcessorInterface
         Bag::CONJUNCTION_OR => 'OR',
     ];
 
+    /** @var  Bag The CommandBag to be processed */
+    protected $bag;
+
+    /** @var  string The script in process */
+    protected $script;
+
     /**
      * Command Processor
      *
@@ -49,90 +56,102 @@ class CommandProcessor implements ProcessorInterface
      * @param Bag $bag
      * @return CommandInterface
      */
-    /* ToDo: Divide this into multiple methods */
-    /* ToDo: Throw orient specific exceptions when needed */
     public function process(Bag $bag)
     {
-        // NOTE: the whitespace should be placed by the new clause at beginning, not the previous clause at the end
+        $this->init($bag);
 
-        // COMMAND
-        $script = $this->commandsMap[$bag->command];
+        // Process the command using select(), insert(), update(), delete()
+        call_user_func([$this, $this->getBagsCommand()]);
 
-        // <projections>
-        if (!empty($bag->projections)) {
-            $script .= " " . trim(implode(", ", $bag->projections), ", ");
-        }
+        return new Command($this->script);
+    }
 
-        // FROM
-        if ($bag->target instanceof TargetID) {
-            $target = $bag->target->id;
-        } else {
-            $target = $bag->target;
-        }
+    /**
+     * Process a COMMAND_CREATE bag
+     * @throws \Exception
+     */
+    public function insert()
+    {
+        /* CREATE VERTEX */
+        $this->startScript("INSERT INTO");
 
-        $script .= " FROM " . $target;
+        /* Users */
+        $this->appendTarget("");
 
-        // WHERE
-        if (!empty($bag->where)) {
-            $script .= " WHERE";
+        /* CONTENT {} */
+        $this->appendData("CONTENT");
+        $this->addToScript("RETURN @this");
+    }
 
-            foreach ($bag->where as $index => $value) {
-                if ($index !== 0) { // don't add conjunction to the first clause
-                    $script .= " " . (string)$this->toSqlOperator($value[3]);
-                }
+    /**
+     * Process a COMMAND_RETRIEVE bag
+     * @throws NotSupportedException
+     */
+    public function select()
+    {
+        /* SELECT */
+        $this->startScript("SELECT");
 
-                $script .= " " . (string)$value[0]; // field
-                $script .= " " . (string)$this->toSqlOperator($value[1]); // operator
-                $script .= " " . $this->castValue($value[2]); // value
-            }
-        }
+        /* name, username */
+        $this->appendProjections();
 
-        // GROUP BY
-        if (is_array($bag->groupBy)) {
-//
-//            // Perform compliance Check
-//            if (count($bag->groupBy) > 1) {
-//                throw new \InvalidArgumentException("Orient DB only allows one field in Group By");
-//            }
+        /* FROM Users */
+        $this->appendTarget("from");
 
-            $script .= " GROUP BY";
+        /* WHERE last_name = 'wilson' */
+        $this->appendWheres();
 
-            foreach ($bag->groupBy as $index => $field) {
-                if ($index !== 0) {
-                    $script .= ",";
-                }
+        /* GROUP BY country */
+        $this->appendGroupBy();
 
-                $script .= " $field";
-            }
-        }
+        /* ORDER BY date_joined ASC */
+        $this->appendOrderBy();
 
-        // ORDER BY
-        if (is_array($bag->orderBy)) {
-//
-//            // Perform compliance check
-//            if (count($bag->orderBy) > 1) {
-//                throw new \InvalidArgumentException("Orient DB only allows one field in Group By");
-//            }
+        /* LIMIT 20 */
+        $this->appendLimit();
+    }
 
-            $script .= " ORDER BY";
+    /**
+     * Process a COMMAND_UPDATE bag
+     * @throws \Exception
+     */
+    protected function update()
+    {
+        /* UPDATE */
+        $this->startScript("UPDATE");
 
-            foreach ($bag->orderBy as $index => $field) {
-                if ($index !== 0) {
-                    $script .= ",";
-                }
+        /* Users */
+        $this->appendTarget("");
 
-                $script .= " $field";
-            }
+        /* MERGE {} */
+        $this->appendData("MERGE");
 
-            $script .= ($bag->orderAsc) ? ' ASC' : ' DESC';
-        }
+        /* WHERE */
+        $this->appendWheres();
 
-        // LIMIT
-        if ($bag->limit) {
-            $script .= " LIMIT " . (string)$bag->limit;
-        }
+        /* LIMIT */
+        $this->appendLimit();
 
-        return new Command($script);
+        /* RETURN AFTER */
+        $this->addToScript("RETURN AFTER");
+    }
+
+    /**
+     * Process a COMMAND_DELETE bag
+     */
+    protected function delete()
+    {
+        /* DELETE VERTEX */
+        $this->startScript("DELETE VERTEX");
+
+        /* #12:1 | FROM Users */
+        $this->appendTarget(($this->bag->target instanceof TargetID) ? "" : "FROM");
+
+        /* WHERE */
+        $this->appendWheres();
+
+        /* LIMIT */
+        $this->appendLimit();
     }
 
     /**
@@ -164,5 +183,158 @@ class CommandProcessor implements ProcessorInterface
     public function toSqlOperator($operator)
     {
         return $this->operatorsMap[$operator];
+    }
+
+    /**
+     * Initialize the Command Processor
+     * @param Bag $bag
+     */
+    public function init(Bag $bag)
+    {
+        $this->bag = $bag;
+        $this->script = '';
+    }
+
+    /**
+     * Begin the current script without a space
+     * @param $clause
+     */
+    public function startScript($clause)
+    {
+        $this->script = $clause;
+    }
+
+    /**
+     * Add to the current script with a space before
+     * @param $clause
+     * @throws \Exception
+     */
+    public function addToScript($clause)
+    {
+        if (!is_string($clause)) {
+            throw new \Exception("Only strings can be added to script");
+        }
+
+        $this->script .= " " . $clause;
+    }
+
+    /**
+     * Append projections to current script
+     * @throws \Exception
+     */
+    protected function appendProjections()
+    {
+        if (!empty($this->bag->projections)) {
+            $this->addToScript(implode(", ", $this->bag->projections));
+        }
+    }
+
+    /**
+     * Append target to current script
+     * @param string $prefix
+     * @throws \Exception
+     */
+    protected function appendTarget($prefix = "from")
+    {
+        if ($this->bag->target instanceof TargetID) {
+            $target = $this->bag->target->id;
+        } else {
+            $target = $this->bag->target;
+        }
+
+        if ($prefix !== "") {
+            $this->addToScript(strtoupper($prefix));
+        }
+
+        $this->addToScript($target);
+    }
+
+    /**
+     * Append where constraints to current script
+     * @throws \Exception
+     */
+    protected function appendWheres()
+    {
+        if (!empty($this->bag->where)) {
+            $this->addToScript("WHERE");
+
+            foreach ($this->bag->where as $index => $value) {
+                if ($index !== 0) { // don't add conjunction to the first clause
+                    $this->addToScript((string)$this->toSqlOperator($value[3]));
+                }
+
+                $this->addToScript((string)$value[0]); // field
+                $this->addToScript((string)$this->toSqlOperator($value[1])); // operator
+                $this->addToScript($this->castValue($value[2])); // value
+            }
+        }
+    }
+
+    /**
+     * Append Group By to current script
+     * @throws NotSupportedException
+     * @throws \Exception
+     */
+    protected function appendGroupBy()
+    {
+        if (is_array($this->bag->groupBy)) {
+            // Perform compliance Check
+            if (count($this->bag->groupBy) > 1) {
+                throw new NotSupportedException("Orient DB only allows one field in Group By");
+            }
+
+            $this->addToScript("GROUP BY");
+            $this->addToScript(implode(",", $this->bag->groupBy));
+        }
+    }
+
+    /**
+     * Append OrderBy to current script
+     * @throws NotSupportedException
+     * @throws \Exception
+     */
+    protected function appendOrderBy()
+    {
+        if (is_array($this->bag->orderBy)) {
+            // Perform compliance check
+            if (count($this->bag->orderBy) > 1) {
+                throw new NotSupportedException("Orient DB only allows one field in Order By");
+            }
+
+            $this->addToScript("ORDER BY");
+            $this->addToScript(implode(",", $this->bag->orderBy));
+            $this->addToScript(($this->bag->orderAsc) ? 'ASC' : 'DESC');
+        }
+    }
+
+    /**
+     * Append Limit to current script
+     * @throws \Exception
+     */
+    protected function appendLimit()
+    {
+        if ($this->bag->limit) {
+            $this->addToScript("LIMIT " . (string)$this->bag->limit);
+        }
+    }
+
+    /**
+     * Append data to current script
+     * @param string $prefix
+     * @throws \Exception
+     */
+    protected function appendData($prefix = "content")
+    {
+        $this->addToScript(strtoupper($prefix));
+        $this->addToScript(json_encode($this->bag->data));
+    }
+
+    /**
+     * Returns the desired command (select, update, insert, delete)
+     * @return mixed
+     */
+    protected function getBagsCommand()
+    {
+        return $this->commandsMap[$this->bag->command];
     }
 }
