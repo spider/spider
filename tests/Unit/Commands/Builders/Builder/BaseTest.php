@@ -4,6 +4,7 @@ namespace Spider\Test\Unit\Commands\Builders\Builder;
 use Codeception\Specify;
 use Spider\Commands\Bag;
 use Spider\Graphs\ID as TargetID;
+use Spider\Test\Stubs\CommandProcessorStub;
 use Spider\Test\Unit\Commands\Builders\Builder\TestSetup;
 
 class BaseTest extends TestSetup
@@ -42,57 +43,54 @@ class BaseTest extends TestSetup
         });
     }
 
-    public function testRetrievalMethods()
+    public function testBuildScripts()
     {
-        $this->specify("it gets all records", function () {
+        $this->specify("sets optional language processors", function () {
+            $this->builder->setProcessor(new CommandProcessorStub());
+
             $actual = $this->builder
-                ->select()
-                ->from('v')
-                ->all()
+                ->retrieve('something')
+                ->target('target')
+                ->getScript();
+
+            $expected = $this->buildExpectedCommand([
+                'command' => Bag::COMMAND_RETRIEVE,
+                'target' => 'target',
+                'projections' => ['something']
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+    }
+
+    public function testResponseFormats()
+    {
+        $this->specify("sets response format as tree", function () {
+            $this->builder->setProcessor(new CommandProcessorStub());
+
+            $actual = $this->builder
+                ->tree()
                 ->getCommandBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => "v",
-                'limit' => false
+                'format' => Bag::FORMAT_TREE
             ]);
 
-            $this->assertEquals($expected, $actual, 'failed to return correct command');
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
         });
 
-        $this->specify("it gets one records", function () {
+        $this->specify("sets response format as path", function () {
+            $this->builder->setProcessor(new CommandProcessorStub());
+
             $actual = $this->builder
-                ->select()
-                ->from('v')
-                ->one()
+                ->path()
                 ->getCommandBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => "v",
-                'limit' => 1
+                'format' => Bag::FORMAT_PATH
             ]);
 
-            $this->assertEquals($expected, $actual, 'failed to return correct command');
-        });
-
-        $this->specify("it gets first records", function () {
-            $actual = $this->builder
-                ->select()
-                ->from('v')
-                ->first()
-                ->getCommandBag();
-
-            $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => "v",
-                'limit' => 1
-            ]);
-
-            $this->assertEquals($expected, $actual, 'failed to return correct command');
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
         });
     }
 }

@@ -2,36 +2,34 @@
 namespace Spider\Commands;
 
 use InvalidArgumentException;
+use Spider\Base\Collection;
 use Spider\Commands\Languages\ProcessorInterface;
 use Spider\Connections\ConnectionInterface;
 
 /**
- * Command Builder with sugar, no awareness of connections
+ * Command Builder with sugar, connections, and CommandProcessor
  */
 class Query extends Builder
 {
     /** @var ConnectionInterface Valid connection containing a driver */
     protected $connection;
 
-    /** @var ProcessorInterface Valid, Driver-Specific Command Processor to process Command Bag */
-    protected $processor;
-
-    /** @var Command The processed command ready for the driver to execute */
-    protected $command;
-
-    /** @var string The response format desired. set, path, scalar, or tree  */
-    protected $format = 'set';
+    /**
+     * @var string The response format desired. set, path, scalar, or tree
+     * @default Bag::FORMAT_SET
+     */
+    protected $format;
 
     /**
      * Creates a new instance of the Command Builder
-     *
+     * With a LanguageProcessor and Connection
      * @param ProcessorInterface $processor
      * @param ConnectionInterface|null $connection
      * @param Bag|null $bag
      */
     public function __construct(
         ProcessorInterface $processor,
-        ConnectionInterface $connection = null,
+        ConnectionInterface $connection,
         Bag $bag = null
     ) {
         parent::__construct($bag);
@@ -82,76 +80,7 @@ class Query extends Builder
         return $this;
     }
 
-
-    /* Execute a command with limits */
-    /**
-     * Dispatch a retrieve command with no limit.
-     * Return all the results
-     * @return mixed Command results
-     */
-    public function all()
-    {
-        parent::all();
-        return $this->dispatch();
-    }
-
-    /**
-     * Retrieve the first result by dispatching the current Command Bag.
-     * @return mixed Command results
-     */
-    public function one()
-    {
-        parent::one();
-        return $this->dispatch();
-    }
-
-    /**
-     * Retrieve the first result by dispatching the current Command Bag.
-     * Alias of `one()`
-     * @return mixed Command results
-     */
-    public function first()
-    {
-        return $this->one();
-    }
-
-
-    /* Response formats */
-    public function set()
-    {
-        $this->format = 'set';
-        return $this;
-    }
-
-    public function tree()
-    {
-        $this->format = 'tree';
-        return $this;
-    }
-
-    public function path()
-    {
-        $this->format = 'path';
-        return $this;
-    }
-
-    public function scalar()
-    {
-        $this->format = 'scalar';
-        return $this;
-    }
-
-    /* Manage the Builder itself */
-    /**
-     * Clear the current Command Bag
-     * @param array $properties
-     */
-    public function clear($properties = [])
-    {
-        parent::clear($properties);
-        $this->command = null;
-    }
-
+    /* Dispatch */
     /**
      * Execute a command directly from the public api
      *
@@ -159,7 +88,7 @@ class Query extends Builder
      * the native script which is converted to a CommandInterface
      *
      * @param $command
-     * @return mixed Results from Command
+     * @return mixed Results from Command as SpiderResponse
      */
     public function command($command)
     {
@@ -181,43 +110,132 @@ class Query extends Builder
      * current Command Bag is processed via the Command Processor
      *
      * @param CommandInterface|null $command
-     * @return mixed Results from the command
+     * @return mixed Results from the command as a SpiderResponse
      */
     public function dispatch(CommandInterface $command = null)
     {
-        $command = $command ?: $this->getCommand();
-
+        $command = $command ?: $this->getScript(); // returns `Command`
         $this->connection->open();
-        $results = $this->connection->executeReadCommand($command);
-        $this->connection->close();
 
-        $formatMethod = "formatAs".ucfirst($this->format);
-
-        return $results->$formatMethod();
-    }
-
-    /**
-     * Return the current, processed Command
-     *
-     * If no command is set, build the command from current Command Bag
-     * @return Command
-     */
-    public function getCommand()
-    {
-        if (!$this->command) {
-            $this->buildCommand();
+        if ($command->getRw() === 'read') {
+            $results = $this->connection->executeReadCommand($command);
+        } else {
+            $results = $this->connection->executeWriteCommand($command);
         }
 
-        return $this->command;
+        // Are we requesting a specific format?
+        if ($this->format) {
+            // Pass the results through the appropriate formatAsX Driver method
+            $formats = [
+                Bag::FORMAT_SET => 'formatAsSet',
+                Bag::FORMAT_SCALAR => 'formatAsScalar',
+                Bag::FORMAT_PATH => 'formatAsPath',
+                Bag::FORMAT_TREE => 'formatAsTree'
+            ];
+
+            return $this->connection->$formats[$this->format]($results);
+            /* For tests, returns Response above with ::formattedAsSet = true; */
+        }
+
+        // Nope, return the SpiderResponse
+        return $results;
     }
 
-    /* Internals */
+    /* Dispatch with limits */
     /**
-     * Process the current Command Bag through the
-     * current Command Processor
+     * Dispatch a retrieve command with no limit.
+     * Return all the results
+     * @return array|Collection Results formatted as a Set
      */
-    protected function buildCommand()
+    public function all()
     {
-        $this->command = $this->processor->process($this->bag);
+        $this->limit(false);
+        $this->setFormat(Bag::FORMAT_SET);
+        return $this->dispatch();
+    }
+
+    /**
+     * Retrieve the first result by dispatching the current Command Bag.
+     * @return Collection Results formatted as a set with single collection
+     */
+    public function one()
+    {
+        parent::first();
+        $this->setFormat(Bag::FORMAT_SET);
+        return $this->dispatch();
+    }
+
+    /**
+     * Retrieve the first result by dispatching the current Command Bag.
+     * @return Collection Results formatted as a set with single collection
+     */
+    public function first()
+    {
+        return $this->one();
+    }
+
+    /* Dispatch with Response formats */
+    /**
+     * Dispatches Command and formats results as a Set.
+     * @return array|Collection Results formatted as a set
+     */
+    public function set()
+    {
+        $this->setFormat(Bag::FORMAT_SET);
+        return $this->dispatch();
+    }
+
+    /**
+     * Dispatches Command and formats results as a Tree.
+     * @return array|Collection Results formatted as a tree
+     */
+    public function tree()
+    {
+        $this->setFormat(Bag::FORMAT_TREE);
+        return $this->dispatch();
+    }
+
+    /**
+     * Dispatches Command and formats results as a Path.
+     * @return array|Collection Results formatted as a path
+     */
+    public function path()
+    {
+        $this->setFormat(Bag::FORMAT_PATH);
+        return $this->dispatch();
+    }
+
+    /**
+     * Dispatches Command and formats results as a scalar.
+     * @return string|bool|int Results formatted as a scalar
+     */
+    public function scalar()
+    {
+        $this->setFormat(Bag::FORMAT_SCALAR);
+        return $this->dispatch();
+    }
+
+    /* Manage the Builder itself */
+    /**
+     * Clear the current Command Bag
+     * @param array $properties
+     */
+    public function clear($properties = [])
+    {
+        parent::clear($properties);
+        $this->script = null;
+    }
+
+    /**
+     * Sets the desired response format
+     * @param $format
+     */
+    protected function setFormat($format)
+    {
+        // For the driver to formatAsX()
+        $this->format = $format;
+
+        // Flag for the Language Processor
+        $this->bag->format = $format;
     }
 }

@@ -5,6 +5,7 @@ use InvalidArgumentException;
 
 /**
  * Fluent Command Builder, simple bag manipulation
+ * No awareness of connection OR processor
  */
 class BaseBuilder
 {
@@ -30,7 +31,6 @@ class BaseBuilder
 
     /**
      * Creates a new instance of the Command Builder
-     *
      * @param Bag|null $bag
      */
     public function __construct(Bag $bag = null)

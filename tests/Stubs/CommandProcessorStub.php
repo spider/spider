@@ -20,6 +20,8 @@ class CommandProcessorStub implements ProcessorInterface
      */
     public function process(Bag $bag)
     {
-        return new Command(json_encode($bag));
+        $command = new Command(json_encode($bag));
+        $command->setRw('read');
+        return $command;
     }
 }

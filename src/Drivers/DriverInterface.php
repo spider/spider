@@ -109,7 +109,7 @@ interface DriverInterface
      *
      * @param mixed $response the raw DB response
      *
-     * @return Response Spider consistent response
+     * @return mixed Scalar value
      */
     public function formatAsScalar($response);
 }

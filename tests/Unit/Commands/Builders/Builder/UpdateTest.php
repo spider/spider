@@ -45,29 +45,5 @@ class UpdateTest extends TestSetup
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
         });
-
-        $this->specify("it updates multiple records via `withData()`", function () {
-            $data = [
-                ['birth_month' => 'April'],
-                ['two' => 2],
-            ];
-
-            $actual = $this->builder
-                ->update('users')
-                ->where('birth_month', 'apr')
-                ->withData($data)
-                ->all()
-                ->getCommandBag();
-
-            $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_UPDATE,
-                'target' => 'users',
-                'limit' => false,
-                'where' => [['birth_month', Bag::COMPARATOR_EQUAL, 'apr', Bag::CONJUNCTION_AND]],
-                'data' => $data
-            ]);
-
-            $this->assertEquals($expected, $actual, "failed to return correct command bag");
-        });
     }
 }

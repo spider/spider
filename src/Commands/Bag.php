@@ -74,6 +74,15 @@ class Bag extends Object
     /** @var bool Order results Ascending (true) or Descending (false) */
     public $orderAsc = true;
 
+    /**
+     * Flag a response format for the query to return
+     * `Builder` allows SET, PATH, and TREE.
+     * Defaults to SET, which means a normal response
+     *
+     * @var int Constant FORMAT_*
+     */
+    public $format = 300; // defaults to FORMAT_SET
+
     /* Constants */
     /* ToDo: Is it best to move the constants to their own class? */
 
@@ -95,6 +104,12 @@ class Bag extends Object
     const COMMAND_RETRIEVE = 210;
     const COMMAND_UPDATE = 220;
     const COMMAND_DELETE = 230;
+
+    /* Response Formats */
+    const FORMAT_SET = 300;
+    const FORMAT_PATH = 310;
+    const FORMAT_SCALAR = 320;
+    const FORMAT_TREE = 330;
 
     /**
      * Return a new instance of a Command Bag

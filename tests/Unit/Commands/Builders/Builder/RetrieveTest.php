@@ -421,6 +421,23 @@ class RetrieveTest extends TestSetup
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
         });
+
+        $this->specify("it gets first records", function () {
+            $actual = $this->builder
+                ->select()
+                ->from('v')
+                ->first()
+                ->getCommandBag();
+
+            $expected = $this->buildExpectedBag([
+                'command' => Bag::COMMAND_RETRIEVE,
+                'projections' => [],
+                'target' => "v",
+                'limit' => 1
+            ]);
+
+            $this->assertEquals($expected, $actual, 'failed to return correct command');
+        });
     }
 
     public function testGroupBy()

@@ -152,6 +152,7 @@ class CommandProcessorTest extends \PHPUnit_Framework_TestCase
 
             $command = new Command($query);
             $command->setScriptLanguage('OrientSQL');
+            $command->setRw('read');
             $expected = $command;
 
             $actual = (new CommandProcessor())->process($bag);
@@ -171,6 +172,7 @@ class CommandProcessorTest extends \PHPUnit_Framework_TestCase
 
             $command = new Command($query);
             $command->setScriptLanguage('OrientSQL');
+            $command->setRw('read');
             $expected = $command;
 
             $actual = (new CommandProcessor())->process($bag);
@@ -198,6 +200,7 @@ class CommandProcessorTest extends \PHPUnit_Framework_TestCase
 
             $command = new Command($query);
             $command->setScriptLanguage('OrientSQL');
+            $command->setRw('read');
             $expected = $command;
 
             $actual = (new CommandProcessor())->process($bag);

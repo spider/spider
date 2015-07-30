@@ -1,15 +1,36 @@
 <?php
 namespace Spider\Commands;
 
-use InvalidArgumentException;
-use Spider\Connections\ConnectionInterface;
+use Spider\Commands\Languages\ProcessorInterface;
 use Spider\Graphs\ID as TargetID;
 
 /**
  * Command Builder with sugar, no awareness of connections
+ * Optional CommandProcessor
  */
 class Builder extends BaseBuilder
 {
+    /** @var ProcessorInterface Valid, Driver-Specific Command Processor to process Command Bag */
+    protected $processor;
+
+    /** @var Command The processed command ready for the driver to execute */
+    protected $script;
+
+    /**
+     * Creates a new instance of the Command Builder
+     * With an optional language processor
+     *
+     * @param ProcessorInterface $processor
+     * @param Bag|null $bag
+     */
+    public function __construct(
+        ProcessorInterface $processor = null,
+        Bag $bag = null
+    ) {
+        parent::__construct($bag);
+        $this->processor = $processor;
+    }
+
     /* Fluent Methods for building queries */
     /**
      * Add a `select` clause to the current Command Bag
@@ -175,28 +196,7 @@ class Builder extends BaseBuilder
         return $this->where($property, $value, $operator, 'AND');
     }
 
-    /* Execute a command with limits */
-    /**
-     * Dispatch a retrieve command with no limit.
-     * Return all the results
-     * @return mixed Command results
-     */
-    public function all()
-    {
-        $this->bag->limit = false; // We want all records
-        return $this;
-    }
-
-    /**
-     * Retrieve the first result by dispatching the current Command Bag.
-     * @return mixed Command results
-     */
-    public function one()
-    {
-        $this->bag->limit = 1;
-        return $this;
-    }
-
+    /* Set limits */
     /**
      * Retrieve the first result by dispatching the current Command Bag.
      * Alias of `one()`
@@ -204,6 +204,71 @@ class Builder extends BaseBuilder
      */
     public function first()
     {
-        return $this->one();
+        $this->bag->limit = 1;
+        return $this;
+    }
+
+    /* Flag Response Formats */
+    /**
+     * Flag the desired response as `tree`
+     * @return $this
+     */
+    public function tree()
+    {
+        $this->bag->format = Bag::FORMAT_TREE;
+        return $this;
+    }
+
+    /**
+     * Flag the desired response as `path`
+     * @return $this
+     */
+    public function path()
+    {
+        $this->bag->format = Bag::FORMAT_PATH;
+        return $this;
+    }
+
+    /**
+     * Set the CommandProcessor
+     * @param ProcessorInterface $processor
+     */
+    public function setProcessor(ProcessorInterface $processor)
+    {
+        $this->processor = $processor;
+    }
+
+    /**
+     * Is there a valid processor attached
+     * @return bool
+     */
+    public function hasProcessor()
+    {
+        return isset($this->processor) && $this->processor instanceof ProcessorInterface;
+    }
+
+    /**
+     * Processes the current command bag
+     * @param ProcessorInterface $processor
+     * @return Command
+     * @throws \Exception
+     */
+    public function getScript(ProcessorInterface $processor = null)
+    {
+        if ($processor) {
+            $this->setProcessor($processor);
+        } else {
+            if (!$this->hasProcessor()) {
+                throw new \Exception(
+                    "`Builder` requires a valid instance of Spider\\Languages\\ProcessorInterface to build scripts"
+                );
+            }
+        }
+
+        $this->script = $this->processor->process(
+            $this->getCommandBag()
+        );
+
+        return $this->script;
     }
 }
