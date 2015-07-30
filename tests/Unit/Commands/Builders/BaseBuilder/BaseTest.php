@@ -9,13 +9,13 @@ class BaseTest extends TestSetup
 {
     use Specify;
 
-    /* Command Bag Tests */
-    public function testCreate()
+    /* Manage the Command Bag */
+    public function testCreateBag()
     {
         $this->assertEquals(new Bag(), $this->builder->getCommandBag(), "failed to return an empty bag");
     }
 
-    public function testClear()
+    public function testClearBag()
     {
         $this->builder
             ->retrieve()
@@ -100,5 +100,15 @@ class BaseTest extends TestSetup
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
         });
+
+        $this->specify("it throws exception if projections is not array or string", function () {
+            $this->builder
+                ->retrieve()
+                ->target('target')// byId() alias
+                ->projections(3)
+                ->getCommandBag();
+
+        }, ['throws' => new \InvalidArgumentException("Projections must be a comma-separated string or an array")]);
+
     }
 }

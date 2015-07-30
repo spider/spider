@@ -9,30 +9,13 @@ class UpdateTest extends TestSetup
 {
     use Specify;
 
-    /* Update Tests */
-    public function testUpdateRecords()
+    public function testUpdateFirst()
     {
-        $this->specify("it updates a single record with a single value by ID", function () {
+        $this->specify("it updates a single record using updateFirst and data", function () {
             $actual = $this->builder
-                ->update('name', 'chris')
-                ->record(3)
-                ->getCommandBag();
-
-            $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_UPDATE,
-                'target' => new TargetID(3),
-                'data' => ['name' => 'chris']
-            ]);
-
-            $this->assertEquals($expected, $actual, "failed to return correct command bag");
-        });
-
-        $this->specify("it updates a single record with a target and constraint", function () {
-            $actual = $this->builder
-                ->update('name', 'chris')
+                ->updateFirst('users')
                 ->where('username', 'chrismichaels84')
-                ->from('users')
-                ->limit(1)
+                ->data('name', 'chris')
                 ->getCommandBag();
 
             $expected = $this->buildExpectedBag([

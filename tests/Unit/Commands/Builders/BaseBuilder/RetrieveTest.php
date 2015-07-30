@@ -11,186 +11,12 @@ class RetrieveTest extends TestSetup
     use Specify;
 
     /* Retrieval Tests */
-    public function testTargetAndProjections()
+
+    // Projections tested in BaseTest
+
+    public function testWhereFilters()
     {
-        $this->specify("it returns specified data using a SELECT projections array", function () {
-            $actual = $this->builder
-                ->retrieve(['price', 'certified'])
-                ->target("target")// byId() alias
-                ->getCommandBag();
-
-            $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => ['price', 'certified'],
-                'target' => 'target'
-            ]);
-
-            $this->assertEquals($expected, $actual, "failed to return correct command bag");
-
-        });
-
-        $this->specify("it returns specified data using a SELECT projections string", function () {
-            $actual = $this->builder
-                ->retrieve('price, certified')
-                ->target('target')// byId() alias
-                ->getCommandBag();
-
-            $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => ['price', 'certified'],
-                'target' => 'target'
-            ]);
-
-            $this->assertEquals($expected, $actual, "failed to return correct command bag");
-        });
-
-        $this->specify("it returns specified data using a only", function () {
-            $actual = $this->builder
-                ->retrieve()
-                ->target('target')// byId() alias
-                ->projections(['price', 'certified'])
-                ->getCommandBag();
-
-            $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => ['price', 'certified'],
-                'target' => 'target'
-            ]);
-
-            $this->assertEquals($expected, $actual, "failed to return correct command bag");
-        });
-
-        $this->specify("it throws exception if projections is not array or string", function () {
-            $this->builder
-                ->retrieve()
-                ->target('target')// byId() alias
-                ->projections(3)
-                ->getCommandBag();
-
-        }, ['throws' => new InvalidArgumentException("Projections must be a comma-separated string or an array")]);
-    }
-
-    public function testSingleWhereFiltersAndCastValues() //todo: split this into two tests
-    {
-        $this->specify("it filters by a single where equals constraint: boolean", function () {
-
-            // True
-            $actualTrue = $this->builder
-                ->retrieve()
-                ->target("V")
-                ->where('certified', true)
-                ->getCommandBag();
-
-            $expectedTrue = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => "V",
-                'where' => [
-                    ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_AND]
-                ]
-            ]);
-
-            $this->assertEquals($expectedTrue, $actualTrue, "failed to return correct command bag: true");
-
-            // False
-            $this->builder->clear();
-            $actualFalse = $this->builder
-                ->retrieve()
-                ->target("V")
-                ->where('certified', false)
-                ->getCommandBag();
-
-            $expectedFalse = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => "V",
-                'where' => [
-                    ['certified', Bag::COMPARATOR_EQUAL, false, Bag::CONJUNCTION_AND]
-                ]
-            ]);
-
-            $this->assertEquals($expectedFalse, $actualFalse, "failed to return correct command bag: false");
-        });
-
-        $this->specify("it filters by a single where equals constraint: int", function () {
-
-            // 1 (not true)
-            $actual = $this->builder
-                ->retrieve()
-                ->target("V")
-                ->where('certified', 1)
-                ->getCommandBag();
-
-            $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => "V",
-                'where' => [
-                    ['certified', Bag::COMPARATOR_EQUAL, 1, Bag::CONJUNCTION_AND]
-                ]
-            ]);
-
-            $this->assertEquals($expected, $actual, "failed to return correct command bag");
-
-            // 0 (not false)
-            $this->builder->clear();
-            $actual = $this->builder
-                ->retrieve()
-                ->target("V")
-                ->where('certified', 0)
-                ->getCommandBag();
-
-            $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => "V",
-                'where' => [
-                    ['certified', Bag::COMPARATOR_EQUAL, 0, Bag::CONJUNCTION_AND]
-                ]
-            ]);
-
-            $this->assertEquals($expected, $actual, "failed to return correct command bag");
-
-            // Whole number
-            $this->builder->clear();
-            $actual = $this->builder
-                ->retrieve()
-                ->target("V")
-                ->where('certified', 13)
-                ->getCommandBag();
-
-            $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => "V",
-                'where' => [
-                    ['certified', Bag::COMPARATOR_EQUAL, 13, Bag::CONJUNCTION_AND]
-                ]
-            ]);
-
-            $this->assertEquals($expected, $actual, "failed to return correct command bag");
-
-            // Decimal (float)
-            $this->builder->clear();
-            $actual = $this->builder
-                ->retrieve()
-                ->target("V")
-                ->where('certified', 1.77)
-                ->getCommandBag();
-
-            $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => "V",
-                'where' => [
-                    ['certified', Bag::COMPARATOR_EQUAL, 1.77, Bag::CONJUNCTION_AND]
-                ]
-            ]);
-
-            $this->assertEquals($expected, $actual, "failed to return correct command bag");
-        });
-
-        $this->specify("it filters by a single where equals constraint: string", function () {
+        $this->specify("it filters by a single where equals constraint", function () {
             $actual = $this->builder
                 ->retrieve()
                 ->target("V")
@@ -202,22 +28,18 @@ class RetrieveTest extends TestSetup
                 'projections' => [],
                 'target' => "V",
                 'where' => [
-                    ['certified', Bag::COMPARATOR_EQUAL, "yes", Bag::CONJUNCTION_AND]
+                    ['certified', Bag::COMPARATOR_EQUAL, 'yes', Bag::CONJUNCTION_AND]
                 ]
             ]);
 
-            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+            $this->assertEquals($expected, $actual, "failed to return correct command bag: true");
         });
-    }
 
-    public function testMultipleAndWhereFilters()
-    {
         $this->specify("it adds several AND WHERE constraints", function () {
             $actual = $this->builder
                 ->retrieve()
                 ->target("V")
                 ->where('name', 'michael')
-                ->where('last', 'wilson')
                 ->where('certified', true)
                 ->getCommandBag();
 
@@ -227,7 +49,6 @@ class RetrieveTest extends TestSetup
                 'target' => "V",
                 'where' => [
                     ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
-                    ['last', Bag::COMPARATOR_EQUAL, "wilson", Bag::CONJUNCTION_AND],
                     ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_AND]
                 ]
             ]);
@@ -278,10 +99,7 @@ class RetrieveTest extends TestSetup
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
         });
-    }
 
-    public function testMultipleOrWhereFilters()
-    {
         $this->specify("it adds an array of WHERE OR constraints", function () {
             $actual = $this->builder
                 ->retrieve()

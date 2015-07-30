@@ -81,6 +81,10 @@ class Builder extends BaseBuilder
     {
         $this->delete(); // set the delete command
 
+        if (is_array($record)) {
+            $this->records($record);
+        }
+
         if (!is_null($record)) {
             $this->record($record);
         }

@@ -1,5 +1,5 @@
 <?php
-namespace Spider\Test\Unit\Drivers\OrientDB;
+namespace Spider\Test\Unit\Commands\Languages;
 
 use Codeception\Specify;
 use Spider\Commands\Bag;
@@ -7,7 +7,7 @@ use Spider\Commands\Command;
 use Spider\Commands\Languages\OrientSQL\CommandProcessor;
 use Spider\Graphs\ID;
 
-class CommandProcessorTest extends \PHPUnit_Framework_TestCase
+class OrientSqlProcessorTest extends \PHPUnit_Framework_TestCase
 {
     use Specify;
 
@@ -16,14 +16,14 @@ class CommandProcessorTest extends \PHPUnit_Framework_TestCase
         return [
             ['one', Bag::COMPARATOR_EQUAL, 'one', Bag::CONJUNCTION_AND],
             ['two', Bag::COMPARATOR_GT, 2, Bag::CONJUNCTION_AND],
-            ['three', Bag::COMPARATOR_LT, 3, Bag::CONJUNCTION_OR],
+            ['three', Bag::COMPARATOR_LT, 3.14, Bag::CONJUNCTION_OR],
             ['four', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_AND]
         ];
     }
 
     protected function getWhereSql()
     {
-        return " WHERE one = 'one' AND two > 2 OR three < 3 AND four = true";
+        return " WHERE one = 'one' AND two > 2 OR three < 3.14 AND four = true";
     }
 
     protected function getData()

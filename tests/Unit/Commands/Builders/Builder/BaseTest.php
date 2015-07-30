@@ -7,6 +7,7 @@ use Spider\Graphs\ID as TargetID;
 use Spider\Test\Stubs\CommandProcessorStub;
 use Spider\Test\Unit\Commands\Builders\Builder\TestSetup;
 
+/* BaseBuilder tested elsewhere */
 class BaseTest extends TestSetup
 {
     use Specify;
@@ -43,7 +44,7 @@ class BaseTest extends TestSetup
         });
     }
 
-    public function testBuildScripts()
+    public function testGetScript()
     {
         $this->specify("sets optional language processors", function () {
             $this->builder->setProcessor(new CommandProcessorStub());
@@ -63,6 +64,7 @@ class BaseTest extends TestSetup
         });
     }
 
+    // Does no dispatching, only flags the bag
     public function testResponseFormats()
     {
         $this->specify("sets response format as tree", function () {

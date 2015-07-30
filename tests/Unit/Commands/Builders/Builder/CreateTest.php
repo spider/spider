@@ -10,7 +10,7 @@ class CreateTest extends TestSetup
     use Specify;
 
     /* Create Tests */
-    public function testCreateRecords()
+    public function testCreateSugars()
     {
         $this->specify("it uses into and insert aliases", function () {
             $record = [

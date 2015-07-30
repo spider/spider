@@ -7,7 +7,7 @@ use Spider\Commands\Languages\ProcessorInterface;
 use Spider\Connections\ConnectionInterface;
 
 /**
- * Command Builder with sugar, connections, and CommandProcessor
+ * Command Builder with connections and CommandProcessor
  */
 class Query extends Builder
 {
@@ -59,6 +59,11 @@ class Query extends Builder
     public function insert($data = null)
     {
         parent::create($data);
+
+        if (is_null($data)) {
+            return $this;
+        }
+
         return $this->dispatch();
     }
 
@@ -152,6 +157,15 @@ class Query extends Builder
         $this->limit(false);
         $this->setFormat(Bag::FORMAT_SET);
         return $this->dispatch();
+    }
+
+    /**
+     * Alias of set()
+     * @return array|Collection
+     */
+    public function get()
+    {
+        return $this->set();
     }
 
     /**
