@@ -21,13 +21,13 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         $this->connections = [
             'default'     => 'default-connection',
             'default-connection' => [
-                'driver' => 'Spider\Test\Stubs\FirstDriverStub',
+                'driver' => 'Spider\Test\Stubs\FirstDriverStub\Driver',
                 'username' => 'username',
                 'host' => 'host',
                 'pass' => 'pass'
             ],
             'connection-one' => [
-                'driver' => 'Spider\Test\Stubs\SecondDriverStub',
+                'driver' => 'Spider\Test\Stubs\SecondDriverStub\Driver',
                 'credentials' => 'one-credentials',
                 'other' => 'one-other'
             ],
@@ -55,7 +55,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
             // Connection is using the correct driver
             $this->assertEquals(
-                $this->connections['default-connection']['driver'] . '\Driver',
+                $this->connections['default-connection']['driver'],
                 $connection->getDriverName(),
                 "failed to set correct driver"
             );
@@ -84,7 +84,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
             // Connection is using the correct driver
             $this->assertEquals(
-                $this->connections['connection-one']['driver'] . '\Driver',
+                $this->connections['connection-one']['driver'],
                 $connection->getDriverName(),
                 "failed to set correct driver"
             );
