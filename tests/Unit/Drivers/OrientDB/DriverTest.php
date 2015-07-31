@@ -5,6 +5,7 @@ use Codeception\Specify;
 use PhpOrient\Protocols\Binary\Data\ID;
 use PhpOrient\Protocols\Binary\Data\Record;
 use Spider\Commands\Command;
+use Spider\Commands\Languages\OrientSQL\CommandProcessor;
 use Spider\Drivers\OrientDB\Driver as OrientDriver;
 use Spider\Exceptions\FormattingException;
 
@@ -17,7 +18,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
     public function setup()
     {
-        $this->markTestSkipped('The Test Database is not installed');
+//        $this->markTestSkipped('The Test Database is not installed');
 
         $this->credentials = [
             'hostname' => 'localhost',
@@ -329,5 +330,14 @@ class DriverTest extends \PHPUnit_Framework_TestCase
     public function testFormatPath()
     {
         $this->markTestSkipped("Tree is not yet implemented as orient doesn't currently support it");
+    }
+
+    public function testMakeProcessor()
+    {
+        $this->assertEquals(
+            new CommandProcessor(),
+            (new OrientDriver($this->credentials))->makeProcessor(),
+            'failed to return processor'
+        );
     }
 }

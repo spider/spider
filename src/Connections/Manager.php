@@ -89,7 +89,7 @@ class Manager extends Collection implements ManagesItemsInterface
     protected function buildConnection($connectionName)
     {
         $credentials = $this->get("connections.$connectionName");
-        $diverClassName = $credentials['driver'] . '\Driver';
+        $diverClassName = $credentials['driver'];
         unset($credentials['driver']);
 
         return new Connection(new $diverClassName, $credentials, $this->get('config'));

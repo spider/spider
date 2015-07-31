@@ -37,4 +37,16 @@ interface CommandInterface
      * @return $this
      */
     public function setScriptLanguage($language);
+
+    /**
+     * Is this a 'read' or 'write' command
+     * @return string
+     */
+    public function getRw();
+
+    /**
+     * Set this as a 'read' or 'write' command
+     * @param string $rw
+     */
+    public function setRw($rw);
 }

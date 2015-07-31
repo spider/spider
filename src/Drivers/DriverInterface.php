@@ -9,6 +9,12 @@ use Spider\Commands\CommandInterface;
 interface DriverInterface
 {
     /**
+     * Returns a valid and preferred language processor
+     * @return mixed
+     */
+    public function makeProcessor();
+
+    /**
      * Connect to the database using already set, internal credentials
      * @return $this
      */
@@ -109,7 +115,7 @@ interface DriverInterface
      *
      * @param mixed $response the raw DB response
      *
-     * @return Response Spider consistent response
+     * @return mixed Scalar value
      */
     public function formatAsScalar($response);
 }

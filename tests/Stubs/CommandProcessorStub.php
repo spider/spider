@@ -3,7 +3,7 @@ namespace Spider\Test\Stubs;
 
 use Spider\Commands\Bag;
 use Spider\Commands\Command;
-use Spider\Commands\ProcessorInterface;
+use Spider\Commands\Languages\ProcessorInterface;
 
 /**
  * Class CommandProcessorStub
@@ -20,6 +20,8 @@ class CommandProcessorStub implements ProcessorInterface
      */
     public function process(Bag $bag)
     {
-        return new Command(json_encode($bag));
+        $command = new Command(json_encode($bag));
+        $command->setRw('read');
+        return $command;
     }
 }

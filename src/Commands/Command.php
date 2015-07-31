@@ -18,15 +18,20 @@ class Command implements CommandInterface
     /** @var  string Optional specified script language */
     protected $language;
 
+    /** @var string Is this a read or write command */
+    protected $rw = 'write';
+
     /**
      * Create a new Command from a text string
      * @param string $script
      * @param null $language
+     * @param string $rw
      */
-    public function __construct($script = '', $language = null)
+    public function __construct($script = '', $language = null, $rw = 'write')
     {
         $this->setScript($script);
         $this->setScriptLanguage($language);
+        $this->setRw($rw);
     }
 
     /**
@@ -74,5 +79,23 @@ class Command implements CommandInterface
     public function __toString()
     {
         return $this->getScript();
+    }
+
+    /**
+     * Is this a 'read' or 'write' command
+     * @return string
+     */
+    public function getRw()
+    {
+        return $this->rw;
+    }
+
+    /**
+     * Set this as a 'read' or 'write' command
+     * @param string $rw
+     */
+    public function setRw($rw)
+    {
+        $this->rw = $rw;
     }
 }

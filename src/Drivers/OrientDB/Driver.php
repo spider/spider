@@ -5,12 +5,14 @@ use PhpOrient\PhpOrient;
 use PhpOrient\Protocols\Binary\Data\Record;
 use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 use Spider\Commands\CommandInterface;
+use Spider\Commands\Languages\OrientSQL\CommandProcessor;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
 use Spider\Drivers\Response;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\NotSupportedException;
 use Spider\Graphs\Graph;
+use Spider\Test\Unit\Commands\Languages\OrientSqlProcessorTest;
 
 /**
  * Driver for Native OrientDB (not using gremlin)
@@ -384,5 +386,14 @@ class Driver extends AbstractDriver implements DriverInterface
         return $e->getFormat() === self::FORMAT_SET
         && count($response) === 1
         && count($response[0]->getOData()) === 1;
+    }
+
+    /**
+     * Returns a valid and preferred language processor
+     * @return mixed
+     */
+    public function makeProcessor()
+    {
+        return new CommandProcessor();
     }
 }
