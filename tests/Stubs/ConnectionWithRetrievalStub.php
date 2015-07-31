@@ -4,6 +4,7 @@ namespace Spider\Test\Stubs;
 use Michaels\Manager\Contracts\ManagesItemsInterface;
 use Michaels\Manager\Traits\ManagesItemsTrait;
 use Spider\Commands\CommandInterface;
+use Spider\Commands\Languages\OrientSQL\CommandProcessor;
 use Spider\Connections\ConnectionInterface;
 use Spider\Connections\Graph;
 use Spider\Connections\Record;
@@ -354,5 +355,14 @@ class ConnectionWithRetrievalStub implements ConnectionInterface, DriverInterfac
     public function __toString()
     {
         // TODO: Implement __toString() method.
+    }
+
+    /**
+     * Returns a valid and preferred language processor
+     * @return mixed
+     */
+    public function makeProcessor()
+    {
+        return new CommandProcessor();
     }
 }

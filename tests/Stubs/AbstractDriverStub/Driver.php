@@ -140,4 +140,13 @@ class Driver extends AbstractDriver implements DriverInterface
     public function formatAsScalar($response)
     {
     }
+
+    /**
+     * Returns a valid and preferred language processor
+     * @return mixed
+     */
+    public function makeProcessor()
+    {
+        // TODO: Implement makeProcessor() method.
+    }
 }

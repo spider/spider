@@ -28,12 +28,12 @@ class Query extends Builder
      * @param Bag|null $bag
      */
     public function __construct(
-        ProcessorInterface $processor,
         ConnectionInterface $connection,
+        ProcessorInterface $processor = null,
         Bag $bag = null
     ) {
         parent::__construct($bag);
-        $this->processor = $processor;
+        $this->processor = $processor ?: $connection->makeProcessor(); // defaults to the driver preferred
         $this->connection = $connection;
     }
 

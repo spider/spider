@@ -9,6 +9,12 @@ use Spider\Commands\CommandInterface;
 interface DriverInterface
 {
     /**
+     * Returns a valid and preferred language processor
+     * @return mixed
+     */
+    public function makeProcessor();
+
+    /**
      * Connect to the database using already set, internal credentials
      * @return $this
      */
