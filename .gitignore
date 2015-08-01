@@ -1,5 +1,6 @@
 composer.lock
 vendor
-build
+build/
 composer.phar
 sandbox
+docs/api/cache
