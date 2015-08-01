@@ -8,6 +8,7 @@ use Spider\Commands\Command;
 use Spider\Commands\Languages\OrientSQL\CommandProcessor;
 use Spider\Drivers\OrientDB\Driver as OrientDriver;
 use Spider\Exceptions\FormattingException;
+use Spider\Exceptions\InvalidCommandException;
 
 class DriverTest extends \PHPUnit_Framework_TestCase
 {
@@ -18,7 +19,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
     public function setup()
     {
-//        $this->markTestSkipped('The Test Database is not installed');
+        $this->markTestSkipped('The Test Database is not installed');
 
         $this->credentials = [
             'hostname' => 'localhost',
@@ -124,6 +125,97 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
         // Done
         $driver->close();
+    }
+
+    public function testTransactions()
+    {
+        //get a transaction enabled graph
+        $this->specify("it builds a correct transaction", function () {
+
+            $driver = new OrientDriver($this->credentials);
+            $driver->open();
+            $driver->startTransaction();
+
+            $driver->executeWriteCommand(new Command(
+                "CREATE VERTEX CONTENT {name:'one'}"
+            ));
+
+            $driver->executeWriteCommand(new Command(
+                "CREATE VERTEX CONTENT {name:'two'}"
+            ));
+
+            $driver->executeWriteCommand(new Command(
+                "CREATE VERTEX CONTENT {name:'three'}"
+            ));
+
+            $expected = "begin\n";
+            $expected .= "LET t1 = CREATE VERTEX CONTENT {name:'one'}\n";
+            $expected .= "LET t2 = CREATE VERTEX CONTENT {name:'two'}\n";
+            $expected .= "LET t3 = CREATE VERTEX CONTENT {name:'three'}\n";
+            $expected .= 'commit return [$t1,$t2,$t3]';
+
+            $driver->stopTransaction(false); // false
+
+            $actual = $driver->getTransactionForTest();
+
+            $this->assertEquals($expected, $actual, "the transaction statement was incorrectly built");
+            $driver->close();
+        });
+
+        $this->specify("it rollbacks properly on transactional graph", function () {
+            $driver = new OrientDriver($this->credentials);
+            $driver->open();
+            $driver->startTransaction();
+
+            $driver->executeWriteCommand(new Command(
+                "CREATE VERTEX CONTENT {name:'testVertex'}"
+            ));
+
+            $driver->stopTransaction(false);
+
+            $response = $driver->executeReadCommand(new Command("SELECT FROM V WHERE name = 'testVertex'"));
+
+            $this->assertFalse($response->has('name'), "the rollback did not properly work");
+            $driver->close();
+        });
+
+        $this->specify("it commits properly on transactional graph", function () {
+            $driver = new OrientDriver($this->credentials);
+            $driver->open();
+            $driver->startTransaction();
+
+            $driver->executeWriteCommand(new Command(
+                "CREATE VERTEX CONTENT {name:'testVertex'}"
+            ));
+
+            $driver->stopTransaction(true);
+
+            $response = $driver->executeReadCommand(new Command("SELECT FROM V WHERE name = 'testVertex'"));
+            $response = $response->getSet();
+
+            $this->assertEquals('testVertex', $response->name, "the commit did not properly work");
+
+            // Delete That one
+            $query = "DELETE VERTEX WHERE name = 'testVertex'";
+            $driver->runWriteCommand(new Command($query));
+
+            $driver->close();
+        });
+
+        $this->specify("it throws an Exception on multiple transaction", function () {
+            $driver = new OrientDriver($this->credentials);
+            $driver->open();
+            $driver->startTransaction();
+            $driver->startTransaction();
+            $driver->close();
+        }, ['throws' => new InvalidCommandException]);
+
+        $this->specify("it throws an Exception when a non existing transaction is stopped", function () {
+            $driver = new OrientDriver($this->credentials);
+            $driver->open();
+            $driver->stopTransaction();
+            $driver->close();
+        }, ['throws' => new InvalidCommandException()]);
     }
 
     public function testFormatScalar()

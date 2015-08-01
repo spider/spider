@@ -4,12 +4,14 @@ namespace Spider\Drivers\OrientDB;
 use PhpOrient\PhpOrient;
 use PhpOrient\Protocols\Binary\Data\Record;
 use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
+use Spider\Commands\Command;
 use Spider\Commands\CommandInterface;
 use Spider\Commands\Languages\OrientSQL\CommandProcessor;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
 use Spider\Drivers\Response;
 use Spider\Exceptions\FormattingException;
+use Spider\Exceptions\InvalidCommandException;
 use Spider\Exceptions\NotSupportedException;
 use Spider\Graphs\Graph;
 use Spider\Test\Unit\Commands\Languages\OrientSqlProcessorTest;
@@ -44,6 +46,8 @@ class Driver extends AbstractDriver implements DriverInterface
     protected $isOpen = false;
 
     protected $formatMessage = "The response from the database was incorrectly formatted for this operation";
+    protected $transaction = 'this is my openning transaction';
+    protected $transactionVariables;
 
     /**
      * Create a new instance with a client
@@ -100,7 +104,12 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function startTransaction()
     {
-        throw new NotSupportedException(__FUNCTION__ . " is not currently supported for OrientDB driver");
+        if ($this->inTransaction) {
+            throw new InvalidCommandException("A Transaction already exists. You can not nest transactions");
+        }
+
+        $this->inTransaction = true;
+        $this->transaction = "begin\n";
     }
 
     /**
@@ -110,9 +119,67 @@ class Driver extends AbstractDriver implements DriverInterface
      * @return bool
      * @throws \Exception
      */
-    public function stopTransaction($commit = TRUE)
+    public function stopTransaction($commit = true)
     {
-        throw new NotSupportedException(__FUNCTION__ . " is not currently supported for OrientDB driver");
+        if (!$this->inTransaction) {
+            throw new InvalidCommandException("No transaction was started");
+        }
+
+        if ($commit) {
+            $this->endTransaction();
+            $command = $this->transaction;
+            $this->transaction = null;
+            $this->inTransaction = false;
+
+            $this->client->sqlBatch($command);
+        }
+    }
+
+    public function getTransactionForTest()
+    {
+        $this->endTransaction();
+        return $this->transaction;
+    }
+
+    protected function endTransaction()
+    {
+//        echo "----ending transaction";
+        $this->writeTransactionStatement("commit");
+        $this->writeTransactionStatement(" return " . $this->getTransactionVariables());
+//        echo "final statement is: \n";
+//        echo $this->transaction;
+    }
+
+    protected function writeTransactionStatement($statement)
+    {
+        $this->transaction .= $statement;
+//        echo "new transaction is: " . $this->transaction;
+    }
+
+    protected function addTransactionStatement($statement)
+    {
+//        echo "-----adding statement to\n";
+//        echo $this->transaction . "\n";
+
+        $this->writeTransactionStatement(
+            'LET ' . $this->incrementTransactionVariables() . ' = ' . $statement . "\n"
+        );
+    }
+
+    protected function incrementTransactionVariables()
+    {
+        $newIndex = count($this->transactionVariables) + 1;
+        $this->transactionVariables[] = "t".(string)$newIndex;
+        return 't'.(string)$newIndex;
+    }
+
+    protected function getTransactionVariables()
+    {
+        $this->transactionVariables = array_map(function ($value) {
+            return '$'.$value;
+        }, $this->transactionVariables);
+
+        return "[" . implode(",", $this->transactionVariables) . "]";
     }
 
     /**
@@ -136,6 +203,13 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function executeWriteCommand(CommandInterface $command)
     {
+//        echo "-----executing write command\n";
+
+        if ($this->inTransaction) {
+            $this->addTransactionStatement($command->getScript());
+            return null;
+        }
+
         /* ToDo: DELETE is very sloppy */
         /* DELETE VERTEX returns an int. DELETE returns either int or before Record */
         /* Drivers expect an empty array upon successful delete */
