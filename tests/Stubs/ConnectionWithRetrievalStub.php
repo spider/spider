@@ -15,7 +15,7 @@ use Spider\Drivers\Response;
  * Class ConnectionStuf
  * @package Spider\Test\Stubs
  */
-class ConnectionWithRetrievalStub implements ConnectionInterface, DriverInterface
+class ConnectionWithRetrievalStub implements ConnectionInterface
 {
     /**
      * Connects to the database

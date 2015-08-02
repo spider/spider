@@ -1,12 +1,13 @@
 <?php
 namespace Spider\Drivers;
 
+use Michaels\Manager\Contracts\ManagesItemsInterface;
 use Spider\Commands\CommandInterface;
 
 /**
  * Driver contract
  */
-interface DriverInterface
+interface DriverInterface extends ManagesItemsInterface
 {
     /**
      * Returns a valid and preferred language processor

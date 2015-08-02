@@ -10,7 +10,7 @@ use Spider\Drivers\Response;
  * Facilitates two-way communication with a data-store
  * @package Spider\Test\Unit\Connections
  */
-interface ConnectionInterface extends ManagesItemsInterface
+interface ConnectionInterface extends DriverInterface
 {
     /**
      * Connects to the database
