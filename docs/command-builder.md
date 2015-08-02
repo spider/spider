@@ -16,15 +16,16 @@ The Query builder will translate your query into a script in any language (Orien
 
 There are really two query builders for you to choose from. 
 
-A **Command builder** is a simple command builder used to generate Commands (language-specific scripts).
+A [**Command builder**](#the-basic-command-builder) is a simple command builder used to generate Commands (language-specific scripts).
 The Command builder has no awareness of any drivers and can't fire queries.
-Instead, you can use the Command Builder to create your queries and (optionally) process them into a Command Object that can be sent directly to the database or through a Spider Driver.
+Instead, you can use the Command Builder to create your queries and (optionally) process them into a Command Object that can be sent directly to the database or through a Spider Connection.
 
-While the Command Builder is useful in some cases, the *Query* is far more powerful.
-With the Query, you can build up your query, execute the query, and get the results in whatever format you want from one place. All with a simple, fluent api.
+While the Command Builder is useful in some cases, the [**Query**](#the-query-builder) is far more powerful.
+With the Query, you can build up and execute the query, and get the results in any supported format.
+All with a simple, fluent api.
 And, the Query has a few sugar methods that just make life easier.
 
-## Using the Basic Command Builder
+## The Basic Command Builder
 The Command Builder is best used when integrating Spider into your existing codebase. It makes no assumptions about *how* you will execute these queries.
 It just builds a predictable Command Bag and (optionally) returns the finished script that you may execute any way you like.
 
@@ -200,25 +201,21 @@ $builder
 ```
 
 ## The Query Builder
-### Configuring the Query builder
-All `Query` needs to get going is a valid connection
-```php
-$query = new Query($connection);
-```
-You may also pass a processor as a second argument, but be sure you know what you are doing.
-
-### Usage
 The Query builder extends the Command Builder, but allows you to:
   1. Execute queries directly from the Builder
   2. [Format responses](responses.md)
   3. Use some extra sugar to make everything more fluent.
   
-When setting up the Query builder, you must pass a valid `Connection` and `Processor`
+### Configuring the Query builder
+All `Query` needs to get going is a valid connection
 ```php
-$query = new Spider\Commands\Query($processor, $connection);
+$query = new Query($connection);
 ```
+When setting up the Query builder, you must pass a valid `Connection`.
+You may also pass a processor as a second argument, but be sure you know what you are doing.
 
-Once the connection and processor are setup, you may create your query using all the [Builder](#builder) methods
+### Usage
+The Query Builder extends the Basic [Command Builder](#builder):
 ```php
 $query
     ->select('name')
@@ -231,6 +228,8 @@ $query
 ```
 
 ### Dispatching from the Query builder
+What makes the Query Builder different is that you can interact with the database directly.
+
 You can simply **dispatch** your query
 ```php
 $result = $query->select()->from('moons')
@@ -311,7 +310,6 @@ It is up to you to know which language to send (cypher, gremlin, etc).
 This returns a generic `Response`. Read [more about responses](responses.md).
 
 #### Dispatching from Update, Drop, and Insert
-
 If you **drop()** with an id, it will dispatch immediately.
 ```php
 $query->drop(3); // executes drop

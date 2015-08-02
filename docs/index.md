@@ -4,22 +4,27 @@ A simple, flexible, and beautiful graph-data abstraction for php.
 Why "Spider?" Because spiders crawl over webs, and webs look like graphs. Walk your data.
 
 ## Goals
-  * Framework agnostic, generic package using composer.
-  * Community-driven, best practices code (DRY, SOLID, PHP The Right Way, PSRs, Tinkerpop, Testing, etc.)
-  * An easy transition from SQL or Mongo
-  * Simple, fluent, and consistent API
-  * An Object-Graph-Mapper and Models inspired by Eloquent, Propel, and Monga.
-  * A filter/sendCommand builder that doesn't make your mind go nuts.
-  * Simple drivers to connect to specific graph databases (orient, neo4j, titat, etc) or other datastores
-  * Handle multiple connections
-  * Validation, filtering, security, and performance.
-  * Extensible and configurable (e.g. for caching).
+  * Framework agnostic, community-driven with best practices.
+  * Made *specifically* for highly-relational data.
+  * An easy transition from SQL or Mongo.
+  * Simple, fluent, and consistent API.
+  * Simple drivers to connect to specific graph databases or other datastores.
+  * Extensible and configurable.
 
-## Install
-Via Composer
-``` bash
-$ composer require spider/spider
-```
+## Current Features
+  * Drivers for Gremlin Server, Neo4j, and OrientDB.
+  * Easily [create your own one-class drivers](create-driver.md).
+  * Fluent [Query Builder](command-builder.md) and Basic [Command Builder](command-builder.md).
+  * Handle, cache, and manage multiple [connections](getting-started.md).
+  * Consistent responses with various [formats](responses.md).
+  
+## Upcoming Features
+  * Fluent traversals through the query and command builder.
+  * Database agnostic Schema Builder.
+  * Simple yet powerful Models and Object Graph Mappers
+  * Graph data utilities (algorithms, etc.).
+  * SSL support, data-binding, filters, validation, caching, logging, and more.
+  * Extensible so you can use your own loggers, cachers, etc.
 
 ## Inspired By
   * [Eloquent ORM](http://laravel.com/docs/5.0/eloquent)
@@ -31,16 +36,13 @@ $ composer require spider/spider
 ## Contributing
 Contributions are welcome and will be fully credited. Please see [CONTRIBUTING](contributing.md) for details.
 
-## Security
+### Security
 If you discover any security related issues, please email phoenixlabsdev@gmail.com instead of using the issue tracker.
 
-## Credits
+### Credits
 - [Michael Wilson](https://github.com/chrismichaels84)
 - [PommeVerte](https://github.com/PommeVerte)
 - Open an issue to join in!
 
-## License
+### License
 The MIT License (MIT). Please see [License File](license.md) for more information.
-
-  
-  
