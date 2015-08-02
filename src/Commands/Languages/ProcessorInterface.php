@@ -1,5 +1,6 @@
 <?php
 namespace Spider\Commands\Languages;
+
 use Spider\Commands\Bag;
 
 /**

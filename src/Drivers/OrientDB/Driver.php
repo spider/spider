@@ -2,9 +2,9 @@
 namespace Spider\Drivers\OrientDB;
 
 use PhpOrient\PhpOrient;
-use PhpOrient\Protocols\Binary\Data\Record;
 use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
-use Spider\Commands\Command;
+use PhpOrient\Protocols\Binary\Data\Record;
+use Spider\Base\Collection;
 use Spider\Commands\CommandInterface;
 use Spider\Commands\Languages\OrientSQL\CommandProcessor;
 use Spider\Drivers\AbstractDriver;
@@ -14,7 +14,6 @@ use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
 use Spider\Exceptions\NotSupportedException;
 use Spider\Graphs\Graph;
-use Spider\Test\Unit\Commands\Languages\OrientSqlProcessorTest;
 
 /**
  * Driver for Native OrientDB (not using gremlin)
@@ -45,8 +44,13 @@ class Driver extends AbstractDriver implements DriverInterface
     /** @var  bool Is connection open, flag */
     protected $isOpen = false;
 
+    /** @var string Messge for exception thrown at formatting error */
     protected $formatMessage = "The response from the database was incorrectly formatted for this operation";
-    protected $transaction = 'this is my openning transaction';
+
+    /** @var string Current transaction (batch) statement */
+    protected $transaction = '';
+
+    /** @var array Batch variables */
     protected $transactionVariables;
 
     /**
@@ -135,48 +139,64 @@ class Driver extends AbstractDriver implements DriverInterface
         }
     }
 
+    /**
+     * Finishes transcation statement and returns for testing
+     * @return string
+     */
     public function getTransactionForTest()
     {
         $this->endTransaction();
         return $this->transaction;
     }
 
+    /**
+     * Finishes the transaction statement
+     */
     protected function endTransaction()
     {
-//        echo "----ending transaction";
         $this->writeTransactionStatement("commit");
         $this->writeTransactionStatement(" return " . $this->getTransactionVariables());
-//        echo "final statement is: \n";
-//        echo $this->transaction;
     }
 
+    /**
+     * Write a new clause to the transaction statement
+     * @param $statement
+     */
     protected function writeTransactionStatement($statement)
     {
         $this->transaction .= $statement;
-//        echo "new transaction is: " . $this->transaction;
     }
 
+    /**
+     * Add a new operation to the transaction statement
+     * @param $statement
+     */
     protected function addTransactionStatement($statement)
     {
-//        echo "-----adding statement to\n";
-//        echo $this->transaction . "\n";
-
         $this->writeTransactionStatement(
             'LET ' . $this->incrementTransactionVariables() . ' = ' . $statement . "\n"
         );
     }
 
+    /**
+     * Increment transaction variables
+     * @return string
+     */
     protected function incrementTransactionVariables()
     {
         $newIndex = count($this->transactionVariables) + 1;
-        $this->transactionVariables[] = "t".(string)$newIndex;
-        return 't'.(string)$newIndex;
+        $this->transactionVariables[] = "t" . (string)$newIndex;
+        return 't' . (string)$newIndex;
     }
 
+    /**
+     * Get the transaction variables for the RETURN array
+     * @return string
+     */
     protected function getTransactionVariables()
     {
         $this->transactionVariables = array_map(function ($value) {
-            return '$'.$value;
+            return '$' . $value;
         }, $this->transactionVariables);
 
         return "[" . implode(",", $this->transactionVariables) . "]";
@@ -203,8 +223,6 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function executeWriteCommand(CommandInterface $command)
     {
-//        echo "-----executing write command\n";
-
         if ($this->inTransaction) {
             $this->addTransactionStatement($command->getScript());
             return null;
@@ -294,7 +312,7 @@ class Driver extends AbstractDriver implements DriverInterface
     protected function mapOrientRecordToCollection(OrientRecord $orientRecord)
     {
         // Or we map a single record to a Spider Record
-        $collection = new \Spider\Base\Collection($orientRecord->getOData());
+        $collection = new Collection($orientRecord->getOData());
 
         $collection->add([
             'id' => $orientRecord->getRid()->jsonSerialize(),

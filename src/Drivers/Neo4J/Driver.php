@@ -70,7 +70,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is the R in CRUD
      *
      * @param CommandInterface $query
-     * @return array|Record|Graph
+     * @return Response
      */
     public function executeReadCommand(CommandInterface $query)
     {
@@ -89,7 +89,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * These are the "CUD" in CRUD
      *
      * @param CommandInterface $command
-     * @return Graph|Record|array|mixed mixed values for some write commands
+     * @return Response
      */
     public function executeWriteCommand(CommandInterface $command)
     {
@@ -285,7 +285,9 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     protected function responseFormat($response)
     {
-        if (isset($response[0][0]) && ($response[0][0] instanceof \Everyman\Neo4j\Node || ($response[0][0] instanceof \Everyman\Neo4j\Relationship))) {
+        if (isset($response[0][0])
+            && ($response[0][0] instanceof \Everyman\Neo4j\Node
+                || ($response[0][0] instanceof \Everyman\Neo4j\Relationship))) {
             return self::FORMAT_SET;
         }
 

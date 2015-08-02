@@ -1,5 +1,6 @@
 <?php
 namespace Spider\Commands;
+use Spider\Base\Object;
 
 /**
  * Command: Contains the command script to be executed by the driver
@@ -73,15 +74,6 @@ class Command implements CommandInterface
     }
 
     /**
-     * Returns the script if object is called as a string
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->getScript();
-    }
-
-    /**
      * Is this a 'read' or 'write' command
      * @return string
      */
@@ -97,5 +89,14 @@ class Command implements CommandInterface
     public function setRw($rw)
     {
         $this->rw = $rw;
+    }
+
+    /**
+     * Returns the script if object is called as a string
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getScript();
     }
 }

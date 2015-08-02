@@ -1,8 +1,8 @@
 <?php
 namespace Spider\Base;
 
-use Michaels\Manager\Traits\ManagesItemsTrait;
 use Michaels\Manager\Traits\ChainsNestedItemsTrait;
+use Michaels\Manager\Traits\ManagesItemsTrait;
 
 /**
  * Class Collection
@@ -10,7 +10,7 @@ use Michaels\Manager\Traits\ChainsNestedItemsTrait;
  */
 class Collection extends Object
 {
-     /**
+    /**
      * @inherits from Michaels\Manager:
      *      init(), add(), get(), getAll(), exists(), has(), set(),
      *      remove(), clear(), toJson, isEmpty(), __toString()

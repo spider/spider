@@ -24,11 +24,11 @@ class Manager extends Collection implements ManagesItemsInterface
      * @param array $connections
      * @param array $config
      */
-    public function __construct($connections = [], $config = [])
+    public function __construct($connections = []) //, $config = [])
     {
         $items = [
             'connections' => $connections,
-            'config' => $config,
+//            'config' => $config,
         ];
 
         $this->initManager($items);
@@ -92,7 +92,7 @@ class Manager extends Collection implements ManagesItemsInterface
         $diverClassName = $credentials['driver'];
         unset($credentials['driver']);
 
-        return new Connection(new $diverClassName, $credentials, $this->get('config'));
+        return new Connection(new $diverClassName, $credentials);
     }
 
     /**

@@ -26,11 +26,11 @@ class Connection extends Collection implements ConnectionInterface
      * Constructs a new connection with driver and properties
      *
      * @param DriverInterface $driver
-     * @param array $properties Credentials and configuration
+     * @param array $configuration Credentials and configuration
      */
-    public function __construct($driver, array $properties = [])
+    public function __construct($driver, array $configuration = [])
     {
-        $config = (is_array($driver) ? $driver : $properties);
+        $config = (is_array($driver) ? $driver : $configuration);
         $this->initManager($config);
 
         if (isset($config['driver'])) {
