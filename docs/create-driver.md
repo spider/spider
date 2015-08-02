@@ -46,6 +46,7 @@ public function runReadCommand(CommandInterface $query);
 public function runWriteCommand(CommandInterface $command);
 public function startTransaction();
 public function stopTransaction($commit = true);
+```
 
 The last part **handles response formatting**
 ```php
