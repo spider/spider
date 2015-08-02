@@ -16,16 +16,33 @@ class Connection extends Collection implements ConnectionInterface
     /** @var  DriverInterface Instance of the driver */
     protected $driver;
 
+    protected $driverAliases = [
+        'orientdb' => 'Spider\Drivers\OrientDB\Driver',
+        'gremlin' => 'Spider\Drivers\Gremlin\Driver',
+        'neo4j' => 'Spider\Drivers\Neo4J\Driver',
+    ];
+
     /**
      * Constructs a new connection with driver and properties
      *
      * @param DriverInterface $driver
      * @param array $properties Credentials and configuration
      */
-    public function __construct(DriverInterface $driver, array $properties = [])
+    public function __construct($driver, array $properties = [])
     {
-        $this->initManager($properties);
-        $this->driver = $driver;
+        $config = (is_array($driver) ? $driver : $properties);
+        $this->initManager($config);
+
+        if (isset($config['driver'])) {
+            if (isset($this->driverAliases[$config['driver']])) {
+                $driverClass = $this->driverAliases[$config['driver']];
+                $this->driver = new $driverClass();
+            } else {
+                $this->driver = new $config['driver']();
+            }
+        } else {
+            $this->driver = $driver;
+        }
     }
 
     /**
