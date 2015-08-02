@@ -12,7 +12,7 @@ A simple, flexible, and generic graph-data abstraction for php.
 Why "Spider?" Because spiders crawl over webs, and webs look like graphs. Walk your data.
 
 This readme is very limited.
-See **[the full documentation](http://http://spider-ogm.readthedocs.org/)** for full a full guidebook.
+See **[the full documentation](http://spider-ogm.readthedocs.org/en/develop/)** for a guidebook.
 
 ## Goals
   * Framework agnostic, community-driven with best practices.
