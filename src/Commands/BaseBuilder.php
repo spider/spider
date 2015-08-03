@@ -319,4 +319,24 @@ class BaseBuilder
     {
         return $this->operators[$sign];
     }
+
+    /**
+     * Flag the desired response as `tree`
+     * @return $this
+     */
+    public function tree()
+    {
+        $this->bag->map = Bag::MAP_TREE;
+        return $this;
+    }
+
+    /**
+     * Flag the desired response as `path`
+     * @return $this
+     */
+    public function path()
+    {
+        $this->bag->map = Bag::MAP_PATH;
+        return $this;
+    }
 }
