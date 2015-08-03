@@ -282,7 +282,6 @@ class DriverTest extends \PHPUnit_Framework_TestCase
              LIMIT 2"
         ));
         $consistent = $response->getPath();
-        print_r($consistent);
 
         $this->assertTrue(is_array($consistent), 'the formatted response is not an array');
 

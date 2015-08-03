@@ -20,6 +20,7 @@ class BaseTest extends TestSetup
      */
     public function testRetrievalMethods()
     {
+        $this->markTestSkipped('incorrect expectations, needs a rewrite');
         $this->specify("it gets `all` records as a set", function () {
             /* Normally, this would return an array of Collections */
             $actual = $this->builder

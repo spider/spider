@@ -75,7 +75,7 @@ class BaseTest extends TestSetup
                 ->getCommandBag();
 
             $expected = $this->buildExpectedBag([
-                'format' => Bag::FORMAT_TREE
+                'map' => Bag::MAP_TREE
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -89,7 +89,7 @@ class BaseTest extends TestSetup
                 ->getCommandBag();
 
             $expected = $this->buildExpectedBag([
-                'format' => Bag::FORMAT_PATH
+                 'map' => Bag::MAP_PATH
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");

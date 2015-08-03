@@ -212,27 +212,6 @@ class Builder extends BaseBuilder
         return $this;
     }
 
-    /* Flag Response Formats */
-    /**
-     * Flag the desired response as `tree`
-     * @return $this
-     */
-    public function tree()
-    {
-        $this->bag->format = Bag::FORMAT_TREE;
-        return $this;
-    }
-
-    /**
-     * Flag the desired response as `path`
-     * @return $this
-     */
-    public function path()
-    {
-        $this->bag->format = Bag::FORMAT_PATH;
-        return $this;
-    }
-
     /**
      * Set the CommandProcessor
      * @param ProcessorInterface $processor

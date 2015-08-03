@@ -15,12 +15,6 @@ class Query extends Builder
     protected $connection;
 
     /**
-     * @var string The response format desired. set, path, scalar, or tree
-     * @default Bag::FORMAT_SET
-     */
-    protected $format;
-
-    /**
      * Creates a new instance of the Command Builder
      * With a LanguageProcessor and Connection
      * @param ProcessorInterface $processor
@@ -115,7 +109,7 @@ class Query extends Builder
      * current Command Bag is processed via the Command Processor
      *
      * @param CommandInterface|null $command
-     * @return mixed Results from the command as a SpiderResponse
+     * @return Response the DB response in SpiderResponse format
      */
     public function dispatch(CommandInterface $command = null)
     {
@@ -123,27 +117,10 @@ class Query extends Builder
         $this->connection->open();
 
         if ($command->getRw() === 'read') {
-            $results = $this->connection->executeReadCommand($command);
+            return $this->connection->executeReadCommand($command);
         } else {
-            $results = $this->connection->executeWriteCommand($command);
+            return $this->connection->executeWriteCommand($command);
         }
-
-        // Are we requesting a specific format?
-        if ($this->format) {
-            // Pass the results through the appropriate formatAsX Driver method
-            $formats = [
-                Bag::FORMAT_SET => 'formatAsSet',
-                Bag::FORMAT_SCALAR => 'formatAsScalar',
-                Bag::FORMAT_PATH => 'formatAsPath',
-                Bag::FORMAT_TREE => 'formatAsTree'
-            ];
-
-            return $this->connection->$formats[$this->format]($results);
-            /* For tests, returns Response above with ::formattedAsSet = true; */
-        }
-
-        // Nope, return the SpiderResponse
-        return $results;
     }
 
     /* Dispatch with limits */
@@ -155,8 +132,7 @@ class Query extends Builder
     public function all()
     {
         $this->limit(false);
-        $this->setFormat(Bag::FORMAT_SET);
-        return $this->dispatch();
+        return $this->dispatch()->getSet();
     }
 
     /**
@@ -175,8 +151,7 @@ class Query extends Builder
     public function one()
     {
         parent::first();
-        $this->setFormat(Bag::FORMAT_SET);
-        return $this->dispatch();
+        return $this->dispatch()->getSet();
     }
 
     /**
@@ -195,8 +170,7 @@ class Query extends Builder
      */
     public function set()
     {
-        $this->setFormat(Bag::FORMAT_SET);
-        return $this->dispatch();
+        return $this->dispatch()->getSet();
     }
 
     /**
@@ -205,8 +179,8 @@ class Query extends Builder
      */
     public function tree()
     {
-        $this->setFormat(Bag::FORMAT_TREE);
-        return $this->dispatch();
+        parent::tree();
+        return $this->dispatch()->getTree();
     }
 
     /**
@@ -215,8 +189,8 @@ class Query extends Builder
      */
     public function path()
     {
-        $this->setFormat(Bag::FORMAT_PATH);
-        return $this->dispatch();
+        parent::path();
+        return $this->dispatch()->getPath();
     }
 
     /**
@@ -225,8 +199,7 @@ class Query extends Builder
      */
     public function scalar()
     {
-        $this->setFormat(Bag::FORMAT_SCALAR);
-        return $this->dispatch();
+        return $this->dispatch()->getScalar();
     }
 
     /* Manage the Builder itself */
@@ -238,18 +211,5 @@ class Query extends Builder
     {
         parent::clear($properties);
         $this->script = null;
-    }
-
-    /**
-     * Sets the desired response format
-     * @param $format
-     */
-    protected function setFormat($format)
-    {
-        // For the driver to formatAsX()
-        $this->format = $format;
-
-        // Flag for the Language Processor
-        $this->bag->format = $format;
     }
 }

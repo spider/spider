@@ -213,9 +213,7 @@ class Driver extends AbstractDriver implements DriverInterface
         $return = [];
         foreach ($response as $row) {
             $collection = [];
-            echo "I";
             foreach ($row[0] as $node) {
-                echo 'L';
                 $collection[] = $this->nodeToCollection($node);
             }
             $return[] = $collection;
