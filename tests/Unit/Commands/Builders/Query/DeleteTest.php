@@ -15,7 +15,7 @@ class DeleteTest extends TestSetup
             $actual = $this->builder
                 ->drop(3); // dispatches command by itself
 
-            $expected = $this->buildExpectedCommand([
+            $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_DELETE,
                 'target' => new TargetID(3)
             ]);
@@ -25,7 +25,7 @@ class DeleteTest extends TestSetup
                 $actual,
                 'failed to return correct command'
             );
-            $this->assertEquals($expected, $actual->getRaw()->getScript(), 'failed to return correct script');
+            $this->assertEquals($expected, $this->builder->getBag(), 'failed to return correct script');
         });
 
         $this->specify("it drops a single record via `dispatch()`", function () {
@@ -34,7 +34,7 @@ class DeleteTest extends TestSetup
                 ->record(3)
                 ->dispatch();
 
-            $expected = $this->buildExpectedCommand([
+            $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_DELETE,
                 'target' => new TargetID(3)
             ]);
@@ -44,14 +44,14 @@ class DeleteTest extends TestSetup
                 $actual,
                 'failed to return correct command'
             );
-            $this->assertEquals($expected, $actual->getRaw()->getScript(), 'failed to return correct script');
+            $this->assertEquals($expected, $this->builder->getBag(), 'failed to return correct script');
         });
 
         $this->specify("it drops multiple records dispatching from `drop()`", function () {
             $actual = $this->builder
                 ->drop([1, 2, 3]);
 
-            $expected = $this->buildExpectedCommand([
+            $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_DELETE,
                 'target' => [
                     new TargetID(1),
@@ -65,7 +65,7 @@ class DeleteTest extends TestSetup
                 $actual,
                 'failed to return correct command'
             );
-            $this->assertEquals($expected, $actual->getRaw()->getScript(), 'failed to return correct script');
+            $this->assertEquals($expected, $this->builder->getBag(), 'failed to return correct script');
         });
 
         $this->specify("it drops multiple records dispatching from `dispatch()`", function () {
@@ -74,7 +74,7 @@ class DeleteTest extends TestSetup
                 ->records([1, 2, 3])
                 ->dispatch();
 
-            $expected = $this->buildExpectedCommand([
+            $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_DELETE,
                 'target' => [
                     new TargetID(1),
@@ -88,7 +88,7 @@ class DeleteTest extends TestSetup
                 $actual,
                 'failed to return correct command'
             );
-            $this->assertEquals($expected, $actual->getRaw()->getScript(), 'failed to return correct script');
+            $this->assertEquals($expected, $this->builder->getBag(), 'failed to return correct script');
         });
     }
 }

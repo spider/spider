@@ -3,8 +3,9 @@ namespace Spider\Test\Unit\Commands\Builders\Query;
 
 use Codeception\Specify;
 use Spider\Commands\Query;
-use Spider\Test\Stubs\CommandProcessorStub;
-use Spider\Test\Stubs\ConnectionWithRetrievalStub;
+use Spider\Connections\Connection;
+use Spider\Test\Stubs\DriverStub as Driver;
+use Spider\Test\Stubs\CommandProcessorStub as CommandProcessor;
 
 /**
  * Class CommandBuilderTestSetup
@@ -16,6 +17,7 @@ class TestSetup extends \Spider\Test\Unit\Commands\Builders\TestSetup
 
     public function setup()
     {
-        $this->builder = new Query(new ConnectionWithRetrievalStub(), new CommandProcessorStub());
+
+        $this->builder = new Query(new Connection(new Driver()), new CommandProcessor);
     }
 }

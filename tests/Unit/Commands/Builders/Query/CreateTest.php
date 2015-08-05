@@ -21,19 +21,15 @@ class CreateTest extends TestSetup
                 ->into('target')
                 ->insert($record);
 
-            $expected = $this->buildExpectedCommand([
+            $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_CREATE,
                 'target' => "target",
                 'data' => $record,
                 'createCount' => 1
             ]);
 
-            $this->assertInstanceOf(
-                "Spider\\Drivers\\Response",
-                $actual,
-                'failed to return correct command'
-            );
-            $this->assertEquals($expected, $actual->getRaw()->getScript(), 'failed to return correct script');
+            $this->assertEquals($expected, $this->builder->getBag(), 'failed to return correct script');
+            $this->assertInstanceOf("\\Spider\\Drivers\\Response", $actual, 'failed to get a db response');
         });
 
         $this->specify("it inserts multiple records", function () {
@@ -46,7 +42,7 @@ class CreateTest extends TestSetup
                 ->into('target')
                 ->insert($records);
 
-            $expected = $this->buildExpectedCommand([
+            $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_CREATE,
                 'target' => "target",
                 'data' => $records,
@@ -54,11 +50,11 @@ class CreateTest extends TestSetup
             ]);
 
             $this->assertInstanceOf(
-                "Spider\\Drivers\\Response",
+                "\\Spider\\Drivers\\Response",
                 $actual,
-                'failed to return correct command'
+                'failed to return correct response'
             );
-            $this->assertEquals($expected, $actual->getRaw()->getScript(), 'failed to return correct script');
+            $this->assertEquals($expected, $this->builder->getBag(), 'failed to return correct script');
         });
     }
 }
