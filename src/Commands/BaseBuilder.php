@@ -339,4 +339,14 @@ class BaseBuilder
         $this->bag->map = Bag::MAP_PATH;
         return $this;
     }
+
+    /**
+     * Read only of the Bag if required
+     *
+     * @return Bad the root Bag object for this builder
+     */
+    public function getBag()
+    {
+        return $this->bag;
+    }
 }
