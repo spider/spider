@@ -3,7 +3,6 @@ namespace Spider\Test\Unit\Drivers;
 
 use Codeception\Specify;
 use Michaels\Manager\Exceptions\ModifyingProtectedValueException;
-use Spider\Commands\Command;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
 
