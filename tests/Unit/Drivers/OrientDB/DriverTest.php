@@ -17,8 +17,11 @@ class DriverTest extends BaseTestSuite
         $this->markTestSkipped("Test Database Not Installed");
     }
 
-    /** Returns an instance of the configured driver */
-    public function driver()
+    /** Returns an instance of the configured driver
+     * @param null $switch
+     * @return OrientDriver
+     */
+    public function driver($switch = null)
     {
         return new OrientDriver([
             'hostname' => 'localhost',
@@ -174,6 +177,26 @@ class DriverTest extends BaseTestSuite
     public function getMetaKey()
     {
         return 'rid';
+    }
+
+    /**
+     * Returns the response needed to formatAsScalar()
+     * Must switch between int, string, boolean
+     * @param $type
+     * @return array
+     */
+    public function getScalarResponse($type)
+    {
+        switch($type) {
+            case 'int':
+                return [10];
+
+            case 'string':
+                return ['string'];
+
+            case 'boolean':
+                return [true];
+        }
     }
 
     /* Orient Specific Tests */

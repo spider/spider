@@ -3,6 +3,7 @@ namespace Spider\Test\Unit\Drivers;
 
 use Codeception\Specify;
 use Michaels\Manager\Exceptions\ModifyingProtectedValueException;
+use Spider\Drivers\DriverInterface;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
 
@@ -248,15 +249,15 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         $this->assertEquals('string', $consistent, 'Scalar formatting did not properly work with Record String');
         */
         // solo int, string, bool
-        $response = [10];
+        $response = $this->getScalarResponse('int');
         $consistent = $driver->formatAsScalar($response);
         $this->assertEquals(10, $consistent, 'Scalar formatting did not properly work with Int');
 
-        $response = ['string'];
+        $response = $this->getScalarResponse('string');
         $consistent = $driver->formatAsScalar($response);
         $this->assertEquals('string', $consistent, 'Scalar formatting did not properly work with String');
 
-        $response = [true];
+        $response = $this->getScalarResponse('boolean');
         $consistent = $driver->formatAsScalar($response);
         $this->assertEquals(true, $consistent, 'Scalar formatting did not properly work with Bool');
     }
@@ -472,8 +473,11 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
     }
 
     /* Queries to Implement */
-    /** Returns an instance of the configured driver */
-    abstract public function driver();
+    /** Returns an instance of the configured driver
+     * @param null $switch
+     * @return DriverInterface
+     */
+    abstract public function driver($switch = null);
 
     /**
      * Command selects exactly one record
@@ -550,4 +554,12 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
      * @return string
      */
     abstract public function getMetaKey();
+
+    /**
+     * Returns the response needed to formatAsScalar()
+     * Must switch between int, string, boolean
+     * @param $type
+     * @return array
+     */
+    abstract public function getScalarResponse($type);
 }

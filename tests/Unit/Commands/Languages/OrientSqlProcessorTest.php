@@ -13,6 +13,10 @@ class OrientSqlProcessorTest extends BaseTestSuite
         return new CommandProcessor();
     }
 
+    /**
+     * Returns a command for the the Bag tested in
+     * testInsert:it processes a simple insert bag
+     */
     public function insertSimple()
     {
         $query = 'INSERT INTO target';
@@ -26,6 +30,10 @@ class OrientSqlProcessorTest extends BaseTestSuite
         return $expected;
     }
 
+    /**
+     * Returns a command for the the Bag tested in
+     * testUpdate:it processes a simple update bag
+     */
     public function updateSimple()
     {
         $query = 'UPDATE #12:1';
@@ -37,6 +45,10 @@ class OrientSqlProcessorTest extends BaseTestSuite
         return $command;
     }
 
+    /**
+     * Returns a command for the the Bag tested in
+     * testUpdate:it processes a complex update bag
+     */
     public function updateComplex()
     {
         $query = 'UPDATE target';
@@ -50,6 +62,10 @@ class OrientSqlProcessorTest extends BaseTestSuite
         return $command;
     }
 
+    /**
+     * Returns a command for the the Bag tested in
+     * testDelete:it processes a simple delete bag
+     */
     public function deleteSimple()
     {
         $query = 'DELETE VERTEX #12:1';
@@ -59,6 +75,10 @@ class OrientSqlProcessorTest extends BaseTestSuite
         return $command;
     }
 
+    /**
+     * Returns a command for the the Bag tested in
+     * testDelete:it processes a complex delete bag
+     */
     public function deleteComplex()
     {
         $query = 'DELETE VERTEX FROM target';
@@ -70,6 +90,10 @@ class OrientSqlProcessorTest extends BaseTestSuite
         return $command;
     }
 
+    /**
+     * Returns a command for the the Bag tested in
+     * testSelect:it processes a simple select bag
+     */
     public function selectSimple()
     {
         $query = 'SELECT';
@@ -81,6 +105,10 @@ class OrientSqlProcessorTest extends BaseTestSuite
         return $command;
     }
 
+    /**
+     * Returns a command for the the Bag tested in
+     * testSelect:it processes a select bag with here constraints
+     */
     public function selectConstraints()
     {
         $query = 'SELECT';
@@ -93,6 +121,10 @@ class OrientSqlProcessorTest extends BaseTestSuite
         return $command;
     }
 
+    /**
+     * Returns a command for the the Bag tested in
+     * testSelect:it processes a complex select bag
+     */
     public function selectComplex()
     {
         $query = 'SELECT field1, field2';
