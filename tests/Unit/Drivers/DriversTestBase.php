@@ -3,6 +3,7 @@ namespace Spider\Test\Unit\Drivers;
 
 use Codeception\Specify;
 use Michaels\Manager\Exceptions\ModifyingProtectedValueException;
+use Spider\Commands\Command;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
 
@@ -205,7 +206,6 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
         $consistent = $driver->formatAsScalar($response);
         $this->assertEquals('string', $consistent, 'Scalar formatting did not properly work with Record String');
         */
-
         // solo int, string, bool
         $response = [10];
         $consistent = $driver->formatAsScalar($response);
@@ -319,7 +319,6 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
                 $consistent->label,
                 "incorrect label found"
             );
-
             $consistent->id = 100; // should throw an error
 
             $driver->close();
