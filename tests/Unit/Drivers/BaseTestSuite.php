@@ -6,7 +6,27 @@ use Michaels\Manager\Exceptions\ModifyingProtectedValueException;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
 
-abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
+/**
+ * This is the base tests for all driver.
+ *
+ * Each driver should extend this class and implement the required methods.
+ * This ensures that all drivers meet the same testing requirements.
+ *
+ * The methods each driver implements will return a Command that executes a query
+ * and an array of expected results. Each docblock specifies which results will be tested.
+ *
+ * Please be sure that the expected results match those returned from the test database
+ *
+ * Even when only one result is retrieved from the database. The 'expected' array should be
+ * a two-level array `'expected' => [
+ *      [
+ *          'name' => 'first result'
+ *      ],
+ * ];
+ *
+ * See the existing drivers for more information.
+ */
+abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 {
     use Specify;
 
@@ -35,19 +55,19 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return a Record');
 
             $this->assertEquals(
-                $this->getExpected('select-one-item')['name'],
+                $this->getExpected('select-one-item')[0]['name'],
                 $response->name,
                 "failed to return the correct names"
             );
 
             $this->assertEquals(
-                $this->getExpected('select-one-item')['label'],
+                $this->getExpected('select-one-item')[0]['label'],
                 $response->label,
                 "failed to return the correct label"
             );
 
             $this->assertEquals(
-                $this->getExpected('select-one-item')['id'],
+                $this->getExpected('select-one-item')[0]['id'],
                 $response->id,
                 "failed to return the correct id"
             );
@@ -88,26 +108,26 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Spider\Base\Collection', $newRecord, 'failed to return a Record');
         $this->assertEquals(
-            $this->getExpected('create-one-item')['name'],
+            $this->getExpected('create-one-item')[0]['name'],
             $newRecord->name,
             "failed to return the correct names"
         );
 
         // Update existing
-        $response = $driver->executeWriteCommand($this->getCommand('update-one-item', $newRecord->id));
+        $response = $driver->executeWriteCommand($this->getCommand('update-one-item', $newRecord->name));
 
         $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
-        $deletedRecord = $response->getSet();
+        $updatedRecord = $response->getSet();
 
-        $this->assertInstanceOf('Spider\Base\Collection', $deletedRecord, 'failed to return a Record');
+        $this->assertInstanceOf('Spider\Base\Collection', $updatedRecord, 'failed to return a Record');
         $this->assertEquals(
-            $this->getExpected('update-one-item')['name'],
-            $deletedRecord->name,
+            $this->getExpected('update-one-item')[0]['name'],
+            $updatedRecord->name,
             "failed to return the correct names"
         );
 
         // Delete That one
-        $response = $driver->executeWriteCommand($this->getCommand('delete-one-item', $newRecord->id));
+        $response = $driver->executeWriteCommand($this->getCommand('delete-one-item', $updatedRecord->name));
 
         $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
         $deletedRecord = $response->getSet();
@@ -115,7 +135,9 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->getExpected('delete-one-item'), $deletedRecord, "failed to delete");
 
         // And try to get it again
-        $response = $driver->executeReadCommand($this->getCommand('select-deleted-item', $newRecord->id));
+        $response = $driver->executeReadCommand(
+            $this->getCommand('select-by-name', $updatedRecord->name)
+        );
 
         $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
         $response = $response->getSet();
@@ -134,13 +156,21 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
             $driver->open();
             $driver->startTransaction();
 
-            $driver->executeWriteCommand($this->getCommand('create-transaction-item'));
+            $driver->executeWriteCommand($this->getCommand('create-one-item'));
 
             $driver->stopTransaction(false);
 
-            $response = $driver->executeReadCommand($this->getCommand('select-transaction-item'));
+            // Try to get that non-existent vertex
+            $response = $driver->executeReadCommand(
+                $this->getCommand(
+                    'select-by-name',
+                    $this->getExpected('create-one-item')[0]['name']
+                )
+            );
 
-            $this->assertFalse($response->has('name'), "the rollback did not properly work");
+            // Should be an empty array if transaction did not commit
+            $this->assertTrue(is_array($response), 'failed to return an array');
+            $this->assertEmpty($response, "failed to return an EMPTY array");
             $driver->close();
         });
 
@@ -149,21 +179,32 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
             $driver->open();
             $driver->startTransaction();
 
-            $driver->executeWriteCommand($this->getCommand('create-transaction-item'));
+            $driver->executeWriteCommand($this->getCommand('create-one-item'));
 
             $driver->stopTransaction(true);
 
-            $response = $driver->executeReadCommand($this->getCommand('select-transaction-item'));
+            // Get the item just created
+            $response = $driver->executeReadCommand(
+                $this->getCommand(
+                    'select-by-name',
+                    $this->getExpected('create-one-item')[0]['name']
+                )
+            );
             $response = $response->getSet();
 
             $this->assertEquals(
-                $this->getExpected('select-transaction-item')['name'],
+                $this->getExpected('create-one-item')[0]['name'],
                 $response->name,
                 "the commit did not properly work"
             );
 
-            // Delete That one
-            $driver->runWriteCommand($this->getCommand('delete-transaction-item'));
+            // Clean up
+            $driver->runWriteCommand(
+                $this->getCommand(
+                    'delete-one-item',
+                    $this->getExpected('create-one-item')[0]['name']
+                )
+            );
 
             $driver->close();
         });
@@ -247,7 +288,7 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
         $this->specify("it throws an exception for multiple scalar values", function () {
             $driver = $this->driver();
 
-            $response = [1,2];
+            $response = [1, 2];
 
             $driver->formatAsScalar($response);
         }, ['throws' => new FormattingException()]);
@@ -271,31 +312,71 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
 
     public function testFormatSet()
     {
-        $driver = $this->driver();
+        $this->specify("it formats a single record as a Collection", function () {
+            $driver = $this->driver();
+            $driver->open();
 
-        $response = $this->buildSingleRawResponse();
+            $rawResponse = $driver->executeReadCommand(
+                $this->getCommand('select-one-item')
+            )->getRaw();
 
-        $consistent = $driver->formatAsSet($response);
-        $this->assertInstanceOf('Spider\Base\Collection', $consistent, 'Set formatting did not work for single entry');
-        $this->assertEquals('dylan', $consistent->name, "name wasn't properly populated");
-        $this->assertEquals('user', $consistent->label, "label wasn't properly populated");
-        $this->assertTrue(is_array($consistent->meta), 'failed to populate meta');
+            $driver->close();
 
-        // test multiple results
-        $response = $this->buildTwoRawResponses();
-        $consistent = $driver->formatAsSet($response);
+            $consistent = $driver->formatAsSet($rawResponse);
+            $this->assertInstanceOf('Spider\Base\Collection', $consistent, 'Did not return a single Collection');
+            $this->assertEquals(
+                $this->getExpected('select-one-item')[0]['name'],
+                $consistent->name,
+                "name wasn't properly populated"
+            );
+            $this->assertEquals(
+                $this->getExpected('select-one-item')[0]['label'],
+                $consistent->label,
+                "label wasn't properly populated"
+            );
+            $this->assertTrue(is_array($consistent->meta), 'failed to populate meta');
+        });
 
-        $this->assertTrue(is_array($consistent), 'the formatted response is not an array');
+        $this->specify("it formats a multiple records as an array of Collections", function () {
+            $driver = $this->driver();
+            $driver->open();
 
-        $this->assertInstanceOf('Spider\Base\Collection', $consistent[0], 'Set formating did not return Collections');
-        $this->assertTrue(is_array($consistent[0]->meta), 'failed to populate meta');
-        $this->assertEquals('user', $consistent[0]->label, "label wasn't properly populated");
-        $this->assertEquals('dylan', $consistent[0]->name, "name wasn't properly populated");
+            $rawResponse = $driver->executeReadCommand(
+                $this->getCommand('select-two-items')
+            )->getRaw();
 
-        $this->assertInstanceOf('Spider\Base\Collection', $consistent[1], 'Set formating did not return Collections');
-        $this->assertTrue(is_array($consistent[1]->meta), 'failed to populate meta');
-        $this->assertEquals('user', $consistent[1]->label, "label wasn't properly populated");
-        $this->assertEquals('nicole', $consistent[1]->name, "title wasn't properly populated");
+            $driver->close();
+
+            $consistent = $driver->formatAsSet($rawResponse);
+
+            $this->assertTrue(is_array($consistent), 'the formatted response is not an array');
+
+            $this->assertInstanceOf('Spider\Base\Collection', $consistent[0], 'first: Did not return a collection');
+            $this->assertTrue(is_array($consistent[0]->meta), 'first: failed to populate meta');
+            $this->assertEquals(
+                $this->getExpected('select-two-items')[0]['label'],
+                $consistent[0]->label,
+                "first label wasn't properly populated"
+            );
+            $this->assertEquals(
+                $this->getExpected('select-two-items')[0]['name'],
+                $consistent[0]->name,
+                "first name wasn't properly populated"
+            );
+
+            $this->assertInstanceOf('Spider\Base\Collection', $consistent[1], 'second: Did not return a collection');
+            $this->assertTrue(is_array($consistent[1]->meta), 'second: failed to populate meta');
+            $this->assertEquals(
+                $this->getExpected('select-two-items')[1]['label'],
+                $consistent[1]->label,
+                "second: label wasn't properly populated"
+            );
+            $this->assertEquals(
+                $this->getExpected('select-two-items')[1]['name'],
+                $consistent[1]->name,
+                "second: name wasn't properly populated"
+            );
+        });
     }
 
     /**
@@ -309,19 +390,19 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
             $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
             $consistent = $response->getSet();
             $this->assertEquals(
-                $this->getExpected('select-one-item')['id'],
+                $this->getExpected('select-one-item')[0]['id'],
                 $consistent->id,
                 "incorrect id found"
             );
             $this->assertEquals(
-                $this->getExpected('select-one-item')['label'],
+                $this->getExpected('select-one-item')[0]['label'],
                 $consistent->label,
                 "incorrect label found"
             );
             $consistent->id = 100; // should throw an error
 
             $driver->close();
-        }, ['throws'=> new ModifyingProtectedValueException]);
+        }, ['throws' => new ModifyingProtectedValueException]);
 
         $this->specify("it throws an Exception when a modifying protected label", function () {
             $driver = $this->driver();
@@ -329,12 +410,12 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
             $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
             $consistent = $response->getSet();
             $this->assertEquals(
-                $this->getExpected('select-one-item')['id'],
+                $this->getExpected('select-one-item')[0]['id'],
                 $consistent->id,
                 "incorrect id found"
             );
             $this->assertEquals(
-                $this->getExpected('select-one-item')['label'],
+                $this->getExpected('select-one-item')[0]['label'],
                 $consistent->label,
                 "incorrect label found"
             );
@@ -342,7 +423,7 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
             $consistent->label = 100; // should throw an error
 
             $driver->close();
-        }, ['throws'=> new ModifyingProtectedValueException]);
+        }, ['throws' => new ModifyingProtectedValueException]);
 
         $this->specify("it throws an Exception when a modifying protected meta", function () {
             $driver = $this->driver();
@@ -350,12 +431,12 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
             $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
             $consistent = $response->getSet();
             $this->assertEquals(
-                $this->getExpected('select-one-item')['id'],
+                $this->getExpected('select-one-item')[0]['id'],
                 $consistent->id,
                 "incorrect id found"
             );
             $this->assertEquals(
-                $this->getExpected('select-one-item')['label'],
+                $this->getExpected('select-one-item')[0]['label'],
                 $consistent->label,
                 "incorrect label found"
             );
@@ -364,17 +445,7 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
             $consistent->meta()->$metaKey = 100; // should throw an error
 
             $driver->close();
-        }, ['throws'=> new ModifyingProtectedValueException]);
-    }
-
-    public function testMakeProcessor()
-    {
-        $driver = $this->driver();
-        $this->assertInstanceOf(
-            'Spider\Commands\Languages\ProcessorInterface',
-            $driver->makeProcessor(),
-            "failed to return a language processor"
-        );
+        }, ['throws' => new ModifyingProtectedValueException]);
     }
 
     /* Internal Methods */
@@ -405,87 +476,73 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
 
     /**
      * Command selects exactly one record
-     * Expected is a single array with: id, name, label
-     * @return array
+     * Expected: a single array with: id, name, label
+     * @return array [
+     *  [
+     *      'command' => new Command("SPECIFIC SCRIPT HERE"),
+     *      'expected' => [
+     *          [
+     *              'id' => 'RETURNED ID',
+     *              'name' => 'RESULT.NAME',
+     *              'label' => 'RESULT.LABEL'
+     *          ]
+     *      ]
+     *  ]
      */
     abstract public function selectOneItem();
 
     /**
      * Command selects exactly two records
-     * Expected is two arrays, each with: id, name, label
-     * @return array
+     * Expected: two arrays, each with: id, name, label
+     * @return array [
+     *  [
+     *      'command' => new Command("SPECIFIC SCRIPT HERE"),
+     *      'expected' => [
+     *          [
+     *              'id' => 'FIRST RETURNED ID',
+     *              'name' => 'FIRST RESULT.NAME',
+     *              'label' => 'FIRST RESULT.LABEL'
+     *          ],
+     *          [
+     *              'id' => 'SECOND RESULT.ID',
+     *              'name' => 'SECOND RESULT.NAME',
+     *              'label' => 'SECOND RESULT.LABEL'
+     *          ],
+     *      ]
+     *  ]
      */
     abstract public function selectTwoItems();
 
     /**
-     * Command selects exactly one record by id that does not exist
-     * Expected is an empty array
-     * @param $id
+     * Command selects exactly one record by name = $name
+     * Expected: Not used. Return an empty array
+     * @param $name
      * @return array
      */
-    abstract public function selectDeletedItem($id);
+    abstract public function selectByName($name);
 
     /**
      * Command creates a single record with a name
-     * Expected is a single array with: name, label
+     * Expected: a single array with: `name` created
      * @return array
      */
     abstract public function createOneItem();
 
     /**
-     * Command updates a single item by id, changing the name
-     * Expected is a single array with: name, label
-     * @param $id
+     * Command updates a single item by name = ?, changing the name
+     * Expected: a single array with: name
+     * @param $name
      * @return array
      */
-    abstract public function updateOneItem($id);
+    abstract public function updateOneItem($name);
 
     /**
-     * Command deletes a single item by id
-     * Expected is an empty array
-     * @param $id
+     * Command deletes a single item by name = ?
+     * Expected: an empty array
+     * @param $name
      * @return array
      */
-    abstract public function deleteOneItem($id);
-
-    /**
-     * Command creates a single item with: name
-     *
-     * The name set must be predictable so
-     * it can be deleted in the other transaction properties
-     *
-     * Expected is a single array with: label, name
-     * @return array
-     */
-    abstract public function createTransactionItem();
-
-    /**
-     * Command selects the single item created in `createTransactionItem()`
-     * Expected is a single array with: name
-     * @return array
-     */
-    abstract public function selectTransactionItem();
-
-    /**
-     * Command deletes the item created by `createTransactionItem()`
-     * Expected is an empty array
-     * @return array
-     */
-    abstract public function deleteTransactionItem();
-
-    /**
-     * Builds and returns an array with a single record in
-     * the driver's native response format
-     * @return array
-     */
-    abstract public function buildSingleRawResponse();
-
-    /**
-     * Builds and returns an array with two records in
-     * the driver's native response format
-     * @return array
-     */
-    abstract public function buildTwoRawResponses();
+    abstract public function deleteOneItem($name);
 
     /**
      * Returns the name of a meta property used by the driver

@@ -2,13 +2,15 @@
 namespace Spider\Test\Unit\Drivers\OrientDB;
 
 use Codeception\Specify;
-use PhpOrient\Protocols\Binary\Data\ID;
-use PhpOrient\Protocols\Binary\Data\Record;
 use Spider\Commands\Command;
 use Spider\Drivers\OrientDB\Driver as OrientDriver;
-use Spider\Test\Unit\Drivers\DriversTestBase;
+use Spider\Test\Unit\Drivers\BaseTestSuite;
 
-class DriverTest extends DriversTestBase
+/**
+ * Tests the Neo4j driver against the standard Driver Test Suite
+ * Must implement all methods. See Drivers\BaseTestSuite for more information
+ */
+class DriverTest extends BaseTestSuite
 {
     /** Returns an instance of the configured driver */
     public function driver()
@@ -24,25 +26,52 @@ class DriverTest extends DriversTestBase
 
     /**
      * Command selects exactly one record
-     * Expected is a single array with: id, name, label
-     * @return array
+     * Expected: a single array with: id, name, label
+     * @return array [
+     *  [
+     *      'command' => new Command("SPECIFIC SCRIPT HERE"),
+     *      'expected' => [
+     *          [
+     *              'id' => 'RETURNED ID',
+     *              'name' => 'RESULT.NAME',
+     *              'label' => 'RESULT.LABEL'
+     *          ]
+     *      ]
+     *  ]
      */
     public function selectOneItem()
     {
         return [
             'command' => new Command("SELECT FROM V WHERE @rid = #9:1"),
             'expected' => [
-                'id' => '#9:1',
-                'name' => 'HEY BO DIDDLEY',
-                'label' => 'V'
+                [
+                    'id' => '#9:1',
+                    'name' => 'HEY BO DIDDLEY',
+                    'label' => 'V'
+                ]
             ]
         ];
     }
 
     /**
      * Command selects exactly two records
-     * Expected is two arrays, each with: id, name, label
-     * @return array
+     * Expected: two arrays, each with: id, name, label
+     * @return array [
+     *  [
+     *      'command' => new Command("SPECIFIC SCRIPT HERE"),
+     *      'expected' => [
+     *          [
+     *              'id' => 'FIRST RETURNED ID',
+     *              'name' => 'FIRST RESULT.NAME',
+     *              'label' => 'FIRST RESULT.LABEL'
+     *          ],
+     *          [
+     *              'id' => 'SECOND RESULT.ID',
+     *              'name' => 'SECOND RESULT.NAME',
+     *              'label' => 'SECOND RESULT.LABEL'
+     *          ],
+     *      ]
+     *  ]
      */
     public function selectTwoItems()
     {
@@ -66,168 +95,71 @@ class DriverTest extends DriversTestBase
     }
 
     /**
-     * Command selects exactly one record by id that does not exist
-     * Expected is an empty array
-     * @param $id
+     * Command selects exactly one record by name = $name
+     * Expected: Not used. Return an empty array
+     * @param $name
      * @return array
      */
-    public function selectDeletedItem($id)
+    public function selectByName($name)
     {
         return [
-            'command' => new Command("SELECT FROM $id"),
-            'expected' => []
+            'command' => new Command("SELECT FROM V WHERE name = '$name'"),
+            'expected' => [],
         ];
     }
 
     /**
      * Command creates a single record with a name
-     * Expected is a single array with: name, label
+     * Expected: a single array with: `name` created
      * @return array
      */
     public function createOneItem()
     {
         return [
             'command' => new Command(
-                "CREATE Vertex CONTENT " . json_encode(['song_type' => 'cover', 'name' => 'New Song'])
+                "CREATE Vertex CONTENT " . json_encode(['name' => 'testVertex'])
             ),
             'expected' => [
-                'name' => 'New Song',
-                'label' => 'V',
+                [
+                    'name' => 'testVertex',
+                ]
             ]
         ];
     }
 
     /**
-     * Command updates a single item by id, changing the name
-     * Expected is a single array with: name, label
-     * @param $id
+     * Command updates a single item by name = ?, changing the name
+     * Expected: a single array with: name
+     * @param $name
      * @return array
      */
-    public function updateOneItem($id)
+    public function updateOneItem($name)
     {
-        $query = "UPDATE (SELECT FROM V WHERE @rid=$id) ";
-        $query .= "MERGE " . json_encode(['name' => 'Updated Song']) . ' RETURN AFTER $current';
+        $query = "UPDATE (SELECT FROM V WHERE name='$name') ";
+        $query .= "MERGE " . json_encode(['name' => 'testVertex2']) . ' RETURN AFTER $current';
 
         return [
             'command' => new Command($query),
             'expected' => [
-                'name' => 'Updated Song',
-                'label' => 'V',
+                [
+                    'name' => 'testVertex2',
+                ]
             ]
         ];
     }
 
     /**
-     * Command deletes a single item by id
-     * Expected is an empty array
-     * @param $id
+     * Command deletes a single item by name = ?
+     * Expected: an empty array
+     * @param $name
      * @return array
      */
-    public function deleteOneItem($id)
+    public function deleteOneItem($name)
     {
         return [
-            'command' => new Command("DELETE VERTEX $id"),
+            'command' => new Command("DELETE VERTEX WHERE name = '$name'"),
             'expected' => []
         ];
-    }
-
-    /**
-     * Command creates a single item with: name
-     *
-     * The name set must be predictable so
-     * it can be deleted in the other transaction properties
-     *
-     * Expected is a single array with: label, name
-     * @return array
-     */
-    public function createTransactionItem()
-    {
-        return [
-            'command' => new Command(
-                "CREATE Vertex CONTENT " . json_encode(['song_type' => 'cover', 'name' => 'testVertex'])
-            ),
-            'expected' => [
-                'label' => 'V',
-                'name' => 'testVertex'
-            ]
-        ];
-    }
-
-    /**
-     * Command selects the single item created in `createTransactionItem()`
-     * Expected is a single array with: name
-     * @return array
-     */
-    public function selectTransactionItem()
-    {
-        return [
-            'command' => new Command(
-                "SELECT FROM V WHERE name = 'testVertex'"
-            ),
-            'expected' => [
-                'name' => 'testVertex'
-            ]
-        ];
-    }
-
-    /**
-     * Command deletes the item created by `createTransactionItem()`
-     * Expected is an empty array
-     * @return array
-     */
-    public function deleteTransactionItem()
-    {
-        return [
-            'command' => new Command(
-                "DELETE VERTEX WHERE name = 'testVertex'"
-            ),
-            'expected' => []
-        ];
-    }
-
-    /**
-     * Builds and returns an array with a single record in
-     * the driver's native response format
-     * @return array
-     */
-    public function buildSingleRawResponse()
-    {
-        $record = new Record();
-        $record->setRid(new ID(1, 1));
-        $record->setOClass('user');
-        $record->setVersion(1);
-        $record->setOData([
-            'name' => 'dylan',
-        ]);
-
-        return [$record];
-    }
-
-    /**
-     * Builds and returns an array with two records in
-     * the driver's native response format
-     * @return array
-     */
-    public function buildTwoRawResponses()
-    {
-        // test single result
-        $one = new Record();
-        $one->setRid(new ID(1, 1));
-        $one->setOClass('user');
-        $one->setVersion(1);
-        $one->setOData([
-            'name' => 'dylan',
-        ]);
-
-        $two = new Record();
-        $two->setRid(new ID(2, 2));
-        $two->setOClass('user');
-        $two->setVersion(2);
-        $two->setOData([
-            'name' => 'nicole',
-        ]);
-
-        return [$one, $two];
     }
 
     /**

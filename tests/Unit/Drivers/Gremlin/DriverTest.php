@@ -2,330 +2,199 @@
 namespace Spider\Test\Unit\Drivers\Gremlin;
 
 use Codeception\Specify;
-
-use Spider\Drivers\Gremlin\Driver as GremlinDriver;
 use Spider\Commands\Command;
+use Spider\Drivers\Gremlin\Driver as GremlinDriver;
+use Spider\Test\Unit\Drivers\BaseTestSuite;
 
-class DriverTest extends \PHPUnit_Framework_TestCase
+/**
+ * Tests the Neo4j driver against the standard Driver Test Suite
+ * Must implement all methods. See Drivers\BaseTestSuite for more information
+ */
+class DriverTest extends BaseTestSuite
 {
-    use Specify;
-
-    protected $config;
-    protected $credentials;
+    public $traversal;
+    public $graph;
 
     public function setup()
     {
-        $this->markTestSkipped('The Test Database is not installed');
+        $this->traversal = $this->driver()->traversal;
+        $this->graph = $this->driver()->graph;
+    }
 
-        $this->credentials = [
+    /* Implemented Methods */
+    /** Returns an instance of the configured driver */
+    public function driver()
+    {
+        return new GremlinDriver([
             'hostname' => 'localhost',
             'port' => 8182,
             'graph' => 'graph',
-            'traversal'=> 'g'
-        ];
-    }
-
-    public function testConnections()
-    {
-        $this->specify("it opens and closes the database without exception", function () {
-            $driver = new GremlinDriver($this->credentials);
-            $driver->open();
-            $driver->close();
-        });
-    }
-
-    public function testReadCommands()
-    {
-        $this->specify("it selects a single record and returns an array of Records", function () {
-            $driver = new GremlinDriver($this->credentials);
-            $driver->open();
-
-            $response = $driver->executeReadCommand(new Command(
-                $driver->traversal.".V().has('name', 'marko').limit(1)"
-            ));
-
-            $driver->close();
-
-            $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
-            $response = $response->getSet();
-            $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return a Record');
-            $this->assertEquals("marko", $response->name, "failed to return the correct names");
-            $this->assertEquals("vertex", $response->label, "failed to return the correct label");
-            $this->assertEquals(1, $response->id, "failed to return the correct id");
-        });
-
-        $this->specify("it selects multiple unrelated records and returns an array of Records", function () {
-            $driver = new GremlinDriver($this->credentials);
-            $driver->open();
-
-            $response = $driver->executeReadCommand(new Command(
-                $driver->traversal.".V()"
-            ));
-
-            $driver->close();
-
-            $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
-            $response = $response->getSet();
-
-            $this->assertTrue(is_array($response), "failed to return an array");
-            $this->assertCount(6, $response, "failed to return 6 results");
-            $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return Response Object');
-        });
-    }
-
-    public function testWriteCommands()
-    {
-        $driver = new GremlinDriver($this->credentials);
-        $driver->open();
-
-        // Create new
-        $query = $driver->graph.".addVertex('name', 'testVertex')";
-        $response = $driver->executeWriteCommand(new Command($query));
-
-        $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
-        $newRecord = $response->getSet();
-
-        $this->assertInstanceOf('Spider\Base\Collection', $newRecord, 'failed to return a Record');
-        $this->assertEquals("testVertex", $newRecord->name, "failed to return the correct names");
-
-        // Update existing
-        $query = $driver->traversal.".V().has('name', 'testVertex').property('name', 'testVertex2')";
-        $response = $driver->executeWriteCommand(new Command($query));
-
-        $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
-        $updatedRecord = $response->getSet();
-
-        $this->assertInstanceOf('Spider\Base\Collection', $updatedRecord, 'failed to return a Record');
-        $this->assertEquals("testVertex2", $updatedRecord->name, "failed to return the correct names");
-
-
-        // Delete That one
-        $query = $driver->traversal.".V().has('name', 'testVertex2').drop().iterate()";
-        $response = $driver->executeWriteCommand(new Command($query));
-
-        $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
-        $updatedRecord = $response->getSet();
-
-        $this->assertEquals([], $updatedRecord, "failed to delete");
-
-        // And try to get it again
-        $response = $driver->executeReadCommand(new Command($driver->traversal.".V().has('name', 'testVertex2')"));
-
-        $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
-        $response = $response->getSet();
-
-        $this->assertTrue(is_array($response), 'failed to return an array');
-        $this->assertEmpty($response, "failed to return an EMPTY array");
-
-        // Done
-        $driver->close();
-    }
-
-    public function testTransactions()
-    {
-        //get a transaction enabled graph
-
-        $this->specify("it rollbacks properly on transactional graph", function () {
-
-            $credentials = [
-                'hostname' => 'localhost',
-                'port' => 8182,
-                'graph' => 'graphT',
-                'traversal'=> 't'
-            ];
-
-            $driver = new GremlinDriver($credentials);
-            $driver->open();
-            $driver->StartTransaction();
-
-            $response = $driver->executeWriteCommand(new Command(
-                $driver->graph.".addVertex('name', 'testVertex')"
-            ));
-
-            $driver->StopTransaction(FALSE);
-
-            $response = $driver->executeReadCommand(new Command($driver->traversal.".V().count()"));
-            $count = $response->getScalar();
-
-            $this->assertEquals(0, $count, "the rollback did not properly work");
-            $driver->close();
-        });
-
-        $this->specify("it commits properly on transactional graph", function () {
-
-            $credentials = [
-                'hostname' => 'localhost',
-                'port' => 8182,
-                'graph' => 'graphT',
-                'traversal'=> 't'
-            ];
-
-            $driver = new GremlinDriver($credentials);
-            $driver->open();
-            $driver->StartTransaction();
-
-            $response = $driver->executeWriteCommand(new Command(
-                $driver->graph.".addVertex('name', 'testVertex')"
-            ));
-
-            $driver->StopTransaction();
-
-            $response = $driver->executeReadCommand(new Command($driver->traversal.".V().count()"));
-            $count = $response->getScalar();
-
-            $this->assertEquals(1, $count, "the rollback did not properly work");
-
-            // Delete That one
-            $query = $driver->traversal.".V().drop().iterate()";
-            $driver->runWriteCommand(new Command($query));
-
-            $driver->close();
-        });
-
-        $this->specify("it throws an Exception on non-transactional graphs", function () {
-
-            $driver = new GremlinDriver($this->credentials);
-            $driver->open();
-            $driver->StartTransaction();
-
-            $response = $driver->executeWriteCommand(new Command(
-                $driver->graph.".addVertex('name', 'testVertex')"
-            ));
-
-            $driver->StopTransaction(FALSE);
-
-            $driver->runReadCommand(new Command($driver->traversal.".V().count()"));
-            $driver->close();
-        }, ['throws'=> new \brightzone\rexpro\ServerException('')]);
-
-        $this->specify("it throws an Exception on multiple transaction", function () {
-            $credentials = [
-                'hostname' => 'localhost',
-                'port' => 8182,
-                'graph' => 'graphT',
-                'traversal'=> 't'
-            ];
-
-            $driver = new GremlinDriver($credentials);
-            $driver->open();
-            $driver->StartTransaction();
-            $driver->StartTransaction();
-            $driver->close();
-        }, ['throws'=> new \Spider\Exceptions\InvalidCommandException]);
-
-        $this->specify("it throws an Exception when a non existing transaction is stopped", function () {
-            $credentials = [
-                'hostname' => 'localhost',
-                'port' => 8182,
-                'graph' => 'graphT',
-                'traversal'=> 't'
-            ];
-
-            $driver = new GremlinDriver($credentials);
-            $driver->open();
-            $driver->StopTransaction();
-            $driver->close();
-        }, ['throws'=> new \Spider\Exceptions\InvalidCommandException]);
-    }
-
-    public function testFormatScalar()
-    {
-        $driver = new GremlinDriver();
-
-        $response = [10];
-        $consistent = $driver->formatAsScalar($response);
-        $this->assertEquals(10, $consistent, 'Scalar formating did not properly work with Int');
-
-        $response = ['string'];
-        $consistent = $driver->formatAsScalar($response);
-        $this->assertEquals('string', $consistent, 'Scalar formating did not properly work with String');
+            'traversal' => 'g'
+        ]);
 
     }
 
-    public function testFormatSet()
+    /**
+     * Command selects exactly one record
+     * Expected: a single array with: id, name, label
+     * @return array [
+     *  [
+     *      'command' => new Command("SPECIFIC SCRIPT HERE"),
+     *      'expected' => [
+     *          [
+     *              'id' => 'RETURNED ID',
+     *              'name' => 'RESULT.NAME',
+     *              'label' => 'RESULT.LABEL'
+     *          ]
+     *      ]
+     *  ]
+     */
+    public function selectOneItem()
     {
-        $driver = new GremlinDriver();
-
-        // test single result
-        $response = [
-            [
-                'id'=> 430,
-                'label' => 'user',
-                'type' => 'vertex',
-                'properties' => [
-                    'name' => [
-                        [
-                            'id' => 431,
-                            'value' => 'dylan',
-                        ]
-                    ]
-                ],
+        $query = $this->traversal . ".V().has('name', 'marko').limit(1)";
+        return [
+            'command' => new Command($query),
+            'expected' => [
+                [
+                    'id' => 1,
+                    'label' => "vertex",
+                    'name' => "marko",
+                ]
             ]
         ];
-        $consistent = $driver->formatAsSet($response);
-        $this->assertInstanceOf('Spider\Base\Collection', $consistent, 'Set formating did not properly work for single entry');
-        $this->assertEquals(430, $consistent->meta()->id, "id wasn't properly populated");
-        $this->assertEquals('user', $consistent->meta()->label, "label wasn't properly populated");
-        $this->assertEquals('vertex', $consistent->meta()->type, "type wasn't properly populated");
-        $this->assertEquals('dylan', $consistent->name, "name wasn't properly populated");
-
-        // test multiple results
-        $response = [
-            [
-                'id'=> 430,
-                'label' => 'user',
-                'type' => 'vertex',
-                'properties' => [
-                    'name' => [
-                        [
-                            'id' => 431,
-                            'value' => 'dylan',
-                        ]
-                    ]
-                ],
-            ],
-            [
-                'id'=> 480,
-                'label' => 'user',
-                'type' => 'vertex',
-                'properties' => [
-                    'name' => [
-                        [
-                            'id' => 432,
-                            'value' => 'chris',
-                        ]
-                    ]
-                ],
-            ]
-        ];
-        $consistent = $driver->formatAsSet($response);
-        $this->assertTrue(is_array($consistent), 'the formatted response is not an array');
-
-        $this->assertInstanceOf('Spider\Base\Collection', $consistent[0], 'Set formating did not properly work for single entry');
-        $this->assertEquals(430, $consistent[0]->meta()->id, "id wasn't properly populated");
-        $this->assertEquals('user', $consistent[0]->meta()->label, "label wasn't properly populated");
-        $this->assertEquals('vertex', $consistent[0]->meta()->type, "type wasn't properly populated");
-        $this->assertEquals('dylan', $consistent[0]->name, "name wasn't properly populated");
-
-        $this->assertInstanceOf('Spider\Base\Collection', $consistent[1], 'Set formating did not properly work for single entry');
-        $this->assertEquals(480, $consistent[1]->meta()->id, "id wasn't properly populated");
-        $this->assertEquals('user', $consistent[1]->meta()->label, "label wasn't properly populated");
-        $this->assertEquals('vertex', $consistent[1]->meta()->type, "type wasn't properly populated");
-        $this->assertEquals('chris', $consistent[1]->name, "name wasn't properly populated");
-
     }
 
+    /**
+     * Command selects exactly two records
+     * Expected: two arrays, each with: id, name, label
+     * @return array [
+     *  [
+     *      'command' => new Command("SPECIFIC SCRIPT HERE"),
+     *      'expected' => [
+     *          [
+     *              'id' => 'FIRST RETURNED ID',
+     *              'name' => 'FIRST RESULT.NAME',
+     *              'label' => 'FIRST RESULT.LABEL'
+     *          ],
+     *          [
+     *              'id' => 'SECOND RESULT.ID',
+     *              'name' => 'SECOND RESULT.NAME',
+     *              'label' => 'SECOND RESULT.LABEL'
+     *          ],
+     *      ]
+     *  ]
+     */
+    public function selectTwoItems()
+    {
+        return [
+            'command' => new Command($this->traversal . ".V().limit(2)"),
+            'expected' => [
+                [
+                    'id' => 1,
+                    'label' => "vertex",
+                    'name' => "marko",
+                ],
+                [
+                    'id' => 2,
+                    'label' => "vertex",
+                    'name' => '@todo' // @todo: get correct name
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * Command selects exactly one record by name = $name
+     * Expected: Not used. Return an empty array
+     * @param $name
+     * @return array
+     */
+    public function selectByName($name)
+    {
+        return [
+            'command' => new Command(
+                $this->traversal . ".V().has('name', '$name')"
+            ),
+            'expected' => []
+        ];
+    }
+
+    /**
+     * Command creates a single record with a name
+     * Expected: a single array with: `name` created
+     * @return array
+     */
+    public function createOneItem()
+    {
+        $query = $this->graph . ".addVertex('name', 'testVertex')";
+
+        return [
+            'command' => new Command($query),
+            'expected' => [
+                [
+                    'name' => 'testVertex',
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * Command updates a single item by name = ?, changing the name
+     * Expected: a single array with: name
+     * @param $name
+     * @return array
+     */
+    public function updateOneItem($name)
+    {
+        $query = $this->traversal . ".V().has('name', '$name').property('name', 'testVertex2')";
+
+        return [
+            'command' => new Command($query),
+            'expected' => [
+                [
+                    'name' => 'testVertex2'
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * Command deletes a single item by name = ?
+     * Expected: an empty array
+     * @param $name
+     * @return array
+     */
+    public function deleteOneItem($name)
+    {
+        $query = $this->traversal . ".V().has('name', '$name').drop().iterate()";
+
+        return [
+            'command' => new Command($query),
+            'expected' => [],
+        ];
+    }
+
+    /**
+     * Returns the name of a meta property used by the driver
+     * @return string
+     */
+    public function getMetaKey()
+    {
+        return 'id';
+    }
+
+    /* Gremlin Tests */
     public function testFormatPath()
     {
-        $driver = new GremlinDriver();
+        $driver = $this->driver();
 
         // test single result
         $response = [
             [
-                'labels'=> [[],[]],
+                'labels' => [[], []],
                 'objects' => [
                     [
-                        'id'=> 430,
+                        'id' => 430,
                         'label' => 'user',
                         'type' => 'vertex',
                         'properties' => [
@@ -338,7 +207,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
                         ],
                     ],
                     [
-                        'id'=> 480,
+                        'id' => 480,
                         'label' => 'user',
                         'type' => 'vertex',
                         'properties' => [
@@ -353,10 +222,10 @@ class DriverTest extends \PHPUnit_Framework_TestCase
                 ]
             ],
             [
-                'labels'=> [[],[]],
+                'labels' => [[], []],
                 'objects' => [
                     [
-                        'id'=> 480,
+                        'id' => 480,
                         'label' => 'user',
                         'type' => 'vertex',
                         'properties' => [
@@ -369,7 +238,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
                         ],
                     ],
                     [
-                        'id'=> 430,
+                        'id' => 430,
                         'label' => 'user',
                         'type' => 'vertex',
                         'properties' => [
@@ -416,62 +285,10 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('user', $consistent[1][1]->meta()->label, "label wasn't properly populated");
         $this->assertEquals('vertex', $consistent[1][1]->meta()->type, "type wasn't properly populated");
         $this->assertEquals('dylan', $consistent[1][1]->name, "name wasn't properly populated");
-
     }
 
     public function testFormatTree()
     {
         $this->markTestSkipped("Tree is not yet implemented as gremlin-server doesn't curently support it");
-    }
-
-    /**
-     * Check the id and label in Response are protected.
-     */
-    public function testProtectedResponse()
-    {
-        $this->specify("it throws an Exception when a modifying protected id", function () {
-            $driver = new GremlinDriver($this->credentials);
-            $driver->open();
-            $response = $driver->executeReadCommand(new Command(
-                $driver->traversal.".V().has('name', 'marko').limit(1)"
-            ));
-            $consistent = $response->getSet();
-            $this->assertEquals(1, $consistent->id, "incorrect id found");
-            $this->assertEquals("vertex", $consistent->label, "incorrect label found");
-
-            $consistent->id = 100; // should throw an error
-
-            $driver->close();
-        }, ['throws'=> new \Michaels\Manager\Exceptions\ModifyingProtectedValueException]);
-
-        $this->specify("it throws an Exception when a modifying protected label", function () {
-            $driver = new GremlinDriver($this->credentials);
-            $driver->open();
-            $response = $driver->executeReadCommand(new Command(
-                $driver->traversal.".V().has('name', 'marko').limit(1)"
-            ));
-            $consistent = $response->getSet();
-            $this->assertEquals(1, $consistent->id, "incorrect id found");
-            $this->assertEquals("vertex", $consistent->label, "incorrect label found");
-
-            $consistent->label = 100; // should throw an error
-
-            $driver->close();
-        }, ['throws'=> new \Michaels\Manager\Exceptions\ModifyingProtectedValueException]);
-
-        $this->specify("it throws an Exception when a modifying protected meta", function () {
-            $driver = new GremlinDriver($this->credentials);
-            $driver->open();
-            $response = $driver->executeReadCommand(new Command(
-                $driver->traversal.".V().has('name', 'marko').limit(1)"
-            ));
-            $consistent = $response->getSet();
-            $this->assertEquals(1, $consistent->id, "incorrect id found");
-            $this->assertEquals("vertex", $consistent->label, "incorrect label found");
-
-            $consistent->meta()->id = 100; // should throw an error
-
-            $driver->close();
-        }, ['throws'=> new \Michaels\Manager\Exceptions\ModifyingProtectedValueException]);
     }
 }
