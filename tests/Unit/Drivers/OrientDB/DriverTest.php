@@ -10,7 +10,7 @@ use Spider\Test\Unit\Drivers\DriversTestBase;
 
 class DriverTest extends DriversTestBase
 {
-
+    /** Returns an instance of the configured driver */
     public function driver()
     {
         return new OrientDriver([
@@ -22,7 +22,12 @@ class DriverTest extends DriversTestBase
         ]);
     }
 
-    public function readOneItem()
+    /**
+     * Command selects exactly one record
+     * Expected is a single array with: id, name, label
+     * @return array
+     */
+    public function selectOneItem()
     {
         return [
             'command' => new Command("SELECT FROM V WHERE @rid = #9:1"),
@@ -34,7 +39,12 @@ class DriverTest extends DriversTestBase
         ];
     }
 
-    public function readTwoItems()
+    /**
+     * Command selects exactly two records
+     * Expected is two arrays, each with: id, name, label
+     * @return array
+     */
+    public function selectTwoItems()
     {
         return [
             'command' => new Command(
@@ -55,6 +65,25 @@ class DriverTest extends DriversTestBase
         ];
     }
 
+    /**
+     * Command selects exactly one record by id that does not exist
+     * Expected is an empty array
+     * @param $id
+     * @return array
+     */
+    public function selectDeletedItem($id)
+    {
+        return [
+            'command' => new Command("SELECT FROM $id"),
+            'expected' => []
+        ];
+    }
+
+    /**
+     * Command creates a single record with a name
+     * Expected is a single array with: name, label
+     * @return array
+     */
     public function createOneItem()
     {
         return [
@@ -63,12 +92,17 @@ class DriverTest extends DriversTestBase
             ),
             'expected' => [
                 'name' => 'New Song',
-                'song_gype' => 'cover',
                 'label' => 'V',
             ]
         ];
     }
 
+    /**
+     * Command updates a single item by id, changing the name
+     * Expected is a single array with: name, label
+     * @param $id
+     * @return array
+     */
     public function updateOneItem($id)
     {
         $query = "UPDATE (SELECT FROM V WHERE @rid=$id) ";
@@ -78,12 +112,17 @@ class DriverTest extends DriversTestBase
             'command' => new Command($query),
             'expected' => [
                 'name' => 'Updated Song',
-                'song_type' => 'cover',
                 'label' => 'V',
             ]
         ];
     }
 
+    /**
+     * Command deletes a single item by id
+     * Expected is an empty array
+     * @param $id
+     * @return array
+     */
     public function deleteOneItem($id)
     {
         return [
@@ -92,25 +131,34 @@ class DriverTest extends DriversTestBase
         ];
     }
 
-    public function readOneItemById($id)
-    {
-        return [
-            'command' => new Command("SELECT FROM $id"),
-            'expected' => []
-        ];
-    }
-
+    /**
+     * Command creates a single item with: name
+     *
+     * The name set must be predictable so
+     * it can be deleted in the other transaction properties
+     *
+     * Expected is a single array with: label, name
+     * @return array
+     */
     public function createTransactionItem()
     {
         return [
             'command' => new Command(
                 "CREATE Vertex CONTENT " . json_encode(['song_type' => 'cover', 'name' => 'testVertex'])
             ),
-            'expected' => []
+            'expected' => [
+                'label' => 'V',
+                'name' => 'testVertex'
+            ]
         ];
     }
 
-    public function readTransactionItem()
+    /**
+     * Command selects the single item created in `createTransactionItem()`
+     * Expected is a single array with: name
+     * @return array
+     */
+    public function selectTransactionItem()
     {
         return [
             'command' => new Command(
@@ -122,6 +170,11 @@ class DriverTest extends DriversTestBase
         ];
     }
 
+    /**
+     * Command deletes the item created by `createTransactionItem()`
+     * Expected is an empty array
+     * @return array
+     */
     public function deleteTransactionItem()
     {
         return [
@@ -132,9 +185,13 @@ class DriverTest extends DriversTestBase
         ];
     }
 
+    /**
+     * Builds and returns an array with a single record in
+     * the driver's native response format
+     * @return array
+     */
     public function buildSingleRawResponse()
     {
-        // test single result
         $record = new Record();
         $record->setRid(new ID(1, 1));
         $record->setOClass('user');
@@ -146,6 +203,11 @@ class DriverTest extends DriversTestBase
         return [$record];
     }
 
+    /**
+     * Builds and returns an array with two records in
+     * the driver's native response format
+     * @return array
+     */
     public function buildTwoRawResponses()
     {
         // test single result
@@ -168,6 +230,10 @@ class DriverTest extends DriversTestBase
         return [$one, $two];
     }
 
+    /**
+     * Returns the name of a meta property used by the driver
+     * @return string
+     */
     public function getMetaKey()
     {
         return 'rid';
@@ -208,6 +274,7 @@ class DriverTest extends DriversTestBase
         });
     }
 
+    /* Override Not Supported Features */
     public function testFormatTree()
     {
         $this->markTestSkipped("Tree is not yet implemented as orient doesn't currently support it");

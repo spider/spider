@@ -3,23 +3,12 @@ namespace Spider\Test\Unit\Drivers;
 
 use Codeception\Specify;
 use Michaels\Manager\Exceptions\ModifyingProtectedValueException;
-use Spider\Commands\Command;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
 
 abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
 {
     use Specify;
-
-    /** Returns new driver with correct credentials */
-    abstract public function driver();
-
-    /* Queries to Implement */
-    /** Expects 1 record with: id, label, name */
-    abstract public function readOneItem();
-
-    /** Expects 2 records, each with: id, label, name */
-    abstract public function readTwoItems();
 
     /* Begin Tests */
     public function testConnections()
@@ -37,7 +26,7 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
             $driver = $this->driver();
             $driver->open();
 
-            $response = $driver->executeReadCommand($this->getCommand('read-one-item'));
+            $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
 
             $driver->close();
 
@@ -46,19 +35,19 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return a Record');
 
             $this->assertEquals(
-                $this->getExpected('read-one-item')['name'],
+                $this->getExpected('select-one-item')['name'],
                 $response->name,
                 "failed to return the correct names"
             );
 
             $this->assertEquals(
-                $this->getExpected('read-one-item')['label'],
+                $this->getExpected('select-one-item')['label'],
                 $response->label,
                 "failed to return the correct label"
             );
 
             $this->assertEquals(
-                $this->getExpected('read-one-item')['id'],
+                $this->getExpected('select-one-item')['id'],
                 $response->id,
                 "failed to return the correct id"
             );
@@ -68,7 +57,7 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
             $driver = $this->driver();
             $driver->open();
 
-            $response = $driver->executeReadCommand($this->getCommand('read-two-items'));
+            $response = $driver->executeReadCommand($this->getCommand('select-two-items'));
 
             $driver->close();
 
@@ -79,7 +68,7 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
             $this->assertCount(2, $response, "failed to return 2 results");
             $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return Response Object');
             $this->assertEquals(
-                $this->getExpected('read-two-items')[1]['name'],
+                $this->getExpected('select-two-items')[1]['name'],
                 $response[1]->name,
                 "failed to return the correct record"
             );
@@ -126,7 +115,7 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->getExpected('delete-one-item'), $deletedRecord, "failed to delete");
 
         // And try to get it again
-        $response = $driver->executeReadCommand($this->getCommand('read-one-item-by-id', $newRecord->id));
+        $response = $driver->executeReadCommand($this->getCommand('select-deleted-item', $newRecord->id));
 
         $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
         $response = $response->getSet();
@@ -149,7 +138,7 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
 
             $driver->stopTransaction(false);
 
-            $response = $driver->executeReadCommand($this->getCommand('read-transaction-item'));
+            $response = $driver->executeReadCommand($this->getCommand('select-transaction-item'));
 
             $this->assertFalse($response->has('name'), "the rollback did not properly work");
             $driver->close();
@@ -164,11 +153,11 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
 
             $driver->stopTransaction(true);
 
-            $response = $driver->executeReadCommand($this->getCommand('read-transaction-item'));
+            $response = $driver->executeReadCommand($this->getCommand('select-transaction-item'));
             $response = $response->getSet();
 
             $this->assertEquals(
-                $this->getExpected('read-transaction-item')['name'],
+                $this->getExpected('select-transaction-item')['name'],
                 $response->name,
                 "the commit did not properly work"
             );
@@ -199,21 +188,23 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
     {
         $driver = $this->driver();
 
-        // Record with int
-//        $record= new Record();
-//        $record->setOData(['item' => 10]);
-//        $response = [$record];
-//
-//        $consistent = $driver->formatAsScalar($response);
-//        $this->assertEquals(10, $consistent, 'Scalar formatting did not properly work with Record Int');
-//
-//         Record with string
-//        $record = new Record();
-//        $record->setOData(['item' => 'string']);
-//        $response = [$record];
-//
-//        $consistent = $driver->formatAsScalar($response);
-//        $this->assertEquals('string', $consistent, 'Scalar formatting did not properly work with Record String');
+        /* Scalar should format a single record with a single value as a scalar */
+        /*
+        $record= new Record();
+        $record->setOData(['item' => 10]);
+        $response = [$record];
+
+        $consistent = $driver->formatAsScalar($response);
+        $this->assertEquals(10, $consistent, 'Scalar formatting did not properly work with Record Int');
+
+         Record with string
+        $record = new Record();
+        $record->setOData(['item' => 'string']);
+        $response = [$record];
+
+        $consistent = $driver->formatAsScalar($response);
+        $this->assertEquals('string', $consistent, 'Scalar formatting did not properly work with Record String');
+        */
 
         // solo int, string, bool
         $response = [10];
@@ -231,25 +222,28 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
 
     public function testThrowsFormattingExceptionForScalar()
     {
-//        $this->specify("it throws an exception for record with more than one item", function () {
-//            $driver = $this->driver();
-//
-//            $record = new Record();
-//            $record->setOData(['item' => 10, 'two' => 2]);
-//            $response = [$record];
-//
-//            $driver->formatAsScalar($response);
-//        }, ['throws' => new FormattingException()]);
-//
-//        $this->specify("it throws an exception for multiple records", function () {
-//            $driver = $this->driver();
-//
-//            $record = new Record();
-//            $another = new Record();
-//            $response = [$record, $another];
-//
-//            $driver->formatAsScalar($response);
-//        }, ['throws' => new FormattingException()]);
+        /* Should throw an exception for a record with more than one item */
+        /*
+        $this->specify("it throws an exception for record with more than one item", function () {
+            $driver = $this->driver();
+
+            $record = new Record();
+            $record->setOData(['item' => 10, 'two' => 2]);
+            $response = [$record];
+
+            $driver->formatAsScalar($response);
+        }, ['throws' => new FormattingException()]);
+
+        $this->specify("it throws an exception for multiple records", function () {
+            $driver = $this->driver();
+
+            $record = new Record();
+            $another = new Record();
+            $response = [$record, $another];
+
+            $driver->formatAsScalar($response);
+        }, ['throws' => new FormattingException()]);
+        */
 
         $this->specify("it throws an exception for multiple scalar values", function () {
             $driver = $this->driver();
@@ -313,12 +307,18 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
         $this->specify("it throws an Exception when a modifying protected id", function () {
             $driver = $this->driver();
             $driver->open();
-            $response = $driver->executeReadCommand(new Command(
-                "SELECT FROM #9:3"
-            ));
+            $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
             $consistent = $response->getSet();
-            $this->assertEquals("#9:3", $consistent->id, "incorrect id found");
-            $this->assertEquals("V", $consistent->label, "incorrect label found");
+            $this->assertEquals(
+                $this->getExpected('select-one-item')['id'],
+                $consistent->id,
+                "incorrect id found"
+            );
+            $this->assertEquals(
+                $this->getExpected('select-one-item')['label'],
+                $consistent->label,
+                "incorrect label found"
+            );
 
             $consistent->id = 100; // should throw an error
 
@@ -328,12 +328,18 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
         $this->specify("it throws an Exception when a modifying protected label", function () {
             $driver = $this->driver();
             $driver->open();
-            $response = $driver->executeReadCommand(new Command(
-                "SELECT FROM #9:3"
-            ));
+            $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
             $consistent = $response->getSet();
-            $this->assertEquals("#9:3", $consistent->id, "incorrect id found");
-            $this->assertEquals("V", $consistent->label, "incorrect label found");
+            $this->assertEquals(
+                $this->getExpected('select-one-item')['id'],
+                $consistent->id,
+                "incorrect id found"
+            );
+            $this->assertEquals(
+                $this->getExpected('select-one-item')['label'],
+                $consistent->label,
+                "incorrect label found"
+            );
 
             $consistent->label = 100; // should throw an error
 
@@ -343,15 +349,15 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
         $this->specify("it throws an Exception when a modifying protected meta", function () {
             $driver = $this->driver();
             $driver->open();
-            $response = $driver->executeReadCommand($this->getCommand('read-one-item'));
+            $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
             $consistent = $response->getSet();
             $this->assertEquals(
-                $this->getExpected('read-one-item')['id'],
+                $this->getExpected('select-one-item')['id'],
                 $consistent->id,
                 "incorrect id found"
             );
             $this->assertEquals(
-                $this->getExpected('read-one-item')['label'],
+                $this->getExpected('select-one-item')['label'],
                 $consistent->label,
                 "incorrect label found"
             );
@@ -394,4 +400,98 @@ abstract class DriversTestBase extends \PHPUnit_Framework_TestCase
         $method = $this->camelCase($alias);
         return $this->$method(null)['expected'];
     }
+
+    /* Queries to Implement */
+    /** Returns an instance of the configured driver */
+    abstract public function driver();
+
+    /**
+     * Command selects exactly one record
+     * Expected is a single array with: id, name, label
+     * @return array
+     */
+    abstract public function selectOneItem();
+
+    /**
+     * Command selects exactly two records
+     * Expected is two arrays, each with: id, name, label
+     * @return array
+     */
+    abstract public function selectTwoItems();
+
+    /**
+     * Command selects exactly one record by id that does not exist
+     * Expected is an empty array
+     * @param $id
+     * @return array
+     */
+    abstract public function selectDeletedItem($id);
+
+    /**
+     * Command creates a single record with a name
+     * Expected is a single array with: name, label
+     * @return array
+     */
+    abstract public function createOneItem();
+
+    /**
+     * Command updates a single item by id, changing the name
+     * Expected is a single array with: name, label
+     * @param $id
+     * @return array
+     */
+    abstract public function updateOneItem($id);
+
+    /**
+     * Command deletes a single item by id
+     * Expected is an empty array
+     * @param $id
+     * @return array
+     */
+    abstract public function deleteOneItem($id);
+
+    /**
+     * Command creates a single item with: name
+     *
+     * The name set must be predictable so
+     * it can be deleted in the other transaction properties
+     *
+     * Expected is a single array with: label, name
+     * @return array
+     */
+    abstract public function createTransactionItem();
+
+    /**
+     * Command selects the single item created in `createTransactionItem()`
+     * Expected is a single array with: name
+     * @return array
+     */
+    abstract public function selectTransactionItem();
+
+    /**
+     * Command deletes the item created by `createTransactionItem()`
+     * Expected is an empty array
+     * @return array
+     */
+    abstract public function deleteTransactionItem();
+
+    /**
+     * Builds and returns an array with a single record in
+     * the driver's native response format
+     * @return array
+     */
+    abstract public function buildSingleRawResponse();
+
+    /**
+     * Builds and returns an array with two records in
+     * the driver's native response format
+     * @return array
+     */
+    abstract public function buildTwoRawResponses();
+
+    /**
+     * Returns the name of a meta property used by the driver
+     * @return string
+     */
+    abstract public function getMetaKey();
 }
