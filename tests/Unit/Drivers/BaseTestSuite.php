@@ -167,10 +167,11 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                     $this->getExpected('create-one-item')[0]['name']
                 )
             );
+            $consistent = $response->getSet();
 
             // Should be an empty array if transaction did not commit
-            $this->assertTrue(is_array($response), 'failed to return an array');
-            $this->assertEmpty($response, "failed to return an EMPTY array");
+            $this->assertTrue(is_array($consistent), 'failed to return an array');
+            $this->assertEmpty($consistent, "failed to return an EMPTY array");
             $driver->close();
         });
 

@@ -19,6 +19,7 @@ class DriverTest extends BaseTestSuite
     {
         $this->traversal = $this->driver()->traversal;
         $this->graph = $this->driver()->graph;
+        $this->markTestSkipped("Test Database Not Installed");
     }
 
     /* Implemented Methods */
