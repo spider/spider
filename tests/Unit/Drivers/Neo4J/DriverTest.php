@@ -98,7 +98,7 @@ class DriverTest extends BaseTestSuite
                 [
                     'id' => 1,
                     'label' => "person",
-                    'name' => '@todo' // @todo: get correct name
+                    'name' => 'vadas'
                 ]
             ]
         ];
@@ -188,7 +188,7 @@ class DriverTest extends BaseTestSuite
     /* Neo4j Tests */
     public function testFormatPath()
     {
-        $driver = new Neo4JDriver($this->credentials);
+        $driver = $this->driver();
         $driver->open();
         $response = $driver->executeReadCommand(new Command(
             "MATCH p =((a)-[:created]->(b)<-[:created]-(c))

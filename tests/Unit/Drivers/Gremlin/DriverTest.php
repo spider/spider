@@ -24,7 +24,31 @@ class DriverTest extends BaseTestSuite
 
     /* Implemented Methods */
     /** Returns an instance of the configured driver */
-    public function driver()
+    public function driver($switch = null)
+    {
+        if($switch == 'transaction')
+        {
+            return new GremlinDriver([
+                'hostname' => 'localhost',
+                'port' => 8182,
+                'graph' => 'graphT',
+                'traversal' => 't'
+            ]);
+
+        }
+        else
+        {
+            return new GremlinDriver([
+                'hostname' => 'localhost',
+                'port' => 8182,
+                'graph' => 'graph',
+                'traversal' => 'g'
+            ]);
+        }
+
+    }
+
+    public function testTransactions()
     {
         return new GremlinDriver([
             'hostname' => 'localhost',
@@ -32,7 +56,7 @@ class DriverTest extends BaseTestSuite
             'graph' => 'graph',
             'traversal' => 'g'
         ]);
-
+        parent::testTransactions();
     }
 
     /**
@@ -98,7 +122,7 @@ class DriverTest extends BaseTestSuite
                 [
                     'id' => 2,
                     'label' => "vertex",
-                    'name' => '@todo' // @todo: get correct name
+                    'name' => 'vadas'
                 ]
             ]
         ];
