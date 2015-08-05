@@ -152,7 +152,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
     public function testTransactions()
     {
         $this->specify("it rollbacks properly on transactional graph", function () {
-            $driver = $this->driver();
+            $driver = $this->driver('transaction');
             $driver->open();
             $driver->startTransaction();
 
@@ -176,7 +176,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("it commits properly on transactional graph", function () {
-            $driver = $this->driver();
+            $driver = $this->driver('transaction');
             $driver->open();
             $driver->startTransaction();
 
@@ -211,7 +211,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("it throws an Exception on multiple transaction", function () {
-            $driver = $this->driver();
+            $driver = $this->driver('transaction');
             $driver->open();
             $driver->startTransaction();
             $driver->startTransaction();
@@ -219,7 +219,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         }, ['throws' => new InvalidCommandException()]);
 
         $this->specify("it throws an Exception when a non existing transaction is stopped", function () {
-            $driver = $this->driver();
+            $driver = $this->driver('transaction');
             $driver->open();
             $driver->stopTransaction();
             $driver->close();

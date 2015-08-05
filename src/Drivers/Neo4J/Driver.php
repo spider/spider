@@ -293,7 +293,7 @@ class Driver extends AbstractDriver implements DriverInterface
             return self::FORMAT_PATH;
         }
 
-        if (isset($response[0][0]) && count($response[0][0]) == 1 && !is_array($response[0][0])) {
+        if (isset($response[0][0]) && count($response[0]) == 1 && !is_array($response[0][0])) {
             return self::FORMAT_SCALAR;
         }
 
