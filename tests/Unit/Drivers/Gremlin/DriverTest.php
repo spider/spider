@@ -16,7 +16,7 @@ class DriverTest extends BaseTestSuite
 
     public function setup()
     {
-        //~ $this->markTestSkipped("Test Database Not Installed");
+        $this->markTestSkipped("Test Database Not Installed");
     }
 
     /* Implemented Methods */
@@ -318,6 +318,6 @@ class DriverTest extends BaseTestSuite
 
     public function testFormatTree()
     {
-        $this->markTestSkipped("Tree is not yet implemented as gremlin-server doesn't curently support it");
+        $this->markTestSkipped("Tree is not yet implemented as gremlin-server doesn't currently support it");
     }
 }
