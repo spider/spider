@@ -17,8 +17,6 @@ class DriverTest extends BaseTestSuite
 
     public function setup()
     {
-        $this->traversal = $this->driver()->traversal;
-        $this->graph = $this->driver()->graph;
         $this->markTestSkipped("Test Database Not Installed");
     }
 
@@ -73,7 +71,7 @@ class DriverTest extends BaseTestSuite
      */
     public function selectOneItem()
     {
-        $query = $this->traversal . ".V().has('name', 'marko').limit(1)";
+        $query = $this->driver('transaction')->traversal . ".V().has('name', 'marko').limit(1)";
         return [
             'command' => new Command($query),
             'expected' => [
@@ -109,7 +107,7 @@ class DriverTest extends BaseTestSuite
     public function selectTwoItems()
     {
         return [
-            'command' => new Command($this->traversal . ".V().limit(2)"),
+            'command' => new Command($this->driver('transaction')->traversal . ".V().limit(2)"),
             'expected' => [
                 [
                     'id' => 1,
@@ -135,7 +133,7 @@ class DriverTest extends BaseTestSuite
     {
         return [
             'command' => new Command(
-                $this->traversal . ".V().has('name', '$name')"
+                $this->driver('transaction')->traversal . ".V().has('name', '$name')"
             ),
             'expected' => []
         ];
@@ -148,7 +146,7 @@ class DriverTest extends BaseTestSuite
      */
     public function createOneItem()
     {
-        $query = $this->graph . ".addVertex('name', 'testVertex')";
+        $query = $this->driver('transaction')->graph . ".addVertex('name', 'testVertex')";
 
         return [
             'command' => new Command($query),
@@ -168,7 +166,7 @@ class DriverTest extends BaseTestSuite
      */
     public function updateOneItem($name)
     {
-        $query = $this->traversal . ".V().has('name', '$name').property('name', 'testVertex2')";
+        $query = $this->driver('transaction')->traversal . ".V().has('name', '$name').property('name', 'testVertex2')";
 
         return [
             'command' => new Command($query),
@@ -188,7 +186,7 @@ class DriverTest extends BaseTestSuite
      */
     public function deleteOneItem($name)
     {
-        $query = $this->traversal . ".V().has('name', '$name').drop().iterate()";
+        $query = $this->driver('transaction')->traversal . ".V().has('name', '$name').drop().iterate()";
 
         return [
             'command' => new Command($query),
@@ -332,6 +330,6 @@ class DriverTest extends BaseTestSuite
 
     public function testFormatTree()
     {
-        $this->markTestSkipped("Tree is not yet implemented as gremlin-server doesn't curently support it");
+        $this->markTestSkipped("Tree is not yet implemented as gremlin-server doesn't currently support it");
     }
 }
