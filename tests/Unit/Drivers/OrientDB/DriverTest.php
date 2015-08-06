@@ -2,137 +2,208 @@
 namespace Spider\Test\Unit\Drivers\OrientDB;
 
 use Codeception\Specify;
-use PhpOrient\Protocols\Binary\Data\ID;
-use PhpOrient\Protocols\Binary\Data\Record;
 use Spider\Commands\Command;
-use Spider\Commands\Languages\OrientSQL\CommandProcessor;
 use Spider\Drivers\OrientDB\Driver as OrientDriver;
-use Spider\Exceptions\FormattingException;
-use Spider\Exceptions\InvalidCommandException;
+use Spider\Test\Unit\Drivers\BaseTestSuite;
 
-class DriverTest extends \PHPUnit_Framework_TestCase
+/**
+ * Tests the Neo4j driver against the standard Driver Test Suite
+ * Must implement all methods. See Drivers\BaseTestSuite for more information
+ */
+class DriverTest extends BaseTestSuite
 {
-    use Specify;
-
-    protected $config;
-    protected $credentials;
-
     public function setup()
     {
-        $this->markTestSkipped('The Test Database is not installed');
+        $this->markTestSkipped("Test Database Not Installed");
+    }
 
-        $this->credentials = [
+    /** Returns an instance of the configured driver
+     * @param null $switch
+     * @return OrientDriver
+     */
+    public function driver($switch = null)
+    {
+        return new OrientDriver([
             'hostname' => 'localhost',
             'port' => 2424,
             'username' => 'root',
             'password' => "root",
             'database' => 'GratefulDeadConcerts'
+        ]);
+    }
+
+    /**
+     * Command selects exactly one record
+     * Expected: a single array with: id, name, label
+     * @return array [
+     *  [
+     *      'command' => new Command("SPECIFIC SCRIPT HERE"),
+     *      'expected' => [
+     *          [
+     *              'id' => 'RETURNED ID',
+     *              'name' => 'RESULT.NAME',
+     *              'label' => 'RESULT.LABEL'
+     *          ]
+     *      ]
+     *  ]
+     */
+    public function selectOneItem()
+    {
+        return [
+            'command' => new Command("SELECT FROM V WHERE @rid = #9:1"),
+            'expected' => [
+                [
+                    'id' => '#9:1',
+                    'name' => 'HEY BO DIDDLEY',
+                    'label' => 'V'
+                ]
+            ]
         ];
     }
 
-    public function testConnections()
+    /**
+     * Command selects exactly two records
+     * Expected: two arrays, each with: id, name, label
+     * @return array [
+     *  [
+     *      'command' => new Command("SPECIFIC SCRIPT HERE"),
+     *      'expected' => [
+     *          [
+     *              'id' => 'FIRST RETURNED ID',
+     *              'name' => 'FIRST RESULT.NAME',
+     *              'label' => 'FIRST RESULT.LABEL'
+     *          ],
+     *          [
+     *              'id' => 'SECOND RESULT.ID',
+     *              'name' => 'SECOND RESULT.NAME',
+     *              'label' => 'SECOND RESULT.LABEL'
+     *          ],
+     *      ]
+     *  ]
+     */
+    public function selectTwoItems()
     {
-        $this->specify("it opens and closes the database without exception", function () {
-            $driver = new OrientDriver($this->credentials);
-            $driver->open();
-            $driver->close();
-        });
+        return [
+            'command' => new Command(
+                "SELECT FROM V WHERE song_type = 'cover' LIMIT 2"
+            ),
+            'expected' => [
+                [
+                    'id' => '#9:1',
+                    'name' => 'HEY BO DIDDLEY',
+                    'label' => 'V',
+                ],
+                [
+                    'id' => '#9:2',
+                    'name' => 'IM A MAN',
+                    'label' => 'V',
+                ],
+            ]
+        ];
     }
 
-    public function testReadCommands()
+    /**
+     * Command selects exactly one record by name = $name
+     * Expected: Not used. Return an empty array
+     * @param $name
+     * @return array
+     */
+    public function selectByName($name)
     {
-        $this->specify("it selects a single record and returns an array of Records", function () {
-            $driver = new OrientDriver($this->credentials);
-            $driver->open();
-
-            $response = $driver->executeReadCommand(new Command(
-                "SELECT FROM V WHERE @rid = #9:1"
-            ));
-
-            $driver->close();
-
-            $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
-            $response = $response->getSet();
-            $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return a Record');
-            $this->assertEquals("HEY BO DIDDLEY", $response->name, "failed to return the correct names");
-            $this->assertEquals("V", $response->label, "failed to return the correct label");
-            $this->assertEquals('#9:1', $response->id, "failed to return the correct id");
-        });
-
-        $this->specify("it selects multiple unrelated records and returns an array of Records", function () {
-            $driver = new OrientDriver($this->credentials);
-            $driver->open();
-
-            $response = $driver->executeReadCommand(new Command(
-                "SELECT FROM V WHERE song_type = 'cover' LIMIT 3"
-            ));
-
-            $driver->close();
-
-            $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
-            $response = $response->getSet();
-
-            $this->assertTrue(is_array($response), "failed to return an array");
-            $this->assertCount(3, $response, "failed to return 3 results");
-            $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return Response Object');
-        });
+        return [
+            'command' => new Command("SELECT FROM V WHERE name = '$name'"),
+            'expected' => [],
+        ];
     }
 
-    public function testWriteCommands()
+    /**
+     * Command creates a single record with a name
+     * Expected: a single array with: `name` created
+     * @return array
+     */
+    public function createOneItem()
     {
-        $driver = new OrientDriver($this->credentials);
-        $driver->open();
-
-        // Create new
-        $query = "CREATE Vertex CONTENT " . json_encode(['song_type' => 'cover', 'name' => 'New Song']);
-        $response = $driver->executeWriteCommand(new Command($query));
-
-        $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
-        $newRecord = $response->getSet();
-
-        $this->assertInstanceOf('Spider\Base\Collection', $newRecord, 'failed to return a Record');
-        $this->assertEquals("New Song", $newRecord->name, "failed to return the correct names");
-
-        // Update existing
-        $query = "UPDATE (SELECT FROM V WHERE @rid=$newRecord->id) ";
-        $query .= "MERGE " . json_encode(['name' => 'Updated Song']) . ' RETURN AFTER $current';
-
-        $response = $driver->executeWriteCommand(new Command($query));
-
-        $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
-        $updatedRecord = $response->getSet();
-
-        $this->assertInstanceOf('Spider\Base\Collection', $updatedRecord, 'failed to return a Record');
-        $this->assertEquals("Updated Song", $updatedRecord->name, "failed to return the correct names");
-
-        // Delete That one
-        $query = "DELETE VERTEX $newRecord->id";
-        $response = $driver->executeWriteCommand(new Command($query));
-
-        $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
-        $updatedRecord = $response->getSet();
-
-        $this->assertEquals([], $updatedRecord, "failed to delete");
-
-        // And try to get it again
-        $response = $driver->executeReadCommand(new Command("SELECT FROM V WHERE @rid=$newRecord->id"));
-
-        $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
-        $response = $response->getSet();
-
-        $this->assertTrue(is_array($response), 'failed to return an array');
-        $this->assertEmpty($response, "failed to return an EMPTY array");
-
-        // Done
-        $driver->close();
+        return [
+            'command' => new Command(
+                "CREATE Vertex CONTENT " . json_encode(['name' => 'testVertex'])
+            ),
+            'expected' => [
+                [
+                    'name' => 'testVertex',
+                ]
+            ]
+        ];
     }
 
-    public function testTransactions()
+    /**
+     * Command updates a single item by name = ?, changing the name
+     * Expected: a single array with: name
+     * @param $name
+     * @return array
+     */
+    public function updateOneItem($name)
     {
-        //get a transaction enabled graph
+        $query = "UPDATE (SELECT FROM V WHERE name='$name') ";
+        $query .= "MERGE " . json_encode(['name' => 'testVertex2']) . ' RETURN AFTER $current';
+
+        return [
+            'command' => new Command($query),
+            'expected' => [
+                [
+                    'name' => 'testVertex2',
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * Command deletes a single item by name = ?
+     * Expected: an empty array
+     * @param $name
+     * @return array
+     */
+    public function deleteOneItem($name)
+    {
+        return [
+            'command' => new Command("DELETE VERTEX WHERE name = '$name'"),
+            'expected' => []
+        ];
+    }
+
+    /**
+     * Returns the name of a meta property used by the driver
+     * @return string
+     */
+    public function getMetaKey()
+    {
+        return 'rid';
+    }
+
+    /**
+     * Returns the response needed to formatAsScalar()
+     * Must switch between int, string, boolean
+     * @param $type
+     * @return array
+     */
+    public function getScalarResponse($type)
+    {
+        switch($type) {
+            case 'int':
+                return [10];
+
+            case 'string':
+                return ['string'];
+
+            case 'boolean':
+                return [true];
+        }
+    }
+
+    /* Orient Specific Tests */
+    public function testBuildTransactionStatement()
+    {
         $this->specify("it builds a correct transaction", function () {
-
-            $driver = new OrientDriver($this->credentials);
+            $driver = $this->driver();
             $driver->open();
             $driver->startTransaction();
 
@@ -161,275 +232,16 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected, $actual, "the transaction statement was incorrectly built");
             $driver->close();
         });
-
-        $this->specify("it rollbacks properly on transactional graph", function () {
-            $driver = new OrientDriver($this->credentials);
-            $driver->open();
-            $driver->startTransaction();
-
-            $driver->executeWriteCommand(new Command(
-                "CREATE VERTEX CONTENT {name:'testVertex'}"
-            ));
-
-            $driver->stopTransaction(false);
-
-            $response = $driver->executeReadCommand(new Command("SELECT FROM V WHERE name = 'testVertex'"));
-
-            $this->assertFalse($response->has('name'), "the rollback did not properly work");
-            $driver->close();
-        });
-
-        $this->specify("it commits properly on transactional graph", function () {
-            $driver = new OrientDriver($this->credentials);
-            $driver->open();
-            $driver->startTransaction();
-
-            $driver->executeWriteCommand(new Command(
-                "CREATE VERTEX CONTENT {name:'testVertex'}"
-            ));
-
-            $driver->stopTransaction(true);
-
-            $response = $driver->executeReadCommand(new Command("SELECT FROM V WHERE name = 'testVertex'"));
-            $response = $response->getSet();
-
-            $this->assertEquals('testVertex', $response->name, "the commit did not properly work");
-
-            // Delete That one
-            $query = "DELETE VERTEX WHERE name = 'testVertex'";
-            $driver->runWriteCommand(new Command($query));
-
-            $driver->close();
-        });
-
-        $this->specify("it throws an Exception on multiple transaction", function () {
-            $driver = new OrientDriver($this->credentials);
-            $driver->open();
-            $driver->startTransaction();
-            $driver->startTransaction();
-            $driver->close();
-        }, ['throws' => new InvalidCommandException]);
-
-        $this->specify("it throws an Exception when a non existing transaction is stopped", function () {
-            $driver = new OrientDriver($this->credentials);
-            $driver->open();
-            $driver->stopTransaction();
-            $driver->close();
-        }, ['throws' => new InvalidCommandException()]);
     }
 
-    public function testFormatScalar()
-    {
-        $driver = new OrientDriver();
-
-        // Record with int
-//        $record= new Record();
-//        $record->setOData(['item' => 10]);
-//        $response = [$record];
-//
-//        $consistent = $driver->formatAsScalar($response);
-//        $this->assertEquals(10, $consistent, 'Scalar formatting did not properly work with Record Int');
-//
-//         Record with string
-//        $record = new Record();
-//        $record->setOData(['item' => 'string']);
-//        $response = [$record];
-//
-//        $consistent = $driver->formatAsScalar($response);
-//        $this->assertEquals('string', $consistent, 'Scalar formatting did not properly work with Record String');
-
-        // solo int, string, bool
-        $response = [10];
-        $consistent = $driver->formatAsScalar($response);
-        $this->assertEquals(10, $consistent, 'Scalar formatting did not properly work with Int');
-
-        $response = ['string'];
-        $consistent = $driver->formatAsScalar($response);
-        $this->assertEquals('string', $consistent, 'Scalar formatting did not properly work with String');
-
-        $response = [true];
-        $consistent = $driver->formatAsScalar($response);
-        $this->assertEquals(true, $consistent, 'Scalar formatting did not properly work with Bool');
-    }
-
-    public function testThrowsFormattingExceptionForScalar()
-    {
-//        $this->specify("it throws an exception for record with more than one item", function () {
-//            $driver = new OrientDriver();
-//
-//            $record = new Record();
-//            $record->setOData(['item' => 10, 'two' => 2]);
-//            $response = [$record];
-//
-//            $driver->formatAsScalar($response);
-//        }, ['throws' => new FormattingException()]);
-//
-//        $this->specify("it throws an exception for multiple records", function () {
-//            $driver = new OrientDriver();
-//
-//            $record = new Record();
-//            $another = new Record();
-//            $response = [$record, $another];
-//
-//            $driver->formatAsScalar($response);
-//        }, ['throws' => new FormattingException()]);
-
-        $this->specify("it throws an exception for multiple scalar values", function () {
-            $driver = new OrientDriver();
-
-            $response = [1,2];
-
-            $driver->formatAsScalar($response);
-        }, ['throws' => new FormattingException()]);
-
-        $this->specify("it throws an exception for a non-array", function () {
-            $driver = new OrientDriver();
-
-            $response = 3;
-
-            $driver->formatAsScalar($response);
-        }, ['throws' => new FormattingException()]);
-
-        $this->specify("it throws an exception for an array of invalid objects", function () {
-            $driver = new OrientDriver();
-
-            $response = [[1]];
-
-            $driver->formatAsScalar($response);
-        }, ['throws' => new FormattingException()]);
-    }
-
-    public function testFormatSet()
-    {
-        $driver = new OrientDriver();
-
-        // test single result
-        $record = new Record();
-        $record->setRid(new ID(1, 1));
-        $record->setOClass('user');
-        $record->setVersion(1);
-        $record->setOData([
-            'name' => 'dylan',
-        ]);
-
-        $response = [$record];
-
-        $consistent = $driver->formatAsSet($response);
-        $this->assertInstanceOf('Spider\Base\Collection', $consistent, 'Set formatting did not work for single entry');
-        $this->assertEquals('#1:1', $consistent->id, "id wasn't properly populated");
-        $this->assertEquals('dylan', $consistent->name, "name wasn't properly populated");
-        $this->assertEquals('user', $consistent->label, "label wasn't properly populated");
-
-        $this->assertEquals('#1:1', $consistent->meta()->rid, "id wasn't properly populated");
-        $this->assertEquals('user', $consistent->meta()->oClass, "class wasn't properly populated");
-        $this->assertEquals(1, $consistent->meta()->version, "version wasn't properly populated");
-
-        // test multiple results
-        $recordOne = new Record();
-        $recordOne->setRid(new ID(1, 1));
-        $recordOne->setOClass('user');
-        $recordOne->setVersion(1);
-        $recordOne->setOData([
-            'name' => 'dylan',
-        ]);
-
-        $recordTwo = new Record();
-        $recordTwo->setRid(new ID(2, 2));
-        $recordTwo->setOClass('post');
-        $recordTwo->setVersion(2);
-        $recordTwo->setOData([
-            'title' => 'awesome',
-        ]);
-
-        $response = [$recordOne, $recordTwo];
-        $consistent = $driver->formatAsSet($response);
-
-        $this->assertTrue(is_array($consistent), 'the formatted response is not an array');
-
-        $this->assertInstanceOf('Spider\Base\Collection', $consistent[0], 'Set formating did not return Collections');
-        $this->assertEquals('#1:1', $consistent[0]->meta()->rid, "id wasn't properly populated");
-        $this->assertEquals('user', $consistent[0]->meta()->oClass, "class wasn't properly populated");
-
-        $this->assertEquals('#1:1', $consistent[0]->id, "id wasn't properly populated");
-        $this->assertEquals('user', $consistent[0]->label, "label wasn't properly populated");
-        $this->assertEquals('dylan', $consistent[0]->name, "name wasn't properly populated");
-
-        $this->assertInstanceOf('Spider\Base\Collection', $consistent[1], 'Set formating did not return Collections');
-        $this->assertEquals('#2:2', $consistent[1]->meta()->rid, "id wasn't properly populated");
-        $this->assertEquals('post', $consistent[1]->meta()->oClass, "class wasn't properly populated");
-
-        $this->assertEquals('#2:2', $consistent[1]->id, "id wasn't properly populated");
-        $this->assertEquals('post', $consistent[1]->label, "label wasn't properly populated");
-        $this->assertEquals('awesome', $consistent[1]->title, "title wasn't properly populated");
-    }
-
+    /* Override Not Supported Features */
     public function testFormatTree()
     {
         $this->markTestSkipped("Tree is not yet implemented as orient doesn't currently support it");
     }
 
-    /**
-     * Check the id and label in Response are protected.
-     */
-    public function testProtectedResponse()
-    {
-        $this->specify("it throws an Exception when a modifying protected id", function () {
-            $driver = new OrientDriver($this->credentials);
-            $driver->open();
-            $response = $driver->executeReadCommand(new Command(
-                "SELECT FROM #9:3"
-            ));
-            $consistent = $response->getSet();
-            $this->assertEquals("#9:3", $consistent->id, "incorrect id found");
-            $this->assertEquals("V", $consistent->label, "incorrect label found");
-
-            $consistent->id = 100; // should throw an error
-
-            $driver->close();
-        }, ['throws'=> new \Michaels\Manager\Exceptions\ModifyingProtectedValueException]);
-
-        $this->specify("it throws an Exception when a modifying protected label", function () {
-            $driver = new OrientDriver($this->credentials);
-            $driver->open();
-            $response = $driver->executeReadCommand(new Command(
-                "SELECT FROM #9:3"
-            ));
-            $consistent = $response->getSet();
-            $this->assertEquals("#9:3", $consistent->id, "incorrect id found");
-            $this->assertEquals("V", $consistent->label, "incorrect label found");
-
-            $consistent->label = 100; // should throw an error
-
-            $driver->close();
-        }, ['throws'=> new \Michaels\Manager\Exceptions\ModifyingProtectedValueException]);
-
-        $this->specify("it throws an Exception when a modifying protected meta", function () {
-            $driver = new OrientDriver($this->credentials);
-            $driver->open();
-            $response = $driver->executeReadCommand(new Command(
-                "SELECT FROM #9:3"
-            ));
-            $consistent = $response->getSet();
-            $this->assertEquals("#9:3", $consistent->id, "incorrect id found");
-            $this->assertEquals("V", $consistent->label, "incorrect label found");
-
-            $consistent->meta()->rid = 100; // should throw an error
-
-            $driver->close();
-        }, ['throws'=> new \Michaels\Manager\Exceptions\ModifyingProtectedValueException]);
-    }
-
     public function testFormatPath()
     {
-        $this->markTestSkipped("Tree is not yet implemented as orient doesn't currently support it");
-    }
-
-    public function testMakeProcessor()
-    {
-        $this->assertEquals(
-            new CommandProcessor(),
-            (new OrientDriver($this->credentials))->makeProcessor(),
-            'failed to return processor'
-        );
+        $this->markTestSkipped("Path is not yet implemented as orient doesn't currently support it");
     }
 }
