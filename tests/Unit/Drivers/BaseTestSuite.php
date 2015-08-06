@@ -264,52 +264,31 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
     public function testThrowsFormattingExceptionForScalar()
     {
-        /* Should throw an exception for a record with more than one item */
+        $this->specify("it throws an exception for single set response on scalar formatting", function () {
+            $driver = $this->driver();
+
+            $response = $this->getExpected('select-one-item');
+
+            $driver->formatAsScalar($response);
+        }, ['throws' => new FormattingException()]);
+
+        $this->specify("it throws an exception for a multi set response on scalar formatting", function () {
+            $driver = $this->driver();
+
+            $response = $this->getExpected('select-two-items');
+
+            $driver->formatAsScalar($response);
+        }, ['throws' => new FormattingException()]);
+
         /*
-        $this->specify("it throws an exception for record with more than one item", function () {
-            $driver = $this->driver();
-
-            $record = new Record();
-            $record->setOData(['item' => 10, 'two' => 2]);
-            $response = [$record];
-
-            $driver->formatAsScalar($response);
-        }, ['throws' => new FormattingException()]);
-
-        $this->specify("it throws an exception for multiple records", function () {
-            $driver = $this->driver();
-
-            $record = new Record();
-            $another = new Record();
-            $response = [$record, $another];
-
-            $driver->formatAsScalar($response);
-        }, ['throws' => new FormattingException()]);
-        */
-
-        $this->specify("it throws an exception for multiple scalar values", function () {
-            $driver = $this->driver();
-
-            $response = [1, 2];
-
-            $driver->formatAsScalar($response);
-        }, ['throws' => new FormattingException()]);
-
-        $this->specify("it throws an exception for a non-array", function () {
-            $driver = $this->driver();
-
-            $response = 3;
-
-            $driver->formatAsScalar($response);
-        }, ['throws' => new FormattingException()]);
-
-        $this->specify("it throws an exception for an array of invalid objects", function () {
+        $this->specify("it throws an exception for a path response on scalar formatting", function () {
             $driver = $this->driver();
 
             $response = [[1]];
 
             $driver->formatAsScalar($response);
         }, ['throws' => new FormattingException()]);
+        */
     }
 
     public function testFormatSet()

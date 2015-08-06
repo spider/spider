@@ -14,7 +14,7 @@ class DriverTest extends BaseTestSuite
 {
     public function setup()
     {
-        $this->markTestSkipped("Test Database Not Installed");
+        //$this->markTestSkipped("Test Database Not Installed");
     }
 
     /** Returns an instance of the configured driver
