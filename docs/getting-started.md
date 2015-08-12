@@ -1,6 +1,34 @@
 # Getting Started
 You want to get started with Spider? Shinny.
 
+*Please be aware that Spider is still in development. As we march toward 1.0, things will inevetably change. We do our best to keep code stable and secure, but we are still architecting the awesome. Please [get involved!](contributing.md)
+
+## What are Graph Databases?
+[Graph databases](https://en.wikipedia.org/wiki/Graph_database) are NoSql databases (not-only-sql) that treat relationships like first-class citizens.
+That means that relationships can have properties.
+
+For instance: character:Zoe -> is_married_to -> character:Wash.
+Now, we can add properties to the relationship (is_married_to): years = 3.
+
+This may seem like a simple thing, but it gives an enormous amount of power. Now we can discover paths, follow relationships, do nested queries, and get friends of friends of friends. All blazing fast compared to SQL.
+
+For a more thorough introduction to graph databases, check out:
+  * http://phoenixlabstech.org/2014/08/19/php-graph-databases-and-the-future/
+  * http://neo4j.com/developer/graph-database/
+  * http://www.slideshare.net/maxdemarzi/introduction-to-graph-databases-12735789
+  * http://markorodriguez.com/
+
+## Requirements and Supported Datastores
+Requires:
+  * PHP 5.4
+  
+Currently supports:
+  * OrientDB 2.*
+  * Neo4j 2.*
+  * Gremlin Server 3.*-incubating (querybuilder not yet supported)
+  
+It's easy to [add your own driver](create-driver.md)
+
 ## Install
 Via Composer
 ``` bash

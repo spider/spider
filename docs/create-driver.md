@@ -8,6 +8,12 @@ However, you may create your own driver to connect to any datastore.
 Note that you don't *have* to use Spider with graph databases.
 There are plans to create a MySql and Mongo driver.
 
+## Before we Begin
+Take a look at Spider's test suites. You will unit tests for each supported driver (tests/Unit/Drivers).
+You will also notice that each of these Driver tests extend `BaseTestSuite` which includes several contract methods.
+The best way to build a driver of your own is to create a test that extends this `BaseTestSuite`, implement the required methods,
+and let the tests fly. This way you know your driver is capable of everything a first-party driver can do.
+
 ## Step One: Setup
 The only thing you need to do to setup is create a new class that extends
 `Spider\Drivers\AbstractDriver` which will also implements
@@ -101,7 +107,7 @@ See [response formats](responses.md) for more info about that.
 
 Take a look at the current drivers to see how these were implemented.
 
-## Step Six: Share the love
+## Step Six: Share the Love
 Now that you have a lovely driver, please consider sharing it.
 Open an issue at http://github.com/spider/spider to let us know about it. We won't steal it, we promise.
 

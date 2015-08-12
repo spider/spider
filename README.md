@@ -1,13 +1,13 @@
 # Spider Graphs
-[![Latest Version](https://img.shields.io/github/release/chrismichaels84/spider-graph.svg?style=flat-square)](https://github.com/chrismichaels84/spider-graph/releases)
+[![Latest Version](https://img.shields.io/github/release/spider/spider.svg?style=flat-square)](https://github.com/spider/spider/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Build Status](https://travis-ci.org/chrismichaels84/Spider-Graph.svg?branch=master)](https://travis-ci.org/chrismichaels84/Spider-Graph)
-[![Coverage Status](https://coveralls.io/repos/chrismichaels84/Spider-Graph/badge.svg?branch=master)](https://coveralls.io/r/chrismichaels84/Spider-Graph?branch=master)
-[![Total Downloads](https://img.shields.io/packagist/dt/michaels/spider.svg?style=flat-square)](https://packagist.org/packages/michaels/spider)
+[![Build Status](https://travis-ci.org/spider/spider.svg?branch=master)](https://travis-ci.org/spider/spider)
+[![Coverage Status](https://coveralls.io/repos/spider/spider/badge.svg?branch=master)](https://coveralls.io/r/spider/spider?branch=master)
+[![Total Downloads](https://img.shields.io/packagist/dt/spider/spider.svg?style=flat-square)](https://packagist.org/packages/spider/spider)
 
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/374720ec-b7db-47fc-b958-cc240cf06fbb/big.png)](https://insight.sensiolabs.com/projects/374720ec-b7db-47fc-b958-cc240cf06fbb)
 
-A simple, flexible, and generic graph-data abstraction for php.
+A simple, flexible, and beautiful graph-data abstraction for php.
 
 Why "Spider?" Because spiders crawl over webs, and webs look like graphs. Walk your data.
 
