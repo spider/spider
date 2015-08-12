@@ -14,7 +14,6 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     use Specify;
 
     protected $connections;
-    protected $config;
 
     public function setup()
     {
@@ -189,5 +188,35 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($defaultConnection, $manager->fetch(), "failed to return default cached connection by default");
             $this->assertEquals($defaultConnection, $manager->get('cache.default-connection'), 'failed to cache default-connection');
         });
+    }
+
+    public function testMakeFromProperties()
+    {
+        $manager = new Manager();
+        $connection = $manager->make($this->connections['connection-one']);
+
+        // Connection is a valid instance of Connection
+        $this->assertInstanceOf(
+            'Spider\Connections\ConnectionInterface',
+            $connection,
+            "failed to return an valid connection"
+        );
+
+        // Connection is using the correct driver
+        $this->assertEquals(
+            $this->connections['connection-one']['driver'],
+            $connection->getDriverName(),
+            "failed to set correct driver"
+        );
+
+        // Connection is using the correct properties
+        $expected = $this->connections['connection-one'];
+        unset($expected['driver']);
+
+        $this->assertEquals(
+            $expected,
+            $connection->getAll(),
+            "failed to set correct properties"
+        );
     }
 }
