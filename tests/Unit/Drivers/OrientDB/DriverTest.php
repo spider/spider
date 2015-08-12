@@ -14,7 +14,7 @@ class DriverTest extends BaseTestSuite
 {
     public function setup()
     {
-        $this->markTestSkipped("Test Database Not Installed");
+//        $this->markTestSkipped("Test Database Not Installed");
     }
 
     /** Returns an instance of the configured driver
@@ -28,7 +28,7 @@ class DriverTest extends BaseTestSuite
             'port' => 2424,
             'username' => 'root',
             'password' => "root",
-            'database' => 'GratefulDeadConcerts'
+            'database' => 'spider_test_graph'
         ]);
     }
 
@@ -50,12 +50,12 @@ class DriverTest extends BaseTestSuite
     public function selectOneItem()
     {
         return [
-            'command' => new Command("SELECT FROM V WHERE @rid = #9:1"),
+            'command' => new Command("SELECT FROM person WHERE name = 'marko' LIMIT 1"),
             'expected' => [
                 [
-                    'id' => '#9:1',
-                    'name' => 'HEY BO DIDDLEY',
-                    'label' => 'V'
+                    'id' => "#11:0",
+                    'label' => "person",
+                    'name' => "marko",
                 ]
             ]
         ];
@@ -85,19 +85,19 @@ class DriverTest extends BaseTestSuite
     {
         return [
             'command' => new Command(
-                "SELECT FROM V WHERE song_type = 'cover' LIMIT 2"
+                "SELECT FROM person LIMIT 2"
             ),
             'expected' => [
                 [
-                    'id' => '#9:1',
-                    'name' => 'HEY BO DIDDLEY',
-                    'label' => 'V',
+                    'id' => "#11:0",
+                    'label' => "person",
+                    'name' => "marko",
                 ],
                 [
-                    'id' => '#9:2',
-                    'name' => 'IM A MAN',
-                    'label' => 'V',
-                ],
+                    'id' => "#11:1",
+                    'label' => "person",
+                    'name' => 'vadas'
+                ]
             ]
         ];
     }
@@ -125,7 +125,7 @@ class DriverTest extends BaseTestSuite
     {
         return [
             'command' => new Command(
-                "CREATE Vertex CONTENT " . json_encode(['name' => 'testVertex'])
+                "CREATE Vertex V CONTENT " . json_encode(['name' => 'testVertex'])
             ),
             'expected' => [
                 [
@@ -165,7 +165,7 @@ class DriverTest extends BaseTestSuite
     public function deleteOneItem($name)
     {
         return [
-            'command' => new Command("DELETE VERTEX WHERE name = '$name'"),
+            'command' => new Command("DELETE VERTEX V WHERE name = '$name'"),
             'expected' => []
         ];
     }
@@ -197,6 +197,7 @@ class DriverTest extends BaseTestSuite
             case 'boolean':
                 return [true];
         }
+        return [10];
     }
 
     /* Orient Specific Tests */
