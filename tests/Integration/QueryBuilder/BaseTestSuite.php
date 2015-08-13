@@ -66,8 +66,6 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->where('name', 'marko')
                 ->andWhere('age', 29)
                 ->all();
-            /* See Issue 40 for a discussion about what all() should return */
-            /* Fix this test if decision is made */
 
             $expected = array_filter(Graph::$data, function ($record) {
                 return $record['label'] === 'person'
@@ -75,9 +73,10 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                     && $record['age'] === 29;
             });
 
-            $this->assertFalse(is_array($response), 'failed to return an array');
-            $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return an array of collections');
-            $this->assertEquals($expected[0]['name'], $response->name, 'failed to return correct first collection');
+            $this->assertTrue(is_array($response), 'failed to return an array');
+            $this->assertCount(1, $response, 'failed to return one Collection');
+            $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return an array of collections');
+            $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
         });
 
         $this->specify("it selects with OR constraints", function () {
@@ -87,8 +86,6 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->where('name', 'marko')
                 ->orWhere('name', 'peter')
                 ->all();
-            /* See Issue 40 for a discussion about what all() should return */
-            /* Fix this test if decision is made */
 
             $expected = array_filter(Graph::$data, function ($record) {
                 return $record['label'] === 'person'
