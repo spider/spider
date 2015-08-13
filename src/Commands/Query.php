@@ -141,7 +141,9 @@ class Query extends Builder
     public function all()
     {
         $this->limit(false);
-        return $this->dispatch()->getSet();
+        $response = $this->dispatch()->getSet();
+
+        return (is_array($response)) ? $response : [$response];
     }
 
     /**
