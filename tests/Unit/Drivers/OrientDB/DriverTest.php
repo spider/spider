@@ -14,7 +14,7 @@ class DriverTest extends BaseTestSuite
 {
     public function setup()
     {
-//        $this->markTestSkipped("Test Database Not Installed");
+        $this->markTestSkipped("Test Database Not Installed");
     }
 
     /** Returns an instance of the configured driver
@@ -33,141 +33,66 @@ class DriverTest extends BaseTestSuite
     }
 
     /**
-     * Command selects exactly one record
-     * Expected: a single array with: id, name, label
-     * @return array [
-     *  [
-     *      'command' => new Command("SPECIFIC SCRIPT HERE"),
-     *      'expected' => [
-     *          [
-     *              'id' => 'RETURNED ID',
-     *              'name' => 'RESULT.NAME',
-     *              'label' => 'RESULT.LABEL'
-     *          ]
-     *      ]
-     *  ]
+     * Command selects exactly one record from "person"
+     * @return Command
      */
     public function selectOneItem()
     {
-        return [
-            'command' => new Command("SELECT FROM person WHERE name = 'marko' LIMIT 1"),
-            'expected' => [
-                [
-                    'id' => "#11:0",
-                    'label' => "person",
-                    'name' => "marko",
-                ]
-            ]
-        ];
+        return new Command("SELECT FROM person WHERE name = 'marko' LIMIT 1");
     }
 
     /**
-     * Command selects exactly two records
-     * Expected: two arrays, each with: id, name, label
-     * @return array [
-     *  [
-     *      'command' => new Command("SPECIFIC SCRIPT HERE"),
-     *      'expected' => [
-     *          [
-     *              'id' => 'FIRST RETURNED ID',
-     *              'name' => 'FIRST RESULT.NAME',
-     *              'label' => 'FIRST RESULT.LABEL'
-     *          ],
-     *          [
-     *              'id' => 'SECOND RESULT.ID',
-     *              'name' => 'SECOND RESULT.NAME',
-     *              'label' => 'SECOND RESULT.LABEL'
-     *          ],
-     *      ]
-     *  ]
+     * Command selects exactly the first two records from "person"
+     * @return Command
      */
     public function selectTwoItems()
     {
-        return [
-            'command' => new Command(
-                "SELECT FROM person LIMIT 2"
-            ),
-            'expected' => [
-                [
-                    'id' => "#11:0",
-                    'label' => "person",
-                    'name' => "marko",
-                ],
-                [
-                    'id' => "#11:1",
-                    'label' => "person",
-                    'name' => 'vadas'
-                ]
-            ]
-        ];
+        return new Command(
+            "SELECT FROM person LIMIT 2"
+        );
     }
 
     /**
      * Command selects exactly one record by name = $name
-     * Expected: Not used. Return an empty array
-     * @param $name
-     * @return array
+     * @return Command
      */
     public function selectByName($name)
     {
-        return [
-            'command' => new Command("SELECT FROM V WHERE name = '$name'"),
-            'expected' => [],
-        ];
+        return new Command("SELECT FROM V WHERE name = '$name'");
     }
 
     /**
-     * Command creates a single record with a name
-     * Expected: a single array with: `name` created
-     * @return array
+     * Command creates a single record with the name "testVertex"
+     * @return Command
      */
     public function createOneItem()
     {
-        return [
-            'command' => new Command(
-                "CREATE Vertex V CONTENT " . json_encode(['name' => 'testVertex'])
-            ),
-            'expected' => [
-                [
-                    'name' => 'testVertex',
-                ]
-            ]
-        ];
+        return new Command(
+            "CREATE Vertex V CONTENT " . json_encode(['name' => 'testVertex'])
+        );
     }
 
     /**
-     * Command updates a single item by name = ?, changing the name
-     * Expected: a single array with: name
+     * Command updates a single item by name = ?, changing the name to "testVertex2"
      * @param $name
-     * @return array
+     * @return Command
      */
     public function updateOneItem($name)
     {
         $query = "UPDATE (SELECT FROM V WHERE name='$name') ";
         $query .= "MERGE " . json_encode(['name' => 'testVertex2']) . ' RETURN AFTER $current';
 
-        return [
-            'command' => new Command($query),
-            'expected' => [
-                [
-                    'name' => 'testVertex2',
-                ]
-            ]
-        ];
+        return new Command($query);
     }
 
     /**
      * Command deletes a single item by name = ?
-     * Expected: an empty array
      * @param $name
-     * @return array
+     * @return Command
      */
     public function deleteOneItem($name)
     {
-        return [
-            'command' => new Command("DELETE VERTEX V WHERE name = '$name'"),
-            'expected' => []
-        ];
+        return new Command("DELETE VERTEX V WHERE name = '$name'");
     }
 
     /**
@@ -198,6 +123,17 @@ class DriverTest extends BaseTestSuite
                 return [true];
         }
         return [10];
+    }
+
+    /**
+     * Format the id to a vendor-specific format
+     * @param int $id
+     * @param int $cluster
+     * @return mixed
+     */
+    public function formatId($id, $cluster = 11)
+    {
+        return "#$cluster:$id";
     }
 
     /* Orient Specific Tests */

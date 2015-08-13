@@ -43,143 +43,68 @@ class DriverTest extends BaseTestSuite
     }
 
     /**
-     * Command selects exactly one record
-     * Expected: a single array with: id, name, label
-     * @return array [
-     *  [
-     *      'command' => new Command("SPECIFIC SCRIPT HERE"),
-     *      'expected' => [
-     *          [
-     *              'id' => 'RETURNED ID',
-     *              'name' => 'RESULT.NAME',
-     *              'label' => 'RESULT.LABEL'
-     *          ]
-     *      ]
-     *  ]
+     * Command selects exactly one record from "person"
+     * @return Command
      */
     public function selectOneItem()
     {
         $query = $this->driver->traversal . ".V().has('name', 'marko').limit(1)";
-        return [
-            'command' => new Command($query),
-            'expected' => [
-                [
-                    'id' => 1,
-                    'label' => "vertex",
-                    'name' => "marko",
-                ]
-            ]
-        ];
+        return new Command($query);
     }
 
     /**
-     * Command selects exactly two records
-     * Expected: two arrays, each with: id, name, label
-     * @return array [
-     *  [
-     *      'command' => new Command("SPECIFIC SCRIPT HERE"),
-     *      'expected' => [
-     *          [
-     *              'id' => 'FIRST RETURNED ID',
-     *              'name' => 'FIRST RESULT.NAME',
-     *              'label' => 'FIRST RESULT.LABEL'
-     *          ],
-     *          [
-     *              'id' => 'SECOND RESULT.ID',
-     *              'name' => 'SECOND RESULT.NAME',
-     *              'label' => 'SECOND RESULT.LABEL'
-     *          ],
-     *      ]
-     *  ]
+     * Command selects exactly the first two records from "person"
+     * @return Command
      */
     public function selectTwoItems()
     {
-        return [
-            'command' => new Command($this->driver->traversal . ".V().limit(2)"),
-            'expected' => [
-                [
-                    'id' => 1,
-                    'label' => "vertex",
-                    'name' => "marko",
-                ],
-                [
-                    'id' => 2,
-                    'label' => "vertex",
-                    'name' => 'vadas'
-                ]
-            ]
-        ];
+        return new Command($this->driver->traversal . ".V().limit(2)");
     }
 
     /**
      * Command selects exactly one record by name = $name
-     * Expected: Not used. Return an empty array
      * @param $name
-     * @return array
+     * @return Command
      */
     public function selectByName($name)
     {
-        return [
-            'command' => new Command(
-                $this->driver->traversal . ".V().has('name', '$name')"
-            ),
-            'expected' => []
-        ];
+        return new Command(
+            $this->driver->traversal . ".V().has('name', '$name')"
+        );
     }
 
     /**
-     * Command creates a single record with a name
-     * Expected: a single array with: `name` created
-     * @return array
+     * Command creates a single record with the name "testVertex"
+     * @return Command
      */
     public function createOneItem()
     {
         $query = $this->driver->graph . ".addVertex('name', 'testVertex')";
-
-        return [
-            'command' => new Command($query),
-            'expected' => [
-                [
-                    'name' => 'testVertex',
-                ]
-            ]
-        ];
+        return new Command($query);
     }
 
     /**
-     * Command updates a single item by name = ?, changing the name
-     * Expected: a single array with: name
+     * Command updates a single item by name = ?, changing the name to "testVertex2"
      * @param $name
-     * @return array
+     * @return Command
      */
     public function updateOneItem($name)
     {
         $query = $this->driver->traversal . ".V().has('name', '$name').property('name', 'testVertex2')";
 
-        return [
-            'command' => new Command($query),
-            'expected' => [
-                [
-                    'name' => 'testVertex2'
-                ]
-            ]
-        ];
+        return new Command($query);
     }
 
     /**
      * Command deletes a single item by name = ?
-     * Expected: an empty array
      * @param $name
-     * @return array
+     * @return Command
      */
     public function deleteOneItem($name)
     {
         $query = $this->driver->traversal . ".V().has('name', '$name').drop().iterate()";
 
-        return [
-            'command' => new Command($query),
-            'expected' => [],
-        ];
+        return new Command($query);
     }
 
     /**
