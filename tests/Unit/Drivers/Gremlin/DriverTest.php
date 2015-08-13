@@ -4,6 +4,7 @@ namespace Spider\Test\Unit\Drivers\Gremlin;
 use Codeception\Specify;
 use Spider\Commands\Command;
 use Spider\Drivers\Gremlin\Driver as GremlinDriver;
+use Spider\Test\Fixtures\Graph;
 use Spider\Test\Unit\Drivers\BaseTestSuite;
 
 /**
@@ -24,20 +25,10 @@ class DriverTest extends BaseTestSuite
     public function driver($switch = null)
     {
         if ($switch == 'transaction') {
-            return $this->driver = new GremlinDriver([
-                'hostname' => 'localhost',
-                'port' => 8182,
-                'graph' => 'graphT',
-                'traversal' => 't'
-            ]);
+            return $this->driver = new GremlinDriver(Graph::$servers['gremlin-transaction']);
 
         } else {
-            return $this->driver = new GremlinDriver([
-                'hostname' => 'localhost',
-                'port' => 8182,
-                'graph' => 'graph',
-                'traversal' => 'g'
-            ]);
+            return $this->driver = new GremlinDriver(Graph::$servers['gremlin']);
         }
 
     }

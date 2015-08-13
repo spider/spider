@@ -7,6 +7,34 @@ namespace Spider\Test\Fixtures;
  */
 class Graph
 {
+    public static $servers = [
+        'orient' => [
+            'hostname' => 'localhost',
+            'port' => 2424,
+            'username' => 'root',
+            'password' => "root",
+            'database' => 'spider_test_graph'
+        ],
+        'neo4j' => [
+            'hostname' => 'localhost',
+            'port' => 7474,
+            'username' => "neo4j",
+            'password' => "j4oen",
+        ],
+        'gremlin' => [
+            'hostname' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'traversal' => 'g'
+        ],
+        'gremlin-transaction' => [
+            'hostname' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graphT',
+            'traversal' => 't'
+        ]
+    ];
+
     public static $data = [
         [
             'label' => 'person',

@@ -4,6 +4,7 @@ namespace Spider\Test\Unit\Drivers\OrientDB;
 use Codeception\Specify;
 use Spider\Commands\Command;
 use Spider\Drivers\OrientDB\Driver as OrientDriver;
+use Spider\Test\Fixtures\Graph;
 use Spider\Test\Unit\Drivers\BaseTestSuite;
 
 /**
@@ -14,7 +15,7 @@ class DriverTest extends BaseTestSuite
 {
     public function setup()
     {
-        $this->markTestSkipped("Test Database Not Installed");
+//        $this->markTestSkipped("Test Database Not Installed");
     }
 
     /** Returns an instance of the configured driver
@@ -23,13 +24,7 @@ class DriverTest extends BaseTestSuite
      */
     public function driver($switch = null)
     {
-        return new OrientDriver([
-            'hostname' => 'localhost',
-            'port' => 2424,
-            'username' => 'root',
-            'password' => "root",
-            'database' => 'spider_test_graph'
-        ]);
+        return new OrientDriver(Graph::$servers['orient']);
     }
 
     /**
