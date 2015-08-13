@@ -13,25 +13,29 @@ class Graph
             'port' => 2424,
             'username' => 'root',
             'password' => "root",
-            'database' => 'spider_test_graph'
+            'database' => 'spider_test_graph',
+            'driver' => 'orientdb',
         ],
         'neo4j' => [
             'hostname' => 'localhost',
             'port' => 7474,
             'username' => "neo4j",
             'password' => "j4oen",
+            'driver' => 'neo4j',
         ],
         'gremlin' => [
             'hostname' => 'localhost',
             'port' => 8182,
             'graph' => 'graph',
-            'traversal' => 'g'
+            'traversal' => 'g',
+            'driver' => 'gremlin',
         ],
         'gremlin-transaction' => [
             'hostname' => 'localhost',
             'port' => 8182,
             'graph' => 'graphT',
-            'traversal' => 't'
+            'traversal' => 't',
+            'driver' => 'gremlin',
         ]
     ];
 
