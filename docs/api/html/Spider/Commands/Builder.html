@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>Spider\Commands\Builder | API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../css/sami.css">
+        <script src="../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../js/bootstrap.min.js"></script>
+        <script src="../../js/typeahead.min.js"></script>
+        <script src="../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    
+    
+    </head>
+
+    <body id="class" data-name="class:Spider_Commands_Builder" data-root-path="../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                <form id="search-form" action="../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../index.html">API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../classes.html">Classes</a></li>
+                                            <li><a href="../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../traits.html">Traits</a></li>
+                    <li><a href="../../doc-index.html">Index</a></li>
+                    <li><a href="../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                                                            <li><a href="../../Spider.html">Spider</a></li>
+                                        <li><a href="../../Spider/Commands.html">Commands</a></li>
+    
+                <li>Builder</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>Builder</h1>
+    </div>
+
+    <p>    class
+    <strong>Builder</strong>        extends <a href="../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a>
+</p>
+
+            <div class="description">
+            <p>Command Builder with sugar, no awareness of connections
+Optional CommandProcessor</p>                    </div>
+    
+    
+    
+            <h2>Properties</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td class="type" id="property_operators">
+                                                                                array
+                </td>
+                <td>$operators</td>
+                <td class="last">A map of operators and conjunctions
+These signs on the left are can be used in <code>where</code> constraints and such</td>
+                <td><small>from&nbsp;<a href="../../Spider/Commands/BaseBuilder.html#property_operators"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></small></td>
+            </tr>
+            </table>
+
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___construct">__construct</a>(<abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr> $processor = null, <abbr title="Spider\Commands\Spider\Commands\Bag">Bag</abbr> $bag = null)
+                                            <p>Creates a new instance of the Command Builder</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    mixed
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_create">create</a>(array $data)
+                                            <p>Add an <code>insert</code> clause to the current command bag</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../Spider/Commands/BaseBuilder.html#method_create"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_retrieve">retrieve</a>(null $projections = null)
+                                            <p>Add a <code>retrieve</code> clause to the current Command Bag</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../Spider/Commands/BaseBuilder.html#method_retrieve"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_update">update</a>(null $property = null, null $value = null)
+                                            <p>An an <code>update</code> clause to the current command bag</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../Spider/Commands/BaseBuilder.html#method_update"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>|mixed
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_delete">delete</a>()
+                                            <p>Add a <code>delete</code> clause to the current command bag</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../Spider/Commands/BaseBuilder.html#method_delete"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_data">data</a>($property, null $value = null)
+                                            <p>Add data to the current command bag (for insert and update)</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../Spider/Commands/BaseBuilder.html#method_data"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_target">target</a>($target)
+                                            <p>Set the target in the current Command Bag</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../Spider/Commands/BaseBuilder.html#method_target"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_projections">projections</a>($projections)
+                                            <p>Set the projection fields in the current Command Bag</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../Spider/Commands/BaseBuilder.html#method_projections"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_where">where</a>(string $property, mixed $value = null, string $operator = &#039;=&#039;, string $conjunction = &#039;AND&#039;)
+                                            <p>Add a single or multiple <code>where</code> constraint to the current Command Bag</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../Spider/Commands/BaseBuilder.html#method_where"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_limit">limit</a>($limit)
+                                            <p>Set the result limit in the current Command Bag</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../Spider/Commands/BaseBuilder.html#method_limit"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_groupBy">groupBy</a>($fields)
+                                            <p>Set which field to group results by in the current Command Bag</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../Spider/Commands/BaseBuilder.html#method_groupBy"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_orderBy">orderBy</a>($fields)
+                                            <p>Set which fields to order results by in the current Command Bag</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../Spider/Commands/BaseBuilder.html#method_orderBy"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_asc">asc</a>()
+                                            <p>Return results in ascending order</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../Spider/Commands/BaseBuilder.html#method_asc"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_desc">desc</a>()
+                                            <p>Return results in descending order</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../Spider/Commands/BaseBuilder.html#method_desc"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_clear">clear</a>(array $properties = array())
+                                            <p>Clear the current Command Bag</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../Spider/Commands/BaseBuilder.html#method_clear"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../Spider/Commands/Bag.html"><abbr title="Spider\Commands\Bag">Bag</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getCommandBag">getCommandBag</a>()
+                                            <p>Return the current Command Bag</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../Spider/Commands/BaseBuilder.html#method_getCommandBag"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_select">select</a>(null $projections = null)
+                                            <p>Add a <code>select</code> clause to the current Command Bag</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_insert">insert</a>(null $data = null)
+                                            <p>Add a <code>select</code> clause to the current Command Bag</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_updateFirst">updateFirst</a>($target)
+                                            <p>Update only the first record</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>|mixed
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_drop">drop</a>(null $record = null)
+                                            <p>Delete a single record</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_withData">withData</a>($property, null $value = null)
+                                            <p>Alias of <code>data()</code></p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_only">only</a>($projections)
+                                            <p>Add specific projections to the current Command Bag</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_record">record</a>(string|int $id)
+                                            <p>Add a record id to the current Command Bag as target</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_records">records</a>($ids)
+                                            <p>Add several records as target</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_byId">byId</a>(string|int $id)
+                                            <p>Alias of record
+Alias of <code>record()</code></p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_from">from</a>($target)
+                                            <p>Set the target in the current Command Bag</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_into">into</a>($target)
+                                            <p>Alias of from, used for fluency</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_orWhere">orWhere</a>(string $property, mixed $value = null, string $operator = &#039;=&#039;)
+                                            <p>Add a <code>where</code> clause with an <code>OR</code> conjunction to the current Command Bag</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_andWhere">andWhere</a>(string $property, mixed $value = null, string $operator = &#039;=&#039;)
+                                            <p>Add a <code>where</code> clause with an <code>AND</code> conjunction to the current Command Bag</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    mixed
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_first">first</a>()
+                                            <p>Retrieve the first result by dispatching the current Command Bag.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_tree">tree</a>()
+                                            <p>Flag the desired response as <code>tree</code></p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Commands\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_path">path</a>()
+                                            <p>Flag the desired response as <code>path</code></p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setProcessor">setProcessor</a>(<abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr> $processor)
+                                            <p>Set the CommandProcessor</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_hasProcessor">hasProcessor</a>()
+                                            <p>Is there a valid processor attached</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../Spider/Commands/Command.html"><abbr title="Spider\Commands\Command">Command</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getScript">getScript</a>(<abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr> $processor = null)
+                                            <p>Processes the current command bag</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method___construct">
+        <div class="location">at line 26</div>
+        <code>                    
+    <strong>__construct</strong>(<abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr> $processor = null, <abbr title="Spider\Commands\Spider\Commands\Bag">Bag</abbr> $bag = null)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Creates a new instance of the Command Builder</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></td>
+                <td>$processor</td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td><abbr title="Spider\Commands\Spider\Commands\Bag">Bag</abbr></td>
+                <td>$bag</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_create">
+        <div class="location">in <a href="../../Spider/Commands/BaseBuilder.html#method_create"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> at line 47</div>
+        <code>                    mixed
+    <strong>create</strong>(array $data)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Add an <code>insert</code> clause to the current command bag</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$data</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>mixed</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_retrieve">
+        <div class="location">in <a href="../../Spider/Commands/BaseBuilder.html#method_retrieve"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> at line 68</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>retrieve</strong>(null $projections = null)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Add a <code>retrieve</code> clause to the current Command Bag</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>null</td>
+                <td>$projections</td>
+                <td>Specific fields to retrieve (defaults to *)</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_update">
+        <div class="location">in <a href="../../Spider/Commands/BaseBuilder.html#method_update"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> at line 81</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>update</strong>(null $property = null, null $value = null)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>An an <code>update</code> clause to the current command bag</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>null</td>
+                <td>$property</td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td>null</td>
+                <td>$value</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_delete">
+        <div class="location">in <a href="../../Spider/Commands/BaseBuilder.html#method_delete"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> at line 113</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>|mixed
+    <strong>delete</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Add a <code>delete</code> clause to the current command bag</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr>|mixed</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_data">
+        <div class="location">in <a href="../../Spider/Commands/BaseBuilder.html#method_data"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> at line 125</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>data</strong>($property, null $value = null)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Add data to the current command bag (for insert and update)</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$property</td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td>null</td>
+                <td>$value</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_target">
+        <div class="location">in <a href="../../Spider/Commands/BaseBuilder.html#method_target"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> at line 142</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>target</strong>($target)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Set the target in the current Command Bag</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$target</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_projections">
+        <div class="location">in <a href="../../Spider/Commands/BaseBuilder.html#method_projections"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> at line 157</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>projections</strong>($projections)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Set the projection fields in the current Command Bag</p>                    <p>This is used by <code>only()</code>, <code>select()</code>, and others. A projection is
+a field affected by the current command. Like <code>SELECT fieldname</code> in SQL</p>            </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$projections</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_where">
+        <div class="location">in <a href="../../Spider/Commands/BaseBuilder.html#method_where"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> at line 182</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>where</strong>(string $property, mixed $value = null, string $operator = &#039;=&#039;, string $conjunction = &#039;AND&#039;)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Add a single or multiple <code>where</code> constraint to the current Command Bag</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$property</td>
+                <td>Field name</td>
+            </tr>
+                    <tr>
+                <td>mixed</td>
+                <td>$value</td>
+                <td>Value matched against</td>
+            </tr>
+                    <tr>
+                <td>string</td>
+                <td>$operator</td>
+                <td>From the <code>self::$operators</code> array</td>
+            </tr>
+                    <tr>
+                <td>string</td>
+                <td>$conjunction</td>
+                <td>From the <code>self::$operators</code> array</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_limit">
+        <div class="location">in <a href="../../Spider/Commands/BaseBuilder.html#method_limit"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> at line 221</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>limit</strong>($limit)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Set the result limit in the current Command Bag</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$limit</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_groupBy">
+        <div class="location">in <a href="../../Spider/Commands/BaseBuilder.html#method_groupBy"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> at line 232</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>groupBy</strong>($fields)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Set which field to group results by in the current Command Bag</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$fields</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_orderBy">
+        <div class="location">in <a href="../../Spider/Commands/BaseBuilder.html#method_orderBy"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> at line 244</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>orderBy</strong>($fields)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Set which fields to order results by in the current Command Bag</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$fields</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_asc">
+        <div class="location">in <a href="../../Spider/Commands/BaseBuilder.html#method_asc"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> at line 255</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>asc</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Return results in ascending order</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_desc">
+        <div class="location">in <a href="../../Spider/Commands/BaseBuilder.html#method_desc"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> at line 265</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>desc</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Return results in descending order</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_clear">
+        <div class="location">in <a href="../../Spider/Commands/BaseBuilder.html#method_clear"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> at line 276</div>
+        <code>                    
+    <strong>clear</strong>(array $properties = array())</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Clear the current Command Bag</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$properties</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getCommandBag">
+        <div class="location">in <a href="../../Spider/Commands/BaseBuilder.html#method_getCommandBag"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> at line 285</div>
+        <code>                    <a href="../../Spider/Commands/Bag.html"><abbr title="Spider\Commands\Bag">Bag</abbr></a>
+    <strong>getCommandBag</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Return the current Command Bag</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../Spider/Commands/Bag.html"><abbr title="Spider\Commands\Bag">Bag</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_select">
+        <div class="location">at line 43</div>
+        <code>                    <a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a>
+    <strong>select</strong>(null $projections = null)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Add a <code>select</code> clause to the current Command Bag</p>                    <p>Alias of retrieve</p>            </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>null</td>
+                <td>$projections</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_insert">
+        <div class="location">at line 56</div>
+        <code>                    <a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a>
+    <strong>insert</strong>(null $data = null)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Add a <code>select</code> clause to the current Command Bag</p>                    <p>Alias of retrieve</p>            </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>null</td>
+                <td>$data</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_updateFirst">
+        <div class="location">at line 66</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>updateFirst</strong>($target)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Update only the first record</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$target</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_drop">
+        <div class="location">at line 80</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>|mixed
+    <strong>drop</strong>(null $record = null)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Delete a single record</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>null</td>
+                <td>$record</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr>|mixed</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_withData">
+        <div class="location">at line 101</div>
+        <code>                    <a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a>
+    <strong>withData</strong>($property, null $value = null)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Alias of <code>data()</code></p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$property</td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td>null</td>
+                <td>$value</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_only">
+        <div class="location">at line 111</div>
+        <code>                    <a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a>
+    <strong>only</strong>($projections)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Add specific projections to the current Command Bag</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$projections</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_record">
+        <div class="location">at line 122</div>
+        <code>                    <a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a>
+    <strong>record</strong>(string|int $id)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Add a record id to the current Command Bag as target</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string|int</td>
+                <td>$id</td>
+                <td>The id of the record</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_records">
+        <div class="location">at line 140</div>
+        <code>                    <a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a>
+    <strong>records</strong>($ids)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Add several records as target</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$ids</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_byId">
+        <div class="location">at line 152</div>
+        <code>                    <a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a>
+    <strong>byId</strong>(string|int $id)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Alias of record
+Alias of <code>record()</code></p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string|int</td>
+                <td>$id</td>
+                <td>The id of the record</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_from">
+        <div class="location">at line 162</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>from</strong>($target)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Set the target in the current Command Bag</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$target</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_into">
+        <div class="location">at line 172</div>
+        <code>                    <a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a>
+    <strong>into</strong>($target)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Alias of from, used for fluency</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$target</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../Spider/Commands/Builder.html"><abbr title="Spider\Commands\Builder">Builder</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_orWhere">
+        <div class="location">at line 185</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>orWhere</strong>(string $property, mixed $value = null, string $operator = &#039;=&#039;)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Add a <code>where</code> clause with an <code>OR</code> conjunction to the current Command Bag</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$property</td>
+                <td>Field name</td>
+            </tr>
+                    <tr>
+                <td>mixed</td>
+                <td>$value</td>
+                <td>Value matched against</td>
+            </tr>
+                    <tr>
+                <td>string</td>
+                <td>$operator</td>
+                <td>From the <code>self::$operators</code> array</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_andWhere">
+        <div class="location">at line 198</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>andWhere</strong>(string $property, mixed $value = null, string $operator = &#039;=&#039;)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Add a <code>where</code> clause with an <code>AND</code> conjunction to the current Command Bag</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$property</td>
+                <td>Field name</td>
+            </tr>
+                    <tr>
+                <td>mixed</td>
+                <td>$value</td>
+                <td>Value matched against</td>
+            </tr>
+                    <tr>
+                <td>string</td>
+                <td>$operator</td>
+                <td>From the <code>self::$operators</code> array</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_first">
+        <div class="location">at line 209</div>
+        <code>                    mixed
+    <strong>first</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Retrieve the first result by dispatching the current Command Bag.</p>                    <p>Alias of <code>one()</code></p>            </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>mixed</td>
+            <td>Command results</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_tree">
+        <div class="location">at line 220</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>tree</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Flag the desired response as <code>tree</code></p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_path">
+        <div class="location">at line 230</div>
+        <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
+    <strong>path</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Flag the desired response as <code>path</code></p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Commands\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setProcessor">
+        <div class="location">at line 240</div>
+        <code>                    
+    <strong>setProcessor</strong>(<abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr> $processor)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Set the CommandProcessor</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></td>
+                <td>$processor</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_hasProcessor">
+        <div class="location">at line 249</div>
+        <code>                    bool
+    <strong>hasProcessor</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Is there a valid processor attached</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getScript">
+        <div class="location">at line 260</div>
+        <code>                    <a href="../../Spider/Commands/Command.html"><abbr title="Spider\Commands\Command">Command</abbr></a>
+    <strong>getScript</strong>(<abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr> $processor = null)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Processes the current command bag</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></td>
+                <td>$processor</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../Spider/Commands/Command.html"><abbr title="Spider\Commands\Command">Command</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>

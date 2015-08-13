@@ -1,10 +1,10 @@
 <?php
-namespace Michaels\Spider\Graphs;
+namespace Spider\Graphs;
 use Michaels\Manager\Manager;
 
 /**
  * Class Record
- * @package Michaels\Spider\Graphs
+ * @package Spider\Graphs
  */
 class Record extends Manager
 {
