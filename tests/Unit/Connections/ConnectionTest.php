@@ -92,7 +92,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     public function testInitializeThroughConfigArray()
     {
-        $this->specify("it creates a driver from a config array: full class", function () {
+        $this->specify("it creates a driver from a config array: full classname", function () {
             $connection = new Connection([
                 'driver' => 'Spider\Test\Stubs\DriverStub',
                 'hostname' => 'localhost',
@@ -112,6 +112,41 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->specify("it creates a driver from a config array: alias", function () {
             $connection = new Connection([
                 'driver' => 'orientdb',
+                'hostname' => 'localhost',
+                'port' => 2424,
+            ]);
+
+            $this->assertInstanceOf(
+                'Spider\Drivers\OrientDB\Driver',
+                $connection->getDriver(),
+                "failed to set correct driver"
+            );
+
+            $this->assertEquals('localhost', $connection->get('hostname'), 'failed to set hostname');
+            $this->assertEquals(2424, $connection->get('port'), 'failed to set port');
+        });
+    }
+
+    public function testInitializeThroughDriverAndArray()
+    {
+        $this->specify("it creates a driver from a config array: full classname", function () {
+            $connection = new Connection('Spider\Test\Stubs\DriverStub', [
+                'hostname' => 'localhost',
+                'port' => 2424,
+            ]);
+
+            $this->assertInstanceOf(
+                'Spider\Test\Stubs\DriverStub',
+                $connection->getDriver(),
+                "failed to set correct driver"
+            );
+
+            $this->assertEquals('localhost', $connection->get('hostname'), 'failed to set hostname');
+            $this->assertEquals(2424, $connection->get('port'), 'failed to set port');
+        });
+
+        $this->specify("it creates a driver from a config array: alias", function () {
+            $connection = new Connection('orientdb', [
                 'hostname' => 'localhost',
                 'port' => 2424,
             ]);

@@ -25,23 +25,29 @@ class Connection extends Collection implements ConnectionInterface
     /**
      * Constructs a new connection with driver and properties
      *
-     * @param DriverInterface $driver
+     * @param DriverInterface|string $driver
      * @param array $configuration Credentials and configuration
      */
     public function __construct($driver, array $configuration = [])
     {
+        /* I am sure all this could be refactored */
+
+        // Were we passed all the properties through the first argument?
         $config = (is_array($driver) ? $driver : $configuration);
         $this->initManager($config);
 
-        if (isset($config['driver'])) {
-            if (isset($this->driverAliases[$config['driver']])) {
-                $driverClass = $this->driverAliases[$config['driver']];
-                $this->driver = new $driverClass();
-            } else {
-                $this->driver = new $config['driver']();
-            }
-        } else {
+        /* Setup the driver */
+        if (is_string($driver)) {
+            $this->driverFromString($driver);
+
+        } elseif ($driver instanceof DriverInterface) {
             $this->driver = $driver;
+
+        } elseif (isset($config['driver'])) {
+            if (is_string($config['driver'])) {
+                $this->driverFromString($config['driver']);
+            } elseif ($config['driver'] instanceof DriverInterface)
+                $this->driver = $config['driver'];
         }
     }
 
@@ -230,5 +236,21 @@ class Connection extends Collection implements ConnectionInterface
     public function formatAsScalar($response)
     {
         return $this->driver->formatAsScalar($response);
+    }
+
+    /**
+     * @param $driver
+     */
+    protected function driverFromString($driver)
+    {
+        // As an alias
+        if (isset($this->driverAliases[$driver])) {
+            $driverClass = $this->driverAliases[$driver];
+            $this->driver = new $driverClass();
+
+            // As a classname
+        } else {
+            $this->driver = new $driver();
+        }
     }
 }
