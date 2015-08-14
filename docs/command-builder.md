@@ -8,13 +8,13 @@ $character = $query
    ->from('characters')
    ->where('allegiance', 'browncoats')
    ->first();
-   
+
 echo $character->name; // 'Mal'
 ```
 
 The Query builder will translate your query into a script in any language (OrientSQL, Cypher, Gremlin) that has a language processor.
 
-There are really two query builders for you to choose from. 
+There are really two query builders for you to choose from.
 
 A [**Command builder**](#the-basic-command-builder) is a simple command builder used to generate Commands (language-specific scripts).
 The Command builder has no awareness of any drivers and can't fire queries.
@@ -32,7 +32,7 @@ It just builds a predictable Command Bag and (optionally) returns the finished s
 The Command Builder (for the moment) only handles CRUD operations. Traversals and relationships are on the way!
 
 ### Setup and Configuration
-Simply 
+Simply
 ```php
 $builder = new Spider\Commands\Builder()
 ```
@@ -45,25 +45,22 @@ $builder = new Spider\Commands\Builder($processor);
 ```
 
 #### Getting Commands and Scripts
-Once you have built up your command, you can get the `CommandBag` which will describe your query in a predictable way
+Once you have built up your command you can process the query and return a `Command` with the language-specific script.
 ```php
-$bag = $builder->getCommandBag();
-```
-
-Or, you can process the query and return a `Command` with the language-specific script.
-```php
-$command = $builder->getScript(new LanguageSpecificProcessor());
+$command = $builder->getCommand(new LanguageSpecificProcessor());
 // or you can pass one to the constructor at creation
 ```
-
-The `Command` lets you ```$command->getScript()```
+If you want to get a string version of your query, the `Command` lets you ```$command->getScript()``` but you could also use the `Builder` shortcut:
+```php
+$stringScript = $builder->getScript(new LanguageSpecificProcessor());
+```
 
 ### Selects
 A **Target** is the label or record type in the database. In MySQL, this would be the row.
 
 You can select everything from a target.
 ```php
-$builder->select()->from('planets'); 
+$builder->select()->from('planets');
 ```
 
 You can specify which fields or **properties** you want.
@@ -92,7 +89,7 @@ Group and/or order the results.
 ```php
 $builder->select()->from('characters')
     ->groupBy('name', 'birthday'); // or (['name', 'birthday'])
-    
+
 $builder->select()->from('users')
     ->orderBy('name', 'birthday'); // or (['name', 'birthday'])
     ->desc(); // or asc(); Defaults to ascending
@@ -140,7 +137,7 @@ Creating new records is as easy as telling a story.
 $builder
     ->into('browncoats')
     ->insert(['name' => 'Zoe', 'rank' => 'corporal']);
-    
+
 // Or
 $builder
     ->insert()
@@ -159,7 +156,7 @@ $builder
     ->update('status', 'cancelled by evil Fox')
     ->from('shows')
     ->where('title', 'Firefly);
-    
+
 // Or, use update as a target
 $builder
     ->update('shows')
@@ -178,7 +175,7 @@ $builder
     ->from('shows')
     ->where(['awesomeness', '>', 200])
     ->limit(3);
-    
+
 $builder
     ->updateFirst('shows') // target
     ->withData(['status' => 'cancelled too soon']);
@@ -205,7 +202,7 @@ The Query builder extends the Command Builder, but allows you to:
   1. Execute queries directly from the Builder
   2. [Format responses](responses.md)
   3. Use some extra sugar to make everything more fluent.
-  
+
 ### Configuring the Query builder
 All `Query` needs to get going is a valid connection
 ```php
@@ -244,7 +241,7 @@ Or, we recommend **get()** or **set()** for most cases.
 $result = $query->select()->from('moons')
     ->get(); // alias of set()
 ```
-Which will return a Set (array of or single`Collection`). 
+Which will return a Set (array of or single`Collection`).
 Read [more about responses](responses.md).
 
 ----
@@ -293,7 +290,7 @@ Read [more about responses](responses.md).
 ```php
 $result = $query->select('name')->from('moons')->where('id', 5)
     ->scalar();
-    
+
 echo $result; // 'Miranda'
 ```
 Read [more about responses](responses.md).
