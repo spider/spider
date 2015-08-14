@@ -16,7 +16,7 @@ class UpdateTest extends TestSetup
                 ->updateFirst('users')
                 ->where('username', 'chrismichaels84')
                 ->data('name', 'chris')
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_UPDATE,

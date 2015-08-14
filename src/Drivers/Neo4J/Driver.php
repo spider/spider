@@ -9,6 +9,7 @@ use Spider\Commands\CommandInterface;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
 use Spider\Drivers\Response;
+use Spider\Commands\BaseBuilder;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
 use Spider\Exceptions\NotSupportedException;
@@ -41,6 +42,13 @@ class Driver extends AbstractDriver implements DriverInterface
     protected $transaction;
 
     /**
+     * @var array The supported languages and their processors
+     */
+    protected $languages = [
+        'cypher' => '\Spider\Commands\Cypher\Processor',
+    ];
+
+    /**
      * Open a database connection
      *
      * @return Driver $this
@@ -69,11 +77,17 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * This is the R in CRUD
      *
-     * @param CommandInterface $query
+     * @param CommandInterface|BaseBuilder $query
      * @return Response
      */
-    public function executeReadCommand(CommandInterface $query)
+    public function executeReadCommand($query)
     {
+        if ($query instanceof BaseBuilder) {
+            throw new NotSupportedException("There are currently no processors for cypher.");
+        } elseif (!$this->isSupportedLanguage($query->getScriptLanguage())) {
+            throw new NotSupportedException(__CLASS__ . " does not support ". $query->getScriptLanguage());
+        }
+
         $neoQuery = new Query($this->client, $query->getScript());
         if ($this->inTransaction) {
             $response = $this->transaction->addStatements($neoQuery);
@@ -88,10 +102,10 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * These are the "CUD" in CRUD
      *
-     * @param CommandInterface $command
+     * @param CommandInterface|BaseBuilder $command
      * @return Response
      */
-    public function executeWriteCommand(CommandInterface $command)
+    public function executeWriteCommand($command)
     {
         return $this->executeReadCommand($command);
     }
@@ -99,28 +113,24 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Executes a read command without waiting for a response
      *
-     * @param CommandInterface $query
+     * @param CommandInterface|BaseBuilder $query
      * @return $this
      */
-    public function runReadCommand(CommandInterface $query)
+    public function runReadCommand($query)
     {
-        $neoQuery = new Query($this->client, $query->getScript());
-        if ($this->inTransaction) {
-            $response = $this->transaction->addStatements($neoQuery);
-        } else {
-            $response = $neoQuery->getResultSet();
-        }
+        $this->executeReadCommand($query);
+        return $this;
     }
 
     /**
      * Executes a write command without waiting for a response
      *
-     * @param CommandInterface $command
+     * @param CommandInterface|BaseBuilder $command
      * @return $this
      */
-    public function runWriteCommand(CommandInterface $command)
+    public function runWriteCommand($command)
     {
-        $this->runReadCommand($command);
+        $this->executeWriteCommand($command);
     }
 
     /**

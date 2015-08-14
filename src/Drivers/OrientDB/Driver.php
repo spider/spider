@@ -6,6 +6,7 @@ use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 use PhpOrient\Protocols\Binary\Data\Record;
 use Spider\Base\Collection;
 use Spider\Commands\CommandInterface;
+use Spider\Commands\BaseBuilder;
 use Spider\Commands\Languages\OrientSQL\CommandProcessor;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
@@ -52,6 +53,13 @@ class Driver extends AbstractDriver implements DriverInterface
 
     /** @var array Batch variables */
     protected $transactionVariables;
+
+    /**
+     * @var array The supported languages and their processors
+     */
+    protected $languages = [
+        'orientSQL' => '\Spider\Commands\Languages\OrientSQL\CommandProcessor',
+    ];
 
     /**
      * Create a new instance with a client
@@ -205,10 +213,10 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Executes a Query or read command
      *
-     * @param CommandInterface $query
+     * @param CommandInterface|BaseBuilder $query
      * @return array|Record|Graph
      */
-    public function executeReadCommand(CommandInterface $query)
+    public function executeReadCommand($query)
     {
         return $this->executeCommand($query, 'query');
     }
@@ -218,10 +226,10 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * These are the "CUD" in CRUD
      *
-     * @param CommandInterface $command
+     * @param CommandInterface|BaseBuilder $command
      * @return Graph|Record|array|mixed mixed values for some write commands
      */
-    public function executeWriteCommand(CommandInterface $command)
+    public function executeWriteCommand($command)
     {
         if ($this->inTransaction) {
             $this->addTransactionStatement($command->getScript());
@@ -243,12 +251,19 @@ class Driver extends AbstractDriver implements DriverInterface
 
     /**
      * Executes actual command or query
-     * @param CommandInterface $command
+     * @param CommandInterface|BaseBuilder $command
      * @param $method
      * @return Response
      */
-    protected function executeCommand(CommandInterface $command, $method)
+    protected function executeCommand($command, $method)
     {
+        if ($command instanceof BaseBuilder) {
+            $processor = new $this->languages['orientSQL'];
+            $command = $command->getCommand($processor);
+        } elseif (!$this->isSupportedLanguage($command->getScriptLanguage())) {
+            throw new NotSupportedException(__CLASS__ . " does not support ". $command->getScriptLanguage());
+        }
+
         $response = $this->client->$method($command->getScript());
         $response = $this->rawResponseToArray($response);
         return new Response(['_raw' => $response, '_driver' => $this]);
@@ -257,11 +272,18 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Executes a read command without waiting for a response
      *
-     * @param CommandInterface $query
+     * @param CommandInterface|BaseBuilder $query
      * @return $this
      */
-    public function runReadCommand(CommandInterface $query)
+    public function runReadCommand($query)
     {
+        if ($query instanceof BaseBuilder) {
+            $processor = new $this->languages['orientSQL'];
+            $query = $query->getCommand($processor);
+        } elseif (!$this->isSupportedLanguage($query->getScriptLanguage())) {
+            throw new NotSupportedException(__CLASS__ . " does not support ". $query->getScriptLanguage());
+        }
+
         $this->client->query($query->getScript());
         return $this;
     }
@@ -269,11 +291,18 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Executes a write command without waiting for a response
      *
-     * @param CommandInterface $command
+     * @param CommandInterface|BaseBuilder $command
      * @return $this
      */
-    public function runWriteCommand(CommandInterface $command)
+    public function runWriteCommand($command)
     {
+        if ($command instanceof BaseBuilder) {
+            $processor = new $this->languages['orientSQL'];
+            $command = $command->getCommand($processor);
+        } elseif (!$this->isSupportedLanguage($command->getScriptLanguage())) {
+            throw new NotSupportedException(__CLASS__ . " does not support ". $command->getScriptLanguage());
+        }
+
         $this->client->command($command->getScript());
         return $this;
     }

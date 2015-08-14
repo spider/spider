@@ -105,10 +105,10 @@ class Connection extends Collection implements ConnectionInterface
     /**
      * Passes to driver: executes a Query or read command
      *
-     * @param CommandInterface $query
+     * @param CommandInterface|BaseBuilder $query
      * @return Response
      */
-    public function executeReadCommand(CommandInterface $query)
+    public function executeReadCommand($query)
     {
         return $this->driver->executeReadCommand($query);
     }
@@ -118,11 +118,11 @@ class Connection extends Collection implements ConnectionInterface
      *
      * These are the "CUD" in CRUD
      *
-     * @param CommandInterface $command
+     * @param CommandInterface|BaseBuilder $command
      * @return Response
      * @internal param CommandInterface $sendCommand
      */
-    public function executeWriteCommand(CommandInterface $command)
+    public function executeWriteCommand($command)
     {
         return $this->driver->executeWriteCommand($command);
     }
@@ -130,10 +130,10 @@ class Connection extends Collection implements ConnectionInterface
     /**
      * Passes to driver: executes a read command without waiting for a response
      *
-     * @param CommandInterface $query
+     * @param CommandInterface|BaseBuilder $query
      * @return $this
      */
-    public function runReadCommand(CommandInterface $query)
+    public function runReadCommand($query)
     {
         return $this->driver->runReadCommand($query);
     }
@@ -141,10 +141,10 @@ class Connection extends Collection implements ConnectionInterface
     /**
      * Passes to driver: executes a write command without waiting for a response
      *
-     * @param CommandInterface $command
+     * @param CommandInterface|BaseBuilder $command
      * @return $this
      */
-    public function runWriteCommand(CommandInterface $command)
+    public function runWriteCommand($command)
     {
         return $this->driver->runWriteCommand($command);
     }

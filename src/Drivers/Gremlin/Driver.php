@@ -7,6 +7,7 @@ use Spider\Commands\CommandInterface;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
 use Spider\Drivers\Response;
+use Spider\Commands\BaseBuilder;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
 use Spider\Exceptions\NotSupportedException;
@@ -38,6 +39,14 @@ class Driver extends AbstractDriver implements DriverInterface
     public $traversal = "g";
 
     /**
+     * @var array The supported languages and their processors
+     */
+    protected $languages = [
+        'gremlin' => '\Spider\Commands\Gremlin\Processor',
+        'cypher' => '\Spider\Commands\Cypher\Processor',
+    ];
+
+    /**
      * Create a new instance with a client
      *
      * @param array $properties an array of the properties to set for this class
@@ -55,6 +64,7 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function open()
     {
+        //multiple open scenario is handled by the client.
         $this->client->open($this->hostname . ':' . $this->port, $this->graph);
         return $this;
     }
@@ -78,8 +88,14 @@ class Driver extends AbstractDriver implements DriverInterface
      * @throws \Exception
      * @throws \brightzone\rexpro\ServerException
      */
-    public function executeReadCommand(CommandInterface $query)
+    public function executeReadCommand($query)
     {
+        if ($query instanceof BaseBuilder) {
+            throw new NotSupportedException("There are currently no processors for gremlin/cypher.");
+        } elseif (!$this->isSupportedLanguage($query->getScriptLanguage())) {
+            throw new NotSupportedException(__CLASS__ . " does not support ". $query->getScriptLanguage());
+        }
+
         try {
             $response = $this->client->send($query->getScript());
         } catch (\Exception $e) {
@@ -103,7 +119,7 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @return Response
      */
-    public function executeWriteCommand(CommandInterface $command)
+    public function executeWriteCommand($command)
     {
         return $this->executeReadCommand($command);
     }
@@ -116,16 +132,9 @@ class Driver extends AbstractDriver implements DriverInterface
      * @throws \Exception
      * @throws \brightzone\rexpro\ServerException
      */
-    public function runReadCommand(CommandInterface $query)
+    public function runReadCommand($query)
     {
-        try {
-            $this->client->send($query->getScript());
-        } catch (\Exception $e) {
-            //Check for empty return error from server.
-            if (!($e instanceof \brightzone\rexpro\ServerException) || ($e->getCode() != 204)) {
-                throw $e;
-            }
-        }
+        $this->executeReadCommand($query);
         return $this;
     }
 
@@ -137,7 +146,7 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @return $this
      */
-    public function runWriteCommand(CommandInterface $command)
+    public function runWriteCommand($command)
     {
         return $this->runReadCommand($command);
     }

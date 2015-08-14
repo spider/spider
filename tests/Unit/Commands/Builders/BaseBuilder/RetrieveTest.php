@@ -21,7 +21,7 @@ class RetrieveTest extends TestSetup
                 ->retrieve()
                 ->target("V")
                 ->where('certified', 'yes')
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -41,7 +41,7 @@ class RetrieveTest extends TestSetup
                 ->target("V")
                 ->where('name', 'michael')
                 ->where('certified', true)
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -62,7 +62,7 @@ class RetrieveTest extends TestSetup
                 ->target("V")
                 ->where(['name', '=', 'michael'])
                 ->where('certified', true)
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -85,7 +85,7 @@ class RetrieveTest extends TestSetup
                     ['name', '=', 'michael'],
                     ['price', '>', 2]
                 ])
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -106,7 +106,7 @@ class RetrieveTest extends TestSetup
                 ->target("V")
                 ->where('certified', true)
                 ->where(['name', '=', 'michael', 'OR'])
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -130,7 +130,7 @@ class RetrieveTest extends TestSetup
                     ['name', '=', 'michael'],
                     ['price', '>', 2, 'OR']
                 ])
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -153,7 +153,7 @@ class RetrieveTest extends TestSetup
                 ->retrieve()
                 ->target("V")
                 ->limit(2)
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -173,7 +173,7 @@ class RetrieveTest extends TestSetup
                 ->retrieve()
                 ->target("V")
                 ->groupBy('certified')
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -190,7 +190,7 @@ class RetrieveTest extends TestSetup
                 ->retrieve()
                 ->target("V")
                 ->groupBy(['certified', 'price'])
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -207,7 +207,7 @@ class RetrieveTest extends TestSetup
                 ->retrieve()
                 ->target("V")
                 ->groupBy('certified, price')
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -227,7 +227,7 @@ class RetrieveTest extends TestSetup
                 ->retrieve()
                 ->target("V")
                 ->orderBy('price')
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -244,7 +244,7 @@ class RetrieveTest extends TestSetup
                 ->retrieve()
                 ->target("V")
                 ->orderBy('price')->desc()
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -262,7 +262,7 @@ class RetrieveTest extends TestSetup
                 ->retrieve()
                 ->target("V")
                 ->orderBy('price')->asc()
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -280,7 +280,7 @@ class RetrieveTest extends TestSetup
                 ->retrieve()
                 ->target("V")
                 ->orderBy(['price', 'owner'])
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -298,7 +298,7 @@ class RetrieveTest extends TestSetup
                 ->retrieve()
                 ->target("V")
                 ->orderBy('price, owner')
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,

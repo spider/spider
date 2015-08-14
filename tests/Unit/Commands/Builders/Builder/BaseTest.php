@@ -18,7 +18,7 @@ class BaseTest extends TestSetup
         $this->specify("it adds a single record id via `record()`", function () {
             $actual = $this->builder
                 ->record(3)
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'target' => new TargetID(3)
@@ -30,7 +30,7 @@ class BaseTest extends TestSetup
         $this->specify("it adds multiple records via ids", function () {
             $actual = $this->builder
                 ->records([1, 2, 3])
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'target' => [
@@ -72,7 +72,7 @@ class BaseTest extends TestSetup
 
             $actual = $this->builder
                 ->tree()
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'map' => Bag::MAP_TREE
@@ -86,7 +86,7 @@ class BaseTest extends TestSetup
 
             $actual = $this->builder
                 ->path()
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                  'map' => Bag::MAP_PATH

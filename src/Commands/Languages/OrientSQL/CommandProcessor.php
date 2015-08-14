@@ -66,9 +66,6 @@ class CommandProcessor implements ProcessorInterface
         $command = new Command($this->script);
         $command->setScriptLanguage('OrientSQL');
 
-        $rw = ($bag->command === Bag::COMMAND_RETRIEVE) ? 'read' : 'write';
-        $command->setRw($rw);
-
         return $command;
     }
 

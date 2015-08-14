@@ -44,34 +44,34 @@ interface ConnectionInterface extends DriverInterface
     /**
      * Passes to driver: executes a Query or read command
      *
-     * @param CommandInterface $query
+     * @param CommandInterface|BaseBuilder $query
      * @return Response
      */
-    public function executeReadCommand(CommandInterface $query);
+    public function executeReadCommand($query);
 
     /**
      * Passes to driver: executes a write command
      *
      * These are the "CUD" in CRUD
      *
-     * @param CommandInterface $command
+     * @param CommandInterface|BaseBuilder $command
      * @return Response
      */
-    public function executeWriteCommand(CommandInterface $command);
+    public function executeWriteCommand($command);
 
     /**
      * Passes to driver: executes a read command without waiting for a response
      *
-     * @param CommandInterface $query
+     * @param CommandInterface|BaseBuilder $query
      * @return $this
      */
-    public function runReadCommand(CommandInterface $query);
+    public function runReadCommand($query);
 
     /**
      * Passes to driver: executes a write command without waiting for a response
      *
-     * @param CommandInterface $command
+     * @param CommandInterface|BaseBuilder $command
      * @return $this
      */
-    public function runWriteCommand(CommandInterface $command);
+    public function runWriteCommand($command);
 }

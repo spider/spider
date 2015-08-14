@@ -2,6 +2,7 @@
 namespace Spider\Commands;
 
 use InvalidArgumentException;
+use Spider\Commands\Languages\ProcessorInterface;
 
 /**
  * Fluent Command Builder, simple bag manipulation
@@ -282,7 +283,7 @@ class BaseBuilder
      * Return the current Command Bag
      * @return Bag
      */
-    public function getCommandBag()
+    public function getBag()
     {
         return $this->bag;
     }
@@ -341,12 +342,38 @@ class BaseBuilder
     }
 
     /**
-     * Read only of the Bag if required
-     *
-     * @return Bad the root Bag object for this builder
+     * Processes the current command bag
+     * @param ProcessorInterface $processor
+     * @return String the script in string form
+     * @throws \Exception
      */
-    public function getBag()
+    public function getScript(ProcessorInterface $processor = null)
     {
-        return $this->bag;
+        return $this->getCommand($processor)->getScript();
+    }
+
+    /**
+     * Processes the current command bag
+     * @param ProcessorInterface $processor
+     * @return Command
+     * @throws \Exception
+     */
+    public function getCommand(ProcessorInterface $processor = null)
+    {
+        if ($processor) {
+            $this->setProcessor($processor);
+        } else {
+            if (!$this->hasProcessor()) {
+                throw new \Exception(
+                    "`Builder` requires a valid instance of Spider\\Languages\\ProcessorInterface to build scripts"
+                );
+            }
+        }
+
+        $this->script = $this->processor->process(
+            $this->getBag()
+        );
+
+        return $this->script;
     }
 }

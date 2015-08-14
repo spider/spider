@@ -16,7 +16,7 @@ class DriverTest extends BaseTestSuite
 
     public function setup()
     {
-        $this->markTestSkipped("Test Database Not Installed");
+        //$this->markTestSkipped("Test Database Not Installed");
     }
 
     /* Implemented Methods */
@@ -61,7 +61,7 @@ class DriverTest extends BaseTestSuite
     {
         $query = $this->driver->traversal . ".V().has('name', 'marko').limit(1)";
         return [
-            'command' => new Command($query),
+            'command' => new Command($query, 'gremlin'),
             'expected' => [
                 [
                     'id' => 1,
@@ -95,7 +95,7 @@ class DriverTest extends BaseTestSuite
     public function selectTwoItems()
     {
         return [
-            'command' => new Command($this->driver->traversal . ".V().limit(2)"),
+            'command' => new Command($this->driver->traversal . ".V().limit(2)", 'gremlin'),
             'expected' => [
                 [
                     'id' => 1,
@@ -121,7 +121,7 @@ class DriverTest extends BaseTestSuite
     {
         return [
             'command' => new Command(
-                $this->driver->traversal . ".V().has('name', '$name')"
+                $this->driver->traversal . ".V().has('name', '$name')", 'gremlin'
             ),
             'expected' => []
         ];
@@ -137,7 +137,7 @@ class DriverTest extends BaseTestSuite
         $query = $this->driver->graph . ".addVertex('name', 'testVertex')";
 
         return [
-            'command' => new Command($query),
+            'command' => new Command($query, 'gremlin'),
             'expected' => [
                 [
                     'name' => 'testVertex',
@@ -157,7 +157,7 @@ class DriverTest extends BaseTestSuite
         $query = $this->driver->traversal . ".V().has('name', '$name').property('name', 'testVertex2')";
 
         return [
-            'command' => new Command($query),
+            'command' => new Command($query, 'gremlin'),
             'expected' => [
                 [
                     'name' => 'testVertex2'
@@ -177,7 +177,7 @@ class DriverTest extends BaseTestSuite
         $query = $this->driver->traversal . ".V().has('name', '$name').drop().iterate()";
 
         return [
-            'command' => new Command($query),
+            'command' => new Command($query, 'gremlin'),
             'expected' => [],
         ];
     }

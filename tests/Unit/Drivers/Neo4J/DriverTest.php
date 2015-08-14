@@ -14,7 +14,7 @@ class DriverTest extends BaseTestSuite
 {
     public function setup()
     {
-        $this->markTestSkipped("Test Database Not Installed");
+        //$this->markTestSkipped("Test Database Not Installed");
     }
 
     /** Returns an instance of the configured driver
@@ -52,7 +52,7 @@ class DriverTest extends BaseTestSuite
             'command' => new Command(
                 "MATCH (a {name:'marko'})
                  RETURN a
-                 LIMIT 1"
+                 LIMIT 1", "cypher"
             ),
             'expected' => [
                 [
@@ -90,7 +90,7 @@ class DriverTest extends BaseTestSuite
             'command' => new Command(
                 "MATCH (a)
                  RETURN a
-                 LIMIT 2"
+                 LIMIT 2", "cypher"
             ),
             'expected' => [
                 [
@@ -117,7 +117,7 @@ class DriverTest extends BaseTestSuite
     {
         return [
             'command' => new Command(
-                "MATCH (a {name:'$name'}) RETURN a"
+                "MATCH (a {name:'$name'}) RETURN a", "cypher"
             ),
             'expected' => []
         ];
@@ -131,7 +131,7 @@ class DriverTest extends BaseTestSuite
     public function createOneItem()
     {
         return [
-            'command' => new Command("CREATE (a {name:'testVertex'}) RETURN a"),
+            'command' => new Command("CREATE (a {name:'testVertex'}) RETURN a", "cypher"),
             'expected' => [
                 [
                     'name' => 'testVertex',
@@ -153,7 +153,7 @@ class DriverTest extends BaseTestSuite
                     RETURN a";
 
         return [
-            'command' => new Command($query),
+            'command' => new Command($query, "cypher"),
             'expected' => [
                 [
                     'name' => 'testVertex2'
@@ -174,7 +174,7 @@ class DriverTest extends BaseTestSuite
                     DELETE a";
 
         return [
-            'command' => new Command($query),
+            'command' => new Command($query, "cypher"),
             'expected' => [],
         ];
     }
@@ -217,7 +217,7 @@ class DriverTest extends BaseTestSuite
         $response = $driver->executeReadCommand(new Command(
             "MATCH p =((a)-[:created]->(b)<-[:created]-(c))
              RETURN p
-             LIMIT 1"
+             LIMIT 1", "cypher"
         ));
         $consistent = $response->getPath();
         $this->assertTrue(is_array($consistent), 'the formatted response is not an array');
@@ -238,7 +238,7 @@ class DriverTest extends BaseTestSuite
         $response = $driver->executeReadCommand(new Command(
             "MATCH p =((a)-[:created]->(b)<-[:created]-(c))
              RETURN p
-             LIMIT 2"
+             LIMIT 2", "cypher"
         ));
         $consistent = $response->getPath();
         $this->assertTrue(is_array($consistent), 'the formatted response is not an array');

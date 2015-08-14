@@ -17,7 +17,7 @@ class RetrieveTest extends TestSetup
             $actual = $this->builder
                 ->select(['price', 'certified'])
                 ->record("#12:6767")// byId() alias
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -33,7 +33,7 @@ class RetrieveTest extends TestSetup
                 ->select()
                 ->record("#12:6767")// byId() alias
                 ->only(['price', 'certified'])
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -48,7 +48,7 @@ class RetrieveTest extends TestSetup
             $actual = $this->builder
                 ->select()
                 ->from("V")
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -69,7 +69,7 @@ class RetrieveTest extends TestSetup
                 ->where('name', 'michael')
                 ->andWhere('last', 'wilson')
                 ->andWhere('certified', true)
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -92,7 +92,7 @@ class RetrieveTest extends TestSetup
                 ->where('name', 'michael')
                 ->orWhere('last', 'wilson')
                 ->orWhere('certified', true)
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
@@ -116,7 +116,7 @@ class RetrieveTest extends TestSetup
                 ->select()
                 ->from('v')
                 ->first()
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,

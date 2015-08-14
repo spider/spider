@@ -15,7 +15,7 @@ class UpdateTest extends TestSetup
         $this->specify("it updates a single record with a single value by ID", function () {
             $actual = $this->builder
                 ->update('name', 'chris')
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_UPDATE,
@@ -31,7 +31,7 @@ class UpdateTest extends TestSetup
                 ->where('username', 'chrismichaels84')
                 ->target('users')
                 ->limit(1)
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_UPDATE,
@@ -50,7 +50,7 @@ class UpdateTest extends TestSetup
                     'name' => 'chris',
                     'birthday' => 'april'
                 ])
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_UPDATE,
@@ -70,7 +70,7 @@ class UpdateTest extends TestSetup
                 ->update()
                 ->target('target')
                 ->data($data) // alias withData()
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_UPDATE,

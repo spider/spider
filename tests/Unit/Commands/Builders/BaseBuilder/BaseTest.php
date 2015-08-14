@@ -12,7 +12,7 @@ class BaseTest extends TestSetup
     /* Manage the Command Bag */
     public function testCreateBag()
     {
-        $this->assertEquals(new Bag(), $this->builder->getCommandBag(), "failed to return an empty bag");
+        $this->assertEquals(new Bag(), $this->builder->getBag(), "failed to return an empty bag");
     }
 
     public function testClearBag()
@@ -23,7 +23,7 @@ class BaseTest extends TestSetup
 
         $this->builder->clear();
 
-        $this->assertEquals(new Bag(), $this->builder->getCommandBag(), "failed to return an empty bag");
+        $this->assertEquals(new Bag(), $this->builder->getBag(), "failed to return an empty bag");
     }
 
     /* Projections tests */
@@ -32,7 +32,7 @@ class BaseTest extends TestSetup
     {
         $this->specify("it returns nothing by default", function () {
             $actual = $this->builder
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'projections' => []
@@ -44,7 +44,7 @@ class BaseTest extends TestSetup
         $this->specify("it returns a single value", function () {
             $actual = $this->builder
                 ->projections('username')
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'projections' => ['username']
@@ -56,7 +56,7 @@ class BaseTest extends TestSetup
         $this->specify("it several properties from array", function () {
             $actual = $this->builder
                 ->projections(['username', 'password'])
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'projections' => ['username', 'password']
@@ -68,7 +68,7 @@ class BaseTest extends TestSetup
         $this->specify("it several properties from csv string (one space)", function () {
             $actual = $this->builder
                 ->projections('username, password')
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'projections' => ['username', 'password']
@@ -80,7 +80,7 @@ class BaseTest extends TestSetup
         $this->specify("it returns several properties from csv string (no spaces)", function () {
             $actual = $this->builder
                 ->projections('username,password')
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'projections' => ['username', 'password']
@@ -92,7 +92,7 @@ class BaseTest extends TestSetup
         $this->specify("it returns several properties from csv string (many spaces)", function () {
             $actual = $this->builder
                 ->projections('username,           password')
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'projections' => ['username', 'password']
@@ -106,7 +106,7 @@ class BaseTest extends TestSetup
                 ->retrieve()
                 ->target('target')// byId() alias
                 ->projections(3)
-                ->getCommandBag();
+                ->getBag();
 
         }, ['throws' => new \InvalidArgumentException("Projections must be a comma-separated string or an array")]);
 

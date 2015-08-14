@@ -101,7 +101,6 @@ class OrientSqlProcessorTest extends BaseTestSuite
 
         $command = new Command($query);
         $command->setScriptLanguage('OrientSQL');
-        $command->setRw('read');
         return $command;
     }
 
@@ -117,7 +116,6 @@ class OrientSqlProcessorTest extends BaseTestSuite
 
         $command = new Command($query);
         $command->setScriptLanguage('OrientSQL');
-        $command->setRw('read');
         return $command;
     }
 
@@ -136,7 +134,6 @@ class OrientSqlProcessorTest extends BaseTestSuite
 
         $command = new Command($query);
         $command->setScriptLanguage('OrientSQL');
-        $command->setRw('read');
         return $command;
     }
 

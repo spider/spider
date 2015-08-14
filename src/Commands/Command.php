@@ -28,11 +28,10 @@ class Command implements CommandInterface
      * @param null $language
      * @param string $rw
      */
-    public function __construct($script = '', $language = null, $rw = 'write')
+    public function __construct($script = '', $language = null)
     {
         $this->setScript($script);
         $this->setScriptLanguage($language);
-        $this->setRw($rw);
     }
 
     /**
@@ -71,24 +70,6 @@ class Command implements CommandInterface
     public function setScriptLanguage($language)
     {
         $this->language = $language;
-    }
-
-    /**
-     * Is this a 'read' or 'write' command
-     * @return string
-     */
-    public function getRw()
-    {
-        return $this->rw;
-    }
-
-    /**
-     * Set this as a 'read' or 'write' command
-     * @param string $rw
-     */
-    public function setRw($rw)
-    {
-        $this->rw = $rw;
     }
 
     /**

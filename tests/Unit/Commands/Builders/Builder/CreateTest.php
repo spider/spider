@@ -21,7 +21,7 @@ class CreateTest extends TestSetup
             $actual = $this->builder
                 ->into('target')
                 ->insert($record)
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_CREATE,
