@@ -43,12 +43,8 @@ abstract class AbstractDriver extends Collection implements DriverInterface
      */
     public function isSupportedLanguage($language)
     {
-        foreach($this->languages as $lang => $processor)
-        {
-            if($lang == $language)
-            {
-                return true;
-            }
+        if (isset($this->languages[$language])) {
+            return true;
         }
         return false;
     }
@@ -62,7 +58,7 @@ abstract class AbstractDriver extends Collection implements DriverInterface
      */
     public function getProcessor($language)
     {
-        $class = static::$languages[$language];
+        $class = $this->languages[$language];
         return new $class;
     }
 }

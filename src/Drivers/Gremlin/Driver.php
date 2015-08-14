@@ -83,7 +83,7 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Executes a Query or read command
      *
-     * @param CommandInterface $query
+     * @param CommandInterface|BaseBuilder $query
      * @return Response
      * @throws \Exception
      * @throws \brightzone\rexpro\ServerException
@@ -115,7 +115,7 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * These are the "CUD" in CRUD
      *
-     * @param CommandInterface $command
+     * @param CommandInterface|BaseBuilder $command
      *
      * @return Response
      */
@@ -127,7 +127,7 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Executes a read command without waiting for a response
      *
-     * @param CommandInterface $query
+     * @param CommandInterface|BaseBuilder $query
      * @return $this
      * @throws \Exception
      * @throws \brightzone\rexpro\ServerException
@@ -142,7 +142,7 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Executes a write command without waiting for a response
      *
-     * @param CommandInterface $command
+     * @param CommandInterface|BaseBuilder $command
      *
      * @return $this
      */
