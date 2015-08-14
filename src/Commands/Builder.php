@@ -229,29 +229,4 @@ class Builder extends BaseBuilder
     {
         return isset($this->processor) && $this->processor instanceof ProcessorInterface;
     }
-
-    /**
-     * Processes the current command bag
-     * @param ProcessorInterface $processor
-     * @return Command
-     * @throws \Exception
-     */
-    public function getScript(ProcessorInterface $processor = null)
-    {
-        if ($processor) {
-            $this->setProcessor($processor);
-        } else {
-            if (!$this->hasProcessor()) {
-                throw new \Exception(
-                    "`Builder` requires a valid instance of Spider\\Languages\\ProcessorInterface to build scripts"
-                );
-            }
-        }
-
-        $this->script = $this->processor->process(
-            $this->getCommandBag()
-        );
-
-        return $this->script;
-    }
 }

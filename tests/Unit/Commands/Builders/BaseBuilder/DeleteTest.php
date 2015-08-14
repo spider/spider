@@ -14,7 +14,7 @@ class DeleteTest extends TestSetup
         $this->specify("it drops a single record dispatching from `delete()`", function () {
             $actual = $this->builder
                 ->delete()
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_DELETE

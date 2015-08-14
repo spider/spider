@@ -26,8 +26,7 @@ class Query extends Builder
         ProcessorInterface $processor = null,
         Bag $bag = null
     ) {
-        parent::__construct($bag);
-        $this->processor = $processor ?: $connection->makeProcessor(); // defaults to the driver preferred
+        parent::__construct($processor, $bag);
         $this->connection = $connection;
     }
 
@@ -113,13 +112,20 @@ class Query extends Builder
      */
     public function dispatch(CommandInterface $command = null)
     {
-        $command = $command ?: $this->getScript(); // returns `Command`
         $this->connection->open();
 
-        if ($command->getRw() === 'read') {
-            return $this->connection->executeReadCommand($command);
+        if(isset($this->processor)) {
+            //if the processor is defined we want to pass a Command to the driver.
+            $message = $command ? $command : $this->getCommand(); // returns `Command`
         } else {
-            return $this->connection->executeWriteCommand($command);
+            // If not we will pass $this and let the driver decide which language to use.
+            $message = $this;
+        }
+
+        if($this->bag->command === Bag::COMMAND_RETRIEVE) {
+            return $this->connection->executeReadCommand($message);
+        } else {
+            return $this->connection->executeWriteCommand($message);
         }
     }
 

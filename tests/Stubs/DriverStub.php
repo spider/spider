@@ -62,10 +62,10 @@ class DriverStub extends AbstractDriver implements DriverInterface
      *
      * This is the R in CRUD
      *
-     * @param CommandInterface $query
+     * @param CommandInterface|BaseBuilder $query
      * @return array|Record|Graph
      */
-    public function executeReadCommand(CommandInterface $query)
+    public function executeReadCommand($query)
     {
         return new Response(['_raw' => '', '_driver' => $this]);
     }
@@ -75,34 +75,36 @@ class DriverStub extends AbstractDriver implements DriverInterface
      *
      * These are the "CUD" in CRUD
      *
-     * @param CommandInterface $command
+     * @param CommandInterface|BaseBuilder $command
      * @return Graph|Record|array|mixed mixed values for some write commands
      */
-    public function executeWriteCommand(CommandInterface $command)
+    public function executeWriteCommand($command)
     {
-        $this->executeReadCommand($command);
+        return $this->executeReadCommand($command);
     }
 
     /**
      * Executes a read command without waiting for a response
      *
-     * @param CommandInterface $query
+     * @param CommandInterface|BaseBuilder $query
      * @return $this
      */
-    public function runReadCommand(CommandInterface $query)
+    public function runReadCommand($query)
     {
-        // Nothing
+        $this->executeReadCommand($command);
+        return $this;
     }
 
     /**
      * Executes a write command without waiting for a response
      *
-     * @param CommandInterface $command
+     * @param CommandInterface|BaseBuilder $command
      * @return $this
      */
-    public function runWriteCommand(CommandInterface $command)
+    public function runWriteCommand($command)
     {
-        // Nothing
+        $this->executeWriteCommand($command);
+        return $this;
     }
         /**
      * Opens a transaction

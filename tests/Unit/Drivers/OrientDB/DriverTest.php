@@ -14,7 +14,7 @@ class DriverTest extends BaseTestSuite
 {
     public function setup()
     {
-        $this->markTestSkipped("Test Database Not Installed");
+        //$this->markTestSkipped("Test Database Not Installed");
     }
 
     /** Returns an instance of the configured driver
@@ -50,7 +50,7 @@ class DriverTest extends BaseTestSuite
     public function selectOneItem()
     {
         return [
-            'command' => new Command("SELECT FROM V WHERE @rid = #9:1"),
+            'command' => new Command("SELECT FROM V WHERE @rid = #9:1", "orientSQL"),
             'expected' => [
                 [
                     'id' => '#9:1',
@@ -85,7 +85,7 @@ class DriverTest extends BaseTestSuite
     {
         return [
             'command' => new Command(
-                "SELECT FROM V WHERE song_type = 'cover' LIMIT 2"
+                "SELECT FROM V WHERE song_type = 'cover' LIMIT 2", "orientSQL"
             ),
             'expected' => [
                 [
@@ -111,7 +111,7 @@ class DriverTest extends BaseTestSuite
     public function selectByName($name)
     {
         return [
-            'command' => new Command("SELECT FROM V WHERE name = '$name'"),
+            'command' => new Command("SELECT FROM V WHERE name = '$name'", "orientSQL"),
             'expected' => [],
         ];
     }
@@ -125,7 +125,7 @@ class DriverTest extends BaseTestSuite
     {
         return [
             'command' => new Command(
-                "CREATE Vertex CONTENT " . json_encode(['name' => 'testVertex'])
+                "CREATE Vertex CONTENT " . json_encode(['name' => 'testVertex']), "orientSQL"
             ),
             'expected' => [
                 [
@@ -147,7 +147,7 @@ class DriverTest extends BaseTestSuite
         $query .= "MERGE " . json_encode(['name' => 'testVertex2']) . ' RETURN AFTER $current';
 
         return [
-            'command' => new Command($query),
+            'command' => new Command($query, "orientSQL"),
             'expected' => [
                 [
                     'name' => 'testVertex2',
@@ -165,7 +165,7 @@ class DriverTest extends BaseTestSuite
     public function deleteOneItem($name)
     {
         return [
-            'command' => new Command("DELETE VERTEX WHERE name = '$name'"),
+            'command' => new Command("DELETE VERTEX WHERE name = '$name'", "orientSQL"),
             'expected' => []
         ];
     }
@@ -208,15 +208,15 @@ class DriverTest extends BaseTestSuite
             $driver->startTransaction();
 
             $driver->executeWriteCommand(new Command(
-                "CREATE VERTEX CONTENT {name:'one'}"
+                "CREATE VERTEX CONTENT {name:'one'}", "orientSQL"
             ));
 
             $driver->executeWriteCommand(new Command(
-                "CREATE VERTEX CONTENT {name:'two'}"
+                "CREATE VERTEX CONTENT {name:'two'}", "orientSQL"
             ));
 
             $driver->executeWriteCommand(new Command(
-                "CREATE VERTEX CONTENT {name:'three'}"
+                "CREATE VERTEX CONTENT {name:'three'}", "orientSQL"
             ));
 
             $expected = "begin\n";
@@ -243,5 +243,18 @@ class DriverTest extends BaseTestSuite
     public function testFormatPath()
     {
         $this->markTestSkipped("Path is not yet implemented as orient doesn't currently support it");
+    }
+
+    public function testPassingBuilder()
+    {
+        $builder = new \Spider\Commands\Builder();
+        $builder->select()->from('V');
+        $driver = $this->driver();
+        $driver->open();
+
+        $response = $driver->executeReadCommand($builder);
+
+        $consistent = $response->getSet();
+        $this->assertEquals(20, count($consistent), "wrong number of elements found");
     }
 }

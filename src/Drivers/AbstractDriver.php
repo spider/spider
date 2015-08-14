@@ -15,6 +15,11 @@ abstract class AbstractDriver extends Collection implements DriverInterface
     const FORMAT_CUSTOM = 50;
 
     /**
+     * @var array The supported languages and their processors
+     */
+    protected $languages = [];
+
+    /**
      * @var bool whether or not the driver is currently handling an open transaction
      */
     public $inTransaction = false;
@@ -27,5 +32,33 @@ abstract class AbstractDriver extends Collection implements DriverInterface
         }
         //close driver
         $this->close();
+    }
+
+    /**
+     * Checks if a language is supported by this driver
+     *
+     * @param string $language the language identifier, (orientSQL, gremlin, cypher)
+     *
+     * @return bool
+     */
+    public function isSupportedLanguage($language)
+    {
+        if (isset($this->languages[$language])) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Get the processor for a given language
+     *
+     * @param string $language the language identifier, (orientSQL, gremlin, cypher)
+     *
+     * @return ProcessorInterface
+     */
+    public function getProcessor($language)
+    {
+        $class = $this->languages[$language];
+        return new $class;
     }
 }

@@ -14,7 +14,7 @@ class DeleteTest extends TestSetup
         $this->specify("it drops a single record dispatching from `drop()`", function () {
             $actual = $this->builder
                 ->drop(3)
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_DELETE,
@@ -27,7 +27,7 @@ class DeleteTest extends TestSetup
         $this->specify("it drops multiple records dispatching from `drop()`", function () {
             $actual = $this->builder
                 ->drop([1, 2, 3])
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_DELETE,
@@ -46,7 +46,7 @@ class DeleteTest extends TestSetup
                 ->drop()
                 ->from('target')
                 ->where('birthday', 'apr')
-                ->getCommandBag();
+                ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_DELETE,
