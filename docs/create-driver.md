@@ -40,7 +40,7 @@ The DriverInterface can be broken into three parts.
 The first **manages database connections** and utilities:
 ```php
 public function makeProcessor(); // Returns the language processor of choice
-public function open(); // 
+public function open(); //
 public function close();
 ```
 
@@ -64,19 +64,43 @@ public function formatAsScalar($response);
 
 Let's tackle each piece one at a time.
 
-## Step Two: Implement Database Connections
+## Step Two: Define supported languages
+You can define which query languages are supported by your driver by defining the `$languages` property:
+```php
+public $languages = [
+   'cypher' => '\namespace\to\cypher\Processor',
+   'gremil' => '\namespace\to\gremlin\Processor',
+];
+```
+
+## Step Three: Implement Database Connections
 This is pretty simple. In most cases, your driver will be extending some other language binding tool.
 
 The `makeProcessor()` should return the preferred [language processor](#language-processor).
 
 The `open()` method should open a database connection and `close` should close it.
 
-## Step Three: Implement Read and Write Commands
+## Step Four: Implement Read and Write Commands
 Read and write commands are treated differently by some databases, so they are divided here.
-Each method takes a `Spider\Commands\Command` which has three methods:
+Each method takes a `Spider\Commands\Command` which has two methods:
   * getScript() to return the script to be executed
-  * getScriptLanguage() to return the language the script is written in
-  * getRw() to return whether this is a read or write command
+  * getScriptLanguage() to return the language the script is written in to check that it is compatible with the driver
+
+Or a `Spider\Commands\BaseBuilder` that will need to be converted to a `Spider\Commands\Command`. `Spider\Drivers\AbstractDriver` provides some methods to help simplify this process. Namely:
+  * isSupportedLanguage(string) will tell you if string is a supported language for this driver.
+
+Bellow is an example of it in use:
+
+```php
+if ($command instanceof \Spider\Commands\BaseBuilder) {
+    $processor = new $this->languages['cypher'];
+    $command = $command->getCommand($processor);
+} elseif (!$this->isSupportedLanguage($command->getScriptLanguage())) {
+    throw new NotSupportedException(__CLASS__ . " does not support ". $command->getScriptLanguage());
+}
+```
+
+##### Return values
 
 The `executeReadCommand()` and `executeWriteCommand()` methods must return a `Spider\Drivers\Response`
 ```php
@@ -86,7 +110,7 @@ return new Response(['_raw' => $response, '_driver' => $this]);
 
 The `runReadCommand()` and `runWriteCommand()` methods are identical, except they don't return anything.
 
-## Step Four: Implement Transactions
+## Step Five: Implement Transactions
 Implement transactions with `startTransaction()` and `stopTransaction(bool $commit)`.
 This will vary wildly for each database. Check out documentation and look through the first-party drivers for ideas.
 
@@ -94,7 +118,7 @@ Note that `stopTransaction()` should commit by default, unless `false` is passed
 
 Also note that when a driver is `__destruct()`ed, `stopTransaction()` is called. As is `close()`
 
-## Step Five: Implement Response Formatting
+## Step Six: Implement Response Formatting
 Honestly, this may be the trickiest part.
 
 The driver must always return a `Spider\Drivers\Response` when executing a command.
@@ -107,7 +131,7 @@ See [response formats](responses.md) for more info about that.
 
 Take a look at the current drivers to see how these were implemented.
 
-## Step Six: Share the Love
+## Step Seven: Share the Love
 Now that you have a lovely driver, please consider sharing it.
 Open an issue at http://github.com/spider/spider to let us know about it. We won't steal it, we promise.
 
