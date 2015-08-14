@@ -8,13 +8,10 @@ use PhpOrient\PhpOrient;
  */
 class OrientFixture extends DbFixture
 {
-    public function __construct()
+    public function load($data = null)
     {
-        $this->data = Graph::$data;
-    }
+        $this->data = ($data) ? $data : Graph::$data;
 
-    public function load()
-    {
         $client = new PhpOrient();
         $client->configure(Graph::$servers['orient']);
         $client->connect();
