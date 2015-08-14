@@ -85,7 +85,7 @@ class CommandProcessor implements ProcessorInterface
         $this->appendTarget("");
 
         /* CONTENT {} */
-        $this->appendData("CONTENT");
+        $this->appendInsertData();
         $this->addToScript("RETURN @this");
     }
 
@@ -130,7 +130,7 @@ class CommandProcessor implements ProcessorInterface
         $this->appendTarget("");
 
         /* MERGE {} */
-        $this->appendData("MERGE");
+        $this->appendUpdateData();
 
         /* WHERE */
         $this->appendWheres();
@@ -325,13 +325,74 @@ class CommandProcessor implements ProcessorInterface
     }
 
     /**
-     * Append data to current script
+     * Append insert data to current script
      * @param string $prefix
      * @throws \Exception
      */
-    protected function appendData($prefix = "content")
+    protected function appendInsertData($prefix = "content")
     {
-        $this->addToScript(strtoupper($prefix));
+        $keys = [];
+        $values = [];
+
+        /* Is this a multiple creation? */
+        /* ToDo: Way to many loops here */
+        if (isset($this->bag->data[0])) {
+            // First, we setup the keys array [key1, key2, key3]
+            foreach ($this->bag->data as $record) {
+                $keys = array_unique(array_merge($keys, array_keys($record)));
+            }
+
+            // Now we setup sets of values arrays ['one', null, 'two'], [null, 'three', 'four']
+            $i = 0;
+
+            // For every record
+            foreach ($this->bag->data as $record) {
+                // We check every key
+                $set = [];
+                foreach ($keys as $key) {
+                    // And set it to a value
+                    if (array_key_exists($key, $record)) {
+                        $set[] = $this->castValue($record[$key]);
+
+                    // Or to 'null'
+                    } else {
+                        $set[] = 'null';
+                    }
+                }
+
+                // Create the string for that value set
+                $values[$i] = '(' . implode(", ", $set) . ')';
+                $i++;
+            }
+
+        /* No, its a single creation */
+        } else {
+            $keys = array_keys($this->bag->data);
+            $values = array_values($this->bag->data);
+
+            $values = array_map(function ($value) {
+                return $this->castValue($value);
+            }, $values);
+        }
+
+        $stringValues = '(' . implode(", ", $values) . ')';
+        $stringValues = str_replace("((", "(", $stringValues);
+        $stringValues = str_replace("))", ")", $stringValues);
+
+        $stringKeys = implode(", ", $keys);
+
+        $data = "($stringKeys) VALUES $stringValues";
+        $this->addToScript($data);
+    }
+
+    /**
+     * Append update data to current script
+     * @param string $prefix
+     * @throws \Exception
+     */
+    protected function appendUpdateData($prefix = "content")
+    {
+        $this->addToScript("MERGE");
         $this->addToScript(json_encode($this->bag->data));
     }
 
