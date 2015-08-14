@@ -8,25 +8,28 @@ use PhpOrient\PhpOrient;
  */
 class OrientFixture extends DbFixture
 {
-    public function load($data = null)
+    public function load()
     {
-        $this->data = ($data) ? $data : Graph::$data;
-
         $client = new PhpOrient();
-        $client->configure(Graph::$servers['orient']);
+        $client->configure([
+            'hostname' => 'localhost',
+            'port' => 2424,
+            'username' => 'root',
+            'password' => "root",
+        ]);
         $client->connect();
 
-        if ($client->dbExists('spider_test_graph')) {
-            throw new \Exception("Cannot create Orient database fixture. `spider_test_graph` already exists");
+        if ($client->dbExists('modern_graph')) {
+            throw new \Exception("Cannot create Orient database fixture. `modern_graph` already exists");
         }
 
         $client->dbCreate(
-            'spider_test_graph',
+            'modern_graph',
             PhpOrient::STORAGE_TYPE_MEMORY,
             PhpOrient::DATABASE_TYPE_GRAPH
         );
 
-        $client->dbOpen('spider_test_graph', 'root', 'root');
+        $client->dbOpen('modern_graph', 'root', 'root');
 
         $client->command('create class person extends V');
         $client->command('create class knows extends E');
@@ -59,11 +62,17 @@ class OrientFixture extends DbFixture
     public function unload()
     {
         $client = new PhpOrient();
-        $client->configure(Graph::$servers['orient']);
+        $client->configure([
+            'hostname' => 'localhost',
+            'port' => 2424,
+            'username' => 'root',
+            'password' => "root",
+            'database' => 'modern_graph',
+        ]);
         $client->connect();
 
-        if ($client->dbExists('spider_test_graph')) {
-            $client->dbDrop('spider_test_graph');
+        if ($client->dbExists('modern_graph')) {
+            $client->dbDrop('modern_graph');
         }
     }
 

@@ -12,11 +12,17 @@ class WithOrientTest extends BaseTestSuite
     public function setup()
     {
         $this->fixture = (new OrientFixture())->load();
-        $this->expected = (array)$this->fixture->getData();
 
         $manager = new Manager([
             'default' => 'orient',
-            'orient' => Graph::$servers['orient']
+            'orient' => [
+                'hostname' => 'localhost',
+                'port' => 2424,
+                'username' => 'root',
+                'password' => "root",
+                'database' => 'modern_graph',
+                'driver' => 'orientdb'
+            ]
         ]);
 
         $this->query = new Query($manager->make());

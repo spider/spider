@@ -25,10 +25,20 @@ class DriverTest extends BaseTestSuite
     public function driver($switch = null)
     {
         if ($switch == 'transaction') {
-            return $this->driver = new GremlinDriver(Graph::$servers['gremlin-transaction']);
+            return $this->driver = new GremlinDriver([
+                'hostname' => 'localhost',
+                'port' => 8182,
+                'graph' => 'graphT',
+                'traversal' => 't',
+            ]);
 
         } else {
-            return $this->driver = new GremlinDriver(Graph::$servers['gremlin']);
+            return $this->driver = new GremlinDriver([
+                'hostname' => 'localhost',
+                'port' => 8182,
+                'graph' => 'graph',
+                'traversal' => 'g',
+            ]);
         }
 
     }

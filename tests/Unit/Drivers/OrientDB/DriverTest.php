@@ -18,9 +18,7 @@ class DriverTest extends BaseTestSuite
     public function setup()
     {
 //        $this->markTestSkipped("Test Database Not Installed");
-
         $this->fixture = (new OrientFixture())->load();
-        $this->expected = (array)$this->fixture->getData();
     }
 
     public function teardown()
@@ -34,7 +32,13 @@ class DriverTest extends BaseTestSuite
      */
     public function driver($switch = null)
     {
-        return new OrientDriver(Graph::$servers['orient']);
+        return new OrientDriver([
+            'hostname' => 'localhost',
+            'port' => 2424,
+            'username' => 'root',
+            'password' => "root",
+            'database' => 'modern_graph',
+        ]);
     }
 
     /**

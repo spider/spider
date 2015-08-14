@@ -15,7 +15,7 @@ class DriverTest extends BaseTestSuite
 {
     public function setup()
     {
-        $this->markTestSkipped("Test Database Not Installed");
+//        $this->markTestSkipped("Test Database Not Installed");
     }
 
     /** Returns an instance of the configured driver
@@ -24,7 +24,12 @@ class DriverTest extends BaseTestSuite
      */
     public function driver($switch = null)
     {
-        return new Neo4JDriver(Graph::$servers['neo4j']);
+        return new Neo4JDriver([
+            'hostname' => 'localhost',
+            'port' => 7474,
+            'username' => "neo4j",
+            'password' => "j4oen",
+        ]);
     }
 
     /**
