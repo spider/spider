@@ -31,6 +31,36 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $actual = $this->processor()->process($bag);
             $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
         });
+
+        $this->specify("it processes a multiple insert bag", function () {
+            $bag = new Bag();
+            $bag->command = Bag::COMMAND_CREATE;
+            $bag->target = 'target';
+
+            /* ToDo: data is too rigid. See note in BaseTest */
+            $bag->data = [
+                [
+                    'name' => 'mal',
+                    'role' => 'captain',
+                    'ship' => 'firefly'
+                ],
+                [
+                    'name' => 'zoe',
+                    'role' => 'first',
+                    'husband' => 'wash'
+                ],
+                [
+                    'name' => 'book',
+                    'role' => 'shepherd',
+                    'past' => 'unknown'
+                ]
+            ];
+
+            $expected = $this->getExpectedCommand('insert-multiple');
+
+            $actual = $this->processor()->process($bag);
+            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+        });
     }
 
 
