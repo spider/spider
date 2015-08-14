@@ -2,6 +2,7 @@
 namespace Spider\Test\Unit\Drivers\OrientDB;
 
 use Codeception\Specify;
+use Spider\Commands\Builder;
 use Spider\Commands\Command;
 use Spider\Drivers\OrientDB\Driver as OrientDriver;
 use Spider\Test\Fixtures\Graph;
@@ -72,7 +73,8 @@ class DriverTest extends BaseTestSuite
     public function createOneItem()
     {
         return new Command(
-            "CREATE Vertex V CONTENT " . json_encode(['name' => 'testVertex'], 'orientSQL')
+            "CREATE Vertex V CONTENT " . json_encode(['name' => 'testVertex']),
+            'orientSQL'
         );
     }
 
@@ -188,7 +190,7 @@ class DriverTest extends BaseTestSuite
 
     public function testPassingBuilder()
     {
-        $builder = new \Spider\Commands\Builder();
+        $builder = new Builder();
         $builder->select()->from('V');
         $driver = $this->driver();
         $driver->open();
@@ -196,6 +198,6 @@ class DriverTest extends BaseTestSuite
         $response = $driver->executeReadCommand($builder);
 
         $consistent = $response->getSet();
-        $this->assertEquals(20, count($consistent), "wrong number of elements found");
+        $this->assertEquals(6, count($consistent), "wrong number of elements found");
     }
 }

@@ -64,7 +64,7 @@ class CommandProcessor implements ProcessorInterface
         call_user_func([$this, $this->getBagsCommand()]);
 
         $command = new Command($this->script);
-        $command->setScriptLanguage('OrientSQL');
+        $command->setScriptLanguage('orientSQL');
 
         return $command;
     }

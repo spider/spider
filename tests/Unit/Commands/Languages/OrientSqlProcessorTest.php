@@ -24,7 +24,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $query .= ' RETURN @this';
 
         $command = new Command($query);
-        $command->setScriptLanguage('OrientSQL');
+        $command->setScriptLanguage('orientSQL');
         $expected = $command;
 
         return $expected;
@@ -41,7 +41,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $query .= ' RETURN AFTER';
 
         $command = new Command($query);
-        $command->setScriptLanguage('OrientSQL');
+        $command->setScriptLanguage('orientSQL');
         return $command;
     }
 
@@ -58,7 +58,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $query .= ' RETURN AFTER';
 
         $command = new Command($query);
-        $command->setScriptLanguage('OrientSQL');
+        $command->setScriptLanguage('orientSQL');
         return $command;
     }
 
@@ -71,7 +71,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $query = 'DELETE VERTEX #12:1';
 
         $command = new Command($query);
-        $command->setScriptLanguage('OrientSQL');
+        $command->setScriptLanguage('orientSQL');
         return $command;
     }
 
@@ -86,7 +86,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $query .= ' LIMIT 10';
 
         $command = new Command($query);
-        $command->setScriptLanguage('OrientSQL');
+        $command->setScriptLanguage('orientSQL');
         return $command;
     }
 
@@ -100,7 +100,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $query .= ' FROM target';
 
         $command = new Command($query);
-        $command->setScriptLanguage('OrientSQL');
+        $command->setScriptLanguage('orientSQL');
         return $command;
     }
 
@@ -115,7 +115,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $query .= $this->getWhereSql();
 
         $command = new Command($query);
-        $command->setScriptLanguage('OrientSQL');
+        $command->setScriptLanguage('orientSQL');
         return $command;
     }
 
@@ -133,7 +133,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $query .= ' LIMIT 3';
 
         $command = new Command($query);
-        $command->setScriptLanguage('OrientSQL');
+        $command->setScriptLanguage('orientSQL');
         return $command;
     }
 
