@@ -3,9 +3,13 @@ namespace Spider\Test\Fixtures;
 
 abstract class Fixture
 {
-    abstract public function setup();
+    abstract public function load();
 
-    abstract protected function teardown();
+    abstract public function unload();
 
-    abstract protected function reset();
+    abstract public function getData();
+
+    abstract public function setDependencies();
+
+    abstract public function getDependencies();
 }

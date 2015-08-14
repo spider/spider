@@ -7,7 +7,6 @@ use Spider\Commands\Command;
 use Spider\Drivers\DriverInterface;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
-use Spider\Test\Fixtures\Graph;
 
 /**
  * This is the base tests for all driver.
@@ -32,6 +31,9 @@ use Spider\Test\Fixtures\Graph;
 abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 {
     use Specify;
+
+    protected $fixture;
+    protected $expected;
 
     /* Begin Tests */
     public function testConnections()
@@ -58,13 +60,13 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return a Record');
 
             $this->assertEquals(
-                Graph::$data[0]['name'],
+                $this->expected[0]['name'],
                 $response->name,
                 "failed to return the correct names"
             );
 
             $this->assertEquals(
-                Graph::$data[0]['label'],
+                $this->expected[0]['label'],
                 $response->label,
                 "failed to return the correct label"
             );
@@ -91,7 +93,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertCount(2, $response, "failed to return 2 results");
             $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return Response Object');
             $this->assertEquals(
-                Graph::$data[1]['name'],
+                $this->expected[1]['name'],
                 $response[1]->name,
                 "failed to return the correct record"
             );
@@ -269,7 +271,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         $this->specify("it throws an exception for single set response on scalar formatting", function () {
             $driver = $this->driver();
 
-            $response = [Graph::$data[0]];
+            $response = [$this->expected[0]];
 
             $driver->formatAsScalar($response);
         }, ['throws' => new FormattingException()]);
@@ -277,8 +279,8 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         $this->specify("it throws an exception for a multi set response on scalar formatting", function () {
             $driver = $this->driver();
 
-            $response[] = Graph::$data[0];
-            $response[] = Graph::$data[1];
+            $response[] = $this->expected[0];
+            $response[] = $this->expected[1];
 
             $driver->formatAsScalar($response);
         }, ['throws' => new FormattingException()]);
@@ -309,12 +311,12 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $consistent = $driver->formatAsSet($rawResponse);
             $this->assertInstanceOf('Spider\Base\Collection', $consistent, 'Did not return a single Collection');
             $this->assertEquals(
-                Graph::$data[0]['name'],
+                $this->expected[0]['name'],
                 $consistent->name,
                 "name wasn't properly populated"
             );
             $this->assertEquals(
-                Graph::$data[0]['label'],
+                $this->expected[0]['label'],
                 $consistent->label,
                 "label wasn't properly populated"
             );
@@ -338,12 +340,12 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Spider\Base\Collection', $consistent[0], 'first: Did not return a collection');
             $this->assertTrue(is_array($consistent[0]->meta), 'first: failed to populate meta');
             $this->assertEquals(
-                Graph::$data[0]['label'],
+                $this->expected[0]['label'],
                 $consistent[0]->label,
                 "first label wasn't properly populated"
             );
             $this->assertEquals(
-                Graph::$data[0]['name'],
+                $this->expected[0]['name'],
                 $consistent[0]->name,
                 "first name wasn't properly populated"
             );
@@ -351,12 +353,12 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Spider\Base\Collection', $consistent[1], 'second: Did not return a collection');
             $this->assertTrue(is_array($consistent[1]->meta), 'second: failed to populate meta');
             $this->assertEquals(
-                Graph::$data[1]['label'],
+                $this->expected[1]['label'],
                 $consistent[1]->label,
                 "second: label wasn't properly populated"
             );
             $this->assertEquals(
-                Graph::$data[1]['name'],
+                $this->expected[1]['name'],
                 $consistent[1]->name,
                 "second: name wasn't properly populated"
             );
@@ -379,7 +381,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 "incorrect id found"
             );
             $this->assertEquals(
-                Graph::$data[0]['label'],
+                $this->expected[0]['label'],
                 $consistent->label,
                 "incorrect label found"
             );
@@ -399,7 +401,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 "incorrect id found"
             );
             $this->assertEquals(
-                Graph::$data[0]['label'],
+                $this->expected[0]['label'],
                 $consistent->label,
                 "incorrect label found"
             );
@@ -420,7 +422,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 "incorrect id found"
             );
             $this->assertEquals(
-                Graph::$data[0]['label'],
+                $this->expected[0]['label'],
                 $consistent->label,
                 "incorrect label found"
             );
