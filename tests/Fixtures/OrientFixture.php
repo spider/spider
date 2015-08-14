@@ -76,11 +76,6 @@ class OrientFixture extends DbFixture
         }
     }
 
-    public function getData()
-    {
-        return $this->data;
-    }
-
     public function setDependencies()
     {
         // nothing

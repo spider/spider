@@ -1,84 +1,50 @@
 <?php
 namespace Spider\Test\Fixtures;
+use Everyman\Neo4j\Client;
+use Everyman\Neo4j\Cypher\Query;
 use PhpOrient\PhpOrient;
 
 /**
  * Class OrientFixture
  * @package Spider\Test\Fixtures
  */
-class OrientFixture extends DbFixture
+class NeoFixture extends DbFixture
 {
     public function load()
     {
-        $client = new PhpOrient();
-        $client->configure([
-            'hostname' => 'localhost',
-            'port' => 2424,
-            'username' => 'root',
-            'password' => "root",
-        ]);
-        $client->connect();
+        $client = new Client('localhost', 7474);
+        $client->getTransport()
+            ->setAuth('neo4j', 'j4oen');
 
-        if ($client->dbExists('modern_graph')) {
-            throw new \Exception("Cannot create Orient database fixture. `modern_graph` already exists");
-        }
-
-        $client->dbCreate(
-            'modern_graph',
-            PhpOrient::STORAGE_TYPE_MEMORY,
-            PhpOrient::DATABASE_TYPE_GRAPH
-        );
-
-        $client->dbOpen('modern_graph', 'root', 'root');
-
-        $client->command('create class person extends V');
-        $client->command('create class knows extends E');
-        $client->command('create class created extends E');
-
-        $client->sqlBatch(
-            'begin;
-            let a = INSERT INTO person CONTENT {name:"marko",age:29 } RETURN @rid;
-            let b = INSERT INTO person CONTENT {name:"vadas",age:27 } RETURN @rid;
-            let c = INSERT INTO person CONTENT {name:"peter",age:35 } RETURN @rid;
-            let d = INSERT INTO person CONTENT {name:"josh",age:32 } RETURN @rid;
-            let e = INSERT INTO person CONTENT {name:"lop",lang:"java" } RETURN @rid;
-            let f = INSERT INTO person CONTENT {name:"ripple",lang:"java" } RETURN @rid;
-
-            CREATE EDGE knows FROM $a TO $b CONTENT { "weight" : 0.5 };
-            CREATE EDGE created FROM $a TO $e CONTENT { "weight" : 0.4 };
-            CREATE EDGE created FROM $c TO $e CONTENT { "weight" : 0.2 };
-            CREATE EDGE created FROM $d TO $e CONTENT { "weight" : 0.4 };
-            CREATE EDGE created FROM $d TO $f CONTENT { "weight" : 1.0 };
-
-            commit retry 100;
-            return a;'
-        );
-
-        $client->dbClose();
+        $queryString = "CREATE (a:person {name:'marko',age:29 }),
+            (b:person {name:'vadas',age:27 }),
+            (c:person {name:'peter',age:35 }),
+            (d:person {name:'josh',age:32 }),
+            (e:software {name:'lop',lang:'java' }),
+            (f:software {name:'ripple',lang:'java' }),
+            (a)-[:knows {weight:0.5}]->(b),
+            (a)-[:created {weight:0.4}]->(e),
+            (c)-[:created {weight:0.2}]->(e),
+            (d)-[:created {weight:0.4}]->(e),
+            (d)-[:created {weight:1.0}]->(f)";
+        $query = new Query($client, $queryString);
+        $query->getResultSet();
 
         return $this;
     }
 
     public function unload()
     {
-        $client = new PhpOrient();
-        $client->configure([
-            'hostname' => 'localhost',
-            'port' => 2424,
-            'username' => 'root',
-            'password' => "root",
-            'database' => 'modern_graph',
-        ]);
-        $client->connect();
+        $client = new Client('localhost', 7474);
+        $client->getTransport()
+            ->setAuth('neo4j', 'j4oen');
 
-        if ($client->dbExists('modern_graph')) {
-            $client->dbDrop('modern_graph');
-        }
-    }
+        $queryString = "MATCH (n)
+            OPTIONAL MATCH (n)-[r]-()
+            DELETE n,r";
 
-    public function getData()
-    {
-        return $this->data;
+        $query = new Query($client, $queryString);
+        $query->getResultSet();
     }
 
     public function setDependencies()

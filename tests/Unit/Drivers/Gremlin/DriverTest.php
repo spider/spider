@@ -4,7 +4,7 @@ namespace Spider\Test\Unit\Drivers\Gremlin;
 use Codeception\Specify;
 use Spider\Commands\Command;
 use Spider\Drivers\Gremlin\Driver as GremlinDriver;
-use Spider\Test\Fixtures\Graph;
+use Spider\Test\Fixtures\GremlinFixture;
 use Spider\Test\Unit\Drivers\BaseTestSuite;
 
 /**
@@ -18,6 +18,12 @@ class DriverTest extends BaseTestSuite
     public function setup()
     {
         $this->markTestSkipped("Test Database Not Installed");
+//        $this->fixture = (new GremlinFixture())->load();
+    }
+
+    public function teardown()
+    {
+//        $this->fixture->unload();
     }
 
     /* Implemented Methods */
