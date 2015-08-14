@@ -5,6 +5,7 @@ use Codeception\Specify;
 use Spider\Commands\Command;
 use Spider\Drivers\OrientDB\Driver as OrientDriver;
 use Spider\Test\Fixtures\Graph;
+use Spider\Test\Fixtures\OrientFixture;
 use Spider\Test\Unit\Drivers\BaseTestSuite;
 
 /**
@@ -15,7 +16,15 @@ class DriverTest extends BaseTestSuite
 {
     public function setup()
     {
-        $this->markTestSkipped("Test Database Not Installed");
+//        $this->markTestSkipped("Test Database Not Installed");
+
+        $this->fixture = (new OrientFixture())->load();
+        $this->expected = (array)$this->fixture->getData();
+    }
+
+    public function teardown()
+    {
+        $this->fixture->unload();
     }
 
     /** Returns an instance of the configured driver

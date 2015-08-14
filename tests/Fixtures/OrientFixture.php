@@ -1,40 +1,41 @@
 <?php
 namespace Spider\Test\Fixtures;
-
 use PhpOrient\PhpOrient;
 
-class Orient extends Fixture
+/**
+ * Class OrientFixture
+ * @package Spider\Test\Fixtures
+ */
+class OrientFixture extends DbFixture
 {
-    protected $client;
-
-    public function setup()
+    public function __construct()
     {
-        $this->client = new PhpOrient();
-        $this->client->configure([
-            'username' => 'root',
-            'password' => 'root',
-            'hostname' => 'localhost',
-            'port' => 2424,
-        ]);
-        $this->client->connect();
+        $this->data = Graph::$data;
+    }
 
-        if ($this->client->dbExists('spider_test_graph')) {
+    public function load()
+    {
+        $client = new PhpOrient();
+        $client->configure(Graph::$servers['orient']);
+        $client->connect();
+
+        if ($client->dbExists('spider_test_graph')) {
             throw new \Exception("Cannot create Orient database fixture. `spider_test_graph` already exists");
         }
 
-        $this->client->dbCreate(
+        $client->dbCreate(
             'spider_test_graph',
             PhpOrient::STORAGE_TYPE_MEMORY,
             PhpOrient::DATABASE_TYPE_GRAPH
         );
 
-        $this->client->dbOpen('spider_test_graph', 'root', 'root');
+        $client->dbOpen('spider_test_graph', 'root', 'root');
 
-        $this->client->command('create class person extends V');
-        $this->client->command('create class knows extends E');
-        $this->client->command('create class created extends E');
+        $client->command('create class person extends V');
+        $client->command('create class knows extends E');
+        $client->command('create class created extends E');
 
-        $this->client->sqlBatch(
+        $client->sqlBatch(
             'begin;
             let a = INSERT INTO person CONTENT {name:"marko",age:29 } RETURN @rid;
             let b = INSERT INTO person CONTENT {name:"vadas",age:27 } RETURN @rid;
@@ -53,28 +54,34 @@ class Orient extends Fixture
             return a;'
         );
 
-        $this->client->dbClose();
+        $client->dbClose();
+
+        return $this;
     }
 
-    public function teardown()
+    public function unload()
     {
-        $this->client = new PhpOrient();
-        $this->client->configure([
-            'username' => 'root',
-            'password' => 'root',
-            'hostname' => 'localhost',
-            'port' => 2424,
-        ]);
-        $this->client->connect();
+        $client = new PhpOrient();
+        $client->configure(Graph::$servers['orient']);
+        $client->connect();
 
-        if ($this->client->dbExists('spider_test_graph')) {
-            $this->client->dbDrop('spider_test_graph');
+        if ($client->dbExists('spider_test_graph')) {
+            $client->dbDrop('spider_test_graph');
         }
     }
 
-    public function reset()
+    public function getData()
     {
-        $this->teardown();
-        $this->setup();
+        return $this->data;
+    }
+
+    public function setDependencies()
+    {
+        // nothing
+    }
+
+    public function getDependencies()
+    {
+        // Nothing
     }
 }

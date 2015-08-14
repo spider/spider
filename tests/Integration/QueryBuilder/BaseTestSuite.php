@@ -9,7 +9,9 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
     use Specify;
 
     /** @var  \Spider\Commands\Query */
+    protected $expected;
     protected $query;
+    protected $fixture;
 
     public function testBasicSelects()
     {
@@ -19,7 +21,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->from('person')
                 ->all();
 
-            $expected = array_filter(Graph::$data, function ($record) {
+            $expected = array_filter($this->expected, function ($record) {
                 return $record['label'] === 'person';
             });
 
@@ -35,7 +37,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->from('person')
                 ->first();
 
-            $expected = array_filter(Graph::$data, function ($record) {
+            $expected = array_filter($this->expected, function ($record) {
                 return $record['label'] === 'person';
             });
 
@@ -50,7 +52,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->from('person')
                 ->one();
 
-            $expected = array_filter(Graph::$data, function ($record) {
+            $expected = array_filter($this->expected, function ($record) {
                 return $record['label'] === 'person';
             });
 
@@ -67,7 +69,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->andWhere('age', 29)
                 ->all();
 
-            $expected = array_filter(Graph::$data, function ($record) {
+            $expected = array_filter($this->expected, function ($record) {
                 return $record['label'] === 'person'
                     && $record['name'] === 'marko'
                     && $record['age'] === 29;
@@ -87,7 +89,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->orWhere('name', 'peter')
                 ->all();
 
-            $expected = array_filter(Graph::$data, function ($record) {
+            $expected = array_filter($this->expected, function ($record) {
                 return $record['label'] === 'person'
                 && ($record['name'] === 'marko' || $record['name'] === 'peter');
             });
@@ -111,7 +113,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->limit(3)
                 ->get();
 
-            $expected = array_filter(Graph::$data, function ($record) {
+            $expected = array_filter($this->expected, function ($record) {
                 return $record['label'] === 'person';
             });
 
@@ -137,7 +139,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->limit(4)
                 ->get();
 
-            $expected = array_filter(Graph::$data, function ($record) {
+            $expected = array_filter($this->expected, function ($record) {
                 return $record['label'] === 'person';
             });
 
