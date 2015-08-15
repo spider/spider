@@ -17,8 +17,10 @@ class DriverTest extends BaseTestSuite
 {
     public function setup()
     {
-//        $this->markTestSkipped("Test Database Not Installed");
-        $this->fixture = (new OrientFixture())->load();
+        $this->fixture = new OrientFixture();
+        $this->fixture->unload();
+        $this->fixture->load();
+        $this->markTestSkipped("Test Database Not Installed");
     }
 
     public function teardown()

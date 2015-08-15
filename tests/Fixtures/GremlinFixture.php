@@ -10,7 +10,14 @@ class GremlinFixture extends DbFixture
         $client = new Connection();
         $client->open('localhost:8182', 'graph');
 
-        $client->send("TinkerFactory.generateModern(graph)");
+        try{
+            $client->send("TinkerFactory.generateModern(graph)");
+        } catch (\Exception $e) {
+            //Check for empty return error from server.
+            if (!($e instanceof \brightzone\rexpro\ServerException) || ($e->getCode() != 204)) {
+                throw $e;
+            }
+        }
 
         $client->close();
 
@@ -22,8 +29,14 @@ class GremlinFixture extends DbFixture
         $client = new Connection();
         $client->open('localhost:8182', 'graph');
 
-        $client->send("g.V().drop().iterate()");
-
+        try {
+            $client->send("g.V().drop().iterate()");
+        } catch (\Exception $e) {
+            //Check for empty return error from server.
+            if (!($e instanceof \brightzone\rexpro\ServerException) || ($e->getCode() != 204)) {
+                throw $e;
+            }
+        }
         $client->close();
     }
 

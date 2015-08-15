@@ -17,13 +17,15 @@ class DriverTest extends BaseTestSuite
 
     public function setup()
     {
+        $this->fixture = new GremlinFixture();
+        $this->fixture->unload();
+        $this->fixture->load();
         $this->markTestSkipped("Test Database Not Installed");
-//        $this->fixture = (new GremlinFixture())->load();
     }
 
     public function teardown()
     {
-//        $this->fixture->unload();
+        $this->fixture->unload();
     }
 
     /* Implemented Methods */
@@ -76,7 +78,7 @@ class DriverTest extends BaseTestSuite
     public function selectByName($name)
     {
         return new Command(
-            $this->driver->traversal . ".V().has('name', '$name', 'gremlin')"
+            $this->driver->traversal . ".V().has('name', '$name')", 'gremlin'
         );
     }
 

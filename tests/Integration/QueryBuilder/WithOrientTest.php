@@ -11,7 +11,9 @@ class WithOrientTest extends BaseTestSuite
 {
     public function setup()
     {
-        $this->fixture = (new OrientFixture())->load();
+        $this->fixture = new OrientFixture();
+        $this->fixture->unload();
+        $this->fixture->load();
 
         $manager = new Manager([
             'default' => 'orient',
