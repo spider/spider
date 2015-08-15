@@ -3,6 +3,7 @@ namespace Spider\Test\Unit\Drivers;
 
 use Codeception\Specify;
 use Michaels\Manager\Exceptions\ModifyingProtectedValueException;
+use Spider\Commands\Command;
 use Spider\Drivers\DriverInterface;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
@@ -31,6 +32,102 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 {
     use Specify;
 
+    protected $fixture;
+    protected $expected = [
+        [
+            'label' => 'person',
+            'name' => 'marko',
+            'age' => 29,
+            'out' => [
+                [
+                    'label' => 'knows',
+                    'weight' => 0.5,
+                    'to' => 1
+                ],
+                [
+                    'label' => 'created',
+                    'weight' => 0.4,
+                    'to' => 4
+                ],
+            ]
+        ],
+        [
+            'label' => 'person',
+            'name' => 'vadas',
+            'age' => 27,
+            'in' => [
+                [
+                    'label' => 'knows',
+                    'weight' => 0.5,
+                    'from' => 0
+                ],
+            ]
+        ],
+        [
+            'label' => 'person',
+            'name' => 'peter',
+            'age' => 35,
+            'out' => [
+                [
+                    'label' => 'created',
+                    'weight' => 0.2,
+                    'to' => 4
+                ],
+            ]
+        ],
+        [
+            'label' => 'person',
+            'name' => 'josh',
+            'age' => 32,
+            'out' => [
+                [
+                    'label' => 'created',
+                    'weight' => 0.4,
+                    'to' => 4
+                ],
+                [
+                    'label' => 'created',
+                    'weight' => 1.0,
+                    'to' => 5
+                ],
+            ]
+        ],
+        [
+            'label' => 'person',
+            'name' => 'lop',
+            'lang' => 'java',
+            'in' => [
+                [
+                    'label' => 'created',
+                    'weight' => 0.4,
+                    'from' => 0
+                ],
+                [
+                    'label' => 'created',
+                    'weight' => 0.2,
+                    'from' => 2
+                ],
+                [
+                    'label' => 'created',
+                    'weight' => 0.4,
+                    'from' => 3
+                ]
+            ]
+        ],
+        [
+            'label' => 'person',
+            'name' => 'ripple',
+            'lang' => 'java',
+            'in' => [
+                [
+                    'label' => 'created',
+                    'weight' => 1.0,
+                    'from' => 3
+                ],
+            ],
+        ]
+    ];
+
     /* Begin Tests */
     public function testConnections()
     {
@@ -56,22 +153,22 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return a Record');
 
             $this->assertEquals(
-                $this->getExpected('select-one-item')[0]['name'],
+                $this->expected[0]['name'],
                 $response->name,
                 "failed to return the correct names"
             );
 
             $this->assertEquals(
-                $this->getExpected('select-one-item')[0]['label'],
+                $this->expected[0]['label'],
                 $response->label,
                 "failed to return the correct label"
             );
 
-            $this->assertEquals(
-                $this->getExpected('select-one-item')[0]['id'],
-                $response->id,
-                "failed to return the correct id"
-            );
+//            $this->assertEquals(
+//                $this->formatId(0, 11),
+//                $response->id,
+//                "failed to return the correct id"
+//            );
         });
 
         $this->specify("it selects multiple, unrelated vertices", function () {
@@ -89,7 +186,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertCount(2, $response, "failed to return 2 results");
             $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return Response Object');
             $this->assertEquals(
-                $this->getExpected('select-two-items')[1]['name'],
+                $this->expected[1]['name'],
                 $response[1]->name,
                 "failed to return the correct record"
             );
@@ -109,7 +206,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Spider\Base\Collection', $newRecord, 'failed to return a Record');
         $this->assertEquals(
-            $this->getExpected('create-one-item')[0]['name'],
+            'testVertex',
             $newRecord->name,
             "failed to return the correct names"
         );
@@ -122,7 +219,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Spider\Base\Collection', $updatedRecord, 'failed to return a Record');
         $this->assertEquals(
-            $this->getExpected('update-one-item')[0]['name'],
+            'testVertex2',
             $updatedRecord->name,
             "failed to return the correct names"
         );
@@ -133,7 +230,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
         $deletedRecord = $response->getSet();
 
-        $this->assertEquals($this->getExpected('delete-one-item'), $deletedRecord, "failed to delete");
+        $this->assertEquals([], $deletedRecord, "failed to delete");
 
         // And try to get it again
         $response = $driver->executeReadCommand(
@@ -165,7 +262,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $response = $driver->executeReadCommand(
                 $this->getCommand(
                     'select-by-name',
-                    $this->getExpected('create-one-item')[0]['name']
+                    'testVertex'
                 )
             );
             $consistent = $response->getSet();
@@ -189,13 +286,13 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $response = $driver->executeReadCommand(
                 $this->getCommand(
                     'select-by-name',
-                    $this->getExpected('create-one-item')[0]['name']
+                    'testVertex'
                 )
             );
             $response = $response->getSet();
 
             $this->assertEquals(
-                $this->getExpected('create-one-item')[0]['name'],
+                'testVertex',
                 $response->name,
                 "the commit did not properly work"
             );
@@ -204,7 +301,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $driver->runWriteCommand(
                 $this->getCommand(
                     'delete-one-item',
-                    $this->getExpected('create-one-item')[0]['name']
+                    'testVertex'
                 )
             );
 
@@ -267,7 +364,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         $this->specify("it throws an exception for single set response on scalar formatting", function () {
             $driver = $this->driver();
 
-            $response = $this->getExpected('select-one-item');
+            $response = [$this->expected[0]];
 
             $driver->formatAsScalar($response);
         }, ['throws' => new FormattingException()]);
@@ -275,7 +372,8 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         $this->specify("it throws an exception for a multi set response on scalar formatting", function () {
             $driver = $this->driver();
 
-            $response = $this->getExpected('select-two-items');
+            $response[] = $this->expected[0];
+            $response[] = $this->expected[1];
 
             $driver->formatAsScalar($response);
         }, ['throws' => new FormattingException()]);
@@ -306,12 +404,12 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $consistent = $driver->formatAsSet($rawResponse);
             $this->assertInstanceOf('Spider\Base\Collection', $consistent, 'Did not return a single Collection');
             $this->assertEquals(
-                $this->getExpected('select-one-item')[0]['name'],
+                $this->expected[0]['name'],
                 $consistent->name,
                 "name wasn't properly populated"
             );
             $this->assertEquals(
-                $this->getExpected('select-one-item')[0]['label'],
+                $this->expected[0]['label'],
                 $consistent->label,
                 "label wasn't properly populated"
             );
@@ -335,12 +433,12 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Spider\Base\Collection', $consistent[0], 'first: Did not return a collection');
             $this->assertTrue(is_array($consistent[0]->meta), 'first: failed to populate meta');
             $this->assertEquals(
-                $this->getExpected('select-two-items')[0]['label'],
+                $this->expected[0]['label'],
                 $consistent[0]->label,
                 "first label wasn't properly populated"
             );
             $this->assertEquals(
-                $this->getExpected('select-two-items')[0]['name'],
+                $this->expected[0]['name'],
                 $consistent[0]->name,
                 "first name wasn't properly populated"
             );
@@ -348,12 +446,12 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Spider\Base\Collection', $consistent[1], 'second: Did not return a collection');
             $this->assertTrue(is_array($consistent[1]->meta), 'second: failed to populate meta');
             $this->assertEquals(
-                $this->getExpected('select-two-items')[1]['label'],
+                $this->expected[1]['label'],
                 $consistent[1]->label,
                 "second: label wasn't properly populated"
             );
             $this->assertEquals(
-                $this->getExpected('select-two-items')[1]['name'],
+                $this->expected[1]['name'],
                 $consistent[1]->name,
                 "second: name wasn't properly populated"
             );
@@ -370,13 +468,13 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $driver->open();
             $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
             $consistent = $response->getSet();
+//            $this->assertEquals(
+//                $this->formatId(0, 11),
+//                $consistent->id,
+//                "incorrect id found"
+//            );
             $this->assertEquals(
-                $this->getExpected('select-one-item')[0]['id'],
-                $consistent->id,
-                "incorrect id found"
-            );
-            $this->assertEquals(
-                $this->getExpected('select-one-item')[0]['label'],
+                $this->expected[0]['label'],
                 $consistent->label,
                 "incorrect label found"
             );
@@ -390,13 +488,13 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $driver->open();
             $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
             $consistent = $response->getSet();
+//            $this->assertEquals(
+//                $this->formatId(0, 11),
+//                $consistent->id,
+//                "incorrect id found"
+//            );
             $this->assertEquals(
-                $this->getExpected('select-one-item')[0]['id'],
-                $consistent->id,
-                "incorrect id found"
-            );
-            $this->assertEquals(
-                $this->getExpected('select-one-item')[0]['label'],
+                $this->expected[0]['label'],
                 $consistent->label,
                 "incorrect label found"
             );
@@ -411,13 +509,13 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $driver->open();
             $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
             $consistent = $response->getSet();
+//            $this->assertEquals(
+//                $this->formatId(0, 11),
+//                $consistent->id,
+//                "incorrect id found"
+//            );
             $this->assertEquals(
-                $this->getExpected('select-one-item')[0]['id'],
-                $consistent->id,
-                "incorrect id found"
-            );
-            $this->assertEquals(
-                $this->getExpected('select-one-item')[0]['label'],
+                $this->expected[0]['label'],
                 $consistent->label,
                 "incorrect label found"
             );
@@ -442,13 +540,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
     protected function getCommand($alias, $arg = null)
     {
         $method = $this->camelCase($alias);
-        return $this->$method($arg)['command'];
-    }
-
-    protected function getExpected($alias)
-    {
-        $method = $this->camelCase($alias);
-        return $this->$method(null)['expected'];
+        return $this->$method($arg);
     }
 
     /* Queries to Implement */
@@ -459,72 +551,40 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
     abstract public function driver($switch = null);
 
     /**
-     * Command selects exactly one record
-     * Expected: a single array with: id, name, label
-     * @return array [
-     *  [
-     *      'command' => new Command("SPECIFIC SCRIPT HERE"),
-     *      'expected' => [
-     *          [
-     *              'id' => 'RETURNED ID',
-     *              'name' => 'RESULT.NAME',
-     *              'label' => 'RESULT.LABEL'
-     *          ]
-     *      ]
-     *  ]
+     * Command selects exactly one record from "person"
+     * @return Command
      */
     abstract public function selectOneItem();
 
     /**
-     * Command selects exactly two records
-     * Expected: two arrays, each with: id, name, label
-     * @return array [
-     *  [
-     *      'command' => new Command("SPECIFIC SCRIPT HERE"),
-     *      'expected' => [
-     *          [
-     *              'id' => 'FIRST RETURNED ID',
-     *              'name' => 'FIRST RESULT.NAME',
-     *              'label' => 'FIRST RESULT.LABEL'
-     *          ],
-     *          [
-     *              'id' => 'SECOND RESULT.ID',
-     *              'name' => 'SECOND RESULT.NAME',
-     *              'label' => 'SECOND RESULT.LABEL'
-     *          ],
-     *      ]
-     *  ]
+     * Command selects exactly the first two records from "person"
+     * @return Command
      */
     abstract public function selectTwoItems();
 
     /**
      * Command selects exactly one record by name = $name
-     * Expected: Not used. Return an empty array
-     * @param $name
-     * @return array
+     * @return Command
      */
     abstract public function selectByName($name);
 
     /**
-     * Command creates a single record with a name
-     * Expected: a single array with: `name` created
-     * @return array
+     * Command creates a single record with the name "testVertex"
+     * @return Command
      */
     abstract public function createOneItem();
 
     /**
-     * Command updates a single item by name = ?, changing the name
-     * Expected: a single array with: name
+     * Command updates a single item by name = ?, changing the name to "testVertex2"
      * @param $name
-     * @return array
+     * @return Command
      */
     abstract public function updateOneItem($name);
 
     /**
      * Command deletes a single item by name = ?
-     * Expected: an empty array
      * @param $name
-     * @return array
+     * @return Command
      */
     abstract public function deleteOneItem($name);
 
@@ -541,4 +601,15 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
      * @return array
      */
     abstract public function getScalarResponse($type);
+
+    /**
+     * Format the id to a vendor-specific format
+     * @param int $id
+     * @param int $cluster
+     * @return mixed
+     */
+    public function formatId($id, $cluster = 11)
+    {
+        return $id;
+    }
 }

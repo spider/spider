@@ -117,7 +117,7 @@ class Manager extends Collection implements ManagesItemsInterface
         $diverClassName = $properties['driver'];
         unset($properties['driver']);
 
-        return new Connection(new $diverClassName, $properties);
+        return new Connection($diverClassName, $properties);
     }
 
     /**

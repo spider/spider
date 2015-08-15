@@ -63,7 +63,7 @@ class Command implements CommandInterface
     }
 
     /**
-     * Sets the current script language (eg OrientSQL, Cypher, etc)
+     * Sets the current script language (eg orientSQL, Cypher, etc)
      * @param $language
      * @return $this
      */

@@ -129,6 +129,15 @@ class Query extends Builder
         }
     }
 
+    /**
+     * Alias of dispatch
+     * @return Response
+     */
+    public function go()
+    {
+        return $this->dispatch();
+    }
+
     /* Dispatch with limits */
     /**
      * Dispatch a retrieve command with no limit.

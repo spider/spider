@@ -2,8 +2,11 @@
 namespace Spider\Test\Unit\Drivers\OrientDB;
 
 use Codeception\Specify;
+use Spider\Commands\Builder;
 use Spider\Commands\Command;
 use Spider\Drivers\OrientDB\Driver as OrientDriver;
+use Spider\Test\Fixtures\Graph;
+use Spider\Test\Fixtures\OrientFixture;
 use Spider\Test\Unit\Drivers\BaseTestSuite;
 
 /**
@@ -14,7 +17,15 @@ class DriverTest extends BaseTestSuite
 {
     public function setup()
     {
-        //$this->markTestSkipped("Test Database Not Installed");
+        $this->fixture = new OrientFixture();
+        $this->fixture->unload();
+        $this->fixture->load();
+        $this->markTestSkipped("Test Database Not Installed");
+    }
+
+    public function teardown()
+    {
+        $this->fixture->unload();
     }
 
     /** Returns an instance of the configured driver
@@ -28,146 +39,72 @@ class DriverTest extends BaseTestSuite
             'port' => 2424,
             'username' => 'root',
             'password' => "root",
-            'database' => 'GratefulDeadConcerts'
+            'database' => 'modern_graph',
         ]);
     }
 
     /**
-     * Command selects exactly one record
-     * Expected: a single array with: id, name, label
-     * @return array [
-     *  [
-     *      'command' => new Command("SPECIFIC SCRIPT HERE"),
-     *      'expected' => [
-     *          [
-     *              'id' => 'RETURNED ID',
-     *              'name' => 'RESULT.NAME',
-     *              'label' => 'RESULT.LABEL'
-     *          ]
-     *      ]
-     *  ]
+     * Command selects exactly one record from "person"
+     * @return Command
      */
     public function selectOneItem()
     {
-        return [
-            'command' => new Command("SELECT FROM V WHERE @rid = #9:1", "orientSQL"),
-            'expected' => [
-                [
-                    'id' => '#9:1',
-                    'name' => 'HEY BO DIDDLEY',
-                    'label' => 'V'
-                ]
-            ]
-        ];
+        return new Command("SELECT FROM person WHERE name = 'marko' LIMIT 1", 'orientSQL');
     }
 
     /**
-     * Command selects exactly two records
-     * Expected: two arrays, each with: id, name, label
-     * @return array [
-     *  [
-     *      'command' => new Command("SPECIFIC SCRIPT HERE"),
-     *      'expected' => [
-     *          [
-     *              'id' => 'FIRST RETURNED ID',
-     *              'name' => 'FIRST RESULT.NAME',
-     *              'label' => 'FIRST RESULT.LABEL'
-     *          ],
-     *          [
-     *              'id' => 'SECOND RESULT.ID',
-     *              'name' => 'SECOND RESULT.NAME',
-     *              'label' => 'SECOND RESULT.LABEL'
-     *          ],
-     *      ]
-     *  ]
+     * Command selects exactly the first two records from "person"
+     * @return Command
      */
     public function selectTwoItems()
     {
-        return [
-            'command' => new Command(
-                "SELECT FROM V WHERE song_type = 'cover' LIMIT 2", "orientSQL"
-            ),
-            'expected' => [
-                [
-                    'id' => '#9:1',
-                    'name' => 'HEY BO DIDDLEY',
-                    'label' => 'V',
-                ],
-                [
-                    'id' => '#9:2',
-                    'name' => 'IM A MAN',
-                    'label' => 'V',
-                ],
-            ]
-        ];
+        return new Command(
+            "SELECT FROM person LIMIT 2", 'orientSQL'
+        );
     }
 
     /**
      * Command selects exactly one record by name = $name
-     * Expected: Not used. Return an empty array
-     * @param $name
-     * @return array
+     * @return Command
      */
     public function selectByName($name)
     {
-        return [
-            'command' => new Command("SELECT FROM V WHERE name = '$name'", "orientSQL"),
-            'expected' => [],
-        ];
+        return new Command("SELECT FROM V WHERE name = '$name'", 'orientSQL');
     }
 
     /**
-     * Command creates a single record with a name
-     * Expected: a single array with: `name` created
-     * @return array
+     * Command creates a single record with the name "testVertex"
+     * @return Command
      */
     public function createOneItem()
     {
-        return [
-            'command' => new Command(
-                "CREATE Vertex CONTENT " . json_encode(['name' => 'testVertex']), "orientSQL"
-            ),
-            'expected' => [
-                [
-                    'name' => 'testVertex',
-                ]
-            ]
-        ];
+        return new Command(
+            "CREATE Vertex V CONTENT " . json_encode(['name' => 'testVertex']),
+            'orientSQL'
+        );
     }
 
     /**
-     * Command updates a single item by name = ?, changing the name
-     * Expected: a single array with: name
+     * Command updates a single item by name = ?, changing the name to "testVertex2"
      * @param $name
-     * @return array
+     * @return Command
      */
     public function updateOneItem($name)
     {
         $query = "UPDATE (SELECT FROM V WHERE name='$name') ";
         $query .= "MERGE " . json_encode(['name' => 'testVertex2']) . ' RETURN AFTER $current';
 
-        return [
-            'command' => new Command($query, "orientSQL"),
-            'expected' => [
-                [
-                    'name' => 'testVertex2',
-                ]
-            ]
-        ];
+        return new Command($query, 'orientSQL');
     }
 
     /**
      * Command deletes a single item by name = ?
-     * Expected: an empty array
      * @param $name
-     * @return array
+     * @return Command
      */
     public function deleteOneItem($name)
     {
-        return [
-            'command' => new Command("DELETE VERTEX WHERE name = '$name'", "orientSQL"),
-            'expected' => []
-        ];
+        return new Command("DELETE VERTEX V WHERE name = '$name'", 'orientSQL');
     }
 
     /**
@@ -197,6 +134,18 @@ class DriverTest extends BaseTestSuite
             case 'boolean':
                 return [true];
         }
+        return [10];
+    }
+
+    /**
+     * Format the id to a vendor-specific format
+     * @param int $id
+     * @param int $cluster
+     * @return mixed
+     */
+    public function formatId($id, $cluster = 11)
+    {
+        return "#$cluster:$id";
     }
 
     /* Orient Specific Tests */
@@ -247,7 +196,7 @@ class DriverTest extends BaseTestSuite
 
     public function testPassingBuilder()
     {
-        $builder = new \Spider\Commands\Builder();
+        $builder = new Builder();
         $builder->select()->from('V');
         $driver = $this->driver();
         $driver->open();
@@ -255,6 +204,6 @@ class DriverTest extends BaseTestSuite
         $response = $driver->executeReadCommand($builder);
 
         $consistent = $response->getSet();
-        $this->assertEquals(20, count($consistent), "wrong number of elements found");
+        $this->assertEquals(6, count($consistent), "wrong number of elements found");
     }
 }
