@@ -13,6 +13,7 @@ All Notable changes to `Spider` will be documented in this file
 - Manager creates Connection from array of properties
 - Refactor Drivers to hold configuration internally instead of by array
 - Refactor and split CommandBuilder to BaseBuilder, Builder, and Query
+- Introduce fixtures, integration tests, and proper stubs.
 
 ## v0.2.1 - 7-9-2015
 - Updated: ConnectionInterface to mimic DriverInterface
