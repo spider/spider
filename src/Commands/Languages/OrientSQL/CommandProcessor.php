@@ -242,7 +242,7 @@ class CommandProcessor implements ProcessorInterface
         if ($this->bag->target instanceof TargetID) {
             $target = $this->bag->target->id;
         } else {
-            $target = $this->bag->target;
+            $target = ($this->bag->target) ? $this->bag->target : "V";
         }
 
         if ($prefix !== "") {

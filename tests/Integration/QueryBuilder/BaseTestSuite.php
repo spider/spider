@@ -107,7 +107,20 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
     public function testBasicSelects()
     {
-        $this->specify("it selects all records", function () {
+        $this->specify("it selects all vertices", function () {
+            $response = $this->query
+                ->select()
+                ->all();
+
+            $expected = $this->expected;
+
+            $this->assertTrue(is_array($response), 'failed to return an array');
+            $this->assertCount(count($expected), $response, 'failed to return the correct number of records');
+            $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return an array of collections');
+            $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
+        });
+
+        $this->specify("it selects all records from a label", function () {
             $response = $this->query
                 ->select()
                 ->from('person')

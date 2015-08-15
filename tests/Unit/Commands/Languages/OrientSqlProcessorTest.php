@@ -2,6 +2,7 @@
 namespace Spider\Test\Unit\Commands\Languages;
 
 use Codeception\Specify;
+use Spider\Commands\Bag;
 use Spider\Commands\Command;
 use Spider\Commands\Languages\OrientSQL\CommandProcessor;
 
@@ -50,7 +51,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $query .= " RETURN @this";
 
         $command = new Command($query);
-        $command->setScriptLanguage('OrientSQL');
+        $command->setScriptLanguage('orientSQL');
         $expected = $command;
 
         return $expected;
@@ -161,6 +162,23 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
         return $command;
+    }
+
+    /* Orient Specific Tests */
+    public function testSelectFromVByDefault()
+    {
+        $this->specify("it selects from V by default", function () {
+            $bag = new Bag();
+            $bag->command = Bag::COMMAND_RETRIEVE;
+            // equivalent to $builder->select();
+            // Issue #41
+
+            $expected  = new Command('SELECT FROM V');
+            $expected->setScriptLanguage('orientSQL');
+
+            $actual = $this->processor()->process($bag);
+            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+        });
     }
 
     /* Internal */

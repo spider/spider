@@ -124,7 +124,7 @@ class DriverTest extends BaseTestSuite
      */
     public function getScalarResponse($type)
     {
-        switch($type) {
+        switch ($type) {
             case 'int':
                 return [10];
 
@@ -148,7 +148,7 @@ class DriverTest extends BaseTestSuite
         return "#$cluster:$id";
     }
 
-    /* Orient Specific Tests */
+    /* Orient specific tests */
     public function testBuildTransactionStatement()
     {
         $this->specify("it builds a correct transaction", function () {
@@ -162,11 +162,11 @@ class DriverTest extends BaseTestSuite
 
             $driver->executeWriteCommand(new Command(
                 "CREATE VERTEX CONTENT {name:'two'}", "orientSQL"
-            ));
+            ), "orientSQL");
 
             $driver->executeWriteCommand(new Command(
                 "CREATE VERTEX CONTENT {name:'three'}", "orientSQL"
-            ));
+            ), "orientSQL");
 
             $expected = "begin\n";
             $expected .= "LET t1 = CREATE VERTEX CONTENT {name:'one'}\n";
@@ -181,6 +181,21 @@ class DriverTest extends BaseTestSuite
             $this->assertEquals($expected, $actual, "the transaction statement was incorrectly built");
             $driver->close();
         });
+    }
+
+    public function testClassNotNotExist()
+    {
+        $this->specify("it throws an exception if inserting into non-existant class", function () {
+            $driver = $this->driver();
+            $driver->open();
+
+            $driver->executeWriteCommand(new Command(
+                "INSERT INTO nothing CONTENT {name: 'michael'}",
+                "orientSQL"
+            ));
+
+            $driver->close();
+        }, ['throws' => 'Spider\Drivers\OrientDB\ClassDoesNotExistException']);
     }
 
     /* Override Not Supported Features */

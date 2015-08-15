@@ -4,6 +4,7 @@ namespace Spider\Drivers\OrientDB;
 use PhpOrient\PhpOrient;
 use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 use PhpOrient\Protocols\Binary\Data\Record;
+use PhpOrient\Exceptions\PhpOrientException as ServerException;
 use Spider\Base\Collection;
 use Spider\Commands\CommandInterface;
 use Spider\Commands\BaseBuilder;
@@ -254,6 +255,8 @@ class Driver extends AbstractDriver implements DriverInterface
      * @param CommandInterface|BaseBuilder $command
      * @param $method
      * @return Response
+     * @throws NotSupportedException
+     * @throws \Exception
      */
     protected function executeCommand($command, $method)
     {
@@ -264,7 +267,16 @@ class Driver extends AbstractDriver implements DriverInterface
             throw new NotSupportedException(__CLASS__ . " does not support ". $command->getScriptLanguage());
         }
 
-        $response = $this->client->$method($command->getScript());
+        try {
+            $response = $this->client->$method($command->getScript());
+        } catch (ServerException $e) {
+            // Wrap a "class doesn't exist" exception
+            if (strpos($e->getMessage(), "not found in database")) {
+                throw new ClassDoesNotExistException($e->getMessage());
+            } else {
+                throw $e;
+            }
+        }
         $response = $this->rawResponseToArray($response);
         return new Response(['_raw' => $response, '_driver' => $this]);
     }
@@ -274,6 +286,8 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @param CommandInterface|BaseBuilder $query
      * @return $this
+     * @throws NotSupportedException
+     * @throws \Exception
      */
     public function runReadCommand($query)
     {
