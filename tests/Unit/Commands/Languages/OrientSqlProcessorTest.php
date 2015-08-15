@@ -20,11 +20,37 @@ class OrientSqlProcessorTest extends BaseTestSuite
     public function insertSimple()
     {
         $query = 'INSERT INTO target';
-        $query .= ' CONTENT ' . json_encode($this->getData());
+
+        /* ToDo: insert data should be produced dynamically */
+        /* In order to produce this on the fly, we had to copy processor methods */
+        /* This seemed to defeat the purpose of testing those methods */
+        $query .= " (one, two, three) VALUES (1, 'two', false)";
+
         $query .= ' RETURN @this';
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
+        $expected = $command;
+
+        return $expected;
+    }
+
+    /**
+     * Returns a command for the the Bag tested in
+     * testInsert:it processes a simple insert bag
+     */
+    public function insertMultiple()
+    {
+        $query = "INSERT INTO target ";
+        $query .= "(name, role, ship, husband, past)";
+        $query .= " VALUES ";
+        $query .= "('mal', 'captain', 'firefly', null, null), ";
+        $query .= "('zoe', 'first', null, 'wash', null), ";
+        $query .= "('book', 'shepherd', null, null, 'unknown')";
+        $query .= " RETURN @this";
+
+        $command = new Command($query);
+        $command->setScriptLanguage('OrientSQL');
         $expected = $command;
 
         return $expected;
