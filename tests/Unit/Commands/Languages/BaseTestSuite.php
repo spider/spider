@@ -152,19 +152,34 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
         });
 
-        $this->specify("it processes a complex select bag", function () {
+        $this->specify("it processes a complex order by select bag", function () {
 
             $bag = new Bag();
             $bag->command = Bag::COMMAND_RETRIEVE;
             $bag->projections = ['field1', 'field2'];
             $bag->target = 'target'; // don't forget about TargetID
             $bag->limit = 3;
-            $bag->groupBy = ['groupField'];
-            $bag->orderBy = ['orderField'];
+            $bag->orderBy = ['field1'];
             $bag->orderAsc = false;
             $bag->where = $this->getWheres();
 
-            $expected = $this->getExpectedCommand('select-complex');
+            $expected = $this->getExpectedCommand('select-order-by');
+
+            $actual = $this->processor()->process($bag);
+            $this->assertEquals($expected, $actual, 'failed to return expected Command');
+        });
+
+        $this->specify("it processes a complex order by select bag", function () {
+
+            $bag = new Bag();
+            $bag->command = Bag::COMMAND_RETRIEVE;
+            $bag->projections = [];
+            $bag->target = 'target'; // don't forget about TargetID
+            $bag->limit = 3;
+            $bag->groupBy = ['field1'];
+            $bag->where = $this->getWheres();
+
+            $expected = $this->getExpectedCommand('select-group-by');
 
             $actual = $this->processor()->process($bag);
             $this->assertEquals($expected, $actual, 'failed to return expected Command');
@@ -250,7 +265,13 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
     /**
      * Returns a command for the the Bag tested in
-     * testSelect:it processes a complex select bag
+     * testSelect:it processes a complex group by select bag
      */
-    abstract public function selectComplex();
+    abstract public function selectGroupBy();
+
+    /**
+     * Returns a command for the the Bag tested in
+     * testSelect:it processes a complex order byselect bag
+     */
+    abstract public function selectOrderBy();
 }
