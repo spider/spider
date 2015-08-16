@@ -1,11 +1,11 @@
 <?php
-namespace Michaels\Spider\Graphs;
+namespace Spider\Graphs;
 
 use Michaels\Manager\Manager;
 
 /**
  * Class GraphCollection
- * @package Michaels\Spider\Graphs
+ * @package Spider\Graphs
  */
 class Graph extends Manager implements GraphInterface
 {

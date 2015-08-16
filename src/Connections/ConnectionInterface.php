@@ -1,15 +1,16 @@
 <?php
-namespace Michaels\Spider\Connections;
+namespace Spider\Connections;
 
 use Michaels\Manager\Contracts\ManagesItemsInterface;
-use Michaels\Spider\Drivers\DriverInterface;
-use Michaels\Spider\Queries\CommandInterface;
+use Spider\Commands\CommandInterface;
+use Spider\Drivers\DriverInterface;
+use Spider\Drivers\Response;
 
 /**
  * Facilitates two-way communication with a data-store
- * @package Michaels\Spider\Test\Unit\Connections
+ * @package Spider\Test\Unit\Connections
  */
-interface ConnectionInterface extends ManagesItemsInterface
+interface ConnectionInterface extends DriverInterface
 {
     /**
      * Connects to the database
@@ -20,19 +21,6 @@ interface ConnectionInterface extends ManagesItemsInterface
      * Closes database connection
      */
     public function close();
-
-    /**
-     * Returns the properties array
-     * @return array
-     */
-    public function getProperties();
-
-    /**
-     * Updates the entire properties array
-     *
-     * @param array $properties
-     */
-    public function setProperties(array $properties);
 
     /**
      * Returns the class name of the active driver
@@ -56,34 +44,34 @@ interface ConnectionInterface extends ManagesItemsInterface
     /**
      * Passes to driver: executes a Query or read command
      *
-     * @param CommandInterface $query
-     * @return array|Graph|Record
+     * @param CommandInterface|BaseBuilder $query
+     * @return Response
      */
-    public function executeReadCommand(CommandInterface $query);
+    public function executeReadCommand($query);
 
     /**
      * Passes to driver: executes a write command
      *
      * These are the "CUD" in CRUD
      *
-     * @param CommandInterface $command
-     * @return array|Graph|Record|mixed mixed values for some write commands
+     * @param CommandInterface|BaseBuilder $command
+     * @return Response
      */
-    public function executeWriteCommand(CommandInterface $command);
+    public function executeWriteCommand($command);
 
     /**
      * Passes to driver: executes a read command without waiting for a response
      *
-     * @param CommandInterface $query
+     * @param CommandInterface|BaseBuilder $query
      * @return $this
      */
-    public function runReadCommand(CommandInterface $query);
+    public function runReadCommand($query);
 
     /**
      * Passes to driver: executes a write command without waiting for a response
      *
-     * @param CommandInterface $command
+     * @param CommandInterface|BaseBuilder $command
      * @return $this
      */
-    public function runWriteCommand(CommandInterface $command);
+    public function runWriteCommand($command);
 }

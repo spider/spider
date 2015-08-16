@@ -1,42 +1,54 @@
 <?php
-namespace Michaels\Spider\Connections;
+namespace Spider\Connections;
 
-use Michaels\Manager\Traits\ManagesItemsTrait;
-use Michaels\Spider\Drivers\DriverInterface;
-use Michaels\Spider\Graphs\Graph;
-use Michaels\Spider\Queries\CommandInterface;
+use Spider\Base\Collection;
+use Spider\Commands\CommandInterface;
+use Spider\Drivers\DriverInterface;
+use Spider\Drivers\Response;
+use Spider\Graphs\Graph;
 
 /**
  * Facilitates two-way communication with a driver store
- * @package Michaels\Spider\Test\Unit\Connections
+ * @package Spider\Test\Unit\Connections
  */
-class Connection implements ConnectionInterface
+class Connection extends Collection implements ConnectionInterface
 {
-    /** @inherits from Michaels\Manager:
-     *      init(), add(), get(), getAll(), exists(), has(), set(),
-     *      remove(), clear(), toJson, isEmpty(), __toString()
-     */
-    use ManagesItemsTrait;
-
     /** @var  DriverInterface Instance of the driver */
     protected $driver;
+
+    protected $driverAliases = [
+        'orientdb' => 'Spider\Drivers\OrientDB\Driver',
+        'gremlin' => 'Spider\Drivers\Gremlin\Driver',
+        'neo4j' => 'Spider\Drivers\Neo4J\Driver',
+    ];
 
     /**
      * Constructs a new connection with driver and properties
      *
-     * @param DriverInterface $driver
-     * @param array $credentials Credentials, host, and the like
-     * @param array $config
+     * @param DriverInterface|string $driver
+     * @param array $configuration Credentials and configuration
      */
-    public function __construct(DriverInterface $driver, array $credentials, array $config = [])
+    public function __construct($driver, array $configuration = [])
     {
-        $items = [
-            'credentials' => $credentials,
-            'config' => $config
-        ];
+        /* I am sure all this could be refactored */
 
-        $this->initManager($items);
-        $this->driver = $driver;
+        // Were we passed all the properties through the first argument?
+        $config = (is_array($driver) ? $driver : $configuration);
+        $this->initManager($config);
+
+        /* Setup the driver */
+        if (is_string($driver)) {
+            $this->driverFromString($driver);
+
+        } elseif ($driver instanceof DriverInterface) {
+            $this->driver = $driver;
+
+        } elseif (isset($config['driver'])) {
+            if (is_string($config['driver'])) {
+                $this->driverFromString($config['driver']);
+            } elseif ($config['driver'] instanceof DriverInterface)
+                $this->driver = $config['driver'];
+        }
     }
 
     /**
@@ -44,7 +56,8 @@ class Connection implements ConnectionInterface
      */
     public function open()
     {
-        return $this->driver->open($this->get('credentials'), $this->get('config'));
+        $this->driver->setProperties($this->getAll()); // from given properties
+        return $this->driver->open();
     }
 
     /**
@@ -65,25 +78,6 @@ class Connection implements ConnectionInterface
     public function __call($name, $args)
     {
         return call_user_func_array([$this->driver, $name], $args);
-    }
-
-    /**
-     * Returns the properties array
-     * @return array
-     */
-    public function getProperties()
-    {
-        return $this->getAll();
-    }
-
-    /**
-     * Updates the entire properties array
-     *
-     * @param array $properties
-     */
-    public function setProperties(array $properties)
-    {
-        $this->reset($properties);
     }
 
     /**
@@ -117,10 +111,10 @@ class Connection implements ConnectionInterface
     /**
      * Passes to driver: executes a Query or read command
      *
-     * @param CommandInterface $query
-     * @return array|Record|Graph
+     * @param CommandInterface|BaseBuilder $query
+     * @return Response
      */
-    public function executeReadCommand(CommandInterface $query)
+    public function executeReadCommand($query)
     {
         return $this->driver->executeReadCommand($query);
     }
@@ -130,11 +124,11 @@ class Connection implements ConnectionInterface
      *
      * These are the "CUD" in CRUD
      *
-     * @param CommandInterface $command
-     * @return array|Record|Graph|mixed mixed values for some write commands
-     * @internal param CommandInterface $query
+     * @param CommandInterface|BaseBuilder $command
+     * @return Response
+     * @internal param CommandInterface $sendCommand
      */
-    public function executeWriteCommand(CommandInterface $command)
+    public function executeWriteCommand($command)
     {
         return $this->driver->executeWriteCommand($command);
     }
@@ -142,10 +136,10 @@ class Connection implements ConnectionInterface
     /**
      * Passes to driver: executes a read command without waiting for a response
      *
-     * @param CommandInterface $query
+     * @param CommandInterface|BaseBuilder $query
      * @return $this
      */
-    public function runReadCommand(CommandInterface $query)
+    public function runReadCommand($query)
     {
         return $this->driver->runReadCommand($query);
     }
@@ -153,11 +147,110 @@ class Connection implements ConnectionInterface
     /**
      * Passes to driver: executes a write command without waiting for a response
      *
-     * @param CommandInterface $command
+     * @param CommandInterface|BaseBuilder $command
      * @return $this
      */
-    public function runWriteCommand(CommandInterface $command)
+    public function runWriteCommand($command)
     {
         return $this->driver->runWriteCommand($command);
+    }
+
+    /**
+     * Returns a valid and preferred language processor
+     * @return mixed
+     */
+    public function makeProcessor()
+    {
+        return $this->driver->makeProcessor();
+    }
+
+    /**
+     * Opens a transaction
+     *
+     * @return bool
+     */
+    public function startTransaction()
+    {
+        return $this->driver->startTransaction();
+    }
+
+    /**
+     * Closes a transaction
+     *
+     * @param bool $commit whether this is a commit (true) or a rollback (false)
+     *
+     * @return bool
+     */
+    public function stopTransaction($commit = true)
+    {
+        return $this->driver->stopTransaction($commit);
+    }
+
+    /**
+     * Format a raw response to a set of collections
+     * This is for cases where a set of Vertices or Edges is expected in the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsSet($response)
+    {
+        return $this->driver->formatAsSet($response);
+    }
+
+    /**
+     * Format a raw response to a tree of collections
+     * This is for cases where a set of Vertices or Edges is expected in tree format from the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsTree($response)
+    {
+        return $this->driver->formatAsTree($response);
+    }
+
+    /**
+     * Format a raw response to a path of collections
+     * This is for cases where a set of Vertices or Edges is expected in path format from the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsPath($response)
+    {
+        return $this->driver->formatAsPath($response);
+    }
+
+    /**
+     * Format a raw response to a scalar
+     * This is for cases where a scalar result is expected
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return mixed Scalar value
+     */
+    public function formatAsScalar($response)
+    {
+        return $this->driver->formatAsScalar($response);
+    }
+
+    /**
+     * @param $driver
+     */
+    protected function driverFromString($driver)
+    {
+        // As an alias
+        if (isset($this->driverAliases[$driver])) {
+            $driverClass = $this->driverAliases[$driver];
+            $this->driver = new $driverClass();
+
+            // As a classname
+        } else {
+            $this->driver = new $driver();
+        }
     }
 }

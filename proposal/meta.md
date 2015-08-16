@@ -1,2 +1,0 @@
-# Meta
-Other notes
