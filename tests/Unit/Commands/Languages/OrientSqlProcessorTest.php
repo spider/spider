@@ -150,13 +150,29 @@ class OrientSqlProcessorTest extends BaseTestSuite
      * Returns a command for the the Bag tested in
      * testSelect:it processes a complex select bag
      */
-    public function selectComplex()
+    public function selectOrderBy()
     {
         $query = 'SELECT field1, field2';
         $query .= ' FROM target';
         $query .= $this->getWhereSql();
-        $query .= ' GROUP BY groupField';
-        $query .= ' ORDER BY orderField DESC';
+        $query .= ' ORDER BY field1 DESC';
+        $query .= ' LIMIT 3';
+
+        $command = new Command($query);
+        $command->setScriptLanguage('orientSQL');
+        return $command;
+    }
+
+    /**
+     * Returns a command for the the Bag tested in
+     * testSelect:it processes a complex select bag
+     */
+    public function selectGroupBy()
+    {
+        $query = 'SELECT';
+        $query .= ' FROM target';
+        $query .= $this->getWhereSql();
+        $query .= ' GROUP BY field1';
         $query .= ' LIMIT 3';
 
         $command = new Command($query);
