@@ -10,73 +10,9 @@ class BaseTest extends TestSetup
 {
     use Specify;
 
-    /*
-     * Normally, these tests would return formatted Responses that may or may not be
-     * instances of Response
-     *
-     * For testing we get back a Response()
-     * Response::getRaw() -> Command() -> getScript() -> json_encode($bag)
-     * Response::formattedAsX = true
-     */
     public function testRetrievalMethods()
     {
         $this->markTestSkipped('incorrect expectations, needs a rewrite');
-//        $this->specify("it gets `all` records as a set", function () {
-//            /* Normally, this would return an array of Collections */
-//            $actual = $this->builder
-//                ->select()
-//                ->from('v')
-//                ->all();
-//
-//            $expected = $this->buildExpectedCommand([
-//                'command' => Bag::COMMAND_RETRIEVE,
-//                'projections' => [],
-//                'target' => "v",
-//                'limit' => false
-//            ]);
-//
-//            $this->assertInstanceOf("Spider\\Drivers\\Response", $actual, "failed to return a Response");
-//            $this->assertTrue($actual->formattedAsSet, 'failed to return correctly formatted response');
-//            $this->assertEquals($expected, $actual->getRaw()->getScript(), 'failed to return correct command');
-//        });
-//
-//        $this->specify("it gets `one` record as a Set (single collection)", function () {
-//            /* Normally, this would return a single collection */
-//            $actual = $this->builder
-//                ->select()
-//                ->from('v')
-//                ->one();
-//
-//            $expected = $this->buildExpectedCommand([
-//                'command' => Bag::COMMAND_RETRIEVE,
-//                'projections' => [],
-//                'target' => "v",
-//                'limit' => 1
-//            ]);
-//
-//            $this->assertInstanceOf("Spider\\Drivers\\Response", $actual, "failed to return a Response");
-//            $this->assertTrue($actual->formattedAsSet, 'failed to return correctly formatted response');
-//            $this->assertEquals($expected, $actual->getRaw()->getScript(), 'failed to return correct command');
-//        });
-//
-//        $this->specify("it gets `first` record as a Set (single collection)", function () {
-//            /* Normally, this would return a single collection */
-//            $actual = $this->builder
-//                ->select()
-//                ->from('v')
-//                ->first();
-//
-//            $expected = $this->buildExpectedCommand([
-//                'command' => Bag::COMMAND_RETRIEVE,
-//                'projections' => [],
-//                'target' => "v",
-//                'limit' => 1
-//            ]);
-//
-//            $this->assertInstanceOf("Spider\\Drivers\\Response", $actual, "failed to return a Response");
-//            $this->assertTrue($actual->formattedAsSet, 'failed to return correctly formatted response');
-//            $this->assertEquals($expected, $actual->getRaw()->getScript(), 'failed to return correct command');
-//        });
 
         $this->specify("it gets a `path`", function () {
             /* Normally, this would return a single collection */
@@ -197,6 +133,4 @@ class BaseTest extends TestSetup
             $this->assertEquals($expected, $actual->getRaw()->getScript(), 'failed to return correct script');
         });
     }
-
-    /* ToDo: fromDb tests, an experimental feature */
 }

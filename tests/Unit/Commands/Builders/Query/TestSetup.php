@@ -17,7 +17,6 @@ class TestSetup extends \Spider\Test\Unit\Commands\Builders\TestSetup
 
     public function setup()
     {
-
         $this->builder = new Query(new Connection(new Driver()), new CommandProcessor);
     }
 }
