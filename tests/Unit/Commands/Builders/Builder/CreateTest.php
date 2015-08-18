@@ -25,8 +25,9 @@ class CreateTest extends TestSetup
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_CREATE,
-                'target' => "target",
-                'data' => $record,
+                'target' => Bag::ELEMENT_VERTEX,
+                'where' => [[Bag::ELEMENT_LABEL, Bag::COMPARATOR_EQUAL, 'target', Bag::CONJUNCTION_AND]],
+                'data' => [$record],
                 'createCount' => 1
             ]);
 

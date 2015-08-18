@@ -65,7 +65,6 @@ $builder->select()->from('planets');
 
 You can specify which fields or **properties** you want.
 ```php
-$builder->select('name, type')->from('planets');
 $builder->select(['name', 'type'])->from('planets');
 ```
 
@@ -135,8 +134,8 @@ Creating new records is as easy as telling a story.
 
 ```php
 $builder
-    ->into('browncoats')
-    ->insert(['name' => 'Zoe', 'rank' => 'corporal']);
+    ->insert(['name' => 'Zoe', 'rank' => 'corporal'])
+    ->into('browncoats');
 
 // Or
 $builder
@@ -159,8 +158,9 @@ $builder
 
 // Or, use update as a target
 $builder
-    ->update('shows')
+    ->update()
     ->withData(['status' => 'cancelled by evil Fox'])
+    ->from('shows')
     ->where('title', 'Firefly');
 
 // And, of course, by record
@@ -177,7 +177,8 @@ $builder
     ->limit(3);
 
 $builder
-    ->updateFirst('shows') // target
+    ->updateFirst()
+    ->from('shows')
     ->withData(['status' => 'cancelled too soon']);
 ```
 
@@ -220,8 +221,8 @@ $query
     ->where('class', 'firefly')
     ->andWhere('captain', 'mal')
     ->limit(1)
+    ->orderBy('launch_date') // order of orderBy is important
     ->orderBy('registry')
-    ->groupBy('launch_date')
 ```
 
 ### Dispatching from the Query builder

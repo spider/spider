@@ -22,7 +22,8 @@ class RetrieveTest extends TestSetup
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => ['price', 'certified'],
-                'target' => new TargetID("#12:6767")
+                'target' => Bag::ELEMENT_VERTEX,
+                'where' => [[Bag::ELEMENT_ID, Bag::COMPARATOR_EQUAL, "#12:6767", Bag::CONJUNCTION_AND]]
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -38,7 +39,8 @@ class RetrieveTest extends TestSetup
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => ['price', 'certified'],
-                'target' => new TargetID("#12:6767")
+                'target' => Bag::ELEMENT_VERTEX,
+                'where' => [[Bag::ELEMENT_ID, Bag::COMPARATOR_EQUAL, "#12:6767", Bag::CONJUNCTION_AND]]
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -53,7 +55,8 @@ class RetrieveTest extends TestSetup
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
-                'target' => "V"
+                'target' => Bag::ELEMENT_VERTEX,
+                'where' => [[Bag::ELEMENT_LABEL, Bag::COMPARATOR_EQUAL, "V", Bag::CONJUNCTION_AND]]
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -74,11 +77,12 @@ class RetrieveTest extends TestSetup
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
-                'target' => "V",
+                'target' => Bag::ELEMENT_VERTEX,
                 'where' => [
+                    [Bag::ELEMENT_LABEL, Bag::COMPARATOR_EQUAL, "V", Bag::CONJUNCTION_AND],
                     ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
                     ['last', Bag::COMPARATOR_EQUAL, "wilson", Bag::CONJUNCTION_AND],
-                    ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_AND]
+                    ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_AND],
                 ]
             ]);
 
@@ -97,11 +101,12 @@ class RetrieveTest extends TestSetup
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
-                'target' => "V",
+                'target' => Bag::ELEMENT_VERTEX,
                 'where' => [
+                    [Bag::ELEMENT_LABEL, Bag::COMPARATOR_EQUAL, "V", Bag::CONJUNCTION_AND],
                     ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
                     ['last', Bag::COMPARATOR_EQUAL, "wilson", Bag::CONJUNCTION_OR],
-                    ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_OR]
+                    ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_OR],
                 ]
             ]);
 
@@ -121,7 +126,8 @@ class RetrieveTest extends TestSetup
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_RETRIEVE,
                 'projections' => [],
-                'target' => "v",
+                'target' => Bag::ELEMENT_VERTEX,
+                'where' => [[Bag::ELEMENT_LABEL, Bag::COMPARATOR_EQUAL, "v", Bag::CONJUNCTION_AND]],
                 'limit' => 1
             ]);
 

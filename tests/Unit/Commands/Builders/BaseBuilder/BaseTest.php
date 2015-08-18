@@ -19,7 +19,7 @@ class BaseTest extends TestSetup
     {
         $this->builder
             ->retrieve()
-            ->target('V');
+            ->type(Bag::ELEMENT_VERTEX);
 
         $this->builder->clear();
 
@@ -104,7 +104,7 @@ class BaseTest extends TestSetup
         $this->specify("it throws exception if projections is not array or string", function () {
             $this->builder
                 ->retrieve()
-                ->target('target')// byId() alias
+                ->type(Bag::ELEMENT_VERTEX)
                 ->projections(3)
                 ->getBag();
 

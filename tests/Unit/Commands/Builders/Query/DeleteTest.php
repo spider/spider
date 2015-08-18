@@ -17,7 +17,9 @@ class DeleteTest extends TestSetup
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_DELETE,
-                'target' => new TargetID(3)
+                'target' => Bag::ELEMENT_VERTEX,
+                'where'=>[[Bag::ELEMENT_ID, Bag::COMPARATOR_EQUAL, 3, Bag::CONJUNCTION_AND]]
+
             ]);
 
             $this->assertInstanceOf(
@@ -36,7 +38,8 @@ class DeleteTest extends TestSetup
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_DELETE,
-                'target' => new TargetID(3)
+                'target' => Bag::ELEMENT_VERTEX,
+                'where'=>[[Bag::ELEMENT_ID, Bag::COMPARATOR_EQUAL, 3, Bag::CONJUNCTION_AND]]
             ]);
 
             $this->assertInstanceOf(
@@ -53,11 +56,8 @@ class DeleteTest extends TestSetup
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_DELETE,
-                'target' => [
-                    new TargetID(1),
-                    new TargetID(2),
-                    new TargetID(3),
-                ],
+                'target' => Bag::ELEMENT_VERTEX,
+                'where'=>[[Bag::ELEMENT_ID, Bag::COMPARATOR_IN, [1, 2, 3], Bag::CONJUNCTION_AND]]
             ]);
 
             $this->assertInstanceOf(
@@ -76,11 +76,8 @@ class DeleteTest extends TestSetup
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_DELETE,
-                'target' => [
-                    new TargetID(1),
-                    new TargetID(2),
-                    new TargetID(3),
-                ],
+                'target' => Bag::ELEMENT_VERTEX,
+                'where'=>[[Bag::ELEMENT_ID, Bag::COMPARATOR_IN, [1, 2, 3], Bag::CONJUNCTION_AND]]
             ]);
 
             $this->assertInstanceOf(

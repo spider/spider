@@ -25,9 +25,12 @@ class BaseBuilder
         '<=' => Bag::COMPARATOR_LE,
         '>=' => Bag::COMPARATOR_GE,
         '<>' => Bag::COMPARATOR_NE,
+        'IN' => Bag::COMPARATOR_IN,
 
         'AND' => Bag::CONJUNCTION_AND,
-        'OR' => Bag::CONJUNCTION_OR
+        'OR' => Bag::CONJUNCTION_OR,
+        'XOR' => Bag::CONJUNCTION_XOR,
+        'NOT' => Bag::CONJUNCTION_NOT,
     ];
 
     /**
@@ -45,7 +48,7 @@ class BaseBuilder
      * @param array $data
      * @return mixed
      */
-    public function create(array $data)
+    public function insert(array $data)
     {
         $this->bag->command = Bag::COMMAND_CREATE;
 
@@ -75,36 +78,19 @@ class BaseBuilder
 
     /**
      * An an `update` clause to the current command bag
-     * @param null $property
-     * @param null $value
+     * @param array|null $properties should be in the format [props=>values, props2=>values2, ...]
      * @return $this
      */
-    public function update($property = null, $value = null)
+    public function update($properties = null)
     {
         $this->bag->command = Bag::COMMAND_UPDATE;
 
-        // We're just setting the command
-        if (is_null($property)) {
+        if (is_null($properties)) {
             return $this;
         }
 
-        // Or, We're adding a single bit of data as well
-        if (!is_null($value)) {
-            $this->data($property, $value);
-            return $this;
-        }
-
-        // Okay, so we only have a $property. That leaves us with 2 possibilities
-        // First, the $property is an array of data to be added
-        if (is_array($property)) {
-            $this->data($property);
-            return $this;
-
-            // Second, the $property is a target
-        } else {
-            $this->target($property);
-            return $this;
-        }
+        $this->data($properties);
+        return $this;
     }
 
     /**
@@ -125,24 +111,22 @@ class BaseBuilder
      */
     public function data($property, $value = null)
     {
-        if (is_array($property)) {
-            foreach ($property as $key => $value) {
-                $this->data($key, $value);
-            }
+        if (!is_array($property)) {
+            return $this->data([$property => $value]);
         } else {
-            $this->bag->data[$property] = $value;
+            $this->bag->data[] = $property;
+            return $this;
         }
-        return $this;
     }
 
     /**
-     * Set the target in the current Command Bag
+     * Set the type of the target in the current Command Bag
      * @param $target
      * @return $this
      */
-    public function target($target)
+    public function type($type)
     {
-        $this->bag->target = $target;
+        $this->bag->target = $type;
         return $this;
     }
 
@@ -238,34 +222,14 @@ class BaseBuilder
     }
 
     /**
-     * Set which fields to order results by in the current Command Bag
-     * @param $fields
+     * Set which field to order results by in the current Command Bag
+     * @param $field
+     * @param $direction
      * @return $this
      */
-    public function orderBy($fields)
+    public function orderBy($field, $direction = Bag::ORDER_ASC)
     {
-        $fields = $this->csvToArray($fields);
-        $this->bag->orderBy = $fields;
-        return $this;
-    }
-
-    /**
-     * Return results in ascending order
-     * @return $this
-     */
-    public function asc()
-    {
-        $this->bag->orderAsc = true;
-        return $this;
-    }
-
-    /**
-     * Return results in descending order
-     * @return $this
-     */
-    public function desc()
-    {
-        $this->bag->orderAsc = false;
+        $this->bag->orderBy[] = [$field, $direction];
         return $this;
     }
 

@@ -51,7 +51,7 @@ class Query extends Builder
 
     public function insert($data = null)
     {
-        parent::create($data);
+        parent::insert($data);
 
         if (is_null($data)) {
             return $this;
