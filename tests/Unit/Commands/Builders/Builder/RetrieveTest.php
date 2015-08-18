@@ -3,7 +3,6 @@ namespace Spider\Test\Unit\Commands\Builders\Builder;
 
 use Codeception\Specify;
 use Spider\Commands\Bag;
-use Spider\Graphs\ID as TargetID;
 use InvalidArgumentException;
 
 class RetrieveTest extends TestSetup

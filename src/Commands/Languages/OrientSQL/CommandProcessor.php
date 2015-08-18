@@ -6,7 +6,6 @@ use Spider\Commands\Command;
 use Spider\Commands\CommandInterface;
 use Spider\Commands\Languages\ProcessorInterface;
 use Spider\Exceptions\NotSupportedException;
-use Spider\Graphs\ID as TargetID;
 
 /**
  * Class CommandProcessor

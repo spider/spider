@@ -4,7 +4,6 @@ namespace Spider\Test\Unit\Commands\Builders\Query;
 use Codeception\Specify;
 use Spider\Commands\Bag;
 use Spider\Commands\Command;
-use Spider\Graphs\ID as TargetID;
 
 class BaseTest extends TestSetup
 {

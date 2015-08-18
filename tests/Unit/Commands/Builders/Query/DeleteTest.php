@@ -3,7 +3,6 @@ namespace Spider\Test\Unit\Commands\Builders\Query;
 
 use Codeception\Specify;
 use Spider\Commands\Bag;
-use Spider\Graphs\ID as TargetID;
 
 class DeleteTest extends TestSetup
 {

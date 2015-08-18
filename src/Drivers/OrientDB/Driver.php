@@ -15,7 +15,6 @@ use Spider\Drivers\Response;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
 use Spider\Exceptions\NotSupportedException;
-use Spider\Graphs\Graph;
 
 /**
  * Driver for Native OrientDB (not using gremlin)
