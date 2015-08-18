@@ -7,12 +7,10 @@ use Spider\Drivers\DriverInterface;
 use Spider\Base\Collection;
 use Spider\Drivers\Response;
 use Spider\Exceptions\FormattingException;
-use Spider\Exceptions\InvalidCommandException;
 use Spider\Exceptions\NotSupportedException;
 
-
 /**
- * This driver stub should pretend to receive a certan format of DB response and allow to format these.
+ * This driver stub should pretend to receive a certain format of DB response and allow to format these.
  * DB responses will be in the following formats.
  * Set:
  * [
@@ -37,6 +35,10 @@ use Spider\Exceptions\NotSupportedException;
  */
 class DriverStub extends AbstractDriver implements DriverInterface
 {
+    protected $languages = [
+        'stub' => '\Spider\Test\Stubs\CommandProcessorStub',
+    ];
+
     /**
      * @var string some unique identifier in the event of wanting to test multiple drivers
      */
@@ -91,7 +93,7 @@ class DriverStub extends AbstractDriver implements DriverInterface
      */
     public function runReadCommand($query)
     {
-        $this->executeReadCommand($command);
+        $this->executeReadCommand($query);
         return $this;
     }
 

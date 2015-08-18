@@ -109,14 +109,4 @@ class Bag extends Object
     const MAP_SET = 300;
     const MAP_PATH = 310;
     const MAP_TREE = 320;
-
-    /**
-     * Return a new instance of a Command Bag
-     * @param array|null $properties
-     * @return static
-     */
-    public static function make(array $properties = null)
-    {
-        return new static($properties);
-    }
 }

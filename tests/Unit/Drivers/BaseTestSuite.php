@@ -163,12 +163,6 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 $response->label,
                 "failed to return the correct label"
             );
-
-//            $this->assertEquals(
-//                $this->formatId(0, 11),
-//                $response->id,
-//                "failed to return the correct id"
-//            );
         });
 
         $this->specify("it selects multiple, unrelated vertices", function () {
@@ -468,11 +462,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $driver->open();
             $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
             $consistent = $response->getSet();
-//            $this->assertEquals(
-//                $this->formatId(0, 11),
-//                $consistent->id,
-//                "incorrect id found"
-//            );
+
             $this->assertEquals(
                 $this->expected[0]['label'],
                 $consistent->label,
@@ -488,11 +478,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $driver->open();
             $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
             $consistent = $response->getSet();
-//            $this->assertEquals(
-//                $this->formatId(0, 11),
-//                $consistent->id,
-//                "incorrect id found"
-//            );
+
             $this->assertEquals(
                 $this->expected[0]['label'],
                 $consistent->label,
@@ -509,11 +495,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $driver->open();
             $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
             $consistent = $response->getSet();
-//            $this->assertEquals(
-//                $this->formatId(0, 11),
-//                $consistent->id,
-//                "incorrect id found"
-//            );
+
             $this->assertEquals(
                 $this->expected[0]['label'],
                 $consistent->label,

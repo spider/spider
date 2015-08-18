@@ -2,6 +2,8 @@
 namespace Spider\Drivers;
 
 use Spider\Base\Collection;
+use Spider\Commands\Languages\ProcessorInterface;
+use Spider\Exceptions\NotSupportedException;
 
 abstract class AbstractDriver extends Collection implements DriverInterface
 {
@@ -53,11 +55,15 @@ abstract class AbstractDriver extends Collection implements DriverInterface
      * Get the processor for a given language
      *
      * @param string $language the language identifier, (orientSQL, gremlin, cypher)
-     *
      * @return ProcessorInterface
+     * @throws NotSupportedException
      */
     public function getProcessor($language)
     {
+        if (!$this->isSupportedLanguage($language)) {
+            throw new NotSupportedException("$language does not have a supported languabe processor");
+        }
+
         $class = $this->languages[$language];
         return new $class;
     }
