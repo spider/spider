@@ -41,6 +41,16 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     }
 
     /* Inherits from Michaels\Manager\Traits\ManagesItemsTrait, which is self-tested */
+    public function testValidateConnectionProperties()
+    {
+        $this->specify("it throws an exception if no driver is set", function () {
+            $properties = $this->connections;
+            unset($properties['default-connection']['driver']);
+            $manager = new Manager();
+            $manager->make();
+        }, ['throws' => 'Spider\Exceptions\ConnectionNotFoundException']);
+    }
+
     public function testMakeStoredConnections()
     {
         $this->specify("it makes a new instance of the default connection", function () {
