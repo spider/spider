@@ -86,7 +86,7 @@ Check out **[the full documentation](http://http://spider-ogm.readthedocs.org/)*
 Contributions are welcome and will be fully credited. Please see [CONTRIBUTING](contributing.md) for details.
 
 ### Security
-If you discover any security related issues, please email phoenixlabsdev@gmail.com instead of using the issue tracker.
+If you discover any security related issues, please email spiderogm@gmail.com instead of using the issue tracker.
 
 ### Credits
 - [Michael Wilson](https://github.com/chrismichaels84)
