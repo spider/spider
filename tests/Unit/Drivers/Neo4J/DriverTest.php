@@ -19,7 +19,6 @@ class DriverTest extends BaseTestSuite
         $this->fixture = new NeoFixture();
         $this->fixture->unload();
         $this->fixture->load();
-        $this->markTestSkipped("Test Database Not Installed");
     }
 
     public function teardown()

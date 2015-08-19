@@ -20,7 +20,6 @@ class DriverTest extends BaseTestSuite
         $this->fixture = new GremlinFixture();
         $this->fixture->unload();
         $this->fixture->load();
-        $this->markTestSkipped("Test Database Not Installed");
     }
 
     public function teardown()
