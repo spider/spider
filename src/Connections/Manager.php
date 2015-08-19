@@ -1,72 +1,92 @@
 <?php
-namespace Michaels\Spider\Connections;
+namespace Spider\Connections;
 
 use Michaels\Manager\Contracts\ManagesItemsInterface;
 use Michaels\Manager\Exceptions\ItemNotFoundException;
-use Michaels\Manager\Traits\ManagesItemsTrait;
+use Spider\Base\Collection;
+use Spider\Exceptions\ConnectionNotFoundException;
 
 /**
  * Manages and Builds Connections from a stored list
- * @package Michaels\Spider\Connections
+ * @package Spider\Connections
  */
-class Manager implements ManagesItemsInterface
+class Manager extends Collection implements ManagesItemsInterface
 {
     /**
-     * @inherits from Michaels\Manager:
+     * @inherits from Collection:
      *      init(), add(), get(), getAll(), exists(), has(), set(),
      *      remove(), clear(), toJson, isEmpty(), __toString()
      */
-    use ManagesItemsTrait;
 
     /**
      * Build a new manager instance
      *
      * @param array $connections
-     * @param array $config
      */
-    public function __construct($connections = [], $config = [])
+    public function __construct($connections = [])
     {
-        $items = [
+        $properties = [
             'connections' => $connections,
-            'config' => $config,
         ];
 
-        $this->initManager($items);
+        $this->initManager($properties);
     }
 
     /**
-     * Builds, Caches, and Returns a Connection, either default of other
+     * Builds, Caches, and Returns a Connection
      *
-     * @param string $connectionName
+     * Hand null for default Connection
+     * Hand alias for stored Connection
+     * Hand array for implicit Connection
      *
+     * @param string|array|null $alias alias | properties | default
      * @return Connection
-     * @throws \Michaels\Spider\Connections\ConnectionNotFoundException
+     * @throws \Spider\Exceptions\ConnectionNotFoundException
      */
-    public function make($connectionName = null)
+    public function make($alias = null)
     {
-        $connectionName = $this->buildConnectionName($connectionName);
-        $connection = $this->buildConnection($connectionName);
+        // We were handed the properties for a Connection
+        if (is_array($alias)) {
+            return $this->buildConnection($alias);
+        }
 
-        $this->add("cache.$connectionName", $connection);
+        // We need to build a Connection from configuration
+        $alias = (string)$alias ?: $this->getDefault();
+
+        // Verify the connection properties are set
+        if (!$this->has("connections.$alias")) {
+            throw new ConnectionNotFoundException("$alias has not been registered");
+        }
+
+        // Produce and cache the Connection
+        $connection = $this->buildConnection($alias);
+        $this->cache($alias, $connection);
+
         return $connection;
     }
 
     /**
      * Returns cached connection or makes a new one
+     * See make() for details
      *
-     * @param null $connectionName
-     * @return Connection|mixed
+     * @param string|array|null $alias alias | properties | default
+     * @return Connection
      * @throws ConnectionNotFoundException
      */
-    public function fetch($connectionName = null)
+    public function fetch($alias = null)
     {
-        $connectionName = $this->buildConnectionName($connectionName);
-
-        if ($this->has("cache.$connectionName")) {
-            return $this->get("cache.$connectionName");
+        // We were handed the properties for a Connection
+        if (is_array($alias)) {
+            return $this->buildConnection($alias);
         }
 
-        return $this->make($connectionName);
+        // We need to build a Connection from configuration
+        $alias = $alias ?: $this->getDefault();
+        if ($this->has("cache.$alias")) {
+            return $this->get("cache.$alias");
+        }
+
+        return $this->make($alias);
     }
 
     /**
@@ -82,17 +102,25 @@ class Manager implements ManagesItemsInterface
     /**
      * Build and returns the actual connection object
      *
-     * @param $connectionName
+     * @param $properties
      * @return Connection
-     * @throws \Michaels\Spider\Connections\ConnectionNotFoundException
+     * @throws ItemNotFoundException
      */
-    protected function buildConnection($connectionName)
+    protected function buildConnection($properties)
     {
-        $credentials = $this->get("connections.$connectionName");
-        $diverClassName = $credentials['driver'] . '\Driver';
-        unset($credentials['driver']);
+        // Get properties from stored, if needed
+        if (is_string($properties)) {
+            $properties = $this->get("connections.$properties");
+        }
 
-        return new Connection(new $diverClassName, $credentials, $this->get('config'));
+        // Extract the driver
+        if (!isset($properties['driver']))
+            throw new ConnectionNotFoundException("There is no driver set in the Connection parameters");
+
+        $diverClassName = $properties['driver'];
+        unset($properties['driver']);
+
+        return new Connection($diverClassName, $properties);
     }
 
     /**
@@ -100,28 +128,28 @@ class Manager implements ManagesItemsInterface
      *
      * Will return the default connection name if none is supplied
      * Will throw and exception if the connection requested does not exist
-     *
-     * @param $connectionName
-     * @return mixed
-     * @throws \Michaels\Spider\Connections\ConnectionNotFoundException
-     * @todo Refactor: Exception should probably be thrown elsewhere
+     * @return string The alias
+     * @throws ConnectionNotFoundException
      */
-    protected function buildConnectionName($connectionName = null)
+    protected function getDefault()
     {
         // Set the default connection
-        if (is_null($connectionName)) {
-            try {
-                $connectionName = $this->get('connections.default');
-            } catch (ItemNotFoundException $e) {
-                throw new ConnectionNotFoundException("There is no default connection set");
-            }
+        try {
+            $alias = $this->get('connections.default');
+        } catch (ItemNotFoundException $e) {
+            throw new ConnectionNotFoundException("There is no default connection set");
         }
 
-        // Set the supplied connection
-        if (!$this->has("connections.$connectionName")) {
-            throw new ConnectionNotFoundException("$connectionName has not been registered");
-        }
+        return $alias;
+    }
 
-        return $connectionName;
+    /**
+     * Caches a built Connection
+     * @param $alias
+     * @param $connection
+     */
+    protected function cache($alias, $connection)
+    {
+        $this->add("cache.$alias", $connection);
     }
 }

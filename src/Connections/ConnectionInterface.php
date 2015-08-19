@@ -1,15 +1,16 @@
 <?php
-namespace Michaels\Spider\Connections;
+namespace Spider\Connections;
 
 use Michaels\Manager\Contracts\ManagesItemsInterface;
-use Michaels\Spider\Drivers\DriverInterface;
-use Michaels\Spider\Queries\CommandInterface;
+use Spider\Commands\CommandInterface;
+use Spider\Drivers\DriverInterface;
+use Spider\Drivers\Response;
 
 /**
  * Facilitates two-way communication with a data-store
- * @package Michaels\Spider\Test\Unit\Connections
+ * @package Spider\Test\Unit\Connections
  */
-interface ConnectionInterface extends ManagesItemsInterface
+interface ConnectionInterface
 {
     /**
      * Connects to the database
@@ -20,19 +21,6 @@ interface ConnectionInterface extends ManagesItemsInterface
      * Closes database connection
      */
     public function close();
-
-    /**
-     * Returns the properties array
-     * @return array
-     */
-    public function getProperties();
-
-    /**
-     * Updates the entire properties array
-     *
-     * @param array $properties
-     */
-    public function setProperties(array $properties);
 
     /**
      * Returns the class name of the active driver
@@ -52,38 +40,4 @@ interface ConnectionInterface extends ManagesItemsInterface
      * @param DriverInterface $driver
      */
     public function setDriver(DriverInterface $driver);
-
-    /**
-     * Passes to driver: executes a Query or read command
-     *
-     * @param CommandInterface $query
-     * @return array|Graph|Record
-     */
-    public function executeReadCommand(CommandInterface $query);
-
-    /**
-     * Passes to driver: executes a write command
-     *
-     * These are the "CUD" in CRUD
-     *
-     * @param CommandInterface $command
-     * @return array|Graph|Record|mixed mixed values for some write commands
-     */
-    public function executeWriteCommand(CommandInterface $command);
-
-    /**
-     * Passes to driver: executes a read command without waiting for a response
-     *
-     * @param CommandInterface $query
-     * @return $this
-     */
-    public function runReadCommand(CommandInterface $query);
-
-    /**
-     * Passes to driver: executes a write command without waiting for a response
-     *
-     * @param CommandInterface $command
-     * @return $this
-     */
-    public function runWriteCommand(CommandInterface $command);
 }
