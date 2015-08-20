@@ -61,7 +61,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $expected = $this->getExpectedCommand('insert-multiple');
 
             $actual = $this->processor()->process($bag);
-            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+            $this->assertEquals($expected, $actual, 'failed to return expected Command for multiple insert');
         });
     }
 
@@ -228,22 +228,6 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $actual = $this->processor()->process($bag);
             $this->assertEquals($expected, $actual, 'failed to return expected Command');
         });
-
-        //~ $this->specify("it processes a complex order by select bag", function () {
-//~
-            //~ $bag = new Bag();
-            //~ $bag->command = Bag::COMMAND_RETRIEVE;
-            //~ $bag->projections = [];
-            //~ $bag->target = Bag::ELEMENT_VERTEX;
-            //~ $bag->limit = 3;
-            //~ $bag->groupBy = ['field1'];
-            //~ $bag->where = $this->getWheres();
-//~
-            //~ $expected = $this->getExpectedCommand('select-group-by');
-//~
-            //~ $actual = $this->processor()->process($bag);
-            //~ $this->assertEquals($expected, $actual, 'failed to return expected Command');
-        //~ });
     }
 
     /* Internals */

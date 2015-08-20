@@ -365,8 +365,9 @@ class CommandProcessor implements ProcessorInterface
     {
         $keys = [];
         $values = [];
+
         /* Is this a multiple creation? */
-        if ($this->bag->createCount > 1) {
+        if (count($this->bag->data) > 1) {
             // First, we setup the keys array [key1, key2, key3]
             foreach ($this->bag->data as $record) {
                 $keys = array_unique(array_merge($keys, array_keys($record)));
