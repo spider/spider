@@ -6,27 +6,27 @@ use Spider\Commands\Command;
 use Spider\Commands\Query;
 use Spider\Connections\Manager;
 use Spider\Test\Fixtures\Graph;
+use Spider\Test\Fixtures\NeoFixture;
 use Spider\Test\Fixtures\OrientFixture;
 
-class WithOrientTest extends BaseTestSuite
+class WithNeo4jTest extends BaseTestSuite
 {
     public function setup()
     {
         $this->beforeSpecify(function () {
-            $this->fixture = new OrientFixture();
+            $this->fixture = new NeoFixture();
             $this->fixture->unload();
             $this->fixture->load();
         });
 
         $manager = new Manager([
-            'default' => 'orient',
-            'orient' => [
+            'default' => 'neo',
+            'neo' => [
+                'driver' => 'neo4j',
                 'hostname' => 'localhost',
-                'port' => 2424,
-                'username' => 'root',
-                'password' => "root",
-                'database' => 'modern_graph',
-                'driver' => 'orientdb'
+                'port' => 7474,
+                'username' => "neo4j",
+                'password' => "j4oen",
             ]
         ]);
 

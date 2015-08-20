@@ -84,11 +84,8 @@ $builder->select()->from('planets')
     ->first();
 ```
 
-Group and/or order the results.
+Order the results.
 ```php
-$builder->select()->from('characters')
-    ->groupBy('name', 'birthday'); // or (['name', 'birthday'])
-
 $builder->select()->from('users')
     ->orderBy('name', 'birthday'); // or (['name', 'birthday'])
     ->desc(); // or asc(); Defaults to ascending
@@ -175,11 +172,6 @@ $builder
     ->from('shows')
     ->where(['awesomeness', '>', 200])
     ->limit(3);
-
-$builder
-    ->updateFirst()
-    ->from('shows')
-    ->withData(['status' => 'cancelled too soon']);
 ```
 
 ### Deletes
@@ -296,17 +288,6 @@ echo $result; // 'Miranda'
 ```
 Read [more about responses](responses.md).
 
-----
-
-Lastly, you can execute a **command()** of your own.
-```php
-$result = $query->command("SELECT FROM moons");
-```
-
-This sends the script directly to the driver.
-It is up to you to know which language to send (cypher, gremlin, etc).
-This returns a generic `Response`. Read [more about responses](responses.md).
-
 #### Dispatching from Update, Drop, and Insert
 If you **drop()** with an id, it will dispatch immediately.
 ```php
@@ -314,7 +295,6 @@ $query->drop(3); // executes drop
 ```
 
 ----
-
 
 If you pass data to **insert()** it will dispatch immediately.
 ```php

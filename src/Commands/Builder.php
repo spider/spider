@@ -63,20 +63,6 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Update only the first record
-     * @param null $property
-     * @param null $value
-     * @return $this
-     */
-    public function updateFirst($property = null, $value = null)
-    {
-        $this->bag->command = Bag::COMMAND_UPDATE;
-        $this->limit(1);
-
-        return $this->update($property, $value);
-    }
-
-    /**
      * Delete a single record
      * @param null $record
      * @return $this|mixed
