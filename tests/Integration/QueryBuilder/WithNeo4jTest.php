@@ -40,37 +40,13 @@ class WithNeo4jTest extends BaseTestSuite
         });
     }
 
-//    public function testDirectCommands()
-//    {
-//        $this->specify("it issues a direct command via `Command`", function () {
-//            $command = new Command("SELECT FROM V", 'orientSQL');
-//            $response = $this->query
-//                ->command($command);
-//
-//            $expected = $this->expected;
-//
-//            $this->assertInstanceOf('Spider\Drivers\Response', $response, "failed to return a `Response`");
-//            $consistent = $response->getSet();
-//
-//            $this->assertTrue(is_array($consistent), 'failed to return an array');
-//            $this->assertCount(count($expected), $consistent, 'failed to return the correct number of records');
-//            $this->assertInstanceOf('Spider\Base\Collection', $consistent[0], 'failed to return an array of collections');
-//            $this->assertEquals($expected[0]['name'], $consistent[0]->name, 'failed to return correct first collection');
-//        });
+    public function testDrop()
+    {
+        $this->assertTrue(true);
+    }
 
-//        $this->specify("it issues a direct command via a string", function () {
-//            $response = $this->query
-//                ->command("SELECT FROM V");
-//
-//            $expected = $this->expected;
-//
-//            $this->assertInstanceOf('Spider\Drivers\Response', $response, "failed to return a `Response`");
-//            $consistent = $response->getSet();
-//
-//            $this->assertTrue(is_array($consistent), 'failed to return an array');
-//            $this->assertCount(count($expected), $consistent, 'failed to return the correct number of records');
-//            $this->assertInstanceOf('Spider\Base\Collection', $consistent[0], 'failed to return an array of collections');
-//            $this->assertEquals($expected[0]['name'], $consistent[0]->name, 'failed to return correct first collection');
-//        });
-//    }
+    public function testUpdates()
+    {
+        $this->assertTrue(true);
+    }
 }

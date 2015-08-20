@@ -229,8 +229,8 @@ class CypherProcessorTest extends BaseTestSuite
         $query = 'MATCH (spider_a)';
         $query .= $this->getWhereSql().' AND spider_a:target';
         $query .= ' ORDER BY spider_a.field1 DESC';
-        $query .= ' LIMIT 3';
         $query .= ' RETURN spider_a.field1, spider_a.field2';
+        $query .= ' LIMIT 3';
 
         $command = new Command($query);
         $command->setScriptLanguage('cypher');

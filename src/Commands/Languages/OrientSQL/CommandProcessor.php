@@ -162,6 +162,9 @@ class CommandProcessor implements ProcessorInterface
                 }
 
                 foreach ($where[2] as $id) {
+                    if (!is_string($id)) {
+                        throw new \Exception("ids can only be ids. $id given");
+                    }
                     $this->bag->where[] = ['@rid', Bag::COMPARATOR_EQUAL, $id, Bag::CONJUNCTION_OR];
                 }
 

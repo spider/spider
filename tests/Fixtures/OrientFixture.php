@@ -32,6 +32,7 @@ class OrientFixture extends DbFixture
         $client->dbOpen('modern_graph', 'root', 'root');
 
         $client->command('create class person extends V');
+        $client->command('create class software extends V');
         $client->command('create class knows extends E');
         $client->command('create class created extends E');
 
@@ -41,8 +42,8 @@ class OrientFixture extends DbFixture
             let b = INSERT INTO person CONTENT {name:"vadas",age:27 } RETURN @rid;
             let c = INSERT INTO person CONTENT {name:"peter",age:35 } RETURN @rid;
             let d = INSERT INTO person CONTENT {name:"josh",age:32 } RETURN @rid;
-            let e = INSERT INTO person CONTENT {name:"lop",lang:"java" } RETURN @rid;
-            let f = INSERT INTO person CONTENT {name:"ripple",lang:"java" } RETURN @rid;
+            let e = INSERT INTO software CONTENT {name:"lop",lang:"java" } RETURN @rid;
+            let f = INSERT INTO software CONTENT {name:"ripple",lang:"java" } RETURN @rid;
 
             CREATE EDGE knows FROM $a TO $b CONTENT { "weight" : 0.5 };
             CREATE EDGE created FROM $a TO $e CONTENT { "weight" : 0.4 };

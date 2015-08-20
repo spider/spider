@@ -68,7 +68,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             ]
         ],
         [
-            'label' => 'person',
+            'label' => 'software',
             'name' => 'lop',
             'lang' => 'java',
             'in' => [
@@ -90,7 +90,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             ]
         ],
         [
-            'label' => 'person',
+            'label' => 'software',
             'name' => 'ripple',
             'lang' => 'java',
             'in' => [
@@ -176,6 +176,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return an array of collections');
             $this->assertEquals($expected['name'], $response->name, 'failed to return correct first collection');
         });
+
     }
 
     public function testFormattedDispatches()
@@ -226,9 +227,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->from('person')
                 ->first();
 
-            $expected = array_filter($this->expected, function ($record) {
-                return $record['label'] === 'person';
-            });
+            $expected = $this->expected;
 
             $this->assertFalse(is_array($response), 'failed to return a collection array');
             $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return an array of collections');
@@ -307,7 +306,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
     }
 
-    public function testInsertAndDeleteDispatches()
+    public function testInsertAndDeleteById()
     {
         $this->specify("it inserts and deletes a single record", function () {
             $record = [
@@ -345,12 +344,12 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             // Make sure we didn't delete everything
             $response = $this->query
                 ->select()
-                ->from('V')
                 ->all();
 
             $this->assertCount(6, $response, "failed to leave six other records");
         });
 
+        /* @todo Neo fails this because of dropping multiple records by a list of ids */
         $this->specify("it inserts and deletes multiple records", function () {
             $records = [
                 [
@@ -383,9 +382,25 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('Spider\Base\Collection', $response[1], "failed to return one record");
             $this->assertEquals("fourth-value", $response[1]->fourth, "failed to create record");
 
-            //Clean up
+            // Delete
             $this->query
                 ->drop([$response[0]->id, $response[1]->id])->go();
+
+            // Check for it again
+            $response = $this->query
+                ->select()
+                ->from('person')
+                ->where('name', 'michael')
+                ->all();
+
+            $this->assertEmpty($response, "failed to return empty array for no items");
+
+            // Make sure we deleted what we wanted to
+            $response = $this->query
+                ->select()
+                ->all();
+
+            $this->assertCount(6, $response, "failed to leave six other records");
         });
     }
 
@@ -439,7 +454,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->all();
 
             $this->assertTrue(is_array($response), "failed to return an array");
-            $this->assertCount(6, $response, "failed to return two records");
+            $this->assertCount(4, $response, "failed to return two records");
         });
 
         $this->specify("it updates a single record by id", function () {

@@ -68,6 +68,7 @@ class CommandProcessor implements ProcessorInterface
         $command = new Command($this->script);
         $command->setScriptLanguage('cypher');
 
+
         return $command;
     }
 
@@ -88,7 +89,17 @@ class CommandProcessor implements ProcessorInterface
 
         /* Create elements */
         $this->startScript("CREATE");
-        $this->addToScript(implode(', ', $traversals));
+        $variable = implode(', ', $traversals);
+
+        /* ToDo: This probably breaks other things */
+        foreach ($this->bag->where as $where) {
+            if ($where[0] === Bag::ELEMENT_LABEL) {
+                $variable = str_replace(')', ":$where[2])", $variable);
+                break;
+            }
+        }
+
+        $this->addToScript($variable);
 
         /* set/update created elements */
         $this->addToScript("SET");
@@ -124,12 +135,12 @@ class CommandProcessor implements ProcessorInterface
             $this->addToScript($this->buildOrderBy());
         }
 
-        /* LIMIT 20 */
-        $this->appendLimit();
-
         /* Return clause */
         $this->addToScript('RETURN');
         $this->addToScript($this->buildProjections());
+
+        /* LIMIT 20 */
+        $this->appendLimit();
     }
 
     /**
@@ -173,7 +184,6 @@ class CommandProcessor implements ProcessorInterface
         /* MATCH CLAUSE*/
         $this->startScript("MATCH");
         $this->addToScript($this->buildTraversal());
-
 
         /* WHERE clause*/
         if (!empty($this->bag->where)) {
@@ -270,10 +280,13 @@ class CommandProcessor implements ProcessorInterface
             {
                 $projections[] = $this->detailField($projection);
             }
-            return implode(", ", $projections);
+            $return = implode(", ", $projections);
         } else {
-            return implode(", ", $this->variables);
+            $return = implode(", ", $this->variables);
         }
+
+        $this->variables = [];
+        return $return;
     }
 
     /**
@@ -294,7 +307,9 @@ class CommandProcessor implements ProcessorInterface
                     $where[] = end($this->variables).':'.$value[2];
                     break;
                 case Bag::ELEMENT_ID :
-                    $where[] = 'ID('.end($this->variables).') '.(string)$this->toCypherOperator($value[1]).' '.$value[2];
+                    $where[] = 'ID('.end($this->variables).') = '.$value[2];
+                    // '.(string)$this->toCypherOperator($value[1]).'
+                    /* @todo when selecting by id, uses operator IN (80) which doesn't exist */
                     break;
                 default:
                     $where[] = (string)$this->detailField($value[0]).' '.(string)$this->toCypherOperator($value[1]).' '.$this->castValue($value[2]);
