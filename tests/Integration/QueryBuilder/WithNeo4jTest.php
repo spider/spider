@@ -40,13 +40,13 @@ class WithNeo4jTest extends BaseTestSuite
         });
     }
 
-    public function testDrop()
-    {
-        $this->assertTrue(true);
-    }
-
-    public function testUpdates()
-    {
-        $this->assertTrue(true);
-    }
+//    public function testDrop()
+//    {
+//        $this->assertTrue(true);
+//    }
+//
+//    public function testUpdates()
+//    {
+//        $this->assertTrue(true);
+//    }
 }
