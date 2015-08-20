@@ -49,7 +49,7 @@ class Query extends Builder
         return $this;
     }
 
-    public function insert($data = null)
+    public function insert(array $data = null)
     {
         parent::insert($data);
 

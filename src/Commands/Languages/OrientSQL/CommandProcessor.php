@@ -9,6 +9,7 @@ use Spider\Exceptions\NotSupportedException;
 
 /**
  * Class CommandProcessor
+ * OrientSQL implementation
  * @package Spider\Drivers\OrientDB
  */
 class CommandProcessor implements ProcessorInterface
@@ -147,7 +148,19 @@ class CommandProcessor implements ProcessorInterface
         $this->startScript("DELETE VERTEX");
 
         /* #12:1 | FROM Users */
-        $this->appendTarget(($this->bag->target instanceof TargetID) ? "" : "FROM");
+        foreach ($this->bag->where as $index => $where) {
+            if ($where[0] === Bag::ELEMENT_LABEL) {
+                $this->addToScript("FROM $where[2]");
+                unset($this->bag->where[$index]);
+                $this->bag->where = array_values($this->bag->where);
+                break;
+            } elseif ($where[0] === Bag::ELEMENT_ID) {
+                $this->addToScript($where[2]);
+                unset($this->bag->where[$index]);
+                $this->bag->where = array_values($this->bag->where);
+                break;
+            }
+        }
 
         /* WHERE */
         $this->appendWheres();
@@ -238,17 +251,31 @@ class CommandProcessor implements ProcessorInterface
      */
     protected function appendTarget($prefix = "from")
     {
-        if ($this->bag->target instanceof TargetID) {
-            $target = $this->bag->target->id;
-        } else {
-            $target = ($this->bag->target) ? $this->bag->target : "V";
+        // Set the vertex or edge target
+        $target = ($this->bag->target === Bag::ELEMENT_EDGE) ? 'E' : 'V';
+
+        // Search through wheres for label (class) or id
+        foreach ($this->bag->data as $index => $value) {
+            if (isset($value[Bag::ELEMENT_LABEL])) {
+                $target = $value[Bag::ELEMENT_LABEL];
+                unset($this->bag->data[$index][Bag::ELEMENT_LABEL]);
+                $this->bag->data = array_values($this->bag->data);
+            }
+        }
+
+        // Search through wheres for label (class) or id
+        foreach ($this->bag->where as $index => $value) {
+            if ($value[0] === Bag::ELEMENT_LABEL || $value[0] === Bag::ELEMENT_ID) {
+                $target = $value[2];
+                unset($this->bag->where[$index]);
+                $this->bag->where = array_values($this->bag->where);
+            }
         }
 
         if ($prefix !== "") {
-            $this->addToScript(strtoupper($prefix));
+            $this->addToScript(strtoupper($prefix)); // FROM
         }
-
-        $this->addToScript($target);
+        $this->addToScript($target); // ID or Class
     }
 
     /**
@@ -298,14 +325,14 @@ class CommandProcessor implements ProcessorInterface
     protected function appendOrderBy()
     {
         if (is_array($this->bag->orderBy)) {
-            // Perform compliance check
-            if (count($this->bag->orderBy) > 1) {
-                throw new NotSupportedException("Orient DB only allows one field in Order By");
+            $this->addToScript("ORDER BY");
+
+            $orders = [];
+            foreach ($this->bag->orderBy as $field) {
+                $orders[] = "$field[0] $field[1]";
             }
 
-            $this->addToScript("ORDER BY");
-            $this->addToScript(implode(",", $this->bag->orderBy));
-            $this->addToScript(($this->bag->orderAsc) ? 'ASC' : 'DESC');
+            $this->addToScript(implode(", ", $orders));
         }
     }
 
@@ -389,7 +416,7 @@ class CommandProcessor implements ProcessorInterface
     protected function appendUpdateData($prefix = "content")
     {
         $this->addToScript("MERGE");
-        $this->addToScript(json_encode($this->bag->data));
+        $this->addToScript(json_encode($this->bag->data[0]));
     }
 
     /**

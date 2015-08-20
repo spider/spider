@@ -121,7 +121,7 @@ class BaseBuilder
 
     /**
      * Set the type of the target in the current Command Bag
-     * @param $target
+     * @param $type
      * @return $this
      */
     public function type($type)

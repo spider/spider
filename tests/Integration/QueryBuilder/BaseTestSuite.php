@@ -105,164 +105,164 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
     protected $query;
     protected $fixture;
 
-    public function testBasicSelects()
-    {
-        $this->specify("it selects all vertices", function () {
-            $response = $this->query
-                ->select()
-                ->all();
-
-            $expected = $this->expected;
-
-            $this->assertTrue(is_array($response), 'failed to return an array');
-            $this->assertCount(count($expected), $response, 'failed to return the correct number of records');
-            $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return an array of collections');
-            $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
-        });
-
-        $this->specify("it selects all records from a label", function () {
-            $response = $this->query
-                ->select()
-                ->from('person')
-                ->all();
-
-            $expected = array_filter($this->expected, function ($record) {
-                return $record['label'] === 'person';
-            });
-
-            $this->assertTrue(is_array($response), 'failed to return an array');
-            $this->assertCount(count($expected), $response, 'failed to return the correct number of records');
-            $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return an array of collections');
-            $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
-        });
-
-        $this->specify("it selects one record with first", function () {
-            $response = $this->query
-                ->select()
-                ->from('person')
-                ->first();
-
-            $expected = array_filter($this->expected, function ($record) {
-                return $record['label'] === 'person';
-            });
-
-            $this->assertFalse(is_array($response), 'failed to return a collection array');
-            $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return an array of collections');
-            $this->assertEquals($expected[0]['name'], $response->name, 'failed to return correct first collection');
-        });
-
-        $this->specify("it selects one record with one", function () {
-            $response = $this->query
-                ->select()
-                ->from('person')
-                ->one();
-
-            $expected = array_filter($this->expected, function ($record) {
-                return $record['label'] === 'person';
-            });
-
-            $this->assertFalse(is_array($response), 'failed to return a collection array');
-            $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return an array of collections');
-            $this->assertEquals($expected[0]['name'], $response->name, 'failed to return correct first collection');
-        });
-
-        $this->specify("it selects with constraints", function () {
-            $response = $this->query
-                ->select()
-                ->from('person')
-                ->where('name', 'marko')
-                ->andWhere('age', 29)
-                ->all();
-
-            $expected = array_filter($this->expected, function ($record) {
-                return $record['label'] === 'person'
-                    && $record['name'] === 'marko'
-                    && $record['age'] === 29;
-            });
-
-            $this->assertTrue(is_array($response), 'failed to return an array');
-            $this->assertCount(1, $response, 'failed to return one Collection');
-            $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return an array of collections');
-            $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
-        });
-
-        $this->specify("it selects with OR constraints", function () {
-            $response = $this->query
-                ->select()
-                ->from('person')
-                ->where('name', 'marko')
-                ->orWhere('name', 'peter')
-                ->all();
-
-            $expected = array_filter($this->expected, function ($record) {
-                return $record['label'] === 'person'
-                && ($record['name'] === 'marko' || $record['name'] === 'peter');
-            });
-
-            $expected = array_values($expected);
-
-            $this->assertTrue(is_array($response), 'failed to return an array');
-            $this->assertCount(count($expected), $response, 'failed to return the correct number of records');
-
-            $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return an array of collections');
-            $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
-
-            $this->assertInstanceOf('Spider\Base\Collection', $response[1], 'failed to return an array of collections');
-            $this->assertEquals($expected[1]['name'], $response[1]->name, 'failed to return correct first collection');
-        });
-
-        $this->specify("it selects with limits", function () {
-            $response = $this->query
-                ->select()
-                ->from('person')
-                ->limit(3)
-                ->get();
-
-            $expected = array_filter($this->expected, function ($record) {
-                return $record['label'] === 'person';
-            });
-
-            $expected = array_slice($expected, 0, 3);
-
-            $this->assertTrue(is_array($response), 'failed to return an array');
-            $this->assertCount(3, $response, 'failed to return the correct number of records');
-
-            $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return an array of collections');
-            $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
-
-            $this->assertInstanceOf('Spider\Base\Collection', $response[1], 'failed to return an array of collections');
-            $this->assertEquals($expected[1]['name'], $response[1]->name, 'failed to return correct first collection');
-
-            $this->assertInstanceOf('Spider\Base\Collection', $response[2], 'failed to return an array of collections');
-            $this->assertEquals($expected[2]['name'], $response[2]->name, 'failed to return correct first collection');
-        });
-
-        $this->specify("it selects with limits with `set()`", function () {
-            $response = $this->query
-                ->select()
-                ->from('person')
-                ->limit(4)
-                ->get();
-
-            $expected = array_filter($this->expected, function ($record) {
-                return $record['label'] === 'person';
-            });
-
-            $expected = array_slice($expected, 0, 4);
-
-            $this->assertTrue(is_array($response), 'failed to return an array');
-            $this->assertCount(4, $response, 'failed to return the correct number of records');
-
-            $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return an array of collections');
-            $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
-
-            $this->assertInstanceOf('Spider\Base\Collection', $response[1], 'failed to return an array of collections');
-            $this->assertEquals($expected[1]['name'], $response[1]->name, 'failed to return correct first collection');
-
-            $this->assertInstanceOf('Spider\Base\Collection', $response[2], 'failed to return an array of collections');
-            $this->assertEquals($expected[2]['name'], $response[2]->name, 'failed to return correct first collection');
-        });
-    }
+//    public function testBasicSelects()
+//    {
+//        $this->specify("it selects all vertices", function () {
+//            $response = $this->query
+//                ->select()
+//                ->all();
+//
+//            $expected = $this->expected;
+//
+//            $this->assertTrue(is_array($response), 'failed to return an array');
+//            $this->assertCount(count($expected), $response, 'failed to return the correct number of records');
+//            $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return an array of collections');
+//            $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
+//        });
+//
+//        $this->specify("it selects all records from a label", function () {
+//            $response = $this->query
+//                ->select()
+//                ->from('person')
+//                ->all();
+//
+//            $expected = array_filter($this->expected, function ($record) {
+//                return $record['label'] === 'person';
+//            });
+//
+//            $this->assertTrue(is_array($response), 'failed to return an array');
+//            $this->assertCount(count($expected), $response, 'failed to return the correct number of records');
+//            $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return an array of collections');
+//            $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
+//        });
+//
+//        $this->specify("it selects one record with first", function () {
+//            $response = $this->query
+//                ->select()
+//                ->from('person')
+//                ->first();
+//
+//            $expected = array_filter($this->expected, function ($record) {
+//                return $record['label'] === 'person';
+//            });
+//
+//            $this->assertFalse(is_array($response), 'failed to return a collection array');
+//            $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return an array of collections');
+//            $this->assertEquals($expected[0]['name'], $response->name, 'failed to return correct first collection');
+//        });
+//
+//        $this->specify("it selects one record with one", function () {
+//            $response = $this->query
+//                ->select()
+//                ->from('person')
+//                ->one();
+//
+//            $expected = array_filter($this->expected, function ($record) {
+//                return $record['label'] === 'person';
+//            });
+//
+//            $this->assertFalse(is_array($response), 'failed to return a collection array');
+//            $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return an array of collections');
+//            $this->assertEquals($expected[0]['name'], $response->name, 'failed to return correct first collection');
+//        });
+//
+//        $this->specify("it selects with constraints", function () {
+//            $response = $this->query
+//                ->select()
+//                ->from('person')
+//                ->where('name', 'marko')
+//                ->andWhere('age', 29)
+//                ->all();
+//
+//            $expected = array_filter($this->expected, function ($record) {
+//                return $record['label'] === 'person'
+//                    && $record['name'] === 'marko'
+//                    && $record['age'] === 29;
+//            });
+//
+//            $this->assertTrue(is_array($response), 'failed to return an array');
+//            $this->assertCount(1, $response, 'failed to return one Collection');
+//            $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return an array of collections');
+//            $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
+//        });
+//
+//        $this->specify("it selects with OR constraints", function () {
+//            $response = $this->query
+//                ->select()
+//                ->from('person')
+//                ->where('name', 'marko')
+//                ->orWhere('name', 'peter')
+//                ->all();
+//
+//            $expected = array_filter($this->expected, function ($record) {
+//                return $record['label'] === 'person'
+//                && ($record['name'] === 'marko' || $record['name'] === 'peter');
+//            });
+//
+//            $expected = array_values($expected);
+//
+//            $this->assertTrue(is_array($response), 'failed to return an array');
+//            $this->assertCount(count($expected), $response, 'failed to return the correct number of records');
+//
+//            $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return an array of collections');
+//            $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
+//
+//            $this->assertInstanceOf('Spider\Base\Collection', $response[1], 'failed to return an array of collections');
+//            $this->assertEquals($expected[1]['name'], $response[1]->name, 'failed to return correct first collection');
+//        });
+//
+//        $this->specify("it selects with limits", function () {
+//            $response = $this->query
+//                ->select()
+//                ->from('person')
+//                ->limit(3)
+//                ->get();
+//
+//            $expected = array_filter($this->expected, function ($record) {
+//                return $record['label'] === 'person';
+//            });
+//
+//            $expected = array_slice($expected, 0, 3);
+//
+//            $this->assertTrue(is_array($response), 'failed to return an array');
+//            $this->assertCount(3, $response, 'failed to return the correct number of records');
+//
+//            $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return an array of collections');
+//            $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
+//
+//            $this->assertInstanceOf('Spider\Base\Collection', $response[1], 'failed to return an array of collections');
+//            $this->assertEquals($expected[1]['name'], $response[1]->name, 'failed to return correct first collection');
+//
+//            $this->assertInstanceOf('Spider\Base\Collection', $response[2], 'failed to return an array of collections');
+//            $this->assertEquals($expected[2]['name'], $response[2]->name, 'failed to return correct first collection');
+//        });
+//
+//        $this->specify("it selects with limits with `set()`", function () {
+//            $response = $this->query
+//                ->select()
+//                ->from('person')
+//                ->limit(4)
+//                ->get();
+//
+//            $expected = array_filter($this->expected, function ($record) {
+//                return $record['label'] === 'person';
+//            });
+//
+//            $expected = array_slice($expected, 0, 4);
+//
+//            $this->assertTrue(is_array($response), 'failed to return an array');
+//            $this->assertCount(4, $response, 'failed to return the correct number of records');
+//
+//            $this->assertInstanceOf('Spider\Base\Collection', $response[0], 'failed to return an array of collections');
+//            $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
+//
+//            $this->assertInstanceOf('Spider\Base\Collection', $response[1], 'failed to return an array of collections');
+//            $this->assertEquals($expected[1]['name'], $response[1]->name, 'failed to return correct first collection');
+//
+//            $this->assertInstanceOf('Spider\Base\Collection', $response[2], 'failed to return an array of collections');
+//            $this->assertEquals($expected[2]['name'], $response[2]->name, 'failed to return correct first collection');
+//        });
+//    }
 
     public function testInsertAndDeleteDispatches()
     {

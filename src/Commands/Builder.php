@@ -49,10 +49,10 @@ class Builder extends BaseBuilder
      *
      * Alias of retrieve
      *
-     * @param null $data
+     * @param array|null $data
      * @return Builder
      */
-    public function insert($data = null)
+    public function insert(array $data = null)
     {
         //case of single entry, and case of multiple entries
         if (!is_array($data) || !isset($data[0]) || !is_array($data[0])) {
@@ -64,7 +64,8 @@ class Builder extends BaseBuilder
 
     /**
      * Update only the first record
-     * @param $target
+     * @param null $property
+     * @param null $value
      * @return $this
      */
     public function updateFirst($property = null, $value = null)

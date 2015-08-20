@@ -72,7 +72,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
             $bag = new Bag();
             $bag->command = Bag::COMMAND_UPDATE;
-            $bag->target = Bag::ELEMENT_VERTEX; // don't forget about TargetID
+            $bag->target = Bag::ELEMENT_VERTEX;
             $bag->data = [$this->getData()];
             $bag->where = [[
                 Bag::ELEMENT_ID,
@@ -133,7 +133,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
             $bag = new Bag();
             $bag->command = Bag::COMMAND_DELETE;
-            $bag->target = Bag::ELEMENT_VERTEX; // don't forget about TargetID
+            $bag->target = Bag::ELEMENT_VERTEX;
             $bag->where = array_merge($this->getWheres(), [[
                 Bag::ELEMENT_LABEL,
                 Bag::COMPARATOR_EQUAL, // convert to constant
