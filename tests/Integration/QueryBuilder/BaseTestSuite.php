@@ -317,7 +317,8 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
             $this->query
                 ->into('person')
-                ->insert($record);
+                ->insert($record)
+                ->go();
 
             $response = $this->query
                 ->select()
@@ -330,7 +331,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
             // Delete
             $this->query
-                ->drop($response->id);
+                ->drop($response->id)->go();
 
             // Check for it again
             $response = $this->query
@@ -364,7 +365,8 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
             $this->query
                 ->into('person')
-                ->insert($records);
+                ->insert($records)
+                ->go();
 
             $response = $this->query
                 ->select()
@@ -383,7 +385,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
             //Clean up
             $this->query
-                ->drop([$response[0]->id, $response[1]->id]);
+                ->drop([$response[0]->id, $response[1]->id])->go();
         });
     }
 

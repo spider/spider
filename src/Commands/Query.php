@@ -30,36 +30,6 @@ class Query extends Builder
         $this->connection = $connection;
     }
 
-    /* Fluent Methods for building queries */
-    /**
-     * Add a `delete` clause to the current command bag
-     * @param null $record
-     * @return $this|mixed
-     */
-    public function drop($record = null)
-    {
-        // Set the command bag
-        parent::drop($record);
-
-        // dispatch if a record was provided
-        if (!is_null($record)) {
-            return $this->dispatch();
-        }
-
-        return $this;
-    }
-
-    public function insert(array $data = null)
-    {
-        parent::insert($data);
-
-        if (is_null($data)) {
-            return $this;
-        }
-
-        return $this->dispatch();
-    }
-
     /**
      * In some cases, choose what the database sends back
      * after the operation. For instance, if deleting

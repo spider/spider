@@ -288,36 +288,5 @@ echo $result; // 'Miranda'
 ```
 Read [more about responses](responses.md).
 
-#### Dispatching from Update, Drop, and Insert
-If you **drop()** with an id, it will dispatch immediately.
-```php
-$query->drop(3); // executes drop
-```
-
-----
-
-If you pass data to **insert()** it will dispatch immediately.
-```php
-$query->into('characters')->insert('name', 'Shepard Book');
-
-// This does not fire immediately
-$query->insert()->data('name', 'Simon')->into('characters');
-
-// So you must dispatch it
-$query->dispatch();
-```
-
-----
-
-**update()** (for now), doesn't dispatch anything on its own.
-You must
-```php
-$query
-    ->update('battles') // target
-    ->where('place', 'serenity valley')
-    ->withData('outcome', 'loss')
-    ->dispatch(); // fires query
-```
-
 ### Api differences between Command and Query builders
 @todo A list of all the api differences
