@@ -12,7 +12,13 @@ A simple, flexible, and beautiful graph-data abstraction for php.
 Why "Spider?" Because spiders crawl over webs, and webs look like graphs. Walk your data.
 
 This readme is very limited.
-See **[the full documentation](http://spider-ogm.readthedocs.org/en/develop/)** for a guidebook.
+See **[the full documentation](http://spider-ogm.readthedocs.org/en/latest/)** for a guidebook.
+
+## Current Version
+Spider is still under active development. All releases are well-tested and stable, though maybe not ready for production yet.
+The current version is v0.3.0 - which includes a basic command builder, connections, and drivers.
+For a roadmap see [the full documentation](http://spider-ogm.readthedocs.org/en/latest/).
+Please use spider anywhere you can and open issues around bugs or edge cases.
 
 ## Goals
   * Framework agnostic, community-driven with best practices.

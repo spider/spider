@@ -39,8 +39,8 @@ I
 The DriverInterface can be broken into three parts.
 The first **manages database connections** and utilities:
 ```php
-public function makeProcessor(); // Returns the language processor of choice
-public function open(); //
+public $languages = [];
+public function open();
 public function close();
 ```
 
@@ -69,14 +69,14 @@ You can define which query languages are supported by your driver by defining th
 ```php
 public $languages = [
    'cypher' => '\namespace\to\cypher\Processor',
-   'gremil' => '\namespace\to\gremlin\Processor',
+   'gremlin' => '\namespace\to\gremlin\Processor',
 ];
 ```
+Read more about [language processors](#the-language-processor).
 
 ## Step Three: Implement Database Connections
-This is pretty simple. In most cases, your driver will be extending some other language binding tool.
-
-The `makeProcessor()` should return the preferred [language processor](#language-processor).
+This is pretty simple. 
+In most cases, your driver will be extending some other language binding tool.
 
 The `open()` method should open a database connection and `close` should close it.
 
@@ -101,7 +101,6 @@ if ($command instanceof \Spider\Commands\BaseBuilder) {
 ```
 
 ##### Return values
-
 The `executeReadCommand()` and `executeWriteCommand()` methods must return a `Spider\Drivers\Response`
 ```php
 $response = // do whatever to get results from database
@@ -116,7 +115,7 @@ This will vary wildly for each database. Check out documentation and look throug
 
 Note that `stopTransaction()` should commit by default, unless `false` is passed it.
 
-Also note that when a driver is `__destruct()`ed, `stopTransaction()` is called. As is `close()`
+Also note that when a driver is `__destruct()`ed, `stopTransaction()` is called. As is `close()`d
 
 ## Step Six: Implement Response Formatting
 Honestly, this may be the trickiest part.
@@ -145,3 +144,41 @@ The implementation may be more difficult.
   2. Look at the existing language processors for best-practices in processing a Bag.
   3. Look at the unit tests, they tell a lot.
   4. Don't forget to set the language and rw on the new Command.
+
+## Driver and Language Processor Testing
+To make sure each language processor and driver behave in predictable ways, there are Base Test Suites that hold all the tests.
+In order to make your driver and processor compliant, create tests that extend these tests. The driver and processor are not considered stable until all these tests pass.
+
+### Driver Testing
+  1. Create a test that extends `Spider\Test\Unit\Drivers\BaseTestSuite`.
+  1. On `setup()` and `teardown`, manage fixtures, if you have them.
+  
+  ```php
+  public function setup()
+      {
+          $this->fixture = new OrientFixture();
+          $this->fixture->unload();
+          $this->fixture->load();
+      }
+  
+      public function teardown()
+      {
+          $this->fixture->unload();
+      }
+  ```
+  
+  1. Implement `driver()` which returns the configured driver instance
+  1. Implement `getMetaKey()` which returns a string of a meta key your driver uses. Something that your driver will have. For Orient, as an example, this is '@rid`.
+  1. Implement `getScalarResponse()` which returns a response that can be `formatAsScalar()`
+  1. Implement the rest of the methods, which return `Command()` objects for the desired operation. This is all documented.
+  1. Add any vendor-specific tests.
+  
+Now, if your tests pass, the driver is up to spec.
+
+### Language Processor Testing
+  1. Create a test that extends `Spider\Test\Unit\Commands\Languages\BaseTestSuite`.
+  1. Implement `processor()` which returns the new processor instance
+  1. Implement the rest of the methods, which return `Command()` objects for the desired operation. This is all documented.
+  1. Add any vendor-specific tests.
+  
+Now, if your tests pass, the processor is up to spec.

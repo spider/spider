@@ -1,7 +1,9 @@
 # Getting Started
 You want to get started with Spider? Shinny.
 
-*Please be aware that Spider is still in development. As we march toward 1.0, things will inevetably change. We do our best to keep code stable and secure, but we are still architecting the awesome. Please [get involved!](contributing.md)
+*Please be aware that Spider is still in development. As we march toward 1.0, things will inevitably change.
+We do our best to keep code stable and secure, but we are still architecting the awesome. 
+Please [get involved!](contributing.md)
 
 ## What are Graph Databases?
 [Graph databases](https://en.wikipedia.org/wiki/Graph_database) are NoSql databases (not-only-sql) that treat relationships like first-class citizens.
@@ -58,6 +60,17 @@ Connections also inherit from [michaels/data-manager](http://github.com/chrismic
 $connection->set('port', 2424);
 ```
 
+## Query Builder
+Now that you have a Connection, you can dive straight into the query builder:
+```php
+$query = new Spider\Commands\Query($connection);
+$result = $query->select('name')->from('characters')->where('ship', 'firefly')->all();
+echo $result[0]->name; // 'Mal'
+```
+
+You can read more about the [builders here](command-builder.md)
+
+## More About Connections
 Once you have a connection, you can dive straight into the database.
 ```php
 $connection->open();

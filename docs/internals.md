@@ -1,7 +1,7 @@
 # Internals
-Notes on architecture and internal development
+Notes on architecture and internal development.
 
-See also the api documentation
+See also the api documentation.
 
 ## Glossary of Terms
 When possible, we rely on TinkerPop definitions, since they are more standard.
@@ -26,5 +26,5 @@ They provide several mapping methods (Query::all(), Query::one(), Query::tree() 
   * `FormattingException` - If requesting a format not registered.
   * `ConnectionNotFoundException` - If a non-existing connection is `make()` by the Manager
   * `InvalidCommandException` - If the Command or CommandBag is corrupt or invalid.
-  * `NotSupportedException` - For cases where functionalities in some graph DBs aren't supported.
+  * `NotSupportedException` - For cases where functionalism's in some graph DBs aren't supported.
   * `ItemNotFoundException` - Whenever a user tries to get a property that doesnt' exist

@@ -59,6 +59,12 @@ You will then need to run gremlin-server in the following manner (it's important
 bin/gremlin-server.sh conf/gremlin-server-php.yaml
 ```
 
+Note that if you are using Windows, you have to reverse the directory seperators in all those paths
+and use .bat files:
+```bash
+bin\gremlin-server.bat conf\gremlin-server-php.yaml
+```
+
 ### Neo4J
 #### Download
 - [Neo4J Server](http://neo4j.com/download/) (Community version is tested)
@@ -66,7 +72,7 @@ bin/gremlin-server.sh conf/gremlin-server-php.yaml
 #### Installation
 Once the server is up and running, connect to [http://localhost:7474/browser](http://localhost:7474/browser) 
 - Change the username:password from `neo4j:neo4j` to `neo4j:j4oen`
-- Click on the star tab and import [this script](https://gist.githubusercontent.com/PommeVerte/46ed5dee72688ee2faf9/raw/12804b280e3e9361319afb5a4bd2084505aed1d0/Neo4J%2520modern%2520graph) that will create a "modern" graph.
+- It is recommended to create a 'testing' graph or similar, as the test suite will wipe all existing data before and after each test.
 
 ### OrientDB
 #### Download
@@ -77,8 +83,10 @@ Simply extract the directory and place it anywhere you like.
 
 That's really it. The server can be accessed by connecting to : [http://localhost:2480/](http://localhost:2480/).
 
-Spider tests use a default graph that is bundled with Orient called "GratefulDeadConcerts". You do not need to do anything to prepare this graph. The tests also use the default username and password: "root" and "root". If you change these for the GratefulDeadConcerts graph, be sure to change the credentials in `tests/Unit/Drivers/OrientDB/DriverTest.php`
-
 You should be good to go.
+
+All tests use fixtures which provide a clean slate for testing. For OrientDB, nothing extra is needed
+(it will create and destroy a database).
+For neo, it is recommended to create a testing graph.
 
 **Happy coding**!

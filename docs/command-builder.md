@@ -1,15 +1,22 @@
 # Command and Query Builders
 Spider offers an easy way to build powerful queries in a fluent way.
-It is modelled after SQL and SQL QueryBuilders, so the learning curve should be small.
+
+For this guide, we will be using the following graph:
+
+[image]()
+
+Blue vertices are `person`s and green are `software`s. Each node has a property `name` which is seen.
+
+Spider is modelled after SQL and SQL QueryBuilders, so the learning curve should be small.
 
 ```php
-$character = $query
-   ->select() // selects everything
-   ->from('characters')
-   ->where('allegiance', 'browncoats')
+$person = $query
+   ->select()
+   ->from('person')
+   ->where('name', 'vadas')
    ->first();
 
-echo $character->name; // 'Mal'
+echo $people->name; // 'Vadas'
 ```
 
 The Query builder will translate your query into a script in any language (OrientSQL, Cypher, Gremlin) that has a language processor.
@@ -18,16 +25,17 @@ There are really two query builders for you to choose from.
 
 A [**Command builder**](#the-basic-command-builder) is a simple command builder used to generate Commands (language-specific scripts).
 The Command builder has no awareness of any drivers and can't fire queries.
-Instead, you can use the Command Builder to create your queries and (optionally) process them into a Command Object that can be sent directly to the database or through a Spider Connection.
+Instead, you can use the Command Builder to create your queries and (optionally) process them directly to an active [`Connection`](connections.md).
 
 While the Command Builder is useful in some cases, the [**Query**](#the-query-builder) is far more powerful.
-With the Query, you can build up and execute the query, and get the results in any supported format.
-All with a simple, fluent api.
+With the Query, you can build up your script, execute the query, and get the results in any supported format.
+All with a simple, fluent api. Of course, the Query Builder extends the Command Builder in every way.
 And, the Query has a few sugar methods that just make life easier.
 
 ## The Basic Command Builder
-The Command Builder is best used when integrating Spider into your existing codebase. It makes no assumptions about *how* you will execute these queries.
-It just builds a predictable Command Bag and (optionally) returns the finished script that you may execute any way you like.
+The Command Builder is best used when integrating Spider into your existing codebase. 
+It makes no assumptions about *how* you will execute these queries.
+It just builds a predictable `Command` that has a script that you may execute any way you like.
 
 The Command Builder (for the moment) only handles CRUD operations. Traversals and relationships are on the way!
 
@@ -56,7 +64,7 @@ $stringScript = $builder->getScript(new LanguageSpecificProcessor());
 ```
 
 ### Selects
-A **Target** is the label or record type in the database. In MySQL, this would be the row.
+A **Target** is the label or record type in the database. In MySQL, this would be the table.
 
 You can select everything from a target.
 ```php
@@ -87,8 +95,8 @@ $builder->select()->from('planets')
 Order the results.
 ```php
 $builder->select()->from('users')
-    ->orderBy('name', 'birthday'); // or (['name', 'birthday'])
-    ->desc(); // or asc(); Defaults to ascending
+    ->orderBy('field', 'asc') // or desc
+    ->orderBy('another-field', 'desc')
 ```
 
 #### Where Constraints
@@ -132,13 +140,13 @@ Creating new records is as easy as telling a story.
 ```php
 $builder
     ->insert(['name' => 'Zoe', 'rank' => 'corporal'])
-    ->into('browncoats');
+    ->from('browncoats'); // target
 
 // Or
 $builder
     ->insert()
     ->data(['name' => 'Zoe', 'rank' => 'corporal'])
-    ->into('browncoats')
+    ->from('browncoats'); // target
 ```
 
 **Note** that for the Command builder, you can put these methods in any order you like, but
@@ -194,7 +202,6 @@ $builder
 The Query builder extends the Command Builder, but allows you to:
   1. Execute queries directly from the Builder
   2. [Format responses](responses.md)
-  3. Use some extra sugar to make everything more fluent.
 
 ### Configuring the Query builder
 All `Query` needs to get going is a valid connection
@@ -215,21 +222,34 @@ $query
     ->limit(1)
     ->orderBy('launch_date') // order of orderBy is important
     ->orderBy('registry')
+    ->all();
 ```
 
 ### Dispatching from the Query builder
 What makes the Query Builder different is that you can interact with the database directly.
 
-You can simply **dispatch** your query
+You can simply **dispatch** your query, or use **go**
 ```php
 $result = $query->select()->from('moons')
     ->dispatch();
+      
+$result = $query->select()->from('moons')
+    ->go();
 ```
 Which will return a generic `Response`. Read [more about responses](responses.md).
 
 ----
 
-Or, we recommend **get()** or **set()** for most cases.
+**all()** removes the limit and returns a an array or collections
+```php
+$result = $query->select()->from('moons')
+    ->all();
+```
+Read [more about responses](responses.md).
+
+----
+
+Or, we recommend **get()** for most cases.
 ```php
 $result = $query->select()->from('moons')
     ->get(); // alias of set()
@@ -237,14 +257,6 @@ $result = $query->select()->from('moons')
 Which will return a Set (array of or single`Collection`).
 Read [more about responses](responses.md).
 
-----
-
-**all()** sets removes the limit and returns a Set
-```php
-$result = $query->select()->from('moons')
-    ->all();
-```
-Read [more about responses](responses.md).
 
 ----
 
@@ -279,6 +291,16 @@ Read [more about responses](responses.md).
 
 ----
 
+**set()** dispatches and returns a Set (array or single collection).
+This is really an alias for `get()`
+```php
+$result = $query->select()->from('moons')
+    ->set();
+```
+Read [more about responses](responses.md).
+
+----
+
 **scalar()** dispatches and returns a single, scalar value.
 ```php
 $result = $query->select('name')->from('moons')->where('id', 5)
@@ -287,6 +309,3 @@ $result = $query->select('name')->from('moons')->where('id', 5)
 echo $result; // 'Miranda'
 ```
 Read [more about responses](responses.md).
-
-### Api differences between Command and Query builders
-@todo A list of all the api differences
