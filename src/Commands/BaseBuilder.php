@@ -58,7 +58,7 @@ class BaseBuilder
             $this->bag->createCount = 1;
         }
 
-        $this->bag->data = $data;
+        $this->bag->data += $data;
 
         return $this;
     }

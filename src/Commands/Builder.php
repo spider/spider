@@ -63,20 +63,6 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Update only the first record
-     * @param null $property
-     * @param null $value
-     * @return $this
-     */
-    public function updateFirst($property = null, $value = null)
-    {
-        $this->bag->command = Bag::COMMAND_UPDATE;
-        $this->limit(1);
-
-        return $this->update($property, $value);
-    }
-
-    /**
      * Delete a single record
      * @param null $record
      * @return $this|mixed
@@ -175,16 +161,6 @@ class Builder extends BaseBuilder
     public function label($label)
     {
         return $this->where(Bag::ELEMENT_LABEL, $label, '=');
-    }
-
-    /**
-     * Alias of label, used for fluency
-     * @param $label
-     * @return Builder
-     */
-    public function into($label)
-    {
-        return $this->label($label);
     }
 
     /**

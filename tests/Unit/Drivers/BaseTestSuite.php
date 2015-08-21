@@ -322,23 +322,6 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
     {
         $driver = $this->driver();
 
-        /* Scalar should format a single record with a single value as a scalar */
-        /*
-        $record= new Record();
-        $record->setOData(['item' => 10]);
-        $response = [$record];
-
-        $consistent = $driver->formatAsScalar($response);
-        $this->assertEquals(10, $consistent, 'Scalar formatting did not properly work with Record Int');
-
-         Record with string
-        $record = new Record();
-        $record->setOData(['item' => 'string']);
-        $response = [$record];
-
-        $consistent = $driver->formatAsScalar($response);
-        $this->assertEquals('string', $consistent, 'Scalar formatting did not properly work with Record String');
-        */
         // solo int, string, bool
         $response = $this->getScalarResponse('int');
         $consistent = $driver->formatAsScalar($response);
@@ -371,16 +354,6 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
             $driver->formatAsScalar($response);
         }, ['throws' => new FormattingException()]);
-
-        /*
-        $this->specify("it throws an exception for a path response on scalar formatting", function () {
-            $driver = $this->driver();
-
-            $response = [[1]];
-
-            $driver->formatAsScalar($response);
-        }, ['throws' => new FormattingException()]);
-        */
     }
 
     public function testFormatSet()
@@ -583,15 +556,4 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
      * @return array
      */
     abstract public function getScalarResponse($type);
-
-    /**
-     * Format the id to a vendor-specific format
-     * @param int $id
-     * @param int $cluster
-     * @return mixed
-     */
-    public function formatId($id, $cluster = 11)
-    {
-        return $id;
-    }
 }

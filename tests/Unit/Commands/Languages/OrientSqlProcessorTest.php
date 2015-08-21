@@ -80,9 +80,9 @@ class OrientSqlProcessorTest extends BaseTestSuite
     {
         $query = 'UPDATE target';
         $query .= ' MERGE ' . json_encode($this->getData());
+        $query .= ' RETURN AFTER';
         $query .= $this->getWhereSql();
         $query .= ' LIMIT 10';
-        $query .= ' RETURN AFTER';
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -95,7 +95,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
      */
     public function deleteSimple()
     {
-        $query = 'DELETE VERTEX target_id';
+        $query = "DELETE VERTEX V WHERE @rid = 'target_id'";
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');

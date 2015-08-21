@@ -80,6 +80,7 @@ class CypherProcessorTest extends BaseTestSuite
             $data[] = 'spider_a.'.$key.' = '.$value;
         }
         $query .= implode(', ', $data);
+        $query .= ' RETURN spider_a';
         $command = new Command($query);
         $command->setScriptLanguage('cypher');
         return $command;
@@ -93,8 +94,6 @@ class CypherProcessorTest extends BaseTestSuite
     {
         $query = 'MATCH (spider_a)';
         $query .= $this->getWhereSql().' AND spider_a:target';
-        $query .= ' LIMIT 10';
-
         $query .= ' SET ';
         $data = [];
         foreach($this->getData() as $key => $value)
@@ -112,6 +111,8 @@ class CypherProcessorTest extends BaseTestSuite
             $data[] = 'spider_a.'.$key.' = '.$value;
         }
         $query .= implode(', ', $data);
+        $query .= ' RETURN spider_a';
+        $query .= ' LIMIT 10';
         $command = new Command($query);
         $command->setScriptLanguage('cypher');
         return $command;
@@ -228,9 +229,9 @@ class CypherProcessorTest extends BaseTestSuite
     {
         $query = 'MATCH (spider_a)';
         $query .= $this->getWhereSql().' AND spider_a:target';
+        $query .= ' RETURN spider_a.field1, spider_a.field2';
         $query .= ' ORDER BY spider_a.field1 DESC';
         $query .= ' LIMIT 3';
-        $query .= ' RETURN spider_a.field1, spider_a.field2';
 
         $command = new Command($query);
         $command->setScriptLanguage('cypher');

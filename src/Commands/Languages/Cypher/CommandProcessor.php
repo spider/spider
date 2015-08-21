@@ -35,6 +35,7 @@ class CommandProcessor implements ProcessorInterface
         Bag::COMPARATOR_LE => '<=',
         Bag::COMPARATOR_GE => '>=',
         Bag::COMPARATOR_NE => '<>',
+        Bag::COMPARATOR_IN => 'IN',
 
         Bag::CONJUNCTION_AND => 'AND',
         Bag::CONJUNCTION_OR => 'OR',
@@ -68,6 +69,7 @@ class CommandProcessor implements ProcessorInterface
         $command = new Command($this->script);
         $command->setScriptLanguage('cypher');
 
+        $this->reset();
         return $command;
     }
 
@@ -88,7 +90,8 @@ class CommandProcessor implements ProcessorInterface
 
         /* Create elements */
         $this->startScript("CREATE");
-        $this->addToScript(implode(', ', $traversals));
+        $variable = implode(', ', $traversals);
+        $this->addToScript($variable);
 
         /* set/update created elements */
         $this->addToScript("SET");
@@ -118,6 +121,10 @@ class CommandProcessor implements ProcessorInterface
             $this->addToScript($this->buildWheres());
         }
 
+        /* Return clause */
+        $this->addToScript('RETURN');
+        $this->addToScript($this->buildProjections());
+
         /* ORDER BY date_joined ASC */
         if (!empty($this->bag->orderBy)) {
             $this->addToScript("ORDER BY");
@@ -126,10 +133,6 @@ class CommandProcessor implements ProcessorInterface
 
         /* LIMIT 20 */
         $this->appendLimit();
-
-        /* Return clause */
-        $this->addToScript('RETURN');
-        $this->addToScript($this->buildProjections());
     }
 
     /**
@@ -151,6 +154,14 @@ class CommandProcessor implements ProcessorInterface
             $this->addToScript($this->buildWheres());
         }
 
+        /* SET clause */
+        $this->addToScript("SET");
+        $this->addToScript($this->buildSet($this->bag->data[0]));
+
+        /* Return clause */
+        $this->addToScript('RETURN');
+        $this->addToScript($this->buildProjections());
+
         /* ORDER BY date_joined ASC */
         if (!empty($this->bag->orderBy)) {
             $this->addToScript("ORDER BY");
@@ -160,9 +171,6 @@ class CommandProcessor implements ProcessorInterface
         /* LIMIT 20 */
         $this->appendLimit();
 
-        /* SET clause */
-        $this->addToScript("SET");
-        $this->addToScript($this->buildSet($this->bag->data[0]));
     }
 
     /**
@@ -173,7 +181,6 @@ class CommandProcessor implements ProcessorInterface
         /* MATCH CLAUSE*/
         $this->startScript("MATCH");
         $this->addToScript($this->buildTraversal());
-
 
         /* WHERE clause*/
         if (!empty($this->bag->where)) {
@@ -192,6 +199,8 @@ class CommandProcessor implements ProcessorInterface
         /* Delete clause */
         $this->addToScript('DELETE');
         $this->addToScript($this->buildProjections());
+
+//        die(var_dump($this->script));
     }
 
     /**
@@ -270,10 +279,12 @@ class CommandProcessor implements ProcessorInterface
             {
                 $projections[] = $this->detailField($projection);
             }
-            return implode(", ", $projections);
+            $return = implode(", ", $projections);
         } else {
-            return implode(", ", $this->variables);
+            $return = implode(", ", $this->variables);
         }
+
+        return $return;
     }
 
     /**
@@ -294,7 +305,9 @@ class CommandProcessor implements ProcessorInterface
                     $where[] = end($this->variables).':'.$value[2];
                     break;
                 case Bag::ELEMENT_ID :
-                    $where[] = 'ID('.end($this->variables).') '.(string)$this->toCypherOperator($value[1]).' '.$value[2];
+                    $idWhere = 'ID('.end($this->variables).') '.(string)$this->toCypherOperator($value[1]).' ';
+                    $idWhere .= (is_array($value[2]) ? $this->castValue($value[2]) : $value[2]);
+                    $where[] = $idWhere;
                     break;
                 default:
                     $where[] = (string)$this->detailField($value[0]).' '.(string)$this->toCypherOperator($value[1]).' '.$this->castValue($value[2]);
@@ -421,5 +434,12 @@ class CommandProcessor implements ProcessorInterface
         } else {
             return $field;
         }
+    }
+
+    public function reset()
+    {
+        $this->variables = [];
+        $this->bag = null;
+        $this->script = null;
     }
 }

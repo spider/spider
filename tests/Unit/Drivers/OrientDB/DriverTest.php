@@ -137,17 +137,6 @@ class DriverTest extends BaseTestSuite
         return [10];
     }
 
-    /**
-     * Format the id to a vendor-specific format
-     * @param int $id
-     * @param int $cluster
-     * @return mixed
-     */
-    public function formatId($id, $cluster = 11)
-    {
-        return "#$cluster:$id";
-    }
-
     /* Orient specific tests */
     public function testBuildTransactionStatement()
     {
@@ -196,6 +185,52 @@ class DriverTest extends BaseTestSuite
 
             $driver->close();
         }, ['throws' => 'Spider\Drivers\OrientDB\ClassDoesNotExistException']);
+    }
+
+    public function testFormatSingleCollectionAsScalar()
+    {
+        $this->specify("it formats a single response as a scalar", function() {
+            $driver = $this->driver();
+            $driver->open();
+
+            $response = $driver->executeReadCommand(new Command(
+                "SELECT name FROM V LIMIT 1", 'orientSQL',
+                "orientSQL"
+            ));
+
+            $scalar = $response->getScalar();
+
+            $driver->close();
+
+            $this->assertTrue(is_string($scalar), "failed to return a string");
+            $this->assertEquals($this->expected[0]['name'], $scalar, "failed to return the correct scalar");
+        });
+
+        $this->specify("it throws exception for multiple projections", function() {
+            $driver = $this->driver();
+            $driver->open();
+
+            $response = $driver->executeReadCommand(new Command(
+                "SELECT FROM V LIMIT 1", 'orientSQL',
+                "orientSQL"
+            ));
+
+            $driver->close();
+            $response->getScalar();
+        }, ['throws' => 'Spider\Exceptions\FormattingException']);
+
+        $this->specify("it throws exception for multiple records", function() {
+            $driver = $this->driver();
+            $driver->open();
+
+            $response = $driver->executeReadCommand(new Command(
+                "SELECT name FROM V", 'orientSQL',
+                "orientSQL"
+            ));
+
+            $driver->close();
+            $response->getScalar();
+        }, ['throws' => 'Spider\Exceptions\FormattingException']);
     }
 
     /* Override Not Supported Features */

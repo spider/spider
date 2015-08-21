@@ -129,14 +129,14 @@ class CommandProcessor implements ProcessorInterface
         /* MERGE {} */
         $this->appendUpdateData();
 
+        /* RETURN AFTER */
+        $this->addToScript("RETURN AFTER");
+
         /* WHERE */
         $this->appendWheres();
 
         /* LIMIT */
         $this->appendLimit();
-
-        /* RETURN AFTER */
-        $this->addToScript("RETURN AFTER");
     }
 
     /**
@@ -154,8 +154,20 @@ class CommandProcessor implements ProcessorInterface
                 unset($this->bag->where[$index]);
                 $this->bag->where = array_values($this->bag->where);
                 break;
+
             } elseif ($where[0] === Bag::ELEMENT_ID) {
-                $this->addToScript($where[2]);
+                $this->addToScript("V");
+                if (!is_array($where[2])) {
+                    $where[2] = [$where[2]];
+                }
+
+                foreach ($where[2] as $id) {
+                    if (!is_string($id)) {
+                        throw new \Exception("ids can only be ids. $id given");
+                    }
+                    $this->bag->where[] = ['@rid', Bag::COMPARATOR_EQUAL, $id, Bag::CONJUNCTION_OR];
+                }
+
                 unset($this->bag->where[$index]);
                 $this->bag->where = array_values($this->bag->where);
                 break;
@@ -358,8 +370,7 @@ class CommandProcessor implements ProcessorInterface
         $values = [];
 
         /* Is this a multiple creation? */
-        /* ToDo: Way to many loops here */
-        if (isset($this->bag->data[0])) {
+        if (count($this->bag->data) > 1) {
             // First, we setup the keys array [key1, key2, key3]
             foreach ($this->bag->data as $record) {
                 $keys = array_unique(array_merge($keys, array_keys($record)));
@@ -390,8 +401,8 @@ class CommandProcessor implements ProcessorInterface
 
         /* No, its a single creation */
         } else {
-            $keys = array_keys($this->bag->data);
-            $values = array_values($this->bag->data);
+            $keys = array_keys($this->bag->data[0]);
+            $values = array_values($this->bag->data[0]);
 
             $values = array_map(function ($value) {
                 return $this->castValue($value);

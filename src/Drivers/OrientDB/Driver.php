@@ -306,6 +306,8 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @param CommandInterface|BaseBuilder $command
      * @return $this
+     * @throws NotSupportedException
+     * @throws \Exception
      */
     public function runWriteCommand($command)
     {
@@ -447,17 +449,17 @@ class Driver extends AbstractDriver implements DriverInterface
     public function formatAsScalar($response)
     {
         // In case we are fetching a scalar from one record with one property
-//        try {
-        $this->canFormat($response, self::FORMAT_SCALAR);
-//        } catch (FormattingException $e) {
-//            if ($this->canBeScalar($response, $e)) {
-//                foreach ($response[0]->getOData() as $key => $value) {
-//                    return $value;
-//                }
-//            } else {
-//                throw $e; // Rethrow the exception
-//            }
-//        }
+        try {
+            $this->canFormat($response, self::FORMAT_SCALAR);
+        } catch (FormattingException $e) {
+            if ($this->canBeScalar($response, $e)) {
+                foreach ($response[0]->getOData() as $key => $value) {
+                    return $value;
+                }
+            } else {
+                throw $e; // Rethrow the exception
+            }
+        }
 
         // Otherwise, its a single scalar
         return $response[0];
