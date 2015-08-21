@@ -3,7 +3,7 @@ Spider offers an easy way to build powerful queries in a fluent way.
 
 For this guide, we will be using the following graph:
 
-[image]()
+![ModernGraph](images/modern_graph.JPG)
 
 Blue vertices are `person`s and green are `software`s. Each node has a property `name` which is seen.
 
