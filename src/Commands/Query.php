@@ -1,7 +1,6 @@
 <?php
 namespace Spider\Commands;
 
-use InvalidArgumentException;
 use Spider\Base\Collection;
 use Spider\Commands\Languages\ProcessorInterface;
 use Spider\Connections\ConnectionInterface;
@@ -25,7 +24,8 @@ class Query extends Builder
         ConnectionInterface $connection,
         ProcessorInterface $processor = null,
         Bag $bag = null
-    ) {
+    )
+    {
         parent::__construct($processor, $bag);
         $this->connection = $connection;
     }
@@ -92,7 +92,7 @@ class Query extends Builder
             $message = $this;
         }
 
-        if($this->bag->command === Bag::COMMAND_RETRIEVE) {
+        if ($this->bag->command === Bag::COMMAND_RETRIEVE) {
             $response = $this->connection->executeReadCommand($message);
         } else {
             $response = $this->connection->executeWriteCommand($message);

@@ -5,7 +5,7 @@ use Spider\Commands\Bag;
 
 /**
  * Command Processor Contract
- * To be implemented by drivers
+ * To be implemented by processors
  */
 interface ProcessorInterface
 {

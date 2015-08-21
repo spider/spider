@@ -2,9 +2,7 @@
 namespace Spider\Connections;
 
 use Spider\Base\Collection;
-use Spider\Commands\CommandInterface;
 use Spider\Drivers\DriverInterface;
-use Spider\Drivers\Response;
 
 /**
  * Facilitates two-way communication with a driver store

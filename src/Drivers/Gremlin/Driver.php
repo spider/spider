@@ -3,11 +3,11 @@ namespace Spider\Drivers\Gremlin;
 
 use brightzone\rexpro\Connection;
 use Spider\Base\Collection;
+use Spider\Commands\BaseBuilder;
 use Spider\Commands\CommandInterface;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
 use Spider\Drivers\Response;
-use Spider\Commands\BaseBuilder;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
 use Spider\Exceptions\NotSupportedException;
@@ -93,7 +93,7 @@ class Driver extends AbstractDriver implements DriverInterface
         if ($query instanceof BaseBuilder) {
             throw new NotSupportedException("There are currently no processors for gremlin/cypher.");
         } elseif (!$this->isSupportedLanguage($query->getScriptLanguage())) {
-            throw new NotSupportedException(__CLASS__ . " does not support ". $query->getScriptLanguage());
+            throw new NotSupportedException(__CLASS__ . " does not support " . $query->getScriptLanguage());
         }
 
         try {

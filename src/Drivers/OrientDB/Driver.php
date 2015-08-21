@@ -1,14 +1,13 @@
 <?php
 namespace Spider\Drivers\OrientDB;
 
-use PhpOrient\PhpOrient;
-use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
-use PhpOrient\Protocols\Binary\Data\Record;
 use PhpOrient\Exceptions\PhpOrientException as ServerException;
+use PhpOrient\PhpOrient;
+use PhpOrient\Protocols\Binary\Data\Record;
+use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 use Spider\Base\Collection;
-use Spider\Commands\CommandInterface;
 use Spider\Commands\BaseBuilder;
-use Spider\Commands\Languages\OrientSQL\CommandProcessor;
+use Spider\Commands\CommandInterface;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
 use Spider\Drivers\Response;
@@ -148,7 +147,7 @@ class Driver extends AbstractDriver implements DriverInterface
     }
 
     /**
-     * Finishes transcation statement and returns for testing
+     * Finishes transaction statement and returns for testing
      * @return string
      */
     public function getTransactionForTest()
@@ -263,7 +262,7 @@ class Driver extends AbstractDriver implements DriverInterface
             $processor = new $this->languages['orientSQL'];
             $command = $command->getCommand($processor);
         } elseif (!$this->isSupportedLanguage($command->getScriptLanguage())) {
-            throw new NotSupportedException(__CLASS__ . " does not support ". $command->getScriptLanguage());
+            throw new NotSupportedException(__CLASS__ . " does not support " . $command->getScriptLanguage());
         }
 
         try {
@@ -294,7 +293,7 @@ class Driver extends AbstractDriver implements DriverInterface
             $processor = new $this->languages['orientSQL'];
             $query = $query->getCommand($processor);
         } elseif (!$this->isSupportedLanguage($query->getScriptLanguage())) {
-            throw new NotSupportedException(__CLASS__ . " does not support ". $query->getScriptLanguage());
+            throw new NotSupportedException(__CLASS__ . " does not support " . $query->getScriptLanguage());
         }
 
         $this->client->query($query->getScript());
@@ -315,7 +314,7 @@ class Driver extends AbstractDriver implements DriverInterface
             $processor = new $this->languages['orientSQL'];
             $command = $command->getCommand($processor);
         } elseif (!$this->isSupportedLanguage($command->getScriptLanguage())) {
-            throw new NotSupportedException(__CLASS__ . " does not support ". $command->getScriptLanguage());
+            throw new NotSupportedException(__CLASS__ . " does not support " . $command->getScriptLanguage());
         }
 
         $this->client->command($command->getScript());
@@ -487,7 +486,6 @@ class Driver extends AbstractDriver implements DriverInterface
      * Checks a response's format whenever possible
      *
      * @param mixed $response the response we want to get the format for
-     *
      * @return int the format (FORMAT_X const) for the response
      */
     protected function responseFormat($response)

@@ -388,7 +388,7 @@ class CommandProcessor implements ProcessorInterface
                     if (array_key_exists($key, $record)) {
                         $set[] = $this->castValue($record[$key]);
 
-                    // Or to 'null'
+                        // Or to 'null'
                     } else {
                         $set[] = 'null';
                     }
@@ -399,7 +399,7 @@ class CommandProcessor implements ProcessorInterface
                 $i++;
             }
 
-        /* No, its a single creation */
+            /* No, its a single creation */
         } else {
             $keys = array_keys($this->bag->data[0]);
             $values = array_values($this->bag->data[0]);

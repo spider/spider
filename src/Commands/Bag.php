@@ -7,7 +7,7 @@ use Spider\Base\Object;
  * Command Bag
  *
  * Holds the parameters for a command to be processed by a
- * Driver specific Command Processor
+ * specific Language Processor
  */
 class Bag extends Object
 {

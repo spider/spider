@@ -1,10 +1,7 @@
 <?php
 namespace Spider\Connections;
 
-use Michaels\Manager\Contracts\ManagesItemsInterface;
-use Spider\Commands\CommandInterface;
 use Spider\Drivers\DriverInterface;
-use Spider\Drivers\Response;
 
 /**
  * Facilitates two-way communication with a data-store

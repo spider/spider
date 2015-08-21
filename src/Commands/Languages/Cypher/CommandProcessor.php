@@ -10,7 +10,6 @@ use Spider\Exceptions\NotSupportedException;
 /**
  * Class CommandProcessor
  * Cypher implementation
- * @package Spider\Drivers\OrientDB
  */
 class CommandProcessor implements ProcessorInterface
 {
@@ -82,8 +81,7 @@ class CommandProcessor implements ProcessorInterface
         // Let generate all the rows we need
         $traversals = [];
         $sets = [];
-        foreach($this->bag->data as $data)
-        {
+        foreach ($this->bag->data as $data) {
             $traversals[] = $this->buildTraversal();
             $sets[] = $this->buildSet($data);
         }
@@ -170,7 +168,6 @@ class CommandProcessor implements ProcessorInterface
 
         /* LIMIT 20 */
         $this->appendLimit();
-
     }
 
     /**
@@ -199,8 +196,6 @@ class CommandProcessor implements ProcessorInterface
         /* Delete clause */
         $this->addToScript('DELETE');
         $this->addToScript($this->buildProjections());
-
-//        die(var_dump($this->script));
     }
 
     /**
@@ -275,8 +270,7 @@ class CommandProcessor implements ProcessorInterface
     {
         if (!empty($this->bag->projections)) {
             $projections = [];
-            foreach($this->bag->projections as $projection)
-            {
+            foreach ($this->bag->projections as $projection) {
                 $projections[] = $this->detailField($projection);
             }
             $return = implode(", ", $projections);
@@ -299,18 +293,18 @@ class CommandProcessor implements ProcessorInterface
                 $where[] = (string)$this->toCypherOperator($value[3]);
             }
 
-            switch($value[0]) {
+            switch ($value[0]) {
                 case Bag::ELEMENT_LABEL :
                     // @todo change to use appropriate variable when traversals are added.
-                    $where[] = end($this->variables).':'.$value[2];
+                    $where[] = end($this->variables) . ':' . $value[2];
                     break;
                 case Bag::ELEMENT_ID :
-                    $idWhere = 'ID('.end($this->variables).') '.(string)$this->toCypherOperator($value[1]).' ';
+                    $idWhere = 'ID(' . end($this->variables) . ') ' . (string)$this->toCypherOperator($value[1]) . ' ';
                     $idWhere .= (is_array($value[2]) ? $this->castValue($value[2]) : $value[2]);
                     $where[] = $idWhere;
                     break;
                 default:
-                    $where[] = (string)$this->detailField($value[0]).' '.(string)$this->toCypherOperator($value[1]).' '.$this->castValue($value[2]);
+                    $where[] = (string)$this->detailField($value[0]) . ' ' . (string)$this->toCypherOperator($value[1]) . ' ' . $this->castValue($value[2]);
             }
         }
         return implode(' ', $where);
@@ -325,13 +319,12 @@ class CommandProcessor implements ProcessorInterface
     {
         // Perform compliance check
         $orders = [];
-        foreach($this->bag->orderBy as $order)
-        {
-            $direction = ( $order[1] === Bag::ORDER_ASC ) ? 'ASC' : 'DESC';
+        foreach ($this->bag->orderBy as $order) {
+            $direction = ($order[1] === Bag::ORDER_ASC) ? 'ASC' : 'DESC';
             if (strpos($order[0], '.') === false) {
-                $orders[] = $this->detailField($order[0]).' '.$direction;
+                $orders[] = $this->detailField($order[0]) . ' ' . $direction;
             } else {
-                $orders[] = $order[0].' '.$direction;
+                $orders[] = $order[0] . ' ' . $direction;
             }
         }
         return implode(",", $orders);
@@ -350,23 +343,23 @@ class CommandProcessor implements ProcessorInterface
 
     /**
      * Append update data to current script
-     * @param string $prefix
-     * @throws \Exception
+     * @param $data
+     * @return string
+     * @throws NotSupportedException
      */
     protected function buildSet($data)
     {
         $set = [];
-        foreach($data as $key => $value)
-        {
-            switch($key) {
+        foreach ($data as $key => $value) {
+            switch ($key) {
                 case Bag::ELEMENT_LABEL :
                     // @todo change to use appropriate variable when traversals are added.
-                    $set[] = end($this->variables).' :'.$value;
+                    $set[] = end($this->variables) . ' :' . $value;
                     break;
                 case Bag::ELEMENT_ID :
                     throw new NotSupportedException('Neo4J will not allow you to manually set IDs');
                 default:
-                    $set[] = $this->detailField($key).' = '.$this->castValue($value);
+                    $set[] = $this->detailField($key) . ' = ' . $this->castValue($value);
             }
         }
         return implode(', ', $set);
@@ -374,20 +367,16 @@ class CommandProcessor implements ProcessorInterface
 
     /**
      * Append traversal data to current script
-     * @param string $prefix
-     * @throws \Exception
+     * @return string
      */
     protected function buildTraversal()
     {
         $var = $this->generateVar();
-        if($this->bag->target == Bag::ELEMENT_EDGE)
-        {
+        if ($this->bag->target == Bag::ELEMENT_EDGE) {
             //We're trying to select an edge
             return "()-[{$var}]-()";
 
-        }
-        else
-        {
+        } else {
             //We're looking for vertices
             return "({$var})";
         }
@@ -412,16 +401,15 @@ class CommandProcessor implements ProcessorInterface
         $var = "a";
         $searching = true;
 
-        while($searching)
-        {
-            if (in_array('spider_'.$var, $this->variables)) {
+        while ($searching) {
+            if (in_array('spider_' . $var, $this->variables)) {
                 $var++;
             } else {
-                $this->variables[] = 'spider_'.$var;
+                $this->variables[] = 'spider_' . $var;
                 $searching = false;
             }
         }
-        return 'spider_'.$var;
+        return 'spider_' . $var;
     }
 
     /**
@@ -429,8 +417,8 @@ class CommandProcessor implements ProcessorInterface
      */
     protected function detailField($field)
     {
-        if(strpos($field, '.') === false) {
-            return end($this->variables).'.'.$field;
+        if (strpos($field, '.') === false) {
+            return end($this->variables) . '.' . $field;
         } else {
             return $field;
         }

@@ -5,11 +5,11 @@ namespace Spider\Drivers\Neo4J;
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Cypher\Query;
 use Spider\Base\Collection;
+use Spider\Commands\BaseBuilder;
 use Spider\Commands\CommandInterface;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
 use Spider\Drivers\Response;
-use Spider\Commands\BaseBuilder;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
 use Spider\Exceptions\NotSupportedException;
@@ -79,6 +79,8 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @param CommandInterface|BaseBuilder $query
      * @return Response
+     * @throws NotSupportedException
+     * @throws \Exception
      */
     public function executeReadCommand($query)
     {
@@ -86,7 +88,7 @@ class Driver extends AbstractDriver implements DriverInterface
             $processor = new $this->languages['cypher'];
             $query = $query->getCommand($processor);
         } elseif (!$this->isSupportedLanguage($query->getScriptLanguage())) {
-            throw new NotSupportedException(__CLASS__ . " does not support ". $query->getScriptLanguage());
+            throw new NotSupportedException(__CLASS__ . " does not support " . $query->getScriptLanguage());
         }
 
         $neoQuery = new Query($this->client, $query->getScript());
@@ -296,7 +298,8 @@ class Driver extends AbstractDriver implements DriverInterface
     {
         if (isset($response[0][0])
             && ($response[0][0] instanceof \Everyman\Neo4j\Node
-                || ($response[0][0] instanceof \Everyman\Neo4j\Relationship))) {
+                || ($response[0][0] instanceof \Everyman\Neo4j\Relationship))
+        ) {
             return self::FORMAT_SET;
         }
 

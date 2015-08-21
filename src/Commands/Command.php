@@ -1,6 +1,5 @@
 <?php
 namespace Spider\Commands;
-use Spider\Base\Object;
 
 /**
  * Command: Contains the command script to be executed by the driver
@@ -26,7 +25,6 @@ class Command implements CommandInterface
      * Create a new Command from a text string
      * @param string $script
      * @param null $language
-     * @param string $rw
      */
     public function __construct($script = '', $language = null)
     {

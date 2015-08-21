@@ -2,7 +2,7 @@
 namespace Spider\Base;
 
 /**
- * Class Object
+ * Configurable Objects
  * @package Spider\Base
  */
 class Object
