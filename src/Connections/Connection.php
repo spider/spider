@@ -1,42 +1,51 @@
 <?php
-namespace Michaels\Spider\Connections;
+namespace Spider\Connections;
 
-use Michaels\Manager\Traits\ManagesItemsTrait;
-use Michaels\Spider\Drivers\DriverInterface;
-use Michaels\Spider\Graphs\Graph;
-use Michaels\Spider\Queries\CommandInterface;
+use Spider\Base\Collection;
+use Spider\Drivers\DriverInterface;
 
 /**
  * Facilitates two-way communication with a driver store
- * @package Michaels\Spider\Test\Unit\Connections
+ * @package Spider\Test\Unit\Connections
  */
-class Connection implements ConnectionInterface
+class Connection extends Collection implements ConnectionInterface
 {
-    /** @inherits from Michaels\Manager:
-     *      init(), add(), get(), getAll(), exists(), has(), set(),
-     *      remove(), clear(), toJson, isEmpty(), __toString()
-     */
-    use ManagesItemsTrait;
-
     /** @var  DriverInterface Instance of the driver */
     protected $driver;
+
+    protected $driverAliases = [
+        'orientdb' => 'Spider\Drivers\OrientDB\Driver',
+        'gremlin' => 'Spider\Drivers\Gremlin\Driver',
+        'neo4j' => 'Spider\Drivers\Neo4J\Driver',
+    ];
 
     /**
      * Constructs a new connection with driver and properties
      *
-     * @param DriverInterface $driver
-     * @param array $credentials Credentials, host, and the like
-     * @param array $config
+     * @param DriverInterface|string $driver
+     * @param array $configuration Credentials and configuration
      */
-    public function __construct(DriverInterface $driver, array $credentials, array $config = [])
+    public function __construct($driver, array $configuration = [])
     {
-        $items = [
-            'credentials' => $credentials,
-            'config' => $config
-        ];
+        /* I am sure all this could be refactored */
 
-        $this->initManager($items);
-        $this->driver = $driver;
+        // Were we passed all the properties through the first argument?
+        $config = (is_array($driver) ? $driver : $configuration);
+        $this->initManager($config);
+
+        /* Setup the driver */
+        if (is_string($driver)) {
+            $this->driverFromString($driver);
+
+        } elseif ($driver instanceof DriverInterface) {
+            $this->driver = $driver;
+
+        } elseif (isset($config['driver'])) {
+            if (is_string($config['driver'])) {
+                $this->driverFromString($config['driver']);
+            } elseif ($config['driver'] instanceof DriverInterface)
+                $this->driver = $config['driver'];
+        }
     }
 
     /**
@@ -44,7 +53,8 @@ class Connection implements ConnectionInterface
      */
     public function open()
     {
-        return $this->driver->open($this->get('credentials'), $this->get('config'));
+        $this->driver->setProperties($this->getAll()); // from given properties
+        return $this->driver->open();
     }
 
     /**
@@ -65,25 +75,6 @@ class Connection implements ConnectionInterface
     public function __call($name, $args)
     {
         return call_user_func_array([$this->driver, $name], $args);
-    }
-
-    /**
-     * Returns the properties array
-     * @return array
-     */
-    public function getProperties()
-    {
-        return $this->getAll();
-    }
-
-    /**
-     * Updates the entire properties array
-     *
-     * @param array $properties
-     */
-    public function setProperties(array $properties)
-    {
-        $this->reset($properties);
     }
 
     /**
@@ -115,49 +106,18 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * Passes to driver: executes a Query or read command
-     *
-     * @param CommandInterface $query
-     * @return array|Record|Graph
+     * @param $driver
      */
-    public function executeReadCommand(CommandInterface $query)
+    protected function driverFromString($driver)
     {
-        return $this->driver->executeReadCommand($query);
-    }
+        // As an alias
+        if (isset($this->driverAliases[$driver])) {
+            $driverClass = $this->driverAliases[$driver];
+            $this->driver = new $driverClass();
 
-    /**
-     * Passes to driver: executes a write command
-     *
-     * These are the "CUD" in CRUD
-     *
-     * @param CommandInterface $command
-     * @return array|Record|Graph|mixed mixed values for some write commands
-     * @internal param CommandInterface $query
-     */
-    public function executeWriteCommand(CommandInterface $command)
-    {
-        return $this->driver->executeWriteCommand($command);
-    }
-
-    /**
-     * Passes to driver: executes a read command without waiting for a response
-     *
-     * @param CommandInterface $query
-     * @return $this
-     */
-    public function runReadCommand(CommandInterface $query)
-    {
-        return $this->driver->runReadCommand($query);
-    }
-
-    /**
-     * Passes to driver: executes a write command without waiting for a response
-     *
-     * @param CommandInterface $command
-     * @return $this
-     */
-    public function runWriteCommand(CommandInterface $command)
-    {
-        return $this->driver->runWriteCommand($command);
+            // As a classname
+        } else {
+            $this->driver = new $driver();
+        }
     }
 }

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>Spider\Commands\Languages\OrientSQL\CommandProcessor | API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../../css/sami.css">
+        <script src="../../../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../../../js/bootstrap.min.js"></script>
+        <script src="../../../../js/typeahead.min.js"></script>
+        <script src="../../../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    
+    
+    </head>
+
+    <body id="class" data-name="class:Spider_Commands_Languages_OrientSQL_CommandProcessor" data-root-path="../../../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                <form id="search-form" action="../../../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../../../index.html">API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../../../classes.html">Classes</a></li>
+                                            <li><a href="../../../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../../../traits.html">Traits</a></li>
+                    <li><a href="../../../../doc-index.html">Index</a></li>
+                    <li><a href="../../../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                                                            <li><a href="../../../../Spider.html">Spider</a></li>
+                                        <li><a href="../../../../Spider/Commands.html">Commands</a></li>
+                                        <li><a href="../../../../Spider/Commands/Languages.html">Languages</a></li>
+                                        <li><a href="../../../../Spider/Commands/Languages/OrientSQL.html">OrientSQL</a></li>
+    
+                <li>CommandProcessor</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>CommandProcessor</h1>
+    </div>
+
+    <p>    class
+    <strong>CommandProcessor</strong>        implements
+        <a href="../../../../Spider/Commands/Languages/ProcessorInterface.html"><abbr title="Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></a>
+</p>
+
+            <div class="description">
+            <p>Class CommandProcessor
+OrientSQL implementation</p>                    </div>
+    
+    
+    
+            <h2>Properties</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td class="type" id="property_operatorsMap">
+                                                                                
+                </td>
+                <td>$operatorsMap</td>
+                <td class="last">
+</td>
+                <td></td>
+            </tr>
+            </table>
+
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_process">process</a>(<abbr title="Spider\Commands\Languages\OrientSQL\Spider\Commands\Bag">Bag</abbr> $bag)
+                                            <p>Command Processor</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_insert">insert</a>()
+                                            <p>Process a COMMAND_CREATE bag</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_select">select</a>()
+                                            <p>Process a COMMAND_RETRIEVE bag</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    mixed
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_toSqlOperator">toSqlOperator</a>($operator)
+                                            <p>Map a Command Bag operator to its Orient SQL counterpart</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_init">init</a>(<abbr title="Spider\Commands\Languages\OrientSQL\Spider\Commands\Bag">Bag</abbr> $bag)
+                                            <p>Initialize the Command Processor</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_startScript">startScript</a>($clause)
+                                            <p>Begin the current script without a space</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_addToScript">addToScript</a>($clause)
+                                            <p>Add to the current script with a space before</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method_process">
+        <div class="location">at line 59</div>
+        <code>                    <a href="../../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>
+    <strong>process</strong>(<abbr title="Spider\Commands\Languages\OrientSQL\Spider\Commands\Bag">Bag</abbr> $bag)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Command Processor</p>                    <p>Receives a Commands\Bag instance and returns a valid
+Commands\CommandInterface instance with a native command
+script for whichever driver is specified</p>            </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Spider\Commands\Languages\OrientSQL\Spider\Commands\Bag">Bag</abbr></td>
+                <td>$bag</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_insert">
+        <div class="location">at line 76</div>
+        <code>                    
+    <strong>insert</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Process a COMMAND_CREATE bag</p>                                </div>
+                <div class="tags">
+            
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_select">
+        <div class="location">at line 93</div>
+        <code>                    
+    <strong>select</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Process a COMMAND_RETRIEVE bag</p>                                </div>
+                <div class="tags">
+            
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../../Spider/Exceptions/NotSupportedException.html"><abbr title="Spider\Exceptions\NotSupportedException">NotSupportedException</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_toSqlOperator">
+        <div class="location">at line 210</div>
+        <code>                    mixed
+    <strong>toSqlOperator</strong>($operator)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Map a Command Bag operator to its Orient SQL counterpart</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$operator</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>mixed</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_init">
+        <div class="location">at line 219</div>
+        <code>                    
+    <strong>init</strong>(<abbr title="Spider\Commands\Languages\OrientSQL\Spider\Commands\Bag">Bag</abbr> $bag)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Initialize the Command Processor</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Spider\Commands\Languages\OrientSQL\Spider\Commands\Bag">Bag</abbr></td>
+                <td>$bag</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_startScript">
+        <div class="location">at line 229</div>
+        <code>                    
+    <strong>startScript</strong>($clause)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Begin the current script without a space</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$clause</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_addToScript">
+        <div class="location">at line 239</div>
+        <code>                    
+    <strong>addToScript</strong>($clause)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Add to the current script with a space before</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$clause</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>

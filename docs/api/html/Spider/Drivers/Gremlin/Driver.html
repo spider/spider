@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>Spider\Drivers\Gremlin\Driver | API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../css/sami.css">
+        <script src="../../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../../js/bootstrap.min.js"></script>
+        <script src="../../../js/typeahead.min.js"></script>
+        <script src="../../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    
+    
+    </head>
+
+    <body id="class" data-name="class:Spider_Drivers_Gremlin_Driver" data-root-path="../../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                <form id="search-form" action="../../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../../index.html">API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../../classes.html">Classes</a></li>
+                                            <li><a href="../../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../../traits.html">Traits</a></li>
+                    <li><a href="../../../doc-index.html">Index</a></li>
+                    <li><a href="../../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                                                            <li><a href="../../../Spider.html">Spider</a></li>
+                                        <li><a href="../../../Spider/Drivers.html">Drivers</a></li>
+                                        <li><a href="../../../Spider/Drivers/Gremlin.html">Gremlin</a></li>
+    
+                <li>Driver</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>Driver</h1>
+    </div>
+
+    <p>    class
+    <strong>Driver</strong>        extends <a href="../../../Spider/Drivers/AbstractDriver.html"><abbr title="Spider\Drivers\AbstractDriver">AbstractDriver</abbr></a>        implements
+        <a href="../../../Spider/Drivers/DriverInterface.html"><abbr title="Spider\Drivers\DriverInterface">DriverInterface</abbr></a>
+</p>
+
+            <div class="description">
+            <p>Driver for Gremlin Server</p>                    </div>
+    
+            <h2>Traits</h2>
+
+        <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-6">
+                                            <abbr title="Michaels\Manager\Traits\ManagesItemsTrait">Michaels\Manager\Traits\ManagesItemsTrait</abbr>
+                                    </div>
+                <div class="col-md-6">
+                    
+
+                </div>
+            </div>
+                    <div class="row">
+                <div class="col-md-6">
+                                            <abbr title="Michaels\Manager\Traits\ChainsNestedItemsTrait">Michaels\Manager\Traits\ChainsNestedItemsTrait</abbr>
+                                    </div>
+                <div class="col-md-6">
+                    
+
+                </div>
+            </div>
+            </div>
+    
+            <h2>Constants</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td>FORMAT_SET</td>
+                <td class="last">
+                    <p><em>set of possible formats for responses.</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>FORMAT_TREE</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>FORMAT_PATH</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>FORMAT_SCALAR</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>FORMAT_CUSTOM</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+            </table>
+
+    
+            <h2>Properties</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td class="type" id="property_inTransaction">
+                                                                                bool
+                </td>
+                <td>$inTransaction</td>
+                <td class="last">
+</td>
+                <td><small>from&nbsp;<a href="../../../Spider/Drivers/AbstractDriver.html#property_inTransaction"><abbr title="Spider\Drivers\AbstractDriver">AbstractDriver</abbr></a></small></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_graph">
+                                                                                string
+                </td>
+                <td>$graph</td>
+                <td class="last">
+</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_traversal">
+                                                                                string
+                </td>
+                <td>$traversal</td>
+                <td class="last">
+</td>
+                <td></td>
+            </tr>
+            </table>
+
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___construct">__construct</a>(array $properties = array())
+                                            <p>Create a new instance with a client</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setProperties">setProperties</a>(array $properties)
+                                            <p>Map array to class properties</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../Spider/Base/Object.html#method_setProperties"><abbr title="Spider\Base\Object">Object</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setProperty">setProperty</a>(String|Int $name, mixed $value)
+                                            <p>Set a class property</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../Spider/Base/Object.html#method_setProperty"><abbr title="Spider\Base\Object">Object</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___destruct">__destruct</a>()
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../Spider/Drivers/AbstractDriver.html#method___destruct"><abbr title="Spider\Drivers\AbstractDriver">AbstractDriver</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_isSupportedLanguage">isSupportedLanguage</a>(string $language)
+                                            <p>Checks if a language is supported by this driver</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../Spider/Drivers/AbstractDriver.html#method_isSupportedLanguage"><abbr title="Spider\Drivers\AbstractDriver">AbstractDriver</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../Spider/Commands/Languages/ProcessorInterface.html"><abbr title="Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getProcessor">getProcessor</a>(string $language)
+                                            <p>Get the processor for a given language</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../Spider/Drivers/AbstractDriver.html#method_getProcessor"><abbr title="Spider\Drivers\AbstractDriver">AbstractDriver</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../Spider/Drivers/Gremlin/Driver.html"><abbr title="Spider\Drivers\Gremlin\Driver">Driver</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_open">open</a>()
+                                            <p>Open a database connection</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../Spider/Drivers/Gremlin/Driver.html"><abbr title="Spider\Drivers\Gremlin\Driver">Driver</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_close">close</a>()
+                                            <p>Close the database connection</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_executeReadCommand">executeReadCommand</a>(<a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> $query)
+                                            <p>Executes a Query or read command</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_executeWriteCommand">executeWriteCommand</a>(<a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> $command)
+                                            <p>Executes a write command</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Drivers\Gremlin\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_runReadCommand">runReadCommand</a>(<a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> $query)
+                                            <p>Executes a read command without waiting for a response</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Spider\Drivers\Gremlin\$this">$this</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_runWriteCommand">runWriteCommand</a>(<a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> $command)
+                                            <p>Executes a write command without waiting for a response</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_startTransaction">startTransaction</a>()
+                                            <p>Opens a transaction</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool|void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_stopTransaction">stopTransaction</a>(bool $commit = true)
+                                            <p>Closes a transaction</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_formatAsSet">formatAsSet</a>(mixed $response)
+                                            <p>Format a raw response to a set of collections
+This is for cases where a set of Vertices or Edges is expected in the response</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_formatAsTree">formatAsTree</a>(mixed $response)
+                                            <p>Format a raw response to a tree of collections
+This is for cases where a set of Vertices or Edges is expected in tree format from the response</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_formatAsPath">formatAsPath</a>(mixed $response)
+                                            <p>Format a raw response to a path of collections
+This is for cases where a set of Vertices or Edges is expected in path format from the response</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_formatAsScalar">formatAsScalar</a>(mixed $response)
+                                            <p>Format a raw response to a scalar
+This is for cases where a scalar result is expected</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method___construct">
+        <div class="location">at line 54</div>
+        <code>                    
+    <strong>__construct</strong>(array $properties = array())</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Create a new instance with a client</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$properties</td>
+                <td>an array of the properties to set for this class</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setProperties">
+        <div class="location">in <a href="../../../Spider/Base/Object.html#method_setProperties"><abbr title="Spider\Base\Object">Object</abbr></a> at line 28</div>
+        <code>                    void
+    <strong>setProperties</strong>(array $properties)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Map array to class properties</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$properties</td>
+                <td>the key value array to set</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setProperty">
+        <div class="location">in <a href="../../../Spider/Base/Object.html#method_setProperty"><abbr title="Spider\Base\Object">Object</abbr></a> at line 43</div>
+        <code>                    void
+    <strong>setProperty</strong>(String|Int $name, mixed $value)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Set a class property</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>String|Int</td>
+                <td>$name</td>
+                <td>the name of the property to set</td>
+            </tr>
+                    <tr>
+                <td>mixed</td>
+                <td>$value</td>
+                <td>the value of the property</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method___destruct">
+        <div class="location">in <a href="../../../Spider/Drivers/AbstractDriver.html#method___destruct"><abbr title="Spider\Drivers\AbstractDriver">AbstractDriver</abbr></a> at line 29</div>
+        <code>                    
+    <strong>__destruct</strong>()</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_isSupportedLanguage">
+        <div class="location">in <a href="../../../Spider/Drivers/AbstractDriver.html#method_isSupportedLanguage"><abbr title="Spider\Drivers\AbstractDriver">AbstractDriver</abbr></a> at line 46</div>
+        <code>                    bool
+    <strong>isSupportedLanguage</strong>(string $language)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Checks if a language is supported by this driver</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$language</td>
+                <td>the language identifier, (orientSQL, gremlin, cypher)</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getProcessor">
+        <div class="location">in <a href="../../../Spider/Drivers/AbstractDriver.html#method_getProcessor"><abbr title="Spider\Drivers\AbstractDriver">AbstractDriver</abbr></a> at line 61</div>
+        <code>                    <a href="../../../Spider/Commands/Languages/ProcessorInterface.html"><abbr title="Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></a>
+    <strong>getProcessor</strong>(string $language)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Get the processor for a given language</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$language</td>
+                <td>the language identifier, (orientSQL, gremlin, cypher)</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../Spider/Commands/Languages/ProcessorInterface.html"><abbr title="Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Exceptions/NotSupportedException.html"><abbr title="Spider\Exceptions\NotSupportedException">NotSupportedException</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_open">
+        <div class="location">at line 65</div>
+        <code>                    <a href="../../../Spider/Drivers/Gremlin/Driver.html"><abbr title="Spider\Drivers\Gremlin\Driver">Driver</abbr></a>
+    <strong>open</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Open a database connection</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../Spider/Drivers/Gremlin/Driver.html"><abbr title="Spider\Drivers\Gremlin\Driver">Driver</abbr></a></td>
+            <td>$this</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_close">
+        <div class="location">at line 77</div>
+        <code>                    <a href="../../../Spider/Drivers/Gremlin/Driver.html"><abbr title="Spider\Drivers\Gremlin\Driver">Driver</abbr></a>
+    <strong>close</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Close the database connection</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../Spider/Drivers/Gremlin/Driver.html"><abbr title="Spider\Drivers\Gremlin\Driver">Driver</abbr></a></td>
+            <td>$this</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_executeReadCommand">
+        <div class="location">at line 91</div>
+        <code>                    <a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
+    <strong>executeReadCommand</strong>(<a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> $query)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Executes a Query or read command</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></td>
+                <td>$query</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a></td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td><abbr title="brightzone\rexpro\ServerException">ServerException</abbr></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_executeWriteCommand">
+        <div class="location">at line 122</div>
+        <code>                    <a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
+    <strong>executeWriteCommand</strong>(<a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> $command)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Executes a write command</p>                    <p>These are the "CUD" in CRUD</p>            </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></td>
+                <td>$command</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_runReadCommand">
+        <div class="location">at line 135</div>
+        <code>                    <abbr title="Spider\Drivers\Gremlin\$this">$this</abbr>
+    <strong>runReadCommand</strong>(<a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> $query)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Executes a read command without waiting for a response</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></td>
+                <td>$query</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Drivers\Gremlin\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a></td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td><abbr title="brightzone\rexpro\ServerException">ServerException</abbr></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_runWriteCommand">
+        <div class="location">at line 149</div>
+        <code>                    <abbr title="Spider\Drivers\Gremlin\$this">$this</abbr>
+    <strong>runWriteCommand</strong>(<a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> $command)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Executes a write command without waiting for a response</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></td>
+                <td>$command</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Spider\Drivers\Gremlin\$this">$this</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_startTransaction">
+        <div class="location">at line 223</div>
+        <code>                    bool
+    <strong>startTransaction</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Opens a transaction</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Exceptions/InvalidCommandException.html"><abbr title="Spider\Exceptions\InvalidCommandException">InvalidCommandException</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_stopTransaction">
+        <div class="location">at line 240</div>
+        <code>                    bool|void
+    <strong>stopTransaction</strong>(bool $commit = true)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Closes a transaction</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>bool</td>
+                <td>$commit</td>
+                <td>whether this is a commit (true) or a rollback (false)</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool|void</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Exceptions/InvalidCommandException.html"><abbr title="Spider\Exceptions\InvalidCommandException">InvalidCommandException</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_formatAsSet">
+        <div class="location">at line 257</div>
+        <code>                    <a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
+    <strong>formatAsSet</strong>(mixed $response)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Format a raw response to a set of collections
+This is for cases where a set of Vertices or Edges is expected in the response</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>mixed</td>
+                <td>$response</td>
+                <td>the raw DB response</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a></td>
+            <td>Spider consistent response</td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Exceptions/FormattingException.html"><abbr title="Spider\Exceptions\FormattingException">FormattingException</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_formatAsTree">
+        <div class="location">at line 275</div>
+        <code>                    <a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
+    <strong>formatAsTree</strong>(mixed $response)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Format a raw response to a tree of collections
+This is for cases where a set of Vertices or Edges is expected in tree format from the response</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>mixed</td>
+                <td>$response</td>
+                <td>the raw DB response</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a></td>
+            <td>Spider consistent response</td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Exceptions/NotSupportedException.html"><abbr title="Spider\Exceptions\NotSupportedException">NotSupportedException</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_formatAsPath">
+        <div class="location">at line 288</div>
+        <code>                    <a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
+    <strong>formatAsPath</strong>(mixed $response)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Format a raw response to a path of collections
+This is for cases where a set of Vertices or Edges is expected in path format from the response</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>mixed</td>
+                <td>$response</td>
+                <td>the raw DB response</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a></td>
+            <td>Spider consistent response</td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Exceptions/FormattingException.html"><abbr title="Spider\Exceptions\FormattingException">FormattingException</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_formatAsScalar">
+        <div class="location">at line 310</div>
+        <code>                    <a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
+    <strong>formatAsScalar</strong>(mixed $response)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Format a raw response to a scalar
+This is for cases where a scalar result is expected</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>mixed</td>
+                <td>$response</td>
+                <td>the raw DB response</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a></td>
+            <td>Spider consistent response</td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Exceptions/FormattingException.html"><abbr title="Spider\Exceptions\FormattingException">FormattingException</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>

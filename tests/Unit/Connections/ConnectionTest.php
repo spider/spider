@@ -1,10 +1,10 @@
 <?php
-namespace Michaels\Spider\Test\Unit\Connections;
+namespace Spider\Test\Unit\Connections;
 
 use Codeception\Specify;
-use Michaels\Spider\Connections\Connection;
-use Michaels\Spider\Test\Stubs\FirstDriverStub\Driver as FirstDriver;
-use Michaels\Spider\Test\Stubs\SecondDriverStub\Driver as SecondDriver;
+use Spider\Connections\Connection;
+use Spider\Test\Stubs\DriverStub as Driver;
+use Spider\Test\Stubs\SecondDriverStub\Driver as SecondDriver;
 
 /*
  * Tests Implementation against ConnectionInterface
@@ -16,47 +16,58 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function testGettersAndSetters()
     {
         $this->specify("it gets driver name", function () {
-            $connection = new Connection(new FirstDriver(), ['one' => 'one']);
 
-            $this->assertEquals('Michaels\Spider\Test\Stubs\FirstDriverStub\Driver', $connection->getDriverName(), "fails to return driver class name");
+            $connection = new Connection(new Driver(), ['one' => 'one']);
+
+            $this->assertEquals(
+                'Spider\Test\Stubs\DriverStub',
+                $connection->getDriverName(),
+                "fails to return driver class name"
+            );
         });
 
         $this->specify("it gets driver instance", function () {
-            $connection = new Connection(new FirstDriver(), ['one' => 'one']);
+            $connection = new Connection(new Driver(), ['one' => 'one']);
 
-            $this->assertInstanceOf('Michaels\Spider\Test\Stubs\FirstDriverStub\Driver', $connection->getDriver(), 'failed to return driver instance');
+            $this->assertInstanceOf(
+                'Spider\Test\Stubs\DriverStub',
+                $connection->getDriver(),
+                'failed to return driver instance'
+            );
         });
 
         $this->specify("it sets driver instance", function () {
-            $connection = new Connection(new FirstDriver(), ['one' => 'one']);
-            $connection->setDriver(new SecondDriver());
 
-            $this->assertInstanceOf('Michaels\Spider\Test\Stubs\SecondDriverStub\Driver', $connection->getDriver(), 'failed to return new driver instance');
+            $connection = new Connection(new Driver(['identifier'=>'one']), ['one' => 'one']);
+            $connection->setDriver(new Driver(['identifier'=>'two']));
+
+            $this->assertEquals(
+                'two',
+                $connection->getDriver()->identifier,
+                'failed to return new driver instance'
+            );
         });
 
         $this->specify("it gets properties array", function () {
-            $connection = new Connection(new FirstDriver(), ['one' => 'one']);
-            $expected = [
-                'credentials' => ['one' => 'one'],
-                'config' => [],
-            ];
+            $connection = new Connection(new Driver(), ['one' => 'one']);
+            $expected = ['one' => 'one'];
 
-            $this->assertEquals($expected, $connection->getProperties(), 'failed to return properties');
+            $this->assertEquals($expected, $connection->getAll(), 'failed to return properties');
         });
 
         $this->specify("it sets properties array", function () {
-            $connection = new Connection(new FirstDriver(), ['one' => 'one']);
-            $connection->setProperties(['two' => 'two']);
+            $connection = new Connection(new Driver(), ['one' => 'one']);
+            $connection->reset(['two' => 'two']);
 
-            $this->assertEquals(['two' => 'two'], $connection->getProperties(), 'failed to update properties');
+            $this->assertEquals(['two' => 'two'], $connection->getAll(), 'failed to update properties');
         });
 
         $this->specify("it gets individual properties", function () {
-            $connection = new Connection(new FirstDriver(), ['one' => 'one', 'two' => 'two'], ['a' => 'a']);
+            $connection = new Connection(new Driver(), ['one' => 'one', 'two' => 'two', 'a' => 'a']);
 
-            $one = $connection->get('credentials.one');
-            $two = $connection->get('credentials.two');
-            $three = $connection->get('config.a');
+            $one = $connection->get('one');
+            $two = $connection->get('two');
+            $three = $connection->get('a');
 
             $this->assertEquals('one', $one, "fails to get first credential");
             $this->assertEquals('two', $two, "fails to get second credential");
@@ -64,31 +75,90 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("it sets individual properties", function () {
-            $connection = new Connection(new FirstDriver(), ['one' => 'one']);
-            $connection->set('credentials.one', 'new-one');
-            $connection->set('credentials.two', 'two');
-            $connection->set('config.three.four', 'four');
+            $connection = new Connection(new Driver(), ['one' => 'one']);
+            $connection->set('one', 'new-one');
+            $connection->set('two', 'two');
+            $connection->set('three.four', 'four');
 
             $expected = [
-                'credentials' => ['one' => 'new-one', 'two' => 'two'],
-                'config' => ['three' => ['four' => 'four']],
+                'one' => 'new-one',
+                'two' => 'two',
+                'three' => ['four' => 'four'],
             ];
 
-            $this->assertEquals($expected, $connection->getProperties(), "failed to set properties");
+            $this->assertEquals($expected, $connection->getAll(), "failed to set properties");
         });
     }
 
-    public function testPassesCredsToDriverOnOpen()
+    public function testInitializeThroughConfigArray()
     {
-        $this->specify("it passes credentials and configs to driver on open", function () {
-            $connection = new Connection(new SecondDriver(), ['port' => 1234], ['some-config' => 'set']);
-            $passedToDriver = $connection->open();
-            $expected = [
-                'credentials' => ['port' => 1234],
-                'config' => ['some-config' => 'set'],
-            ];
+        $this->specify("it creates a driver from a config array: full classname", function () {
+            $connection = new Connection([
+                'driver' => 'Spider\Test\Stubs\DriverStub',
+                'hostname' => 'localhost',
+                'port' => 2424,
+            ]);
 
-            $this->assertEquals($expected, $passedToDriver, "failed to pass creds and config to driver");
+            $this->assertInstanceOf(
+                'Spider\Test\Stubs\DriverStub',
+                $connection->getDriver(),
+                "failed to set correct driver"
+            );
+
+            $this->assertEquals('localhost', $connection->get('hostname'), 'failed to set hostname');
+            $this->assertEquals(2424, $connection->get('port'), 'failed to set port');
+        });
+
+        $this->specify("it creates a driver from a config array: alias", function () {
+            $connection = new Connection([
+                'driver' => 'orientdb',
+                'hostname' => 'localhost',
+                'port' => 2424,
+            ]);
+
+            $this->assertInstanceOf(
+                'Spider\Drivers\OrientDB\Driver',
+                $connection->getDriver(),
+                "failed to set correct driver"
+            );
+
+            $this->assertEquals('localhost', $connection->get('hostname'), 'failed to set hostname');
+            $this->assertEquals(2424, $connection->get('port'), 'failed to set port');
+        });
+    }
+
+    public function testInitializeThroughDriverAndArray()
+    {
+        $this->specify("it creates a driver from a config array: full classname", function () {
+            $connection = new Connection('Spider\Test\Stubs\DriverStub', [
+                'hostname' => 'localhost',
+                'port' => 2424,
+            ]);
+
+            $this->assertInstanceOf(
+                'Spider\Test\Stubs\DriverStub',
+                $connection->getDriver(),
+                "failed to set correct driver"
+            );
+
+            $this->assertEquals('localhost', $connection->get('hostname'), 'failed to set hostname');
+            $this->assertEquals(2424, $connection->get('port'), 'failed to set port');
+        });
+
+        $this->specify("it creates a driver from a config array: alias", function () {
+            $connection = new Connection('orientdb', [
+                'hostname' => 'localhost',
+                'port' => 2424,
+            ]);
+
+            $this->assertInstanceOf(
+                'Spider\Drivers\OrientDB\Driver',
+                $connection->getDriver(),
+                "failed to set correct driver"
+            );
+
+            $this->assertEquals('localhost', $connection->get('hostname'), 'failed to set hostname');
+            $this->assertEquals(2424, $connection->get('port'), 'failed to set port');
         });
     }
 }

@@ -5,6 +5,26 @@ php:
   - 5.5
   - 5.6
   - hhvm
+  - nightly
+
+matrix:
+  allow_failures:
+    - php: nightly
+env:
+  - NEO4J_VERSION="2.2.4" GREMLINSERVER_VERSION="3.0.0" ORIENT_VERSION="2.1.0"
+
+before_install:
+  - sudo apt-get update > /dev/null
+
+install:
+  # install Oracle JDK8
+  - sh -c ./CI/jdk8-install.sh
+  # install gremlin-server
+  - sh -c ./CI/gremlin-server/install.sh
+  # install neo4j
+  - sh -c ./CI/neo4j/install.sh
+  # install orient
+  - sh -c ./CI/orient/install.sh
 
 before_script:
   - travis_retry composer self-update
@@ -16,4 +36,4 @@ script:
 
 after_script:
   - php vendor/bin/coveralls -v
-  
+

@@ -1,10 +1,10 @@
 <?php
-namespace Michaels\Spider\Test\Unit\Connections;
+namespace Spider\Test\Unit\Connections;
 
 use Codeception\Specify;
 use Michaels\Manager\Exceptions\ItemNotFoundException;
-use Michaels\Spider\Connections\ConnectionNotFoundException;
-use Michaels\Spider\Connections\Manager;
+use Spider\Exceptions\ConnectionNotFoundException;
+use Spider\Connections\Manager;
 
 /*
  * Tests Connection Manager. Does not test methods covered in Michaels\Manager
@@ -14,20 +14,21 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
     use Specify;
 
     protected $connections;
-    protected $config;
 
     public function setup()
     {
         $this->connections = [
             'default'     => 'default-connection',
             'default-connection' => [
-                'driver' => 'Michaels\Spider\Test\Stubs\FirstDriverStub',
+                'driver' => 'Spider\Test\Stubs\DriverStub',
+                'identifier' => 'one',
                 'username' => 'username',
                 'host' => 'host',
                 'pass' => 'pass'
             ],
             'connection-one' => [
-                'driver' => 'Michaels\Spider\Test\Stubs\SecondDriverStub',
+                'driver' => 'Spider\Test\Stubs\DriverStub',
+                'identifier' => 'two',
                 'credentials' => 'one-credentials',
                 'other' => 'one-other'
             ],
@@ -37,14 +38,19 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
                 'other' => 'two-other'
             ]
         ];
-
-        $this->config = [
-            'something' => 'something-value',
-            'return-object' => false, // return native object
-        ];
     }
 
     /* Inherits from Michaels\Manager\Traits\ManagesItemsTrait, which is self-tested */
+    public function testValidateConnectionProperties()
+    {
+        $this->specify("it throws an exception if no driver is set", function () {
+            $properties = $this->connections;
+            unset($properties['default-connection']['driver']);
+            $manager = new Manager();
+            $manager->make();
+        }, ['throws' => 'Spider\Exceptions\ConnectionNotFoundException']);
+    }
+
     public function testMakeStoredConnections()
     {
         $this->specify("it makes a new instance of the default connection", function () {
@@ -53,26 +59,25 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
             // Connection is a valid instance of Connection
             $this->assertInstanceOf(
-                'Michaels\Spider\Connections\ConnectionInterface',
+                'Spider\Connections\ConnectionInterface',
                 $connection,
                 "failed to return an valid connection"
             );
 
             // Connection is using the correct driver
             $this->assertEquals(
-                $this->connections['default-connection']['driver'] . '\Driver',
+                $this->connections['default-connection']['driver'],
                 $connection->getDriverName(),
                 "failed to set correct driver"
             );
 
             // Connection is using the correct properties
-            $expected['credentials'] = $this->connections['default-connection'];
-            $expected['config'] = [];
-            unset($expected['credentials']['driver']);
+            $expected = $this->connections['default-connection'];
+            unset($expected['driver']);
 
             $this->assertEquals(
                 $expected,
-                $connection->getProperties(),
+                $connection->getAll(),
                 "failed to set correct properties"
             );
         });
@@ -83,26 +88,25 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 
             // Connection is a valid instance of Connection
             $this->assertInstanceOf(
-                'Michaels\Spider\Connections\ConnectionInterface',
+                'Spider\Connections\ConnectionInterface',
                 $connection,
                 "failed to return an valid connection"
             );
 
             // Connection is using the correct driver
             $this->assertEquals(
-                $this->connections['connection-one']['driver'] . '\Driver',
+                $this->connections['connection-one']['driver'],
                 $connection->getDriverName(),
                 "failed to set correct driver"
             );
 
             // Connection is using the correct properties
-            $expected['credentials'] = $this->connections['connection-one'];
-            unset($expected['credentials']['driver']);
-            $expected['config'] = [];
+            $expected = $this->connections['connection-one'];
+            unset($expected['driver']);
 
             $this->assertEquals(
                 $expected,
-                $connection->getProperties(),
+                $connection->getAll(),
                 "failed to set correct properties"
             );
         });
@@ -116,13 +120,6 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             $manager = new Manager($this->connections);
             $manager->make('doesnotexist');
         }, ['throws' => new ConnectionNotFoundException()]);
-
-        $this->specify("it sets config correctly", function () {
-            $manager = new Manager($this->connections, $this->config);
-            $connection = $manager->make('connection-one');
-
-            $this->assertEquals($this->config['something'], $connection->get('config.something'), 'failed to set and return config value');
-        });
     }
 
     public function testCacheConnections()
@@ -201,5 +198,65 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($defaultConnection, $manager->fetch(), "failed to return default cached connection by default");
             $this->assertEquals($defaultConnection, $manager->get('cache.default-connection'), 'failed to cache default-connection');
         });
+    }
+
+    public function testMakeFromProperties()
+    {
+        $manager = new Manager();
+        $connection = $manager->make($this->connections['connection-one']);
+
+        // Connection is a valid instance of Connection
+        $this->assertInstanceOf(
+            'Spider\Connections\ConnectionInterface',
+            $connection,
+            "failed to return an valid connection"
+        );
+
+        // Connection is using the correct driver
+        $this->assertEquals(
+            $this->connections['connection-one']['driver'],
+            $connection->getDriverName(),
+            "failed to set correct driver"
+        );
+
+        // Connection is using the correct properties
+        $expected = $this->connections['connection-one'];
+        unset($expected['driver']);
+
+        $this->assertEquals(
+            $expected,
+            $connection->getAll(),
+            "failed to set correct properties"
+        );
+    }
+
+    public function testFetchFromArrayOfProperties()
+    {
+        $manager = new Manager();
+        $connection = $manager->fetch($this->connections['connection-one']);
+
+        // Connection is a valid instance of Connection
+        $this->assertInstanceOf(
+            'Spider\Connections\ConnectionInterface',
+            $connection,
+            "failed to return an valid connection"
+        );
+
+        // Connection is using the correct driver
+        $this->assertEquals(
+            $this->connections['connection-one']['driver'],
+            $connection->getDriverName(),
+            "failed to set correct driver"
+        );
+
+        // Connection is using the correct properties
+        $expected = $this->connections['connection-one'];
+        unset($expected['driver']);
+
+        $this->assertEquals(
+            $expected,
+            $connection->getAll(),
+            "failed to set correct properties"
+        );
     }
 }

@@ -1,22 +1,19 @@
 <?php
-namespace Michaels\Spider\Drivers;
+namespace Spider\Drivers;
 
-use Michaels\Spider\Queries\CommandInterface;
+use Michaels\Manager\Contracts\ManagesItemsInterface;
+use Spider\Commands\CommandInterface;
 
 /**
  * Driver contract
  */
-
-interface DriverInterface
+interface DriverInterface extends ManagesItemsInterface
 {
     /**
-     * Connect to the database
-     *
-     * @param array $credentials
-     * @param array $config
+     * Connect to the database using already set, internal credentials
      * @return $this
      */
-    public function open(array $credentials, array $config = []);
+    public function open();
 
     /**
      * Close the database connection
@@ -29,38 +26,91 @@ interface DriverInterface
      *
      * This is the R in CRUD
      *
-     * @param CommandInterface $query
-     * @return array|Record|Graph
+     * @param CommandInterface|BaseBuilder $query
+     * @return Response
      */
-    public function executeReadCommand(CommandInterface $query);
+    public function executeReadCommand($query);
 
     /**
      * Executes a write command
      *
      * These are the "CUD" in CRUD
      *
-     * @param CommandInterface $command
-     * @return Graph|Record|array|mixed mixed values for some write commands
+     * @param CommandInterface|BaseBuilder $command
+     * @return Response
      */
-    public function executeWriteCommand(CommandInterface $command);
+    public function executeWriteCommand($command);
 
     /**
      * Executes a read command without waiting for a response
      *
-     * @param CommandInterface $query
+     * @param CommandInterface|BaseBuilder $query
      * @return $this
      */
-    public function runReadCommand(CommandInterface $query);
+    public function runReadCommand($query);
 
     /**
      * Executes a write command without waiting for a response
      *
-     * @param CommandInterface $command
+     * @param CommandInterface|BaseBuilder $command
      * @return $this
      */
-    public function runWriteCommand(CommandInterface $command);
+    public function runWriteCommand($command);
 
-//    public function startTransaction();
-//
-//    public function stopTransaction();
+    /**
+     * Opens a transaction
+     *
+     * @return bool
+     */
+    public function startTransaction();
+
+    /**
+     * Closes a transaction
+     *
+     * @param bool $commit whether this is a commit (true) or a rollback (false)
+     *
+     * @return bool
+     */
+    public function stopTransaction($commit = true);
+
+    /**
+     * Format a raw response to a set of collections
+     * This is for cases where a set of Vertices or Edges is expected in the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsSet($response);
+
+    /**
+     * Format a raw response to a tree of collections
+     * This is for cases where a set of Vertices or Edges is expected in tree format from the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsTree($response);
+
+    /**
+     * Format a raw response to a path of collections
+     * This is for cases where a set of Vertices or Edges is expected in path format from the response
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return Response Spider consistent response
+     */
+    public function formatAsPath($response);
+
+
+    /**
+     * Format a raw response to a scalar
+     * This is for cases where a scalar result is expected
+     *
+     * @param mixed $response the raw DB response
+     *
+     * @return mixed Scalar value
+     */
+    public function formatAsScalar($response);
 }
