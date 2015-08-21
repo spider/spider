@@ -45,7 +45,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * @var array The supported languages and their processors
      */
     protected $languages = [
-        'cypher' => '\Spider\Commands\Cypher\Processor',
+        'cypher' => '\Spider\Commands\Languages\Cypher\CommandProcessor',
     ];
 
     /**
@@ -83,7 +83,8 @@ class Driver extends AbstractDriver implements DriverInterface
     public function executeReadCommand($query)
     {
         if ($query instanceof BaseBuilder) {
-            throw new NotSupportedException("There are currently no processors for cypher.");
+            $processor = new $this->languages['cypher'];
+            $query = $query->getCommand($processor);
         } elseif (!$this->isSupportedLanguage($query->getScriptLanguage())) {
             throw new NotSupportedException(__CLASS__ . " does not support ". $query->getScriptLanguage());
         }

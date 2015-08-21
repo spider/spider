@@ -30,36 +30,6 @@ class Query extends Builder
         $this->connection = $connection;
     }
 
-    /* Fluent Methods for building queries */
-    /**
-     * Add a `delete` clause to the current command bag
-     * @param null $record
-     * @return $this|mixed
-     */
-    public function drop($record = null)
-    {
-        // Set the command bag
-        parent::drop($record);
-
-        // dispatch if a record was provided
-        if (!is_null($record)) {
-            return $this->dispatch();
-        }
-
-        return $this;
-    }
-
-    public function insert($data = null)
-    {
-        parent::create($data);
-
-        if (is_null($data)) {
-            return $this;
-        }
-
-        return $this->dispatch();
-    }
-
     /**
      * In some cases, choose what the database sends back
      * after the operation. For instance, if deleting
@@ -88,18 +58,18 @@ class Query extends Builder
      * @param $command
      * @return mixed Results from Command as SpiderResponse
      */
-    public function command($command)
-    {
-        if ($command instanceof CommandInterface) {
-            return $this->dispatch($command);
-        }
-
-        if (is_string($command)) {
-            return $this->dispatch(new Command($command));
-        }
-
-        throw new InvalidArgumentException("`command()` only accepts strings or instances of `CommandInterface`");
-    }
+//    public function command($command)
+//    {
+//        if ($command instanceof CommandInterface) {
+//            return $this->dispatch($command);
+//        }
+//
+//        if (is_string($command)) {
+//            return $this->dispatch(new Command($command));
+//        }
+//
+//        throw new InvalidArgumentException("`command()` only accepts strings or instances of `CommandInterface`");
+//    }
 
     /**
      * Dispatch a command through the Connection
@@ -114,7 +84,7 @@ class Query extends Builder
     {
         $this->connection->open();
 
-        if(isset($this->processor)) {
+        if (isset($this->processor)) {
             //if the processor is defined we want to pass a Command to the driver.
             $message = $command ? $command : $this->getCommand(); // returns `Command`
         } else {
@@ -123,10 +93,14 @@ class Query extends Builder
         }
 
         if($this->bag->command === Bag::COMMAND_RETRIEVE) {
-            return $this->connection->executeReadCommand($message);
+            $response = $this->connection->executeReadCommand($message);
         } else {
-            return $this->connection->executeWriteCommand($message);
+            $response = $this->connection->executeWriteCommand($message);
         }
+
+        // Reset query and return response
+        $this->bag = new Bag();
+        return $response;
     }
 
     /**
@@ -147,7 +121,7 @@ class Query extends Builder
     public function all()
     {
         $this->limit(false);
-        $response = $this->dispatch()->getSet();
+        $response = $this->set();
 
         return (is_array($response)) ? $response : [$response];
     }
@@ -216,6 +190,7 @@ class Query extends Builder
      */
     public function scalar()
     {
+        $this->limit(1);
         return $this->dispatch()->getScalar();
     }
 

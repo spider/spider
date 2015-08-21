@@ -16,14 +16,12 @@ class Bag extends Object
     public $command = null;
 
     /**
-     * Target of the command.
-     * Either a string for a label or instance of Commands\TargetID for a specific record
+     * Type of the Target of the command.
+     * Either a vertex (500) or an edge (510)
      *
-     * ToDo: Make TargetID a generic ID (and maybe Label) class
-     *
-     * @var string|TargetID
+     * @var int
      */
-    public $target = null;
+    public $target = 500; // defaults to a vertex
 
     /* Optional Bag Contents with defaults */
     /**
@@ -71,9 +69,6 @@ class Bag extends Object
     /** @var bool|string|array Which field to order results by. `false` no ordering */
     public $orderBy = false;
 
-    /** @var bool Order results Ascending (true) or Descending (false) */
-    public $orderAsc = true;
-
     /**
      * Flag a mapping format for the query to return
      * `Builder` allows SET, PATH, and TREE.
@@ -94,10 +89,13 @@ class Bag extends Object
     const COMPARATOR_LE = 50; // <=
     const COMPARATOR_NE = 60; // not equal
     const COMPARATOR_WITHOUT = 70;
+    const COMPARATOR_IN = 80;
 
     /* Conjunctions for constraints */
     const CONJUNCTION_AND = 100;
     const CONJUNCTION_OR = 110;
+    const CONJUNCTION_XOR = 120;
+    const CONJUNCTION_NOT = 130;
 
     /* CRUD commands (equivalent to SELECT, UPDATE, INSERT, DROP) */
     const COMMAND_CREATE = 200;
@@ -109,4 +107,14 @@ class Bag extends Object
     const MAP_SET = 300;
     const MAP_PATH = 310;
     const MAP_TREE = 320;
+
+    /* orders */
+    const ORDER_ASC = 400;
+    const ORDER_DESC = 410;
+
+    /* Elements */
+    const ELEMENT_VERTEX = 500;
+    const ELEMENT_EDGE = 510;
+    const ELEMENT_LABEL = 520;
+    const ELEMENT_ID = 530;
 }

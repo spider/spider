@@ -3,7 +3,6 @@ namespace Spider\Test\Unit\Commands\Builders\Builder;
 
 use Codeception\Specify;
 use Spider\Commands\Bag;
-use Spider\Graphs\ID as TargetID;
 use Spider\Test\Stubs\CommandProcessorStub;
 use Spider\Test\Unit\Commands\Builders\Builder\TestSetup;
 
@@ -21,7 +20,7 @@ class BaseTest extends TestSetup
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'target' => new TargetID(3)
+                'where' => [[Bag::ELEMENT_ID, Bag::COMPARATOR_EQUAL, 3, Bag::CONJUNCTION_AND]]
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -33,11 +32,7 @@ class BaseTest extends TestSetup
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'target' => [
-                    new TargetID(1),
-                    new TargetID(2),
-                    new TargetID(3),
-                ],
+                'where' => [[Bag::ELEMENT_ID, Bag::COMPARATOR_IN, [1, 2, 3], Bag::CONJUNCTION_AND]]
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -51,13 +46,14 @@ class BaseTest extends TestSetup
 
             $actual = $this->builder
                 ->retrieve('something')
-                ->target('target')
+                ->label('target')
                 ->getScript();
 
             $expected = $this->buildExpectedCommand([
                 'command' => Bag::COMMAND_RETRIEVE,
-                'target' => 'target',
-                'projections' => ['something']
+                'target' => Bag::ELEMENT_VERTEX,
+                'projections' => ['something'],
+                'where' => [[Bag::ELEMENT_LABEL, Bag::COMPARATOR_EQUAL, 'target', Bag::CONJUNCTION_AND]]
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");

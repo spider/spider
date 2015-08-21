@@ -6,10 +6,10 @@ use Spider\Commands\Command;
 use Spider\Commands\CommandInterface;
 use Spider\Commands\Languages\ProcessorInterface;
 use Spider\Exceptions\NotSupportedException;
-use Spider\Graphs\ID as TargetID;
 
 /**
  * Class CommandProcessor
+ * OrientSQL implementation
  * @package Spider\Drivers\OrientDB
  */
 class CommandProcessor implements ProcessorInterface
@@ -129,14 +129,14 @@ class CommandProcessor implements ProcessorInterface
         /* MERGE {} */
         $this->appendUpdateData();
 
+        /* RETURN AFTER */
+        $this->addToScript("RETURN AFTER");
+
         /* WHERE */
         $this->appendWheres();
 
         /* LIMIT */
         $this->appendLimit();
-
-        /* RETURN AFTER */
-        $this->addToScript("RETURN AFTER");
     }
 
     /**
@@ -148,7 +148,31 @@ class CommandProcessor implements ProcessorInterface
         $this->startScript("DELETE VERTEX");
 
         /* #12:1 | FROM Users */
-        $this->appendTarget(($this->bag->target instanceof TargetID) ? "" : "FROM");
+        foreach ($this->bag->where as $index => $where) {
+            if ($where[0] === Bag::ELEMENT_LABEL) {
+                $this->addToScript("FROM $where[2]");
+                unset($this->bag->where[$index]);
+                $this->bag->where = array_values($this->bag->where);
+                break;
+
+            } elseif ($where[0] === Bag::ELEMENT_ID) {
+                $this->addToScript("V");
+                if (!is_array($where[2])) {
+                    $where[2] = [$where[2]];
+                }
+
+                foreach ($where[2] as $id) {
+                    if (!is_string($id)) {
+                        throw new \Exception("ids can only be ids. $id given");
+                    }
+                    $this->bag->where[] = ['@rid', Bag::COMPARATOR_EQUAL, $id, Bag::CONJUNCTION_OR];
+                }
+
+                unset($this->bag->where[$index]);
+                $this->bag->where = array_values($this->bag->where);
+                break;
+            }
+        }
 
         /* WHERE */
         $this->appendWheres();
@@ -239,17 +263,31 @@ class CommandProcessor implements ProcessorInterface
      */
     protected function appendTarget($prefix = "from")
     {
-        if ($this->bag->target instanceof TargetID) {
-            $target = $this->bag->target->id;
-        } else {
-            $target = ($this->bag->target) ? $this->bag->target : "V";
+        // Set the vertex or edge target
+        $target = ($this->bag->target === Bag::ELEMENT_EDGE) ? 'E' : 'V';
+
+        // Search through wheres for label (class) or id
+        foreach ($this->bag->data as $index => $value) {
+            if (isset($value[Bag::ELEMENT_LABEL])) {
+                $target = $value[Bag::ELEMENT_LABEL];
+                unset($this->bag->data[$index][Bag::ELEMENT_LABEL]);
+                $this->bag->data = array_values($this->bag->data);
+            }
+        }
+
+        // Search through wheres for label (class) or id
+        foreach ($this->bag->where as $index => $value) {
+            if ($value[0] === Bag::ELEMENT_LABEL || $value[0] === Bag::ELEMENT_ID) {
+                $target = $value[2];
+                unset($this->bag->where[$index]);
+                $this->bag->where = array_values($this->bag->where);
+            }
         }
 
         if ($prefix !== "") {
-            $this->addToScript(strtoupper($prefix));
+            $this->addToScript(strtoupper($prefix)); // FROM
         }
-
-        $this->addToScript($target);
+        $this->addToScript($target); // ID or Class
     }
 
     /**
@@ -299,14 +337,14 @@ class CommandProcessor implements ProcessorInterface
     protected function appendOrderBy()
     {
         if (is_array($this->bag->orderBy)) {
-            // Perform compliance check
-            if (count($this->bag->orderBy) > 1) {
-                throw new NotSupportedException("Orient DB only allows one field in Order By");
+            $this->addToScript("ORDER BY");
+
+            $orders = [];
+            foreach ($this->bag->orderBy as $field) {
+                $orders[] = "$field[0] $field[1]";
             }
 
-            $this->addToScript("ORDER BY");
-            $this->addToScript(implode(",", $this->bag->orderBy));
-            $this->addToScript(($this->bag->orderAsc) ? 'ASC' : 'DESC');
+            $this->addToScript(implode(", ", $orders));
         }
     }
 
@@ -332,8 +370,7 @@ class CommandProcessor implements ProcessorInterface
         $values = [];
 
         /* Is this a multiple creation? */
-        /* ToDo: Way to many loops here */
-        if (isset($this->bag->data[0])) {
+        if (count($this->bag->data) > 1) {
             // First, we setup the keys array [key1, key2, key3]
             foreach ($this->bag->data as $record) {
                 $keys = array_unique(array_merge($keys, array_keys($record)));
@@ -364,8 +401,8 @@ class CommandProcessor implements ProcessorInterface
 
         /* No, its a single creation */
         } else {
-            $keys = array_keys($this->bag->data);
-            $values = array_values($this->bag->data);
+            $keys = array_keys($this->bag->data[0]);
+            $values = array_values($this->bag->data[0]);
 
             $values = array_map(function ($value) {
                 return $this->castValue($value);
@@ -390,7 +427,7 @@ class CommandProcessor implements ProcessorInterface
     protected function appendUpdateData($prefix = "content")
     {
         $this->addToScript("MERGE");
-        $this->addToScript(json_encode($this->bag->data));
+        $this->addToScript(json_encode($this->bag->data[0]));
     }
 
     /**

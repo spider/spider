@@ -63,7 +63,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
      */
     public function updateSimple()
     {
-        $query = 'UPDATE #12:1';
+        $query = 'UPDATE target_id';
         $query .= ' MERGE ' . json_encode($this->getData());
         $query .= ' RETURN AFTER';
 
@@ -80,9 +80,9 @@ class OrientSqlProcessorTest extends BaseTestSuite
     {
         $query = 'UPDATE target';
         $query .= ' MERGE ' . json_encode($this->getData());
+        $query .= ' RETURN AFTER';
         $query .= $this->getWhereSql();
         $query .= ' LIMIT 10';
-        $query .= ' RETURN AFTER';
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -95,7 +95,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
      */
     public function deleteSimple()
     {
-        $query = 'DELETE VERTEX #12:1';
+        $query = "DELETE VERTEX V WHERE @rid = 'target_id'";
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -122,6 +122,20 @@ class OrientSqlProcessorTest extends BaseTestSuite
      * testSelect:it processes a simple select bag
      */
     public function selectSimple()
+    {
+        $query = 'SELECT';
+        $query .= ' FROM target';
+
+        $command = new Command($query);
+        $command->setScriptLanguage('orientSQL');
+        return $command;
+    }
+
+    /**
+     * Returns a command for the the Bag tested in
+     * testSelect:it processes a simple select bag for edges
+     */
+    public function selectSimpleEdge()
     {
         $query = 'SELECT';
         $query .= ' FROM target';

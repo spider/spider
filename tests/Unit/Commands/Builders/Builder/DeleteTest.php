@@ -3,7 +3,6 @@ namespace Spider\Test\Unit\Commands\Builders\Builder;
 
 use Codeception\Specify;
 use Spider\Commands\Bag;
-use Spider\Graphs\ID as TargetID;
 
 class DeleteTest extends TestSetup
 {
@@ -18,7 +17,8 @@ class DeleteTest extends TestSetup
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_DELETE,
-                'target' => new TargetID(3)
+                'target' => Bag::ELEMENT_VERTEX,
+                'where' => [[Bag::ELEMENT_ID, Bag::COMPARATOR_EQUAL, 3, Bag::CONJUNCTION_AND]]
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -31,11 +31,8 @@ class DeleteTest extends TestSetup
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_DELETE,
-                'target' => [
-                    new TargetID(1),
-                    new TargetID(2),
-                    new TargetID(3),
-                ],
+                'target' => Bag::ELEMENT_VERTEX,
+                'where' => [[Bag::ELEMENT_ID, Bag::COMPARATOR_IN, [1, 2, 3], Bag::CONJUNCTION_AND]]
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -50,8 +47,8 @@ class DeleteTest extends TestSetup
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_DELETE,
-                'target' => 'target',
-                'where' => [['birthday', Bag::COMPARATOR_EQUAL, 'apr', Bag::CONJUNCTION_AND]],
+                'target' => Bag::ELEMENT_VERTEX,
+                'where' => [[Bag::ELEMENT_LABEL, Bag::COMPARATOR_EQUAL, 'target', Bag::CONJUNCTION_AND],['birthday', Bag::COMPARATOR_EQUAL, 'apr', Bag::CONJUNCTION_AND]],
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");

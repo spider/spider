@@ -5,7 +5,6 @@ use Spider\Base\Collection;
 use Spider\Commands\CommandInterface;
 use Spider\Drivers\DriverInterface;
 use Spider\Drivers\Response;
-use Spider\Graphs\Graph;
 
 /**
  * Facilitates two-way communication with a driver store

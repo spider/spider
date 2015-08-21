@@ -14,12 +14,12 @@ class UpdateTest extends TestSetup
     {
         $this->specify("it updates a single record with a single value by ID", function () {
             $actual = $this->builder
-                ->update('name', 'chris')
+                ->update(['name'=> 'chris'])
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_UPDATE,
-                'data' => ['name' => 'chris']
+                'data' => [['name' => 'chris']]
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -27,18 +27,19 @@ class UpdateTest extends TestSetup
 
         $this->specify("it updates a single record with a target and constraint", function () {
             $actual = $this->builder
-                ->update('name', 'chris')
+                ->update(['name'=> 'chris'])
                 ->where('username', 'chrismichaels84')
-                ->target('users')
+                ->where(Bag::ELEMENT_LABEL, 'target')
+                ->type(Bag::ELEMENT_VERTEX)
                 ->limit(1)
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_UPDATE,
-                'target' => 'users',
+                'target' => Bag::ELEMENT_VERTEX,
                 'limit' => 1,
-                'where' => [['username', Bag::COMPARATOR_EQUAL, 'chrismichaels84', Bag::CONJUNCTION_AND]],
-                'data' => ['name' => 'chris']
+                'where' => [['username', Bag::COMPARATOR_EQUAL, 'chrismichaels84', Bag::CONJUNCTION_AND],[Bag::ELEMENT_LABEL, Bag::COMPARATOR_EQUAL, 'target', Bag::CONJUNCTION_AND]],
+                'data' => [['name' => 'chris']]
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -54,7 +55,7 @@ class UpdateTest extends TestSetup
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_UPDATE,
-                'data' => ['name' => 'chris', 'birthday' => 'april'],
+                'data' => [['name' => 'chris', 'birthday' => 'april']],
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -68,14 +69,14 @@ class UpdateTest extends TestSetup
 
             $actual = $this->builder
                 ->update()
-                ->target('target')
+                ->type(Bag::ELEMENT_VERTEX)
                 ->data($data) // alias withData()
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_UPDATE,
-                'data' => ['name' => 'chris', 'birthday' => 'april'],
-                'target' => 'target'
+                'data' => [['name' => 'chris', 'birthday' => 'april']],
+                'target' => Bag::ELEMENT_VERTEX
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");

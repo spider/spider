@@ -12,21 +12,21 @@ class CreateTest extends TestSetup
     /* Create Tests */
     public function testCreateSugars()
     {
-        $this->specify("it uses into and insert aliases", function () {
+        $this->specify("it uses insert aliase", function () {
             $record = [
                 'first' => 'first-value',
-                'second' => 'second-value'
+                'second' => 'second-value',
+                Bag::ELEMENT_LABEL => 'target'
             ];
 
             $actual = $this->builder
-                ->into('target')
                 ->insert($record)
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_CREATE,
-                'target' => "target",
-                'data' => $record,
+                'target' => Bag::ELEMENT_VERTEX,
+                'data' => [$record],
                 'createCount' => 1
             ]);
 

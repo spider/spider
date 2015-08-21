@@ -19,13 +19,13 @@ class CreateTest extends TestSetup
             ];
 
             $actual = $this->builder
-                ->target('target')
-                ->create($record)
+                ->type(Bag::ELEMENT_VERTEX)
+                ->insert($record)
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_CREATE,
-                'target' => "target",
+                'target' => Bag::ELEMENT_VERTEX,
                 'data' => $record,
                 'createCount' => 1
             ]);
@@ -40,13 +40,13 @@ class CreateTest extends TestSetup
             ];
 
             $actual = $this->builder
-                ->target('target')
-                ->create($records)
+                ->type(Bag::ELEMENT_VERTEX)
+                ->insert($records)
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_CREATE,
-                'target' => "target",
+                'target' => Bag::ELEMENT_VERTEX,
                 'data' => $records,
                 'createCount' => 2
             ]);

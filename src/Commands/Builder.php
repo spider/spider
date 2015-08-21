@@ -2,7 +2,6 @@
 namespace Spider\Commands;
 
 use Spider\Commands\Languages\ProcessorInterface;
-use Spider\Graphs\ID as TargetID;
 
 /**
  * Command Builder with sugar, no awareness of connections
@@ -50,26 +49,17 @@ class Builder extends BaseBuilder
      *
      * Alias of retrieve
      *
-     * @param null $data
+     * @param array|null $data
      * @return Builder
      */
-    public function insert($data = null)
+    public function insert(array $data = null)
     {
-        return $this->create($data);
-    }
-
-    /**
-     * Update only the first record
-     * @param $target
-     * @return $this
-     */
-    public function updateFirst($target)
-    {
-        $this->bag->command = Bag::COMMAND_UPDATE;
-        $this->limit(1);
-        $this->target($target);
-
-        return $this;
+        //case of single entry, and case of multiple entries
+        if (!is_array($data) || !isset($data[0]) || !is_array($data[0])) {
+            //single entry situation.
+            $data = [$data];
+        }
+        return parent::insert($data);
     }
 
     /**
@@ -82,11 +72,11 @@ class Builder extends BaseBuilder
         $this->delete(); // set the delete command
 
         if (is_array($record)) {
-            $this->records($record);
+            return $this->records($record);
         }
 
         if (!is_null($record)) {
-            $this->record($record);
+            return $this->record($record);
         }
 
         return $this;
@@ -122,14 +112,9 @@ class Builder extends BaseBuilder
     public function record($id)
     {
         if (is_array($id)) {
-            $ids = array_map(function ($value) {
-                return new TargetID($value);
-            }, $id);
-
-            return $this->from($ids);
+            return $this->where(Bag::ELEMENT_ID, $id, 'IN');
         }
-
-        return $this->from(new TargetID($id));
+        return $this->where(Bag::ELEMENT_ID, $id, '=');
     }
 
     /**
@@ -155,23 +140,27 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Set the target in the current Command Bag
-     * @param $target
+     * Set the target label in the current Command Bag
+     * Alias for label
+     *
+     * @param $label
      * @return $this
      */
-    public function from($target)
+    public function from($label)
     {
-        return $this->target($target);
+        return $this->label($label);
     }
 
     /**
-     * Alias of from, used for fluency
-     * @param $target
-     * @return Builder
+     * Set the target label in the current Command Bag
+     * Alias for label
+     *
+     * @param $label
+     * @return $this
      */
-    public function into($target)
+    public function label($label)
     {
-        return $this->target($target);
+        return $this->where(Bag::ELEMENT_LABEL, $label, '=');
     }
 
     /**
@@ -228,5 +217,23 @@ class Builder extends BaseBuilder
     public function hasProcessor()
     {
         return isset($this->processor) && $this->processor instanceof ProcessorInterface;
+    }
+
+    /**
+     * An an `update` clause to the current command bag
+     * @param null $property
+     * @param null $value
+     * @return $this
+     */
+    public function update($property = null, $value = null)
+    {
+        //The is one situation in which we will want to reformat
+
+        // Or, We're adding a single bit of data as well
+        if (!is_null($value)) {
+            return parent::update([$property => $value]);
+        }
+
+        return parent::update($property);
     }
 }
