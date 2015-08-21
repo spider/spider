@@ -1,6 +1,6 @@
 {
   "name": "spider/spider",
-  "description": "Simple, flexible graph database abstraction.",
+  "description": "Simple and flexible graph database abstraction.",
   "keywords": [
     "graphs",
     "tinkerpop",
