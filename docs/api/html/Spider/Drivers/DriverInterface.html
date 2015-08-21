@@ -76,7 +76,8 @@
     </div>
 
     <p>    interface
-    <strong>DriverInterface</strong>
+    <strong>DriverInterface</strong>        implements
+        <abbr title="Michaels\Manager\Contracts\ManagesItemsInterface">ManagesItemsInterface</abbr>
 </p>
 
             <div class="description">
@@ -88,15 +89,6 @@
             <h2>Methods</h2>
 
             <div class="container-fluid underlined">
-                    <div class="row">
-                <div class="col-md-2 type">
-                    mixed
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_makeProcessor">makeProcessor</a>()
-                                            <p>Returns a valid and preferred language processor</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
                     <div class="row">
                 <div class="col-md-2 type">
                     <abbr title="Spider\Drivers\$this">$this</abbr>
@@ -120,7 +112,7 @@
                     <a href="../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_executeReadCommand">executeReadCommand</a>(<abbr title="Spider\Drivers\Spider\Commands\CommandInterface">CommandInterface</abbr> $query)
+                    <a href="#method_executeReadCommand">executeReadCommand</a>(<a href="../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<abbr title="Spider\Drivers\BaseBuilder">BaseBuilder</abbr> $query)
                                             <p>Executes a Query or read command</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -129,7 +121,7 @@
                     <a href="../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_executeWriteCommand">executeWriteCommand</a>(<abbr title="Spider\Drivers\Spider\Commands\CommandInterface">CommandInterface</abbr> $command)
+                    <a href="#method_executeWriteCommand">executeWriteCommand</a>(<a href="../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<abbr title="Spider\Drivers\BaseBuilder">BaseBuilder</abbr> $command)
                                             <p>Executes a write command</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -138,7 +130,7 @@
                     <abbr title="Spider\Drivers\$this">$this</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_runReadCommand">runReadCommand</a>(<abbr title="Spider\Drivers\Spider\Commands\CommandInterface">CommandInterface</abbr> $query)
+                    <a href="#method_runReadCommand">runReadCommand</a>(<a href="../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<abbr title="Spider\Drivers\BaseBuilder">BaseBuilder</abbr> $query)
                                             <p>Executes a read command without waiting for a response</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -147,7 +139,7 @@
                     <abbr title="Spider\Drivers\$this">$this</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_runWriteCommand">runWriteCommand</a>(<abbr title="Spider\Drivers\Spider\Commands\CommandInterface">CommandInterface</abbr> $command)
+                    <a href="#method_runWriteCommand">runWriteCommand</a>(<a href="../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<abbr title="Spider\Drivers\BaseBuilder">BaseBuilder</abbr> $command)
                                             <p>Executes a write command without waiting for a response</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -216,35 +208,8 @@ This is for cases where a scalar result is expected</p>                </div>
 
             <div id="method-details">
                     <div class="method-item">
-                    <h3 id="method_makeProcessor">
-        <div class="location">at line 15</div>
-        <code>                    mixed
-    <strong>makeProcessor</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>Returns a valid and preferred language processor</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>mixed</td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
                     <h3 id="method_open">
-        <div class="location">at line 21</div>
+        <div class="location">at line 16</div>
         <code>                    <abbr title="Spider\Drivers\$this">$this</abbr>
     <strong>open</strong>()</code>
     </h3>
@@ -271,7 +236,7 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_close">
-        <div class="location">at line 27</div>
+        <div class="location">at line 22</div>
         <code>                    <abbr title="Spider\Drivers\$this">$this</abbr>
     <strong>close</strong>()</code>
     </h3>
@@ -298,9 +263,9 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_executeReadCommand">
-        <div class="location">at line 37</div>
+        <div class="location">at line 32</div>
         <code>                    <a href="../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
-    <strong>executeReadCommand</strong>(<abbr title="Spider\Drivers\Spider\Commands\CommandInterface">CommandInterface</abbr> $query)</code>
+    <strong>executeReadCommand</strong>(<a href="../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<abbr title="Spider\Drivers\BaseBuilder">BaseBuilder</abbr> $query)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -310,7 +275,7 @@ This is for cases where a scalar result is expected</p>                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Spider\Drivers\Spider\Commands\CommandInterface">CommandInterface</abbr></td>
+                <td><a href="../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<abbr title="Spider\Drivers\BaseBuilder">BaseBuilder</abbr></td>
                 <td>$query</td>
                 <td>
 </td>
@@ -336,9 +301,9 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_executeWriteCommand">
-        <div class="location">at line 47</div>
+        <div class="location">at line 42</div>
         <code>                    <a href="../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
-    <strong>executeWriteCommand</strong>(<abbr title="Spider\Drivers\Spider\Commands\CommandInterface">CommandInterface</abbr> $command)</code>
+    <strong>executeWriteCommand</strong>(<a href="../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<abbr title="Spider\Drivers\BaseBuilder">BaseBuilder</abbr> $command)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -348,7 +313,7 @@ This is for cases where a scalar result is expected</p>                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Spider\Drivers\Spider\Commands\CommandInterface">CommandInterface</abbr></td>
+                <td><a href="../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<abbr title="Spider\Drivers\BaseBuilder">BaseBuilder</abbr></td>
                 <td>$command</td>
                 <td>
 </td>
@@ -374,9 +339,9 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_runReadCommand">
-        <div class="location">at line 55</div>
+        <div class="location">at line 50</div>
         <code>                    <abbr title="Spider\Drivers\$this">$this</abbr>
-    <strong>runReadCommand</strong>(<abbr title="Spider\Drivers\Spider\Commands\CommandInterface">CommandInterface</abbr> $query)</code>
+    <strong>runReadCommand</strong>(<a href="../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<abbr title="Spider\Drivers\BaseBuilder">BaseBuilder</abbr> $query)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -386,7 +351,7 @@ This is for cases where a scalar result is expected</p>                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Spider\Drivers\Spider\Commands\CommandInterface">CommandInterface</abbr></td>
+                <td><a href="../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<abbr title="Spider\Drivers\BaseBuilder">BaseBuilder</abbr></td>
                 <td>$query</td>
                 <td>
 </td>
@@ -412,9 +377,9 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_runWriteCommand">
-        <div class="location">at line 63</div>
+        <div class="location">at line 58</div>
         <code>                    <abbr title="Spider\Drivers\$this">$this</abbr>
-    <strong>runWriteCommand</strong>(<abbr title="Spider\Drivers\Spider\Commands\CommandInterface">CommandInterface</abbr> $command)</code>
+    <strong>runWriteCommand</strong>(<a href="../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<abbr title="Spider\Drivers\BaseBuilder">BaseBuilder</abbr> $command)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -424,7 +389,7 @@ This is for cases where a scalar result is expected</p>                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Spider\Drivers\Spider\Commands\CommandInterface">CommandInterface</abbr></td>
+                <td><a href="../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<abbr title="Spider\Drivers\BaseBuilder">BaseBuilder</abbr></td>
                 <td>$command</td>
                 <td>
 </td>
@@ -450,7 +415,7 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_startTransaction">
-        <div class="location">at line 70</div>
+        <div class="location">at line 65</div>
         <code>                    bool
     <strong>startTransaction</strong>()</code>
     </h3>
@@ -477,7 +442,7 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_stopTransaction">
-        <div class="location">at line 79</div>
+        <div class="location">at line 74</div>
         <code>                    bool
     <strong>stopTransaction</strong>(bool $commit = true)</code>
     </h3>
@@ -514,7 +479,7 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_formatAsSet">
-        <div class="location">at line 89</div>
+        <div class="location">at line 84</div>
         <code>                    <a href="../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
     <strong>formatAsSet</strong>(mixed $response)</code>
     </h3>
@@ -551,7 +516,7 @@ This is for cases where a set of Vertices or Edges is expected in the response</
             </div>
                     <div class="method-item">
                     <h3 id="method_formatAsTree">
-        <div class="location">at line 99</div>
+        <div class="location">at line 94</div>
         <code>                    <a href="../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
     <strong>formatAsTree</strong>(mixed $response)</code>
     </h3>
@@ -588,7 +553,7 @@ This is for cases where a set of Vertices or Edges is expected in tree format fr
             </div>
                     <div class="method-item">
                     <h3 id="method_formatAsPath">
-        <div class="location">at line 109</div>
+        <div class="location">at line 104</div>
         <code>                    <a href="../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
     <strong>formatAsPath</strong>(mixed $response)</code>
     </h3>
@@ -625,7 +590,7 @@ This is for cases where a set of Vertices or Edges is expected in path format fr
             </div>
                     <div class="method-item">
                     <h3 id="method_formatAsScalar">
-        <div class="location">at line 120</div>
+        <div class="location">at line 115</div>
         <code>                    mixed
     <strong>formatAsScalar</strong>(mixed $response)</code>
     </h3>

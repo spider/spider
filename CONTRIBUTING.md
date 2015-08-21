@@ -2,7 +2,7 @@
 
 Contributions are **welcome** and will be fully **credited**.
 
-We accept contributions via Pull Requests on [Github](https://github.com/chrismichaels84/Spider-Graph).
+We accept contributions via Pull Requests on [Github](https://github.com/spider/spider).
 
 ## Pull Requests
 
@@ -21,10 +21,7 @@ We accept contributions via Pull Requests on [Github](https://github.com/chrismi
 - **Send coherent history** - Make sure each individual commit in your pull request is meaningful. If you had to make multiple intermediate commits while developing, please squash them before submitting.
 
 ## Running Tests
-
-``` bash
-$ phpunit
-```
+See documentation.
 
 ## Branches
 The **master** branch always contains the most up-to-date, production ready release. In most cases, this will be the same as the latest release under the "releases" tab.

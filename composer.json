@@ -1,6 +1,6 @@
 {
   "name": "spider/spider",
-  "description": "Simple, flexible graph database abstraction. IN DEVELOPMENT.",
+  "description": "Simple, flexible graph database abstraction.",
   "keywords": [
     "graphs",
     "tinkerpop",
@@ -18,7 +18,7 @@
     {
       "name": "Michael Wilson",
       "email": "chrismichaels84@gmail.com",
-      "homepage": "http://phoenixlabstech.org/",
+      "homepage": "http://chrismichaelsauthor.com/",
       "role": "Lead Developer"
     }
   ],

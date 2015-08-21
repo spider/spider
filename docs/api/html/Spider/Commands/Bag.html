@@ -151,6 +151,15 @@ Driver specific Command Processor</p>        </div>
                 </td>
             </tr>
                     <tr>
+                <td>COMPARATOR_IN</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
                 <td>CONJUNCTION_AND</td>
                 <td class="last">
                     <p><em>
@@ -161,6 +170,24 @@ Driver specific Command Processor</p>        </div>
             </tr>
                     <tr>
                 <td>CONJUNCTION_OR</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>CONJUNCTION_XOR</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>CONJUNCTION_NOT</td>
                 <td class="last">
                     <p><em>
 </em></p>
@@ -205,7 +232,7 @@ Driver specific Command Processor</p>        </div>
                 </td>
             </tr>
                     <tr>
-                <td>FORMAT_SET</td>
+                <td>MAP_SET</td>
                 <td class="last">
                     <p><em>
 </em></p>
@@ -214,7 +241,7 @@ Driver specific Command Processor</p>        </div>
                 </td>
             </tr>
                     <tr>
-                <td>FORMAT_PATH</td>
+                <td>MAP_PATH</td>
                 <td class="last">
                     <p><em>
 </em></p>
@@ -223,7 +250,7 @@ Driver specific Command Processor</p>        </div>
                 </td>
             </tr>
                     <tr>
-                <td>FORMAT_SCALAR</td>
+                <td>MAP_TREE</td>
                 <td class="last">
                     <p><em>
 </em></p>
@@ -232,7 +259,52 @@ Driver specific Command Processor</p>        </div>
                 </td>
             </tr>
                     <tr>
-                <td>FORMAT_TREE</td>
+                <td>ORDER_ASC</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>ORDER_DESC</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>ELEMENT_VERTEX</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>ELEMENT_EDGE</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>ELEMENT_LABEL</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>ELEMENT_ID</td>
                 <td class="last">
                     <p><em>
 </em></p>
@@ -257,10 +329,10 @@ Driver specific Command Processor</p>        </div>
             </tr>
                     <tr>
                 <td class="type" id="property_target">
-                                                                                string|<abbr title="Spider\Commands\TargetID">TargetID</abbr>
+                                                                                int
                 </td>
                 <td>$target</td>
-                <td class="last">Target of the command.</td>
+                <td class="last">Type of the Target of the command.</td>
                 <td></td>
             </tr>
                     <tr>
@@ -335,20 +407,11 @@ Driver specific Command Processor</p>        </div>
                 <td></td>
             </tr>
                     <tr>
-                <td class="type" id="property_orderAsc">
-                                                                                bool
-                </td>
-                <td>$orderAsc</td>
-                <td class="last">
-</td>
-                <td></td>
-            </tr>
-                    <tr>
-                <td class="type" id="property_format">
+                <td class="type" id="property_map">
                                                                                 int
                 </td>
-                <td>$format</td>
-                <td class="last">Flag a response format for the query to return
+                <td>$map</td>
+                <td class="last">Flag a mapping format for the query to return
 <code>Builder</code> allows SET, PATH, and TREE.</td>
                 <td></td>
             </tr>
@@ -384,15 +447,6 @@ Driver specific Command Processor</p>        </div>
                     <a href="#method_setProperty">setProperty</a>(String|Int $name, mixed $value)
                                             <p>Set a class property</p>                </div>
                 <div class="col-md-2"><small>from&nbsp;<a href="../../Spider/Base/Object.html#method_setProperty"><abbr title="Spider\Base\Object">Object</abbr></a></small></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    static&nbsp;<a href="../../Spider/Commands/Bag.html"><abbr title="Spider\Commands\Bag">Bag</abbr></a>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_make">make</a>(array $properties = null)
-                                            <p>Return a new instance of a Command Bag</p>                </div>
-                <div class="col-md-2"></div>
             </div>
             </div>
 
@@ -495,44 +549,6 @@ Driver specific Command Processor</p>        </div>
                     <table class="table table-condensed">
         <tr>
             <td>void</td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_make">
-        <div class="location">at line 119</div>
-        <code>        static            <a href="../../Spider/Commands/Bag.html"><abbr title="Spider\Commands\Bag">Bag</abbr></a>
-    <strong>make</strong>(array $properties = null)</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>Return a new instance of a Command Bag</p>                                </div>
-                <div class="tags">
-                            <h4>Parameters</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td>array</td>
-                <td>$properties</td>
-                <td>
-</td>
-            </tr>
-            </table>
-
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td><a href="../../Spider/Commands/Bag.html"><abbr title="Spider\Commands\Bag">Bag</abbr></a></td>
             <td>
 </td>
         </tr>

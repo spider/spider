@@ -181,7 +181,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method___construct">__construct</a>(array $properties = array())
-                                            <p>Overriding construct to map configuration to properties</p>                </div>
+                                            <p>Create a new instance with a client</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -211,6 +211,24 @@
                                             <p class="no-description">No description</p>
                                     </div>
                 <div class="col-md-2"><small>from&nbsp;<a href="../../../Spider/Drivers/AbstractDriver.html#method___destruct"><abbr title="Spider\Drivers\AbstractDriver">AbstractDriver</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_isSupportedLanguage">isSupportedLanguage</a>(string $language)
+                                            <p>Checks if a language is supported by this driver</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../Spider/Drivers/AbstractDriver.html#method_isSupportedLanguage"><abbr title="Spider\Drivers\AbstractDriver">AbstractDriver</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../Spider/Commands/Languages/ProcessorInterface.html"><abbr title="Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getProcessor">getProcessor</a>(string $language)
+                                            <p>Get the processor for a given language</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../Spider/Drivers/AbstractDriver.html#method_getProcessor"><abbr title="Spider\Drivers\AbstractDriver">AbstractDriver</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
@@ -244,25 +262,34 @@
                     bool
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_stopTransaction">stopTransaction</a>(bool $commit = TRUE)
+                    <a href="#method_stopTransaction">stopTransaction</a>(bool $commit = true)
                                             <p>Closes a transaction</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    array|<abbr title="PhpOrient\Protocols\Binary\Data\Record">Record</abbr>|<a href="../../../Spider/Graphs/Graph.html"><abbr title="Spider\Graphs\Graph">Graph</abbr></a>
+                    string
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_executeReadCommand">executeReadCommand</a>(<abbr title="Spider\Drivers\OrientDB\Spider\Commands\CommandInterface">CommandInterface</abbr> $query)
+                    <a href="#method_getTransactionForTest">getTransactionForTest</a>()
+                                            <p>Finishes transcation statement and returns for testing</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    array|<abbr title="PhpOrient\Protocols\Binary\Data\Record">Record</abbr>|<abbr title="Spider\Drivers\OrientDB\Graph">Graph</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_executeReadCommand">executeReadCommand</a>(<a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> $query)
                                             <p>Executes a Query or read command</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <a href="../../../Spider/Graphs/Graph.html"><abbr title="Spider\Graphs\Graph">Graph</abbr></a>|<abbr title="PhpOrient\Protocols\Binary\Data\Record">Record</abbr>|array|mixed
+                    <abbr title="Spider\Drivers\OrientDB\Graph">Graph</abbr>|<abbr title="PhpOrient\Protocols\Binary\Data\Record">Record</abbr>|array|mixed
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_executeWriteCommand">executeWriteCommand</a>(<abbr title="Spider\Drivers\OrientDB\Spider\Commands\CommandInterface">CommandInterface</abbr> $command)
+                    <a href="#method_executeWriteCommand">executeWriteCommand</a>(<a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> $command)
                                             <p>Executes a write command</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -271,7 +298,7 @@
                     <abbr title="Spider\Drivers\OrientDB\$this">$this</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_runReadCommand">runReadCommand</a>(<abbr title="Spider\Drivers\OrientDB\Spider\Commands\CommandInterface">CommandInterface</abbr> $query)
+                    <a href="#method_runReadCommand">runReadCommand</a>(<a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> $query)
                                             <p>Executes a read command without waiting for a response</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -280,7 +307,7 @@
                     <abbr title="Spider\Drivers\OrientDB\$this">$this</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_runWriteCommand">runWriteCommand</a>(<abbr title="Spider\Drivers\OrientDB\Spider\Commands\CommandInterface">CommandInterface</abbr> $command)
+                    <a href="#method_runWriteCommand">runWriteCommand</a>(<a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> $command)
                                             <p>Executes a write command without waiting for a response</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -324,15 +351,6 @@ This is for cases where a set of Vertices or Edges is expected in path format fr
 This is for cases where a scalar result is expected</p>                </div>
                 <div class="col-md-2"></div>
             </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    mixed
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_makeProcessor">makeProcessor</a>()
-                                            <p>Returns a valid and preferred language processor</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
             </div>
 
 
@@ -341,13 +359,13 @@ This is for cases where a scalar result is expected</p>                </div>
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method___construct">
-        <div class="location">at line 52</div>
+        <div class="location">at line 68</div>
         <code>                    
     <strong>__construct</strong>(array $properties = array())</code>
     </h3>
     <div class="details">
                     <div class="method-description">
-                                    <p>Overriding construct to map configuration to properties</p>                                </div>
+                                    <p>Create a new instance with a client</p>                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
@@ -447,7 +465,7 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method___destruct">
-        <div class="location">in <a href="../../../Spider/Drivers/AbstractDriver.html#method___destruct"><abbr title="Spider\Drivers\AbstractDriver">AbstractDriver</abbr></a> at line 22</div>
+        <div class="location">in <a href="../../../Spider/Drivers/AbstractDriver.html#method___destruct"><abbr title="Spider\Drivers\AbstractDriver">AbstractDriver</abbr></a> at line 29</div>
         <code>                    
     <strong>__destruct</strong>()</code>
     </h3>
@@ -461,8 +479,92 @@ This is for cases where a scalar result is expected</p>                </div>
 
             </div>
                     <div class="method-item">
+                    <h3 id="method_isSupportedLanguage">
+        <div class="location">in <a href="../../../Spider/Drivers/AbstractDriver.html#method_isSupportedLanguage"><abbr title="Spider\Drivers\AbstractDriver">AbstractDriver</abbr></a> at line 46</div>
+        <code>                    bool
+    <strong>isSupportedLanguage</strong>(string $language)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Checks if a language is supported by this driver</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$language</td>
+                <td>the language identifier, (orientSQL, gremlin, cypher)</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getProcessor">
+        <div class="location">in <a href="../../../Spider/Drivers/AbstractDriver.html#method_getProcessor"><abbr title="Spider\Drivers\AbstractDriver">AbstractDriver</abbr></a> at line 61</div>
+        <code>                    <a href="../../../Spider/Commands/Languages/ProcessorInterface.html"><abbr title="Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></a>
+    <strong>getProcessor</strong>(string $language)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Get the processor for a given language</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$language</td>
+                <td>the language identifier, (orientSQL, gremlin, cypher)</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../Spider/Commands/Languages/ProcessorInterface.html"><abbr title="Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Exceptions/NotSupportedException.html"><abbr title="Spider\Exceptions\NotSupportedException">NotSupportedException</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
                     <h3 id="method_open">
-        <div class="location">at line 65</div>
+        <div class="location">at line 81</div>
         <code>                    <abbr title="Spider\Drivers\OrientDB\$this">$this</abbr>
     <strong>open</strong>()</code>
     </h3>
@@ -489,7 +591,7 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_close">
-        <div class="location">at line 86</div>
+        <div class="location">at line 102</div>
         <code>                    <abbr title="Spider\Drivers\OrientDB\$this">$this</abbr>
     <strong>close</strong>()</code>
     </h3>
@@ -516,7 +618,7 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_startTransaction">
-        <div class="location">at line 101</div>
+        <div class="location">at line 117</div>
         <code>                    bool
     <strong>startTransaction</strong>()</code>
     </h3>
@@ -536,6 +638,16 @@ This is for cases where a scalar result is expected</p>                </div>
     </table>
 
             
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
             
                     </div>
     </div>
@@ -543,9 +655,9 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_stopTransaction">
-        <div class="location">at line 113</div>
+        <div class="location">at line 134</div>
         <code>                    bool
-    <strong>stopTransaction</strong>(bool $commit = TRUE)</code>
+    <strong>stopTransaction</strong>(bool $commit = true)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -573,6 +685,43 @@ This is for cases where a scalar result is expected</p>                </div>
     </table>
 
             
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getTransactionForTest">
+        <div class="location">at line 154</div>
+        <code>                    string
+    <strong>getTransactionForTest</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Finishes transcation statement and returns for testing</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>string</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
             
                     </div>
     </div>
@@ -580,19 +729,19 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_executeReadCommand">
-        <div class="location">at line 124</div>
-        <code>                    array|<abbr title="PhpOrient\Protocols\Binary\Data\Record">Record</abbr>|<a href="../../../Spider/Graphs/Graph.html"><abbr title="Spider\Graphs\Graph">Graph</abbr></a>
-    <strong>executeReadCommand</strong>(<abbr title="Spider\Drivers\OrientDB\Spider\Commands\CommandInterface">CommandInterface</abbr> $query)</code>
+        <div class="location">at line 219</div>
+        <code>                    array|<abbr title="PhpOrient\Protocols\Binary\Data\Record">Record</abbr>|<abbr title="Spider\Drivers\OrientDB\Graph">Graph</abbr>
+    <strong>executeReadCommand</strong>(<a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> $query)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
-                                    <p>Executes a Query or read command</p>                    <p>This is the R in CRUD</p>            </div>
+                                    <p>Executes a Query or read command</p>                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Spider\Drivers\OrientDB\Spider\Commands\CommandInterface">CommandInterface</abbr></td>
+                <td><a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></td>
                 <td>$query</td>
                 <td>
 </td>
@@ -604,7 +753,7 @@ This is for cases where a scalar result is expected</p>                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td>array|<abbr title="PhpOrient\Protocols\Binary\Data\Record">Record</abbr>|<a href="../../../Spider/Graphs/Graph.html"><abbr title="Spider\Graphs\Graph">Graph</abbr></a></td>
+            <td>array|<abbr title="PhpOrient\Protocols\Binary\Data\Record">Record</abbr>|<abbr title="Spider\Drivers\OrientDB\Graph">Graph</abbr></td>
             <td>
 </td>
         </tr>
@@ -618,9 +767,9 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_executeWriteCommand">
-        <div class="location">at line 137</div>
-        <code>                    <a href="../../../Spider/Graphs/Graph.html"><abbr title="Spider\Graphs\Graph">Graph</abbr></a>|<abbr title="PhpOrient\Protocols\Binary\Data\Record">Record</abbr>|array|mixed
-    <strong>executeWriteCommand</strong>(<abbr title="Spider\Drivers\OrientDB\Spider\Commands\CommandInterface">CommandInterface</abbr> $command)</code>
+        <div class="location">at line 232</div>
+        <code>                    <abbr title="Spider\Drivers\OrientDB\Graph">Graph</abbr>|<abbr title="PhpOrient\Protocols\Binary\Data\Record">Record</abbr>|array|mixed
+    <strong>executeWriteCommand</strong>(<a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> $command)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -630,7 +779,7 @@ This is for cases where a scalar result is expected</p>                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Spider\Drivers\OrientDB\Spider\Commands\CommandInterface">CommandInterface</abbr></td>
+                <td><a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></td>
                 <td>$command</td>
                 <td>
 </td>
@@ -642,7 +791,7 @@ This is for cases where a scalar result is expected</p>                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td><a href="../../../Spider/Graphs/Graph.html"><abbr title="Spider\Graphs\Graph">Graph</abbr></a>|<abbr title="PhpOrient\Protocols\Binary\Data\Record">Record</abbr>|array|mixed</td>
+            <td><abbr title="Spider\Drivers\OrientDB\Graph">Graph</abbr>|<abbr title="PhpOrient\Protocols\Binary\Data\Record">Record</abbr>|array|mixed</td>
             <td>mixed values for some write commands</td>
         </tr>
     </table>
@@ -655,9 +804,9 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_runReadCommand">
-        <div class="location">at line 171</div>
+        <div class="location">at line 291</div>
         <code>                    <abbr title="Spider\Drivers\OrientDB\$this">$this</abbr>
-    <strong>runReadCommand</strong>(<abbr title="Spider\Drivers\OrientDB\Spider\Commands\CommandInterface">CommandInterface</abbr> $query)</code>
+    <strong>runReadCommand</strong>(<a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> $query)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -667,7 +816,7 @@ This is for cases where a scalar result is expected</p>                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Spider\Drivers\OrientDB\Spider\Commands\CommandInterface">CommandInterface</abbr></td>
+                <td><a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></td>
                 <td>$query</td>
                 <td>
 </td>
@@ -686,6 +835,21 @@ This is for cases where a scalar result is expected</p>                </div>
     </table>
 
             
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Exceptions/NotSupportedException.html"><abbr title="Spider\Exceptions\NotSupportedException">NotSupportedException</abbr></a></td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
             
                     </div>
     </div>
@@ -693,9 +857,9 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_runWriteCommand">
-        <div class="location">at line 183</div>
+        <div class="location">at line 312</div>
         <code>                    <abbr title="Spider\Drivers\OrientDB\$this">$this</abbr>
-    <strong>runWriteCommand</strong>(<abbr title="Spider\Drivers\OrientDB\Spider\Commands\CommandInterface">CommandInterface</abbr> $command)</code>
+    <strong>runWriteCommand</strong>(<a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a> $command)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -705,7 +869,7 @@ This is for cases where a scalar result is expected</p>                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Spider\Drivers\OrientDB\Spider\Commands\CommandInterface">CommandInterface</abbr></td>
+                <td><a href="../../../Spider/Commands/CommandInterface.html"><abbr title="Spider\Commands\CommandInterface">CommandInterface</abbr></a>|<a href="../../../Spider/Commands/BaseBuilder.html"><abbr title="Spider\Commands\BaseBuilder">BaseBuilder</abbr></a></td>
                 <td>$command</td>
                 <td>
 </td>
@@ -724,6 +888,21 @@ This is for cases where a scalar result is expected</p>                </div>
     </table>
 
             
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Exceptions/NotSupportedException.html"><abbr title="Spider\Exceptions\NotSupportedException">NotSupportedException</abbr></a></td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
             
                     </div>
     </div>
@@ -731,7 +910,7 @@ This is for cases where a scalar result is expected</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_formatAsSet">
-        <div class="location">at line 264</div>
+        <div class="location">at line 400</div>
         <code>                    <a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
     <strong>formatAsSet</strong>(mixed $response)</code>
     </h3>
@@ -761,6 +940,16 @@ This is for cases where a set of Vertices or Edges is expected in the response</
     </table>
 
             
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Exceptions/FormattingException.html"><abbr title="Spider\Exceptions\FormattingException">FormattingException</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
             
                     </div>
     </div>
@@ -768,7 +957,7 @@ This is for cases where a set of Vertices or Edges is expected in the response</
             </div>
                     <div class="method-item">
                     <h3 id="method_formatAsTree">
-        <div class="location">at line 285</div>
+        <div class="location">at line 421</div>
         <code>                    <a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
     <strong>formatAsTree</strong>(mixed $response)</code>
     </h3>
@@ -798,6 +987,16 @@ This is for cases where a set of Vertices or Edges is expected in tree format fr
     </table>
 
             
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Exceptions/NotSupportedException.html"><abbr title="Spider\Exceptions\NotSupportedException">NotSupportedException</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
             
                     </div>
     </div>
@@ -805,7 +1004,7 @@ This is for cases where a set of Vertices or Edges is expected in tree format fr
             </div>
                     <div class="method-item">
                     <h3 id="method_formatAsPath">
-        <div class="location">at line 299</div>
+        <div class="location">at line 435</div>
         <code>                    <a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
     <strong>formatAsPath</strong>(mixed $response)</code>
     </h3>
@@ -835,6 +1034,16 @@ This is for cases where a set of Vertices or Edges is expected in path format fr
     </table>
 
             
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../Spider/Exceptions/NotSupportedException.html"><abbr title="Spider\Exceptions\NotSupportedException">NotSupportedException</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
             
                     </div>
     </div>
@@ -842,7 +1051,7 @@ This is for cases where a set of Vertices or Edges is expected in path format fr
             </div>
                     <div class="method-item">
                     <h3 id="method_formatAsScalar">
-        <div class="location">at line 313</div>
+        <div class="location">at line 449</div>
         <code>                    <a href="../../../Spider/Drivers/Response.html"><abbr title="Spider\Drivers\Response">Response</abbr></a>
     <strong>formatAsScalar</strong>(mixed $response)</code>
     </h3>
@@ -872,33 +1081,16 @@ This is for cases where a scalar result is expected</p>                         
     </table>
 
             
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_makeProcessor">
-        <div class="location">at line 395</div>
-        <code>                    mixed
-    <strong>makeProcessor</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>Returns a valid and preferred language processor</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
+                            <h4>Exceptions</h4>
 
                     <table class="table table-condensed">
-        <tr>
-            <td>mixed</td>
-            <td>
+                    <tr>
+                <td><a href="../../../Spider/Exceptions/FormattingException.html"><abbr title="Spider\Exceptions\FormattingException">FormattingException</abbr></a></td>
+                <td>
 </td>
-        </tr>
-    </table>
+            </tr>
+            </table>
 
-            
             
                     </div>
     </div>

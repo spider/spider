@@ -6,14 +6,15 @@ All Notable changes to `Spider` will be documented in this file
   - Where filters
   - limit and group
   - targets and projections
-- Basic OrientDB CommandProcessor
-- Basic Neo4j CommandProcessor
+- OrientDB CommandProcessor
+- Neo4j CommandProcessor
 - Consistent Response Formats
 - Implement `Object` and `Collection` classes
 - Manager creates Connection from array of properties
 - Refactor Drivers to hold configuration internally instead of by array
 - Refactor and split CommandBuilder to BaseBuilder, Builder, and Query
 - Introduce fixtures, integration tests, and proper stubs.
+- Better documentation, both guides and api.
 
 ## v0.2.1 - 7-9-2015
 - Updated: ConnectionInterface to mimic DriverInterface

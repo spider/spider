@@ -108,8 +108,9 @@ These signs on the left are can be used in <code>where</code> constraints and su
                     
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method___construct">__construct</a>(<abbr title="Spider\Commands\Spider\Commands\Bag">Bag</abbr> $bag = null)
-                                            <p>Creates a new instance of the Command Builder</p>                </div>
+                    <a href="#method___construct">__construct</a>(<abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr> $processor = null, <abbr title="Spider\Commands\Spider\Commands\Bag">Bag</abbr> $bag = null)
+                                            <p>Creates a new instance of the Command Builder
+With an optional language processor</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -117,7 +118,7 @@ These signs on the left are can be used in <code>where</code> constraints and su
                     mixed
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_create">create</a>(array $data)
+                    <a href="#method_insert">insert</a>(array $data)
                                             <p>Add an <code>insert</code> clause to the current command bag</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -135,7 +136,7 @@ These signs on the left are can be used in <code>where</code> constraints and su
                     <abbr title="Spider\Commands\$this">$this</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_update">update</a>(null $property = null, null $value = null)
+                    <a href="#method_update">update</a>(array|null $properties = null)
                                             <p>An an <code>update</code> clause to the current command bag</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -162,8 +163,8 @@ These signs on the left are can be used in <code>where</code> constraints and su
                     <abbr title="Spider\Commands\$this">$this</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_target">target</a>($target)
-                                            <p>Set the target in the current Command Bag</p>                </div>
+                    <a href="#method_type">type</a>($type)
+                                            <p>Set the type of the target in the current Command Bag</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -207,8 +208,8 @@ These signs on the left are can be used in <code>where</code> constraints and su
                     <abbr title="Spider\Commands\$this">$this</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_orderBy">orderBy</a>($fields)
-                                            <p>Set which fields to order results by in the current Command Bag</p>                </div>
+                    <a href="#method_orderBy">orderBy</a>($field, $direction = Bag::ORDER_ASC)
+                                            <p>Set which field to order results by in the current Command Bag</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -216,8 +217,8 @@ These signs on the left are can be used in <code>where</code> constraints and su
                     <abbr title="Spider\Commands\$this">$this</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_asc">asc</a>()
-                                            <p>Return results in ascending order</p>                </div>
+                    <a href="#method_tree">tree</a>()
+                                            <p>Flag the desired response as <code>tree</code></p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -225,8 +226,8 @@ These signs on the left are can be used in <code>where</code> constraints and su
                     <abbr title="Spider\Commands\$this">$this</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_desc">desc</a>()
-                                            <p>Return results in descending order</p>                </div>
+                    <a href="#method_path">path</a>()
+                                            <p>Flag the desired response as <code>path</code></p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -243,8 +244,44 @@ These signs on the left are can be used in <code>where</code> constraints and su
                     <a href="../../Spider/Commands/Bag.html"><abbr title="Spider\Commands\Bag">Bag</abbr></a>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_getCommandBag">getCommandBag</a>()
+                    <a href="#method_getBag">getBag</a>()
                                             <p>Return the current Command Bag</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    String
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getScript">getScript</a>(<abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr> $processor = null)
+                                            <p>Processes the current command bag</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setProcessor">setProcessor</a>(<abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr> $processor)
+                                            <p>Set the CommandProcessor</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_hasProcessor">hasProcessor</a>()
+                                            <p>Is there a valid processor attached</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../Spider/Commands/Command.html"><abbr title="Spider\Commands\Command">Command</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getCommand">getCommand</a>(<abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr> $processor = null)
+                                            <p>Processes the current command bag</p>                </div>
                 <div class="col-md-2"></div>
             </div>
             </div>
@@ -255,17 +292,24 @@ These signs on the left are can be used in <code>where</code> constraints and su
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method___construct">
-        <div class="location">at line 36</div>
+        <div class="location">at line 49</div>
         <code>                    
-    <strong>__construct</strong>(<abbr title="Spider\Commands\Spider\Commands\Bag">Bag</abbr> $bag = null)</code>
+    <strong>__construct</strong>(<abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr> $processor = null, <abbr title="Spider\Commands\Spider\Commands\Bag">Bag</abbr> $bag = null)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
-                                    <p>Creates a new instance of the Command Builder</p>                                </div>
+                                    <p>Creates a new instance of the Command Builder
+With an optional language processor</p>                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></td>
+                <td>$processor</td>
+                <td>
+</td>
+            </tr>
                     <tr>
                 <td><abbr title="Spider\Commands\Spider\Commands\Bag">Bag</abbr></td>
                 <td>$bag</td>
@@ -282,10 +326,10 @@ These signs on the left are can be used in <code>where</code> constraints and su
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_create">
-        <div class="location">at line 47</div>
+                    <h3 id="method_insert">
+        <div class="location">at line 63</div>
         <code>                    mixed
-    <strong>create</strong>(array $data)</code>
+    <strong>insert</strong>(array $data)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -321,7 +365,7 @@ These signs on the left are can be used in <code>where</code> constraints and su
             </div>
                     <div class="method-item">
                     <h3 id="method_retrieve">
-        <div class="location">at line 68</div>
+        <div class="location">at line 84</div>
         <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
     <strong>retrieve</strong>(null $projections = null)</code>
     </h3>
@@ -358,9 +402,9 @@ These signs on the left are can be used in <code>where</code> constraints and su
             </div>
                     <div class="method-item">
                     <h3 id="method_update">
-        <div class="location">at line 81</div>
+        <div class="location">at line 96</div>
         <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
-    <strong>update</strong>(null $property = null, null $value = null)</code>
+    <strong>update</strong>(array|null $properties = null)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -370,16 +414,9 @@ These signs on the left are can be used in <code>where</code> constraints and su
 
                     <table class="table table-condensed">
                     <tr>
-                <td>null</td>
-                <td>$property</td>
-                <td>
-</td>
-            </tr>
-                    <tr>
-                <td>null</td>
-                <td>$value</td>
-                <td>
-</td>
+                <td>array|null</td>
+                <td>$properties</td>
+                <td>should be in the format [props=>values, props2=>values2, ...]</td>
             </tr>
             </table>
 
@@ -402,7 +439,7 @@ These signs on the left are can be used in <code>where</code> constraints and su
             </div>
                     <div class="method-item">
                     <h3 id="method_delete">
-        <div class="location">at line 113</div>
+        <div class="location">at line 112</div>
         <code>                    <abbr title="Spider\Commands\$this">$this</abbr>|mixed
     <strong>delete</strong>()</code>
     </h3>
@@ -429,7 +466,7 @@ These signs on the left are can be used in <code>where</code> constraints and su
             </div>
                     <div class="method-item">
                     <h3 id="method_data">
-        <div class="location">at line 125</div>
+        <div class="location">at line 124</div>
         <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
     <strong>data</strong>($property, null $value = null)</code>
     </h3>
@@ -472,21 +509,21 @@ These signs on the left are can be used in <code>where</code> constraints and su
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_target">
-        <div class="location">at line 142</div>
+                    <h3 id="method_type">
+        <div class="location">at line 139</div>
         <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
-    <strong>target</strong>($target)</code>
+    <strong>type</strong>($type)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
-                                    <p>Set the target in the current Command Bag</p>                                </div>
+                                    <p>Set the type of the target in the current Command Bag</p>                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
                 <td></td>
-                <td>$target</td>
+                <td>$type</td>
                 <td>
 </td>
             </tr>
@@ -511,7 +548,7 @@ These signs on the left are can be used in <code>where</code> constraints and su
             </div>
                     <div class="method-item">
                     <h3 id="method_projections">
-        <div class="location">at line 157</div>
+        <div class="location">at line 154</div>
         <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
     <strong>projections</strong>($projections)</code>
     </h3>
@@ -550,7 +587,7 @@ a field affected by the current command. Like <code>SELECT fieldname</code> in S
             </div>
                     <div class="method-item">
                     <h3 id="method_where">
-        <div class="location">at line 182</div>
+        <div class="location">at line 179</div>
         <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
     <strong>where</strong>(string $property, mixed $value = null, string $operator = &#039;=&#039;, string $conjunction = &#039;AND&#039;)</code>
     </h3>
@@ -602,7 +639,7 @@ a field affected by the current command. Like <code>SELECT fieldname</code> in S
             </div>
                     <div class="method-item">
                     <h3 id="method_limit">
-        <div class="location">at line 221</div>
+        <div class="location">at line 218</div>
         <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
     <strong>limit</strong>($limit)</code>
     </h3>
@@ -640,7 +677,7 @@ a field affected by the current command. Like <code>SELECT fieldname</code> in S
             </div>
                     <div class="method-item">
                     <h3 id="method_groupBy">
-        <div class="location">at line 232</div>
+        <div class="location">at line 229</div>
         <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
     <strong>groupBy</strong>($fields)</code>
     </h3>
@@ -678,20 +715,26 @@ a field affected by the current command. Like <code>SELECT fieldname</code> in S
             </div>
                     <div class="method-item">
                     <h3 id="method_orderBy">
-        <div class="location">at line 244</div>
+        <div class="location">at line 242</div>
         <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
-    <strong>orderBy</strong>($fields)</code>
+    <strong>orderBy</strong>($field, $direction = Bag::ORDER_ASC)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
-                                    <p>Set which fields to order results by in the current Command Bag</p>                                </div>
+                                    <p>Set which field to order results by in the current Command Bag</p>                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
                 <td></td>
-                <td>$fields</td>
+                <td>$field</td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td></td>
+                <td>$direction</td>
                 <td>
 </td>
             </tr>
@@ -715,14 +758,14 @@ a field affected by the current command. Like <code>SELECT fieldname</code> in S
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_asc">
-        <div class="location">at line 255</div>
+                    <h3 id="method_tree">
+        <div class="location">at line 252</div>
         <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
-    <strong>asc</strong>()</code>
+    <strong>tree</strong>()</code>
     </h3>
     <div class="details">
                     <div class="method-description">
-                                    <p>Return results in ascending order</p>                                </div>
+                                    <p>Flag the desired response as <code>tree</code></p>                                </div>
                 <div class="tags">
             
                             <h4>Return Value</h4>
@@ -742,14 +785,14 @@ a field affected by the current command. Like <code>SELECT fieldname</code> in S
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_desc">
-        <div class="location">at line 265</div>
+                    <h3 id="method_path">
+        <div class="location">at line 262</div>
         <code>                    <abbr title="Spider\Commands\$this">$this</abbr>
-    <strong>desc</strong>()</code>
+    <strong>path</strong>()</code>
     </h3>
     <div class="details">
                     <div class="method-description">
-                                    <p>Return results in descending order</p>                                </div>
+                                    <p>Flag the desired response as <code>path</code></p>                                </div>
                 <div class="tags">
             
                             <h4>Return Value</h4>
@@ -770,7 +813,7 @@ a field affected by the current command. Like <code>SELECT fieldname</code> in S
             </div>
                     <div class="method-item">
                     <h3 id="method_clear">
-        <div class="location">at line 276</div>
+        <div class="location">at line 273</div>
         <code>                    
     <strong>clear</strong>(array $properties = array())</code>
     </h3>
@@ -797,10 +840,10 @@ a field affected by the current command. Like <code>SELECT fieldname</code> in S
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_getCommandBag">
-        <div class="location">at line 285</div>
+                    <h3 id="method_getBag">
+        <div class="location">at line 282</div>
         <code>                    <a href="../../Spider/Commands/Bag.html"><abbr title="Spider\Commands\Bag">Bag</abbr></a>
-    <strong>getCommandBag</strong>()</code>
+    <strong>getBag</strong>()</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -818,6 +861,156 @@ a field affected by the current command. Like <code>SELECT fieldname</code> in S
     </table>
 
             
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getScript">
+        <div class="location">at line 293</div>
+        <code>                    String
+    <strong>getScript</strong>(<abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr> $processor = null)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Processes the current command bag</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></td>
+                <td>$processor</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>String</td>
+            <td>the script in string form</td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setProcessor">
+        <div class="location">at line 302</div>
+        <code>                    
+    <strong>setProcessor</strong>(<abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr> $processor)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Set the CommandProcessor</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></td>
+                <td>$processor</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_hasProcessor">
+        <div class="location">at line 311</div>
+        <code>                    bool
+    <strong>hasProcessor</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Is there a valid processor attached</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getCommand">
+        <div class="location">at line 322</div>
+        <code>                    <a href="../../Spider/Commands/Command.html"><abbr title="Spider\Commands\Command">Command</abbr></a>
+    <strong>getCommand</strong>(<abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr> $processor = null)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Processes the current command bag</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Spider\Commands\Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></td>
+                <td>$processor</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../Spider/Commands/Command.html"><abbr title="Spider\Commands\Command">Command</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
             
                     </div>
     </div>

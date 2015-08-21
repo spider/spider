@@ -209,6 +209,24 @@
                                     </div>
                 <div class="col-md-2"></div>
             </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_isSupportedLanguage">isSupportedLanguage</a>(string $language)
+                                            <p>Checks if a language is supported by this driver</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../Spider/Commands/Languages/ProcessorInterface.html"><abbr title="Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getProcessor">getProcessor</a>(string $language)
+                                            <p>Get the processor for a given language</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
             </div>
 
 
@@ -323,7 +341,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method___destruct">
-        <div class="location">at line 22</div>
+        <div class="location">at line 29</div>
         <code>                    
     <strong>__destruct</strong>()</code>
     </h3>
@@ -331,6 +349,90 @@
                 <div class="tags">
             
             
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_isSupportedLanguage">
+        <div class="location">at line 46</div>
+        <code>                    bool
+    <strong>isSupportedLanguage</strong>(string $language)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Checks if a language is supported by this driver</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$language</td>
+                <td>the language identifier, (orientSQL, gremlin, cypher)</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getProcessor">
+        <div class="location">at line 61</div>
+        <code>                    <a href="../../Spider/Commands/Languages/ProcessorInterface.html"><abbr title="Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></a>
+    <strong>getProcessor</strong>(string $language)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Get the processor for a given language</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$language</td>
+                <td>the language identifier, (orientSQL, gremlin, cypher)</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../Spider/Commands/Languages/ProcessorInterface.html"><abbr title="Spider\Commands\Languages\ProcessorInterface">ProcessorInterface</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../Spider/Exceptions/NotSupportedException.html"><abbr title="Spider\Exceptions\NotSupportedException">NotSupportedException</abbr></a></td>
+                <td>
+</td>
+            </tr>
+            </table>
+
             
                     </div>
     </div>

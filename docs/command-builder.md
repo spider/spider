@@ -68,12 +68,12 @@ A **Target** is the label or record type in the database. In MySQL, this would b
 
 You can select everything from a target.
 ```php
-$builder->select()->from('planets');
+$builder->select()->from('person');
 ```
 
 You can specify which fields or **properties** you want.
 ```php
-$builder->select(['name', 'type'])->from('planets');
+$builder->select(['name', 'height'])->from('person');
 ```
 
 You can select specific records by IDs
@@ -85,18 +85,18 @@ $builder->select()->byId($id);
 
 Feel free to set limits.
 ```php
-$builder->select()->from('planets')
+$builder->select()->from('person')
     ->limit(20)
 
-$builder->select()->from('planets')
+$builder->select()->from('software')
     ->first();
 ```
 
 Order the results.
 ```php
-$builder->select()->from('users')
-    ->orderBy('field', 'asc') // or desc
-    ->orderBy('another-field', 'desc')
+$builder->select()->from('person')
+    ->orderBy('name', 'asc') // or desc
+    ->orderBy('height', 'desc')
 ```
 
 #### Where Constraints
@@ -104,27 +104,27 @@ You can constrain the query using `where()`s.
 
 ```php
 // A single constraint
-$builder->select()->from('users')->where('username', 'michael'); // username = 'michael'
+$builder->select()->from('person')->where('name', 'marko');
 
 // Multiple constraints
-$builder->select()->from('users')->where('username', 'michael')->where('place', 'Mars');
+$builder->select()->from('person')->where('name', 'marko')->where('height', 6);
 $builder
-   ->select()->from('users')
-   ->where('place', 'Mars')
-   ->andWhere('birthday', 'July')
-   ->orWhere('birthday', 'August')
+   ->select()->from('person')
+   ->where('name', 'marko')
+   ->andWhere('height', 6)
+   ->orWhere('height', 5)
 
 // Be more specific
 $builder
    ->select()
-   ->from('users')
-   ->where(['age', '>', 20]);
+   ->from('person')
+   ->where(['height', '>', 5]);
 
 $builder
-    ->select()->from('users')
+    ->select()->from('person')
     ->where([
-        ['name', '=', 'michael'],
-        ['age', '>', 20, 'OR'] // OR WHERE age > 20. If no fourth parameter, default is AND
+        ['name', '=', 'marko'],
+        ['height', '>', 5, 'OR'] // OR WHERE height > 5. If no fourth parameter, default is AND
     ]);
 ```
 
@@ -140,13 +140,13 @@ Creating new records is as easy as telling a story.
 ```php
 $builder
     ->insert(['name' => 'Zoe', 'rank' => 'corporal'])
-    ->from('browncoats'); // target
+    ->from('person'); // target
 
 // Or
 $builder
     ->insert()
     ->data(['name' => 'Zoe', 'rank' => 'corporal'])
-    ->from('browncoats'); // target
+    ->from('person'); // target
 ```
 
 **Note** that for the Command builder, you can put these methods in any order you like, but
@@ -157,28 +157,28 @@ Life isn't static. Things change. Let your database change with them. Updating r
 
 ```php
 $builder
-    ->update('status', 'cancelled by evil Fox')
-    ->from('shows')
-    ->where('title', 'Firefly);
+    ->update('status', 'active')
+    ->from('person')
+    ->where('name', 'marko);
 
 // Or, use update as a target
 $builder
     ->update()
-    ->withData(['status' => 'cancelled by evil Fox'])
-    ->from('shows')
-    ->where('title', 'Firefly');
+    ->withData(['status' => 'cancelled'])
+    ->from('person')
+    ->where('name', 'marko');
 
 // And, of course, by record
 $builder
     ->update()
     ->record(3)
-    ->data(['status' => 'cancelled by evil Fox']); // data() and withData() are aliases
+    ->data(['status' => 'cancelled']); // data() and withData() are aliases
 
 // Plus limits
 $builder
-    ->update(['status' => 'cancelled too soon'])
-    ->from('shows')
-    ->where(['awesomeness', '>', 200])
+    ->update(['status' => 'active'])
+    ->from('person')
+    ->where(['height', '>', 5])
     ->limit(3);
 ```
 
@@ -193,8 +193,8 @@ $builder->drop([1, 2, 3]); // array of ids
 // Or with all the usual constraints
 $builder
     ->drop()
-    ->from('planets')
-    ->where('name', 'Persephone')
+    ->from('software')
+    ->where('name', 'ripple')
     ->limit(7);
 ```
 
@@ -216,12 +216,11 @@ The Query Builder extends the Basic [Command Builder](#builder):
 ```php
 $query
     ->select('name')
-    ->from('ships')
-    ->where('class', 'firefly')
-    ->andWhere('captain', 'mal')
+    ->from('person')
+    ->where('name', 'peter')
+    ->andWhere('height', 5)
     ->limit(1)
-    ->orderBy('launch_date') // order of orderBy is important
-    ->orderBy('registry')
+    ->orderBy('name', 'asc') // order of orderBy is important
     ->all();
 ```
 
@@ -230,10 +229,10 @@ What makes the Query Builder different is that you can interact with the databas
 
 You can simply **dispatch** your query, or use **go**
 ```php
-$result = $query->select()->from('moons')
+$result = $query->select()->from('person')
     ->dispatch();
       
-$result = $query->select()->from('moons')
+$result = $query->select()->from('person')
     ->go();
 ```
 Which will return a generic `Response`. Read [more about responses](responses.md).
@@ -242,7 +241,7 @@ Which will return a generic `Response`. Read [more about responses](responses.md
 
 **all()** removes the limit and returns a an array or collections
 ```php
-$result = $query->select()->from('moons')
+$result = $query->select()->from('person')
     ->all();
 ```
 Read [more about responses](responses.md).
@@ -251,7 +250,7 @@ Read [more about responses](responses.md).
 
 Or, we recommend **get()** for most cases.
 ```php
-$result = $query->select()->from('moons')
+$result = $query->select()->from('person')
     ->get(); // alias of set()
 ```
 Which will return a Set (array of or single`Collection`).
@@ -262,7 +261,7 @@ Read [more about responses](responses.md).
 
 **one()** and **first()** sets the limit to `1` before dispatching
 ```php
-$result = $query->select()->from('moons')
+$result = $query->select()->from('person')
     ->one(); // or first();
 ```
 Returns a single `Collection`. Read [more about responses](responses.md).
@@ -271,7 +270,7 @@ Returns a single `Collection`. Read [more about responses](responses.md).
 
 **path()** dispatches and returns a Path.
 ```php
-$result = $query->select()->from('moons')
+$result = $query->select()->from('person')
     ->path();
 ```
 Read [more about responses](responses.md).
@@ -282,7 +281,7 @@ Read [more about responses](responses.md).
 
 **tree()** dispatches and returns a Tree.
 ```php
-$result = $query->select()->from('moons')
+$result = $query->select()->from('person')
     ->tree();
 ```
 Read [more about responses](responses.md).
@@ -294,7 +293,7 @@ Read [more about responses](responses.md).
 **set()** dispatches and returns a Set (array or single collection).
 This is really an alias for `get()`
 ```php
-$result = $query->select()->from('moons')
+$result = $query->select()->from('person')
     ->set();
 ```
 Read [more about responses](responses.md).
@@ -303,7 +302,7 @@ Read [more about responses](responses.md).
 
 **scalar()** dispatches and returns a single, scalar value.
 ```php
-$result = $query->select('name')->from('moons')->where('id', 5)
+$result = $query->select('name')->from('person')->where('id', 5)
     ->scalar();
 
 echo $result; // 'Miranda'

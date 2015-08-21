@@ -8,6 +8,7 @@ pages:
 - Responses: responses.md
 - Advanced Topics: advanced.md
 - Creating a Driver: create-driver.md
-- Contributing: contributing.md
 - Roadmap: roadmap.md
+- Contributing: contributing.md
 - Internals: internals.md
+- Full API: api.md

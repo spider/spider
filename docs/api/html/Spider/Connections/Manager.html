@@ -116,8 +116,8 @@
                     
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method___construct">__construct</a>(array $connections = array(), array $config = array())
-                                            <p>Overriding construct to map configuration to properties</p>                </div>
+                    <a href="#method___construct">__construct</a>(array $connections = array())
+                                            <p>Build a new manager instance</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -143,17 +143,18 @@
                     <a href="../../Spider/Connections/Connection.html"><abbr title="Spider\Connections\Connection">Connection</abbr></a>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_make">make</a>(string $connectionName = null)
-                                            <p>Builds, Caches, and Returns a Connection, either default of other</p>                </div>
+                    <a href="#method_make">make</a>(string|array|null $alias = null)
+                                            <p>Builds, Caches, and Returns a Connection</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <a href="../../Spider/Connections/Connection.html"><abbr title="Spider\Connections\Connection">Connection</abbr></a>|mixed
+                    <a href="../../Spider/Connections/Connection.html"><abbr title="Spider\Connections\Connection">Connection</abbr></a>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_fetch">fetch</a>(null $connectionName = null)
-                                            <p>Returns cached connection or makes a new one</p>                </div>
+                    <a href="#method_fetch">fetch</a>(string|array|null $alias = null)
+                                            <p>Returns cached connection or makes a new one
+See make() for details</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -173,13 +174,13 @@
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method___construct">
-        <div class="location">at line 27</div>
+        <div class="location">at line 26</div>
         <code>                    
-    <strong>__construct</strong>(array $connections = array(), array $config = array())</code>
+    <strong>__construct</strong>(array $connections = array())</code>
     </h3>
     <div class="details">
                     <div class="method-description">
-                                    <p>Overriding construct to map configuration to properties</p>                                </div>
+                                    <p>Build a new manager instance</p>                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
@@ -187,12 +188,6 @@
                     <tr>
                 <td>array</td>
                 <td>$connections</td>
-                <td>
-</td>
-            </tr>
-                    <tr>
-                <td>array</td>
-                <td>$config</td>
                 <td>
 </td>
             </tr>
@@ -286,22 +281,23 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_make">
-        <div class="location">at line 45</div>
+        <div class="location">at line 46</div>
         <code>                    <a href="../../Spider/Connections/Connection.html"><abbr title="Spider\Connections\Connection">Connection</abbr></a>
-    <strong>make</strong>(string $connectionName = null)</code>
+    <strong>make</strong>(string|array|null $alias = null)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
-                                    <p>Builds, Caches, and Returns a Connection, either default of other</p>                                </div>
+                                    <p>Builds, Caches, and Returns a Connection</p>                    <p>Hand null for default Connection
+Hand alias for stored Connection
+Hand array for implicit Connection</p>            </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
-                <td>string</td>
-                <td>$connectionName</td>
-                <td>
-</td>
+                <td>string|array|null</td>
+                <td>$alias</td>
+                <td>alias | properties | default</td>
             </tr>
             </table>
 
@@ -334,22 +330,22 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_fetch">
-        <div class="location">at line 61</div>
-        <code>                    <a href="../../Spider/Connections/Connection.html"><abbr title="Spider\Connections\Connection">Connection</abbr></a>|mixed
-    <strong>fetch</strong>(null $connectionName = null)</code>
+        <div class="location">at line 76</div>
+        <code>                    <a href="../../Spider/Connections/Connection.html"><abbr title="Spider\Connections\Connection">Connection</abbr></a>
+    <strong>fetch</strong>(string|array|null $alias = null)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
-                                    <p>Returns cached connection or makes a new one</p>                                </div>
+                                    <p>Returns cached connection or makes a new one
+See make() for details</p>                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
-                <td>null</td>
-                <td>$connectionName</td>
-                <td>
-</td>
+                <td>string|array|null</td>
+                <td>$alias</td>
+                <td>alias | properties | default</td>
             </tr>
             </table>
 
@@ -358,7 +354,7 @@
 
                     <table class="table table-condensed">
         <tr>
-            <td><a href="../../Spider/Connections/Connection.html"><abbr title="Spider\Connections\Connection">Connection</abbr></a>|mixed</td>
+            <td><a href="../../Spider/Connections/Connection.html"><abbr title="Spider\Connections\Connection">Connection</abbr></a></td>
             <td>
 </td>
         </tr>
@@ -382,7 +378,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_clearCache">
-        <div class="location">at line 76</div>
+        <div class="location">at line 96</div>
         <code>                    <abbr title="Spider\Connections\$this">$this</abbr>
     <strong>clearCache</strong>()</code>
     </h3>
