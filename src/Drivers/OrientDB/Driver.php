@@ -523,13 +523,4 @@ class Driver extends AbstractDriver implements DriverInterface
         && count($response) === 1
         && count($response[0]->getOData()) === 1;
     }
-
-    /**
-     * Returns a valid and preferred language processor
-     * @return mixed
-     */
-    public function makeProcessor()
-    {
-        return new CommandProcessor();
-    }
 }

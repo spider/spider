@@ -9,12 +9,6 @@ use Spider\Commands\Languages\ProcessorInterface;
  */
 class Builder extends BaseBuilder
 {
-    /** @var ProcessorInterface Valid, Driver-Specific Command Processor to process Command Bag */
-    protected $processor;
-
-    /** @var Command The processed command ready for the driver to execute */
-    protected $script;
-
     /**
      * Creates a new instance of the Command Builder
      * With an optional language processor
@@ -27,7 +21,6 @@ class Builder extends BaseBuilder
         Bag $bag = null
     ) {
         parent::__construct($bag);
-        $this->processor = $processor;
     }
 
     /* Fluent Methods for building queries */
@@ -199,24 +192,6 @@ class Builder extends BaseBuilder
     {
         $this->bag->limit = 1;
         return $this;
-    }
-
-    /**
-     * Set the CommandProcessor
-     * @param ProcessorInterface $processor
-     */
-    public function setProcessor(ProcessorInterface $processor)
-    {
-        $this->processor = $processor;
-    }
-
-    /**
-     * Is there a valid processor attached
-     * @return bool
-     */
-    public function hasProcessor()
-    {
-        return isset($this->processor) && $this->processor instanceof ProcessorInterface;
     }
 
     /**

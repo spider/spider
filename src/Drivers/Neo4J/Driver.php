@@ -312,15 +312,4 @@ class Driver extends AbstractDriver implements DriverInterface
 
         return self::FORMAT_CUSTOM;
     }
-
-    /**
-     * Returns a valid and preferred language processor
-     * @return mixed
-     * @throws NotSupportedException
-     */
-    public function makeProcessor()
-    {
-        throw new NotSupportedException("Cypher Language does not have a processor yet");
-        // TODO: Implement makeProcessor() method.
-    }
 }

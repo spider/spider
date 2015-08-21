@@ -33,12 +33,24 @@ class BaseBuilder
         'NOT' => Bag::CONJUNCTION_NOT,
     ];
 
+    /** @var  ProcessorInterface The current language processor */
+    protected $processor;
+
+    /** @var string The current query script */
+    protected $script;
+
     /**
      * Creates a new instance of the Command Builder
+     * With an optional language processor
+     *
+     * @param ProcessorInterface $processor
      * @param Bag|null $bag
      */
-    public function __construct(Bag $bag = null)
-    {
+    public function __construct(
+        ProcessorInterface $processor = null,
+        Bag $bag = null
+    ) {
+        $this->processor = $processor;
         $this->bag = $bag ?: new Bag();
     }
 
@@ -233,6 +245,26 @@ class BaseBuilder
         return $this;
     }
 
+    /**
+     * Flag the desired response as `tree`
+     * @return $this
+     */
+    public function tree()
+    {
+        $this->bag->map = Bag::MAP_TREE;
+        return $this;
+    }
+
+    /**
+     * Flag the desired response as `path`
+     * @return $this
+     */
+    public function path()
+    {
+        $this->bag->map = Bag::MAP_PATH;
+        return $this;
+    }
+
     /* Manage the Builder itself */
     /**
      * Clear the current Command Bag
@@ -250,6 +282,60 @@ class BaseBuilder
     public function getBag()
     {
         return $this->bag;
+    }
+
+    /**
+     * Processes the current command bag
+     * @param ProcessorInterface $processor
+     * @return String the script in string form
+     * @throws \Exception
+     */
+    public function getScript(ProcessorInterface $processor = null)
+    {
+        return $this->getCommand($processor)->getScript();
+    }
+
+    /**
+     * Set the CommandProcessor
+     * @param ProcessorInterface $processor
+     */
+    public function setProcessor(ProcessorInterface $processor)
+    {
+        $this->processor = $processor;
+    }
+
+    /**
+     * Is there a valid processor attached
+     * @return bool
+     */
+    public function hasProcessor()
+    {
+        return isset($this->processor) && $this->processor instanceof ProcessorInterface;
+    }
+
+    /**
+     * Processes the current command bag
+     * @param ProcessorInterface $processor
+     * @return Command
+     * @throws \Exception
+     */
+    public function getCommand(ProcessorInterface $processor = null)
+    {
+        if ($processor) {
+            $this->setProcessor($processor);
+        } else {
+            if (!$this->hasProcessor()) {
+                throw new \Exception(
+                    "`Builder` requires a valid instance of Spider\\Languages\\ProcessorInterface to build scripts"
+                );
+            }
+        }
+
+        $this->script = $this->processor->process(
+            $this->getBag()
+        );
+
+        return $this->script;
     }
 
     /* Internals */
@@ -283,61 +369,5 @@ class BaseBuilder
     protected function signToConstant($sign)
     {
         return $this->operators[$sign];
-    }
-
-    /**
-     * Flag the desired response as `tree`
-     * @return $this
-     */
-    public function tree()
-    {
-        $this->bag->map = Bag::MAP_TREE;
-        return $this;
-    }
-
-    /**
-     * Flag the desired response as `path`
-     * @return $this
-     */
-    public function path()
-    {
-        $this->bag->map = Bag::MAP_PATH;
-        return $this;
-    }
-
-    /**
-     * Processes the current command bag
-     * @param ProcessorInterface $processor
-     * @return String the script in string form
-     * @throws \Exception
-     */
-    public function getScript(ProcessorInterface $processor = null)
-    {
-        return $this->getCommand($processor)->getScript();
-    }
-
-    /**
-     * Processes the current command bag
-     * @param ProcessorInterface $processor
-     * @return Command
-     * @throws \Exception
-     */
-    public function getCommand(ProcessorInterface $processor = null)
-    {
-        if ($processor) {
-            $this->setProcessor($processor);
-        } else {
-            if (!$this->hasProcessor()) {
-                throw new \Exception(
-                    "`Builder` requires a valid instance of Spider\\Languages\\ProcessorInterface to build scripts"
-                );
-            }
-        }
-
-        $this->script = $this->processor->process(
-            $this->getBag()
-        );
-
-        return $this->script;
     }
 }
