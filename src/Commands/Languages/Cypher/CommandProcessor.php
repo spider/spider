@@ -35,6 +35,7 @@ class CommandProcessor implements ProcessorInterface
         Bag::COMPARATOR_LE => '<=',
         Bag::COMPARATOR_GE => '>=',
         Bag::COMPARATOR_NE => '<>',
+        Bag::COMPARATOR_IN => 'IN',
 
         Bag::CONJUNCTION_AND => 'AND',
         Bag::CONJUNCTION_OR => 'OR',
@@ -202,6 +203,8 @@ class CommandProcessor implements ProcessorInterface
         /* Delete clause */
         $this->addToScript('DELETE');
         $this->addToScript($this->buildProjections());
+
+//        die(var_dump($this->script));
     }
 
     /**
@@ -307,9 +310,9 @@ class CommandProcessor implements ProcessorInterface
                     $where[] = end($this->variables).':'.$value[2];
                     break;
                 case Bag::ELEMENT_ID :
-                    $where[] = 'ID('.end($this->variables).') = '.$value[2];
-                    // '.(string)$this->toCypherOperator($value[1]).'
-                    /* @todo when selecting by id, uses operator IN (80) which doesn't exist */
+                    $clause = 'ID('.end($this->variables).') IN ';
+                    $clause .= (is_array($value[2])) ? ' ['.implode(", ", $value[2]) . ']' : '['.$value[2].']';
+                    $where[] = $clause;
                     break;
                 default:
                     $where[] = (string)$this->detailField($value[0]).' '.(string)$this->toCypherOperator($value[1]).' '.$this->castValue($value[2]);
