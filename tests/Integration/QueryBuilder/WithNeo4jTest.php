@@ -40,6 +40,11 @@ class WithNeo4jTest extends BaseTestSuite
         });
     }
 
+    public function testDrop()
+    {
+        $this->markTestSkipped('Cypher processor needs traversal logic before being able to drop.');
+    }
+
 //    public function testDrop()
 //    {
 //        $this->assertTrue(true);

@@ -164,16 +164,6 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Alias of label, used for fluency
-     * @param $label
-     * @return Builder
-     */
-    public function into($label)
-    {
-        return $this->label($label);
-    }
-
-    /**
      * Add a `where` clause with an `OR` conjunction to the current Command Bag
      *
      * @param string $property Field name

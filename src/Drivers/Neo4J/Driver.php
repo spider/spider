@@ -45,7 +45,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * @var array The supported languages and their processors
      */
     protected $languages = [
-        'cypher' => '\Spider\Commands\languages\Cypher\CommandProcessor',
+        'cypher' => '\Spider\Commands\Languages\Cypher\CommandProcessor',
     ];
 
     /**

@@ -3,6 +3,7 @@ namespace Spider\Test\Integration\QueryBuilder;
 
 use Codeception\Specify;
 use Spider\Test\Fixtures\Graph;
+use Spider\Commands\Bag;
 
 abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 {
@@ -311,11 +312,11 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         $this->specify("it inserts and deletes a single record", function () {
             $record = [
                 'first' => 'first-value',
-                'second' => 'second-value'
+                'second' => 'second-value',
+                Bag::ELEMENT_LABEL => 'person',
             ];
 
             $this->query
-                ->into('person')
                 ->insert($record)
                 ->go();
 
@@ -354,16 +355,17 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $records = [
                 [
                     'name' => 'michael',
-                    'second' => 'second-value'
+                    'second' => 'second-value',
+                    Bag::ELEMENT_LABEL => 'person',
                 ],
                 [
                     'name' => 'michael',
-                    'fourth' => 'fourth-value'
+                    'fourth' => 'fourth-value',
+                    Bag::ELEMENT_LABEL => 'person',
                 ],
             ];
 
             $this->query
-                ->into('person')
                 ->insert($records)
                 ->go();
 
@@ -443,7 +445,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         $this->specify("it updates a key and a value on several records", function () {
             $this->query
                 ->update('name', 'new_name')
-                ->into('person')
+                ->where(Bag::ELEMENT_LABEL, 'person')
                 ->go(); // All person are now named 'new_name'
 
             // Check our work
@@ -481,8 +483,8 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         $this->specify("it updates a single record with several data by wheres", function () {
             $this->query
                 ->update(['name' => 'new_name', 'other' => 'value'])
-                ->into('person')
                 ->where('name', 'marko')
+                ->andWhere(Bag::ELEMENT_LABEL, 'person')
                 ->go();
 
             // Check our work
@@ -500,7 +502,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         $this->specify("it updates the first record with data", function () {
             $this->query
                 ->update()
-                ->into('person')
+                ->where(Bag::ELEMENT_LABEL, 'person')
                 ->withData(['name' => 'new_name', 'other' => 'value'])
                 ->first();
 
