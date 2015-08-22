@@ -2,10 +2,11 @@
 [![Latest Version](https://img.shields.io/github/release/spider/spider.svg?style=flat-square)](https://github.com/spider/spider/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Build Status](https://travis-ci.org/spider/spider.svg?branch=master)](https://travis-ci.org/spider/spider)
-[![Coverage Status](https://coveralls.io/repos/spider/spider/badge.svg?branch=master)](https://coveralls.io/r/spider/spider?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/spider/spider/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/spider/spider/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/spider/spider/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/spider/spider/?branch=master)
 [![Total Downloads](https://img.shields.io/packagist/dt/spider/spider.svg?style=flat-square)](https://packagist.org/packages/spider/spider)
 
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/374720ec-b7db-47fc-b958-cc240cf06fbb/big.png)](https://insight.sensiolabs.com/projects/374720ec-b7db-47fc-b958-cc240cf06fbb)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/dc73805e-2a58-4007-a49e-506281e309ce/big.png)](https://insight.sensiolabs.com/projects/dc73805e-2a58-4007-a49e-506281e309ce)
 
 A simple, flexible, and beautiful graph-data abstraction for php.
 
