@@ -256,7 +256,7 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Hydrate a Collection from an Neo4J Node
      *
-     * @param array|\EveryMan\Neo4j\Node $row a single row from result set to map.
+     * @param \Everyman\Neo4j\Node $row a single row from result set to map.
      * @return Collection
      */
     protected function nodeToCollection(\EveryMan\Neo4j\Node $row)

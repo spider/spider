@@ -3,7 +3,6 @@ namespace Spider\Drivers\OrientDB;
 
 use PhpOrient\Exceptions\PhpOrientException as ServerException;
 use PhpOrient\PhpOrient;
-use PhpOrient\Protocols\Binary\Data\Record;
 use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 use Spider\Base\Collection;
 use Spider\Commands\BaseBuilder;
@@ -202,7 +201,7 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     protected function getTransactionVariables()
     {
-        $this->transactionVariables = array_map(function ($value) {
+        $this->transactionVariables = array_map(function($value) {
             return '$' . $value;
         }, $this->transactionVariables);
 
@@ -339,7 +338,7 @@ class Driver extends AbstractDriver implements DriverInterface
         }
 
         // For multiple records, map each to a Record
-        array_walk($response, function (&$orientRecord) {
+        array_walk($response, function(&$orientRecord) {
             $orientRecord = $this->mapOrientRecordToCollection($orientRecord);
         });
 

@@ -59,7 +59,7 @@ class BaseBuilder
     /**
      * Add an `insert` clause to the current command bag
      * @param array $data
-     * @return mixed
+     * @return BaseBuilder
      */
     public function insert(array $data)
     {
@@ -108,7 +108,7 @@ class BaseBuilder
 
     /**
      * Add a `delete` clause to the current command bag
-     * @return $this|mixed
+     * @return BaseBuilder
      */
     public function delete()
     {
@@ -364,7 +364,7 @@ class BaseBuilder
      * Used to turn things like '=' into Bag::COMPARATOR_EQUAL
      * in where constraints
      *
-     * @param $sign
+     * @param string $sign
      * @return mixed
      */
     protected function signToConstant($sign)

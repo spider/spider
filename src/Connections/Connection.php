@@ -43,8 +43,9 @@ class Connection extends Collection implements ConnectionInterface
         } elseif (isset($config['driver'])) {
             if (is_string($config['driver'])) {
                 $this->driverFromString($config['driver']);
-            } elseif ($config['driver'] instanceof DriverInterface)
-                $this->driver = $config['driver'];
+            } elseif ($config['driver'] instanceof DriverInterface) {
+                            $this->driver = $config['driver'];
+            }
         }
     }
 
