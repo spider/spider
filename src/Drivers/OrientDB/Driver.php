@@ -333,7 +333,7 @@ class Driver extends AbstractDriver implements DriverInterface
         }
 
         // Receive array with single scalar
-        if (!$response[0] instanceof Record) {
+        if (!$response[0] instanceof OrientRecord) {
             return $response[0];
         }
 
@@ -493,7 +493,7 @@ class Driver extends AbstractDriver implements DriverInterface
             return self::FORMAT_CUSTOM;
         }
 
-        if (!empty($response) && $response[0] instanceof Record) {
+        if (!empty($response) && $response[0] instanceof OrientRecord) {
             return self::FORMAT_SET;
         }
 
