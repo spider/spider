@@ -44,7 +44,7 @@ class Command implements CommandInterface
     /**
      * Sets the Command Script
      * @param string $script
-     * @return $this
+     * @return void
      */
     public function setScript($script)
     {
@@ -63,7 +63,7 @@ class Command implements CommandInterface
     /**
      * Sets the current script language (eg orientSQL, Cypher, etc)
      * @param $language
-     * @return $this
+     * @return void
      */
     public function setScriptLanguage($language)
     {

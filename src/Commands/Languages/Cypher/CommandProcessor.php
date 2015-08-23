@@ -110,9 +110,6 @@ class CommandProcessor implements ProcessorInterface
         $this->startScript("MATCH");
         $this->addToScript($this->buildTraversal());
 
-        /* name, username */
-        //~ $this->appendProjections();
-
         /* WHERE last_name = 'wilson' */
         if (!empty($this->bag->where)) {
             $this->addToScript('WHERE');
@@ -294,11 +291,11 @@ class CommandProcessor implements ProcessorInterface
             }
 
             switch ($value[0]) {
-                case Bag::ELEMENT_LABEL :
+                case Bag::ELEMENT_LABEL:
                     // @todo change to use appropriate variable when traversals are added.
                     $where[] = end($this->variables) . ':' . $value[2];
                     break;
-                case Bag::ELEMENT_ID :
+                case Bag::ELEMENT_ID:
                     $idWhere = 'ID(' . end($this->variables) . ') ' . (string)$this->toCypherOperator($value[1]) . ' ';
                     $idWhere .= (is_array($value[2]) ? $this->castValue($value[2]) : $value[2]);
                     $where[] = $idWhere;
@@ -414,6 +411,10 @@ class CommandProcessor implements ProcessorInterface
 
     /**
      * adds the correct prefix for variables that were'nt specified as belonging to a specific set.
+     *
+     * @param the field to check for alias prefixes.
+     *
+     * @return string the field with appropriate prefix
      */
     protected function detailField($field)
     {
@@ -424,6 +425,9 @@ class CommandProcessor implements ProcessorInterface
         }
     }
 
+    /**
+     * Resets the builder for a new query
+     */
     public function reset()
     {
         $this->variables = [];

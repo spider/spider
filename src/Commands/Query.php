@@ -48,29 +48,6 @@ class Query extends Builder
         return $this;
     }
 
-    /* Dispatch */
-    /**
-     * Execute a command directly from the public api
-     *
-     * Accepts either a CommandInterface or a string with
-     * the native script which is converted to a CommandInterface
-     *
-     * @param $command
-     * @return mixed Results from Command as SpiderResponse
-     */
-//    public function command($command)
-//    {
-//        if ($command instanceof CommandInterface) {
-//            return $this->dispatch($command);
-//        }
-//
-//        if (is_string($command)) {
-//            return $this->dispatch(new Command($command));
-//        }
-//
-//        throw new InvalidArgumentException("`command()` only accepts strings or instances of `CommandInterface`");
-//    }
-
     /**
      * Dispatch a command through the Connection
      *

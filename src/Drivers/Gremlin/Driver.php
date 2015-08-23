@@ -47,6 +47,11 @@ class Driver extends AbstractDriver implements DriverInterface
     ];
 
     /**
+     * @var brightzone\rexpro\Connection The client library this driver uses to communicate with the DB
+     */
+    protected $client;
+
+    /**
      * Create a new instance with a client
      *
      * @param array $properties an array of the properties to set for this class
@@ -156,7 +161,7 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @param array $response
      *
-     * @return array
+     * @return array|Collection
      */
     protected function mapResponse(array $response)
     {
@@ -269,7 +274,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in tree format from the response
      *
      * @param mixed $response the raw DB response
-     * @return Response Spider consistent response
+     * @return void
      * @throws NotSupportedException
      */
     public function formatAsTree($response)
