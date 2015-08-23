@@ -186,7 +186,7 @@ class Builder extends BaseBuilder
     /**
      * Retrieve the first result by dispatching the current Command Bag.
      * Alias of `one()`
-     * @return mixed Command results
+     * @return Builder
      */
     public function first()
     {

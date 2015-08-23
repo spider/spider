@@ -109,7 +109,7 @@ class Driver extends AbstractDriver implements DriverInterface
 
     /**
      * Opens a transaction
-     * @return bool
+     * @return void
      * @throws \Exception
      */
     public function startTransaction()
@@ -126,7 +126,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * Closes a transaction
      *
      * @param bool $commit whether this is a commit (TRUE) or a rollback (FALSE)
-     * @return bool
+     * @return void
      * @throws \Exception
      */
     public function stopTransaction($commit = true)
@@ -212,7 +212,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * Executes a Query or read command
      *
      * @param CommandInterface|BaseBuilder $query
-     * @return array|Record|Graph
+     * @return Response
      */
     public function executeReadCommand($query)
     {
@@ -225,7 +225,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * These are the "CUD" in CRUD
      *
      * @param CommandInterface|BaseBuilder $command
-     * @return Graph|Record|array|mixed mixed values for some write commands
+     * @return Response mixed values for some write commands
      */
     public function executeWriteCommand($command)
     {
@@ -413,7 +413,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in tree format from the response
      *
      * @param mixed $response the raw DB response
-     * @return Response Spider consistent response
+     * @return void
      * @throws NotSupportedException
      */
     public function formatAsTree($response)
@@ -427,7 +427,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in path format from the response
      *
      * @param mixed $response the raw DB response
-     * @return Response Spider consistent response
+     * @return void
      * @throws NotSupportedException
      */
     public function formatAsPath($response)

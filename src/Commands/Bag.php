@@ -66,7 +66,7 @@ class Bag extends Object
     /** @var bool|string|array Which field to group results by. `false` no grouping */
     public $groupBy = false;
 
-    /** @var bool|string|array Which field to order results by. `false` no ordering */
+    /** @var bool|array Which field to order results by. `false` no ordering */
     public $orderBy = false;
 
     /**
@@ -82,39 +82,39 @@ class Bag extends Object
     /* ToDo: Is it best to move the constants to their own class? */
 
     /* Comparators for constraints */
-    const COMPARATOR_EQUAL = 10; // =
-    const COMPARATOR_LT = 20; // <
-    const COMPARATOR_GT = 30; // >
-    const COMPARATOR_GE = 40; // >=
-    const COMPARATOR_LE = 50; // <=
-    const COMPARATOR_NE = 60; // not equal
+    const COMPARATOR_EQUAL   = 10; // =
+    const COMPARATOR_LT      = 20; // <
+    const COMPARATOR_GT      = 30; // >
+    const COMPARATOR_GE      = 40; // >=
+    const COMPARATOR_LE      = 50; // <=
+    const COMPARATOR_NE      = 60; // not equal
     const COMPARATOR_WITHOUT = 70;
-    const COMPARATOR_IN = 80;
+    const COMPARATOR_IN      = 80;
 
     /* Conjunctions for constraints */
     const CONJUNCTION_AND = 100;
-    const CONJUNCTION_OR = 110;
+    const CONJUNCTION_OR  = 110;
     const CONJUNCTION_XOR = 120;
     const CONJUNCTION_NOT = 130;
 
     /* CRUD commands (equivalent to SELECT, UPDATE, INSERT, DROP) */
-    const COMMAND_CREATE = 200;
+    const COMMAND_CREATE   = 200;
     const COMMAND_RETRIEVE = 210;
-    const COMMAND_UPDATE = 220;
-    const COMMAND_DELETE = 230;
+    const COMMAND_UPDATE   = 220;
+    const COMMAND_DELETE   = 230;
 
     /* Maps */
-    const MAP_SET = 300;
+    const MAP_SET  = 300;
     const MAP_PATH = 310;
     const MAP_TREE = 320;
 
     /* orders */
-    const ORDER_ASC = 400;
+    const ORDER_ASC  = 400;
     const ORDER_DESC = 410;
 
     /* Elements */
     const ELEMENT_VERTEX = 500;
-    const ELEMENT_EDGE = 510;
-    const ELEMENT_LABEL = 520;
-    const ELEMENT_ID = 530;
+    const ELEMENT_EDGE   = 510;
+    const ELEMENT_LABEL  = 520;
+    const ELEMENT_ID     = 530;
 }
