@@ -7,6 +7,7 @@ use Spider\Commands\Command;
 use Spider\Drivers\DriverInterface;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
+use Spider\Exceptions\NotSupportedException;
 
 /**
  * This is the base tests for all driver.
@@ -356,6 +357,18 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         }, ['throws' => new FormattingException()]);
     }
 
+    public function testThrowsFormattingExceptionForSet()
+    {
+        $this->specify("it throws an exception for scalar response on set formatting", function () {
+            $driver = $this->driver();
+
+            $response = $this->getScalarResponse('string');
+
+            $driver->formatAsSet($response);
+        }, ['throws' => new FormattingException()]);
+
+    }
+
     public function testFormatSet()
     {
         $this->specify("it formats a single record as a Collection", function () {
@@ -480,6 +493,26 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
             $driver->close();
         }, ['throws' => new ModifyingProtectedValueException]);
+    }
+
+    public function testIncorrectLanguage()
+    {
+        $this->specify("it throws an Exception when a command with an unknown language is submitted", function () {
+            $driver = $this->driver();
+            $driver->open();
+            $response = $driver->executeReadCommand(new Command('script', 'unknown-language'));
+        }, ['throws' => new NotSupportedException]);
+    }
+
+    public function testIncorrectScript()
+    {
+        $this->setExpectedException('Exception');
+
+        $driver = $this->driver();
+        $driver->open();
+        $command = $this->getCommand('select-one-item');
+        $command->setScript('incorrect-script');
+        $response = $driver->executeReadCommand($command);
     }
 
     /* Internal Methods */

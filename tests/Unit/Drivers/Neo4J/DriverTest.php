@@ -4,6 +4,7 @@ namespace Spider\Test\Unit\Drivers\Neo4J;
 use Codeception\Specify;
 use Spider\Commands\Command;
 use Spider\Drivers\Neo4J\Driver as Neo4JDriver;
+use Spider\Exceptions\FormattingException;
 use Spider\Test\Fixtures\Graph;
 use Spider\Test\Fixtures\NeoFixture;
 use Spider\Test\Unit\Drivers\BaseTestSuite;
@@ -213,5 +214,17 @@ class DriverTest extends BaseTestSuite
     public function testFormatTree()
     {
         $this->markTestSkipped("Tree is not yet implemented as gremlin-server doesn't curently support it");
+    }
+
+    public function testThrowsFormattingExceptionForPath()
+    {
+        $this->specify("it throws an exception for scalar response on set formatting", function () {
+            $driver = $this->driver();
+
+            $response = $this->getScalarResponse('string');
+
+            $driver->formatAsPath($response);
+        }, ['throws' => new FormattingException()]);
+
     }
 }
