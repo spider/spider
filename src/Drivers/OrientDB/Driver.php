@@ -3,7 +3,6 @@ namespace Spider\Drivers\OrientDB;
 
 use PhpOrient\Exceptions\PhpOrientException as ServerException;
 use PhpOrient\PhpOrient;
-use PhpOrient\Protocols\Binary\Data\Record;
 use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 use Spider\Base\Collection;
 use Spider\Commands\BaseBuilder;
@@ -110,7 +109,7 @@ class Driver extends AbstractDriver implements DriverInterface
 
     /**
      * Opens a transaction
-     * @return bool
+     * @return void
      * @throws \Exception
      */
     public function startTransaction()
@@ -127,7 +126,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * Closes a transaction
      *
      * @param bool $commit whether this is a commit (TRUE) or a rollback (FALSE)
-     * @return bool
+     * @return void
      * @throws \Exception
      */
     public function stopTransaction($commit = true)
@@ -202,7 +201,7 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     protected function getTransactionVariables()
     {
-        $this->transactionVariables = array_map(function ($value) {
+        $this->transactionVariables = array_map(function($value) {
             return '$' . $value;
         }, $this->transactionVariables);
 
@@ -213,7 +212,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * Executes a Query or read command
      *
      * @param CommandInterface|BaseBuilder $query
-     * @return array|Record|Graph
+     * @return Response
      */
     public function executeReadCommand($query)
     {
@@ -226,7 +225,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * These are the "CUD" in CRUD
      *
      * @param CommandInterface|BaseBuilder $command
-     * @return Graph|Record|array|mixed mixed values for some write commands
+     * @return Response mixed values for some write commands
      */
     public function executeWriteCommand($command)
     {
@@ -334,12 +333,12 @@ class Driver extends AbstractDriver implements DriverInterface
         }
 
         // Receive array with single scalar
-        if (!$response[0] instanceof Record) {
+        if (!$response[0] instanceof OrientRecord) {
             return $response[0];
         }
 
         // For multiple records, map each to a Record
-        array_walk($response, function (&$orientRecord) {
+        array_walk($response, function(&$orientRecord) {
             $orientRecord = $this->mapOrientRecordToCollection($orientRecord);
         });
 
@@ -414,7 +413,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in tree format from the response
      *
      * @param mixed $response the raw DB response
-     * @return Response Spider consistent response
+     * @return void
      * @throws NotSupportedException
      */
     public function formatAsTree($response)
@@ -428,7 +427,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in path format from the response
      *
      * @param mixed $response the raw DB response
-     * @return Response Spider consistent response
+     * @return void
      * @throws NotSupportedException
      */
     public function formatAsPath($response)
@@ -494,7 +493,7 @@ class Driver extends AbstractDriver implements DriverInterface
             return self::FORMAT_CUSTOM;
         }
 
-        if (!empty($response) && $response[0] instanceof Record) {
+        if (!empty($response) && $response[0] instanceof OrientRecord) {
             return self::FORMAT_SET;
         }
 

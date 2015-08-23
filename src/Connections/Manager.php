@@ -114,8 +114,9 @@ class Manager extends Collection implements ManagesItemsInterface
         }
 
         // Extract the driver
-        if (!isset($properties['driver']))
-            throw new ConnectionNotFoundException("There is no driver set in the Connection parameters");
+        if (!isset($properties['driver'])) {
+                    throw new ConnectionNotFoundException("There is no driver set in the Connection parameters");
+        }
 
         $diverClassName = $properties['driver'];
         unset($properties['driver']);

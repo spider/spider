@@ -11,11 +11,13 @@ interface ConnectionInterface
 {
     /**
      * Connects to the database
+     * @return DriverInterface
      */
     public function open();
 
     /**
      * Closes database connection
+     * @return DriverInterface
      */
     public function close();
 
@@ -35,6 +37,7 @@ interface ConnectionInterface
      * Updates the driver instance
      *
      * @param DriverInterface $driver
+     * @return void
      */
     public function setDriver(DriverInterface $driver);
 }

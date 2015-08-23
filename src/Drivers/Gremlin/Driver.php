@@ -1,7 +1,6 @@
 <?php
 namespace Spider\Drivers\Gremlin;
 
-use brightzone\rexpro\Connection;
 use Spider\Base\Collection;
 use Spider\Commands\BaseBuilder;
 use Spider\Commands\CommandInterface;
@@ -11,6 +10,7 @@ use Spider\Drivers\Response;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
 use Spider\Exceptions\NotSupportedException;
+use brightzone\rexpro\Connection;
 
 /**
  * Driver for Gremlin Server
@@ -45,6 +45,11 @@ class Driver extends AbstractDriver implements DriverInterface
         'gremlin' => '\Spider\Commands\Gremlin\Processor',
         'cypher' => '\Spider\Commands\Cypher\Processor',
     ];
+
+    /**
+     * @var brightzone\rexpro\Connection The client library this driver uses to communicate with the DB
+     */
+    protected $client;
 
     /**
      * Create a new instance with a client
@@ -156,7 +161,7 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @param array $response
      *
-     * @return array
+     * @return array|Collection
      */
     protected function mapResponse(array $response)
     {
@@ -170,7 +175,7 @@ class Driver extends AbstractDriver implements DriverInterface
         }
 
         // For multiple records, map each to a Record
-        array_walk($response, function (&$array) {
+        array_walk($response, function(&$array) {
             $array = $this->arrayToCollection($array);
         });
         return $response;
@@ -269,7 +274,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in tree format from the response
      *
      * @param mixed $response the raw DB response
-     * @return Response Spider consistent response
+     * @return void
      * @throws NotSupportedException
      */
     public function formatAsTree($response)

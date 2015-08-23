@@ -224,7 +224,7 @@ class CommandProcessor implements ProcessorInterface
 
     /**
      * Begin the current script without a space
-     * @param $clause
+     * @param string $clause
      */
     public function startScript($clause)
     {
@@ -361,10 +361,10 @@ class CommandProcessor implements ProcessorInterface
 
     /**
      * Append insert data to current script
-     * @param string $prefix
+     *
      * @throws \Exception
      */
-    protected function appendInsertData($prefix = "content")
+    protected function appendInsertData()
     {
         $keys = [];
         $values = [];
@@ -404,7 +404,7 @@ class CommandProcessor implements ProcessorInterface
             $keys = array_keys($this->bag->data[0]);
             $values = array_values($this->bag->data[0]);
 
-            $values = array_map(function ($value) {
+            $values = array_map(function($value) {
                 return $this->castValue($value);
             }, $values);
         }
@@ -424,7 +424,7 @@ class CommandProcessor implements ProcessorInterface
      * @param string $prefix
      * @throws \Exception
      */
-    protected function appendUpdateData($prefix = "content")
+    protected function appendUpdateData()
     {
         $this->addToScript("MERGE");
         $this->addToScript(json_encode($this->bag->data[0]));

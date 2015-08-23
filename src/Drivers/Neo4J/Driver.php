@@ -49,6 +49,11 @@ class Driver extends AbstractDriver implements DriverInterface
     ];
 
     /**
+     * @var brightzone\rexpro\Connection The client library this driver uses to communicate with the DB
+     */
+    protected $client;
+
+    /**
      * Open a database connection
      *
      * @return Driver $this
@@ -65,7 +70,7 @@ class Driver extends AbstractDriver implements DriverInterface
 
     /**
      * Close the database connection
-     * @return $this
+     * @return void
      */
     public function close()
     {
@@ -117,7 +122,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * Executes a read command without waiting for a response
      *
      * @param CommandInterface|BaseBuilder $query
-     * @return $this
+     * @return Driver $this
      */
     public function runReadCommand($query)
     {
@@ -129,7 +134,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * Executes a write command without waiting for a response
      *
      * @param CommandInterface|BaseBuilder $command
-     * @return $this
+     * @return void
      */
     public function runWriteCommand($command)
     {
@@ -200,7 +205,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in tree format from the response
      *
      * @param mixed $response the raw DB response
-     * @return Response Spider consistent response
+     * @return void
      * @throws NotSupportedException
      */
     public function formatAsTree($response)
@@ -213,7 +218,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in path format from the response
      *
      * @param mixed $response the raw DB response
-     * @return Response Spider consistent response
+     * @return array
      * @throws FormattingException
      */
     public function formatAsPath($response)
@@ -256,7 +261,7 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Hydrate a Collection from an Neo4J Node
      *
-     * @param array|\EveryMan\Neo4j\Node $row a single row from result set to map.
+     * @param \Everyman\Neo4j\Node $row a single row from result set to map.
      * @return Collection
      */
     protected function nodeToCollection(\EveryMan\Neo4j\Node $row)

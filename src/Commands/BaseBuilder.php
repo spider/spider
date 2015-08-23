@@ -19,16 +19,16 @@ class BaseBuilder
      * @var array
      */
     public $operators = [
-        '=' => Bag::COMPARATOR_EQUAL,
-        '>' => Bag::COMPARATOR_GT,
-        '<' => Bag::COMPARATOR_LT,
+        '='  => Bag::COMPARATOR_EQUAL,
+        '>'  => Bag::COMPARATOR_GT,
+        '<'  => Bag::COMPARATOR_LT,
         '<=' => Bag::COMPARATOR_LE,
         '>=' => Bag::COMPARATOR_GE,
         '<>' => Bag::COMPARATOR_NE,
         'IN' => Bag::COMPARATOR_IN,
 
         'AND' => Bag::CONJUNCTION_AND,
-        'OR' => Bag::CONJUNCTION_OR,
+        'OR'  => Bag::CONJUNCTION_OR,
         'XOR' => Bag::CONJUNCTION_XOR,
         'NOT' => Bag::CONJUNCTION_NOT,
     ];
@@ -59,7 +59,7 @@ class BaseBuilder
     /**
      * Add an `insert` clause to the current command bag
      * @param array $data
-     * @return mixed
+     * @return BaseBuilder
      */
     public function insert(array $data)
     {
@@ -108,7 +108,7 @@ class BaseBuilder
 
     /**
      * Add a `delete` clause to the current command bag
-     * @return $this|mixed
+     * @return BaseBuilder
      */
     public function delete()
     {
@@ -293,7 +293,7 @@ class BaseBuilder
      */
     public function getScript(ProcessorInterface $processor = null)
     {
-        return $this->getCommand($processor)->getScript();
+        return $this->script = $this->getCommand($processor)->getScript();
     }
 
     /**
@@ -332,11 +332,12 @@ class BaseBuilder
             }
         }
 
-        $this->script = $this->processor->process(
+        $command = $this->processor->process(
             $this->getBag()
         );
+        $this->script = $command->getScript();
 
-        return $this->script;
+        return $command;
     }
 
     /* Internals */
@@ -364,7 +365,7 @@ class BaseBuilder
      * Used to turn things like '=' into Bag::COMPARATOR_EQUAL
      * in where constraints
      *
-     * @param $sign
+     * @param string $sign
      * @return mixed
      */
     protected function signToConstant($sign)
