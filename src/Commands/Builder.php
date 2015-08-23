@@ -58,7 +58,7 @@ class Builder extends BaseBuilder
     /**
      * Delete a single record
      * @param null $record
-     * @return $this|mixed
+     * @return Builder
      */
     public function drop($record = null)
     {

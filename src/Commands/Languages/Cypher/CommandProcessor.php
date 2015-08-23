@@ -241,7 +241,7 @@ class CommandProcessor implements ProcessorInterface
 
     /**
      * Begin the current script without a space
-     * @param $clause
+     * @param string $clause
      */
     public function startScript($clause)
     {
@@ -250,7 +250,7 @@ class CommandProcessor implements ProcessorInterface
 
     /**
      * Add to the current script with a space before
-     * @param $clause
+     * @param string $clause
      * @throws \Exception
      */
     public function addToScript($clause)

@@ -1,7 +1,6 @@
 <?php
 namespace Spider\Drivers\Gremlin;
 
-use brightzone\rexpro\Connection;
 use Spider\Base\Collection;
 use Spider\Commands\BaseBuilder;
 use Spider\Commands\CommandInterface;
@@ -11,6 +10,7 @@ use Spider\Drivers\Response;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
 use Spider\Exceptions\NotSupportedException;
+use brightzone\rexpro\Connection;
 
 /**
  * Driver for Gremlin Server
@@ -170,7 +170,7 @@ class Driver extends AbstractDriver implements DriverInterface
         }
 
         // For multiple records, map each to a Record
-        array_walk($response, function (&$array) {
+        array_walk($response, function(&$array) {
             $array = $this->arrayToCollection($array);
         });
         return $response;
