@@ -2,7 +2,7 @@
 [![Latest Version](https://img.shields.io/github/release/spider/spider.svg?style=flat-square)](https://github.com/spider/spider/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Build Status](https://travis-ci.org/spider/spider.svg?branch=master)](https://travis-ci.org/spider/spider)
-[![Code Coverage](https://scrutinizer-ci.com/g/spider/spider/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/spider/spider/?branch=master)
+[![Coverage Status](https://coveralls.io/repos/spider/spider/badge.svg?branch=master&service=github)](https://coveralls.io/github/spider/spider?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/spider/spider/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/spider/spider/?branch=master)
 [![Total Downloads](https://img.shields.io/packagist/dt/spider/spider.svg?style=flat-square)](https://packagist.org/packages/spider/spider)
 
