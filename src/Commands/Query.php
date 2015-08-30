@@ -13,6 +13,9 @@ class Query extends Builder
     /** @var ConnectionInterface Valid connection containing a driver */
     protected $connection;
 
+    /** @var  CommandInterface Incoming command to dispatch */
+    private $command;
+
     /**
      * Creates a new instance of the Command Builder
      * With a LanguageProcessor and Connection
@@ -54,16 +57,15 @@ class Query extends Builder
      * If no instance of CommandInterface is provided, then the
      * current Command Bag is processed via the Command Processor
      *
-     * @param CommandInterface|null $command
      * @return Response the DB response in SpiderResponse format
      */
-    public function dispatch(CommandInterface $command = null)
+    private function dispatch()
     {
         $this->connection->open();
 
         if (isset($this->processor)) {
             //if the processor is defined we want to pass a Command to the driver.
-            $message = $command ? $command : $this->getCommand(); // returns `Command`
+            $message = $this->command ? $this->command : $this->getCommand(); // returns `Command`
         } else {
             // If not we will pass $this and let the driver decide which language to use.
             $message = $this;
@@ -95,10 +97,10 @@ class Query extends Builder
      * Return all the results
      * @return array|Collection Results formatted as a Set
      */
-    public function all()
+    public function getAll()
     {
         $this->limit(false);
-        $response = $this->set();
+        $response = $this->getSet();
 
         return (is_array($response)) ? $response : [$response];
     }
@@ -109,34 +111,26 @@ class Query extends Builder
      */
     public function get()
     {
-        return $this->set();
+        return $this->getSet();
     }
 
     /**
      * Retrieve the first result by dispatching the current Command Bag.
      * @return Collection Results formatted as a set with single collection
      */
-    public function one()
+    public function getOne()
     {
         parent::first();
         return $this->dispatch()->getSet();
     }
 
-    /**
-     * Retrieve the first result by dispatching the current Command Bag.
-     * @return Collection Results formatted as a set with single collection
-     */
-    public function first()
-    {
-        return $this->one();
-    }
 
     /* Dispatch with Response formats */
     /**
      * Dispatches Command and formats results as a Set.
      * @return array|Collection Results formatted as a set
      */
-    public function set()
+    public function getSet()
     {
         return $this->dispatch()->getSet();
     }
@@ -145,7 +139,7 @@ class Query extends Builder
      * Dispatches Command and formats results as a Tree.
      * @return array|Collection Results formatted as a tree
      */
-    public function tree()
+    public function getTree()
     {
         parent::tree();
         return $this->dispatch()->getTree();
@@ -155,7 +149,7 @@ class Query extends Builder
      * Dispatches Command and formats results as a Path.
      * @return array|Collection Results formatted as a path
      */
-    public function path()
+    public function getPath()
     {
         parent::path();
         return $this->dispatch()->getPath();
@@ -165,10 +159,21 @@ class Query extends Builder
      * Dispatches Command and formats results as a scalar.
      * @return string|bool|int Results formatted as a scalar
      */
-    public function scalar()
+    public function getScalar()
     {
         $this->limit(1);
         return $this->dispatch()->getScalar();
+    }
+
+    /**
+     * Execute a command through dispatch
+     * @param CommandInterface|null $command
+     * @return Response
+     */
+    public function execute(CommandInterface $command = null)
+    {
+        $this->command = $command;
+        return $this->dispatch();
     }
 
     /* Manage the Builder itself */

@@ -106,12 +106,12 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
     protected $query;
     protected $fixture;
 
-    public function testDispatching()
+    public function testExecuting()
     {
-        $this->specify("it dispatches using `dispatch`", function () {
+        $this->specify("it executes using `execute`", function () {
             $response = $this->query
                 ->select()
-                ->dispatch();
+                ->execute();
 
             $expected = $this->expected;
 
@@ -124,7 +124,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected[0]['name'], $consistent[0]->name, 'failed to return correct first collection');
         });
 
-        $this->specify("it dispatches using `go`", function () {
+        $this->specify("it executes using `go`", function () {
             $response = $this->query
                 ->select()
                 ->go();
@@ -140,10 +140,10 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected[0]['name'], $consistent[0]->name, 'failed to return correct first collection');
         });
 
-        $this->specify("it dispatches using `all`", function () {
+        $this->specify("it executes using `getAll`", function () {
             $response = $this->query
                 ->select()
-                ->all();
+                ->getAll();
 
             $expected = $this->expected;
 
@@ -153,7 +153,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
         });
 
-        $this->specify("it dispatches using `get` and `set`", function () {
+        $this->specify("it executes using `get` and `set`", function () {
             $response = $this->query
                 ->select()
                 ->get();
@@ -166,10 +166,10 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
         });
 
-        $this->specify("it selects one record with `one` and `first`", function () {
+        $this->specify("it selects one record with `getOne`", function () {
             $response = $this->query
                 ->select()
-                ->first();
+                ->getOne();
 
             $expected = $this->expected[0];
 
@@ -180,13 +180,13 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
     }
 
-    public function testFormattedDispatches()
+    public function testFormattedExecution()
     {
         $this->specify("it formats as a scalar value", function () {
             $response = $this->query
                 ->select('name')
                 ->from('person')
-                ->scalar();
+                ->getScalar();
 
             $expected = $this->expected[0]['name'];
 
@@ -198,7 +198,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->query
                 ->select()
                 ->from('person')
-                ->scalar();
+                ->getScalar();
         }, ['throws' => 'Spider\Exceptions\FormattingException']);
 
         /* Test path and tree once they are supported */
@@ -210,7 +210,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $response = $this->query
                 ->select()
                 ->from('person')
-                ->all();
+                ->getAll();
 
             $expected = array_filter($this->expected, function ($record) {
                 return $record['label'] === 'person';
@@ -222,18 +222,6 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
         });
 
-        $this->specify("it selects one record with first", function () {
-            $response = $this->query
-                ->select()
-                ->from('person')
-                ->first();
-
-            $expected = $this->expected;
-
-            $this->assertFalse(is_array($response), 'failed to return a collection array');
-            $this->assertInstanceOf('Spider\Base\Collection', $response, 'failed to return an array of collections');
-            $this->assertEquals($expected[0]['name'], $response->name, 'failed to return correct first collection');
-        });
 
         $this->specify("it selects with constraints", function () {
             $response = $this->query
@@ -241,7 +229,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->from('person')
                 ->where('name', 'marko')
                 ->andWhere('age', 29)
-                ->all();
+                ->getAll();
 
             $expected = array_filter($this->expected, function ($record) {
                 return $record['label'] === 'person'
@@ -261,7 +249,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->from('person')
                 ->where('name', 'marko')
                 ->orWhere('name', 'peter')
-                ->all();
+                ->getAll();
 
             $expected = array_filter($this->expected, function ($record) {
                 return $record['label'] === 'person'
@@ -324,7 +312,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->select()
                 ->from('person')
                 ->where('first', 'first-value')
-                ->one();
+                ->getOne();
 
             $this->assertInstanceOf('Spider\Base\Collection', $response, "failed to return one record");
             $this->assertEquals("second-value", $response->second, "failed to create record");
@@ -338,14 +326,14 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->select()
                 ->from('person')
                 ->where('first', 'first-value')
-                ->all();
+                ->getAll();
 
             $this->assertEmpty($response, "failed to return empty array for no items");
 
             // Make sure we didn't delete everything
             $response = $this->query
                 ->select()
-                ->all();
+                ->getAll();
 
             $this->assertCount(6, $response, "failed to leave six other records");
         });
@@ -373,7 +361,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->select()
                 ->from('person')
                 ->where('name', 'michael')
-                ->all();
+                ->getAll();
 
             $this->assertTrue(is_array($response), "failed to return an array");
             $this->assertCount(2, $response, "failed to return two records");
@@ -393,14 +381,14 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->select()
                 ->from('person')
                 ->where('name', 'michael')
-                ->all();
+                ->getAll();
 
             $this->assertEmpty($response, "failed to return empty array for no items");
 
             // Make sure we deleted what we wanted to
             $response = $this->query
                 ->select()
-                ->all();
+                ->getAll();
 
             $this->assertCount(6, $response, "failed to leave six other records");
         });
@@ -408,22 +396,22 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
     public function testDrop()
     {
-        $this->specify("it drops a single record via `dispatch()`", function () {
-            $recordToDelete = $this->query->select()->from('person')->where('name', 'marko')->one();
+        $this->specify("it drops a single record via `execute()`", function () {
+            $recordToDelete = $this->query->select()->from('person')->where('name', 'marko')->getOne();
 
             $this->query
                 ->drop()
                 ->record($recordToDelete->id)
-                ->dispatch();
+                ->execute();
 
             // Now, try to find it again
-            $actual = $this->query->select()->record($recordToDelete->id)->one();
+            $actual = $this->query->select()->record($recordToDelete->id)->getOne();
 
             $this->assertEmpty($actual, "failed to delete record");
         });
 
-        $this->specify("it drops multiple records dispatching from `dispatch()`", function () {
-            $recordsToDelete = $this->query->select()->from('person')->where('lang', 'java')->all();
+        $this->specify("it drops multiple records via `execute()`", function () {
+            $recordsToDelete = $this->query->select()->from('person')->where('lang', 'java')->getAll();
             $ids = [];
             foreach ($recordsToDelete as $record) {
                 $ids[] = $record->id;
@@ -432,10 +420,10 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->query
                 ->drop()
                 ->record($ids)
-                ->dispatch();
+                ->execute();
 
             // Now, try to find it again
-            $actual = $this->query->select()->from('person')->where('lang', 'java')->all();
+            $actual = $this->query->select()->from('person')->where('lang', 'java')->getAll();
             $this->assertEmpty($actual, "failed to delete record");
         });
     }
@@ -453,7 +441,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->select()
                 ->from('person')
                 ->where('name', 'new_name')
-                ->all();
+                ->getAll();
 
             $this->assertTrue(is_array($response), "failed to return an array");
             $this->assertCount(4, $response, "failed to return two records");
@@ -461,7 +449,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
         $this->specify("it updates a single record by id", function () {
             $record = $this->query
-                ->select()->first();
+                ->select()->getOne();
 
             $this->query
                 ->update(['name' => 'new_name', 'other' => 'value'])
@@ -473,7 +461,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->select()
                 ->from('person')
                 ->where('name', 'new_name')
-                ->all();
+                ->getAll();
 
             $this->assertTrue(is_array($response), "failed to return an array");
             $this->assertCount(1, $response, "failed to return two records");
@@ -492,7 +480,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->select()
                 ->from('person')
                 ->where('name', 'new_name')
-                ->all();
+                ->getAll();
 
             $this->assertTrue(is_array($response), "failed to return an array");
             $this->assertCount(1, $response, "failed to return two records");
@@ -504,14 +492,14 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->update()
                 ->where(Bag::ELEMENT_LABEL, 'person')
                 ->withData(['name' => 'new_name', 'other' => 'value'])
-                ->first();
+                ->getOne();
 
             // Check our work
             $response = $this->query
                 ->select()
                 ->from('person')
                 ->where('name', 'new_name')
-                ->all();
+                ->getAll();
 
             $this->assertTrue(is_array($response), "failed to return an array");
             $this->assertCount(1, $response, "failed to return two records");
