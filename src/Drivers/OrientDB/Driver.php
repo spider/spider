@@ -266,6 +266,7 @@ class Driver extends AbstractDriver implements DriverInterface
 
         try {
             $response = $this->client->$method($command->getScript());
+
         } catch (ServerException $e) {
             // Wrap a "class doesn't exist" exception
             if (strpos($e->getMessage(), "not found in database")) {

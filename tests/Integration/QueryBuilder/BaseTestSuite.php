@@ -4,6 +4,7 @@ namespace Spider\Test\Integration\QueryBuilder;
 use Codeception\Specify;
 use Spider\Test\Fixtures\Graph;
 use Spider\Commands\Bag;
+use Spider\Commands\Command;
 
 abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 {
@@ -153,7 +154,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected[0]['name'], $response[0]->name, 'failed to return correct first collection');
         });
 
-        $this->specify("it executes using `get` and `set`", function () {
+        $this->specify("it executes using `get`", function () {
             $response = $this->query
                 ->select()
                 ->get();

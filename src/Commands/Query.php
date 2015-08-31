@@ -13,8 +13,6 @@ class Query extends Builder
     /** @var ConnectionInterface Valid connection containing a driver */
     protected $connection;
 
-    /** @var  CommandInterface Incoming command to dispatch */
-    private $command;
 
     /**
      * Creates a new instance of the Command Builder
@@ -56,16 +54,16 @@ class Query extends Builder
      *
      * If no instance of CommandInterface is provided, then the
      * current Command Bag is processed via the Command Processor
-     *
+     * @param CommandInterface|null $command
      * @return Response the DB response in SpiderResponse format
      */
-    private function dispatch()
+    private function dispatch($command = null)
     {
         $this->connection->open();
 
         if (isset($this->processor)) {
             //if the processor is defined we want to pass a Command to the driver.
-            $message = $this->command ? $this->command : $this->getCommand(); // returns `Command`
+            $message = $command ? $command : $this->getCommand(); // returns `Command`
         } else {
             // If not we will pass $this and let the driver decide which language to use.
             $message = $this;
@@ -79,6 +77,7 @@ class Query extends Builder
 
         // Reset query and return response
         $this->bag = new Bag();
+
         return $response;
     }
 
@@ -91,7 +90,7 @@ class Query extends Builder
         return $this->dispatch();
     }
 
-    /* Dispatch with limits */
+    /* Dispatch without limits */
     /**
      * Dispatch a retrieve command with no limit.
      * Return all the results
@@ -172,8 +171,7 @@ class Query extends Builder
      */
     public function execute(CommandInterface $command = null)
     {
-        $this->command = $command;
-        return $this->dispatch();
+        return $this->dispatch($command);
     }
 
     /* Manage the Builder itself */
