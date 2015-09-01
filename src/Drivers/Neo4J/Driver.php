@@ -49,7 +49,7 @@ class Driver extends AbstractDriver implements DriverInterface
     ];
 
     /**
-     * @var brightzone\rexpro\Connection The client library this driver uses to communicate with the DB
+     * @var \brightzone\rexpro\Connection The client library this driver uses to communicate with the DB
      */
     protected $client;
 

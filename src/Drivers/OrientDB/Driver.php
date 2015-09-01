@@ -225,7 +225,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * These are the "CUD" in CRUD
      *
      * @param CommandInterface|BaseBuilder $command
-     * @return Response mixed values for some write commands
+     * @return Response|null values for some write commands
      */
     public function executeWriteCommand($command)
     {

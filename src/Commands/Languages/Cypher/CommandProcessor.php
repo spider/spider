@@ -315,6 +315,10 @@ class CommandProcessor implements ProcessorInterface
     protected function buildOrderBy()
     {
         // Perform compliance check
+        if (!$this->bag->orderBy) {
+            return '';
+        }
+
         $orders = [];
         foreach ($this->bag->orderBy as $order) {
             $direction = ($order[1] === Bag::ORDER_ASC) ? 'ASC' : 'DESC';
@@ -349,11 +353,11 @@ class CommandProcessor implements ProcessorInterface
         $set = [];
         foreach ($data as $key => $value) {
             switch ($key) {
-                case Bag::ELEMENT_LABEL :
+                case Bag::ELEMENT_LABEL:
                     // @todo change to use appropriate variable when traversals are added.
                     $set[] = end($this->variables) . ' :' . $value;
                     break;
-                case Bag::ELEMENT_ID :
+                case Bag::ELEMENT_ID:
                     throw new NotSupportedException('Neo4J will not allow you to manually set IDs');
                 default:
                     $set[] = $this->detailField($key) . ' = ' . $this->castValue($value);

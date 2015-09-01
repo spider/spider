@@ -421,7 +421,6 @@ class CommandProcessor implements ProcessorInterface
 
     /**
      * Append update data to current script
-     * @param string $prefix
      * @throws \Exception
      */
     protected function appendUpdateData()
