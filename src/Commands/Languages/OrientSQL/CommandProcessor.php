@@ -38,6 +38,9 @@ class CommandProcessor implements ProcessorInterface
 
         Bag::CONJUNCTION_AND => 'AND',
         Bag::CONJUNCTION_OR => 'OR',
+
+        Bag::ORDER_DESC => 'DESC',
+        Bag::ORDER_ASC => 'ASC',
     ];
 
     /** @var  Bag The CommandBag to be processed */
@@ -341,7 +344,7 @@ class CommandProcessor implements ProcessorInterface
 
             $orders = [];
             foreach ($this->bag->orderBy as $field) {
-                $orders[] = "$field[0] $field[1]";
+                $orders[] = "$field[0] " . $this->toSqlOperator($field[1]);
             }
 
             $this->addToScript(implode(", ", $orders));
