@@ -28,8 +28,8 @@ class UpdateTest extends TestSetup
         $this->specify("it updates a single record with a target and constraint", function () {
             $actual = $this->builder
                 ->update(['name'=> 'chris'])
-                ->constrain(['username', Bag::COMPARATOR_EQUAL, 'chrismichaels84', Bag::CONJUNCTION_AND])
-                ->constrain([Bag::ELEMENT_LABEL, Bag::COMPARATOR_EQUAL, 'target', Bag::CONJUNCTION_AND])
+                ->internalWhere(['username', Bag::COMPARATOR_EQUAL, 'chrismichaels84', Bag::CONJUNCTION_AND])
+                ->internalWhere([Bag::ELEMENT_LABEL, Bag::COMPARATOR_EQUAL, 'target', Bag::CONJUNCTION_AND])
                 ->type(Bag::ELEMENT_VERTEX)
                 ->limit(1)
                 ->getBag();

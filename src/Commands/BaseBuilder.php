@@ -163,7 +163,7 @@ class BaseBuilder
      * @return $this
      * @throws \Exception
      */
-    public function constrain(array $constraints)
+    public function internalWhere(array $constraints)
     {
         /* Force to multi-dimensional array */
         if (!is_array($constraints[0])) {

@@ -19,7 +19,7 @@ class RetrieveTest extends TestSetup
             $actual = $this->builder
                 ->retrieve()
                 ->type(Bag::ELEMENT_VERTEX)
-                ->constrain(['name', Bag::COMPARATOR_EQUAL, 'michael', Bag::CONJUNCTION_OR])
+                ->internalWhere(['name', Bag::COMPARATOR_EQUAL, 'michael', Bag::CONJUNCTION_OR])
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
@@ -39,7 +39,7 @@ class RetrieveTest extends TestSetup
             $actual = $this->builder
                 ->retrieve()
                 ->type(Bag::ELEMENT_VERTEX)
-                ->constrain([
+                ->internalWhere([
                     ['name', Bag::COMPARATOR_EQUAL, 'michael', Bag::CONJUNCTION_AND],
                     ['price', Bag::COMPARATOR_GT, 2, Bag::CONJUNCTION_OR]
                 ])
@@ -62,7 +62,7 @@ class RetrieveTest extends TestSetup
             $this->builder
                 ->retrieve()
                 ->type(Bag::ELEMENT_VERTEX)
-                ->constrain(
+                ->internalWhere(
                     ['name', Bag::COMPARATOR_EQUAL, 'michael']
                 )
                 ->getBag();
@@ -72,7 +72,7 @@ class RetrieveTest extends TestSetup
             $this->builder
                 ->retrieve()
                 ->type(Bag::ELEMENT_VERTEX)
-                ->constrain(
+                ->internalWhere(
                     ['name', '=', 'michael', Bag::CONJUNCTION_AND]
                 )
                 ->getBag();
@@ -82,7 +82,7 @@ class RetrieveTest extends TestSetup
             $this->builder
                 ->retrieve()
                 ->type(Bag::ELEMENT_VERTEX)
-                ->constrain(
+                ->internalWhere(
                     [true, Bag::COMPARATOR_EQUAL, 'michael', 'AND']
                 )
                 ->getBag();

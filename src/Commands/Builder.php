@@ -133,7 +133,7 @@ class Builder extends BaseBuilder
         }
 
         /* Were we handed parameters for arrays? */
-        $this->constrain([
+        $this->internalWhere([
             $property,
             $this->signToConstant($operator), // convert to constant
             $value,
