@@ -1,7 +1,14 @@
 # Changelog
 All Notable changes to `Spider` will be documented in this file
 
-## v0.3 - NEXT
+## v0.4 - NEXT
+- Query api uses verb-based dispatch methods (getAll(), getOne(), etc)
+- Refactor: OrientDB uses SqlBatch for commands consistently
+
+## v0.3.1 - 9-1-2015
+- Bug: Added ordering to select tests so Neo would consistently pass #63
+
+## v0.3 - 8-22-2015
 - Basic Query Builder (without traversals)
   - Where filters
   - limit and group
