@@ -32,24 +32,6 @@ class Query extends Builder
     }
 
     /**
-     * In some cases, choose what the database sends back
-     * after the operation. For instance, if deleting
-     * Do you want the records affected, record
-     * before, or a simple `true` for success?
-     *
-     * $builder->drop(3)->fromDb('AFTER')
-     *
-     * @note NOT IMPLEMENTED YET see PR #21
-     * @param null $wanted
-     * @return $this
-     */
-    public function fromDb($wanted = null)
-    {
-        $this->bag->return = (is_null($wanted)) ? true : $this->csvToArray($wanted);
-        return $this;
-    }
-
-    /**
      * Dispatch a command through the Connection
      *
      * If no instance of CommandInterface is provided, then the
@@ -57,7 +39,7 @@ class Query extends Builder
      * @param CommandInterface|null $command
      * @return Response the DB response in SpiderResponse format
      */
-    private function dispatch($command = null)
+    protected function dispatch($command = null)
     {
         $this->connection->open();
 
@@ -76,7 +58,7 @@ class Query extends Builder
         }
 
         // Reset query and return response
-        $this->bag = new Bag();
+        $this->clear();
 
         return $response;
     }
@@ -119,7 +101,7 @@ class Query extends Builder
      */
     public function getOne()
     {
-        parent::first();
+        $this->one();
         return $this->dispatch()->getSet();
     }
 
@@ -140,7 +122,7 @@ class Query extends Builder
      */
     public function getTree()
     {
-        parent::tree();
+        $this->tree();
         return $this->dispatch()->getTree();
     }
 
@@ -150,7 +132,7 @@ class Query extends Builder
      */
     public function getPath()
     {
-        parent::path();
+        $this->path();
         return $this->dispatch()->getPath();
     }
 
@@ -160,7 +142,7 @@ class Query extends Builder
      */
     public function getScalar()
     {
-        $this->limit(1);
+        $this->one();
         return $this->dispatch()->getScalar();
     }
 

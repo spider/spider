@@ -184,11 +184,11 @@ class Builder extends BaseBuilder
 
     /* Set limits */
     /**
-     * Retrieve the first result by dispatching the current Command Bag.
+     * Retrieve one result by dispatching the current Command Bag.
      * Alias of `one()`
      * @return Builder
      */
-    public function first()
+    public function one()
     {
         $this->bag->limit = 1;
         return $this;

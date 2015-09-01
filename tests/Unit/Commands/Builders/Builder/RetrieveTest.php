@@ -115,11 +115,11 @@ class RetrieveTest extends TestSetup
 
     public function testLimitSugars()
     {
-        $this->specify("it gets first records", function () {
+        $this->specify("it gets one record", function () {
             $actual = $this->builder
                 ->select()
                 ->from('v')
-                ->first()
+                ->one()
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
