@@ -39,7 +39,7 @@ class Manager extends Collection implements ManagesItemsInterface
      * Hand alias for stored Connection
      * Hand array for implicit Connection
      *
-     * @param string|array|null $alias alias | properties | default
+     * @param string $alias alias | properties | default
      * @return Connection
      * @throws \Spider\Exceptions\ConnectionNotFoundException
      */
@@ -146,8 +146,8 @@ class Manager extends Collection implements ManagesItemsInterface
 
     /**
      * Caches a built Connection
-     * @param $alias
-     * @param $connection
+     * @param string $alias
+     * @param Connection $connection
      */
     protected function cache($alias, $connection)
     {
