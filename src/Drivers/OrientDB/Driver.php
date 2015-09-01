@@ -7,6 +7,7 @@ use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 use Spider\Base\Collection;
 use Spider\Commands\BaseBuilder;
 use Spider\Commands\CommandInterface;
+use Spider\Commands\Languages\OrientSQL\SqlBatch;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
 use Spider\Drivers\Response;
@@ -48,9 +49,6 @@ class Driver extends AbstractDriver implements DriverInterface
 
     /** @var string Current transaction (batch) statement */
     protected $transaction = '';
-
-    /** @var array Batch variables */
-    protected $transactionVariables;
 
     /**
      * @var array The supported languages and their processors
@@ -119,14 +117,15 @@ class Driver extends AbstractDriver implements DriverInterface
         }
 
         $this->inTransaction = true;
-        $this->transaction = "begin\n";
+        $this->transaction = new SqlBatch();
+        $this->transaction->begin();
     }
 
     /**
      * Closes a transaction
      *
      * @param bool $commit whether this is a commit (TRUE) or a rollback (FALSE)
-     * @return void
+     * @return Response
      * @throws \Exception
      */
     public function stopTransaction($commit = true)
@@ -136,13 +135,17 @@ class Driver extends AbstractDriver implements DriverInterface
         }
 
         if ($commit) {
-            $this->endTransaction();
-            $command = $this->transaction;
+            $this->transaction->end();
+
+            $response = $this->client->sqlBatch(
+                $this->transaction->getScript()
+            );
+
             $this->transaction = null;
             $this->inTransaction = false;
-
-            $this->client->sqlBatch($command);
         }
+
+        return isset($response) ? $response : null;
     }
 
     /**
@@ -151,61 +154,8 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function getTransactionForTest()
     {
-        $this->endTransaction();
-        return $this->transaction;
-    }
-
-    /**
-     * Finishes the transaction statement
-     */
-    protected function endTransaction()
-    {
-        $this->writeTransactionStatement("commit");
-        $this->writeTransactionStatement(" return " . $this->getTransactionVariables());
-    }
-
-    /**
-     * Write a new clause to the transaction statement
-     * @param string $statement
-     */
-    protected function writeTransactionStatement($statement)
-    {
-        $this->transaction .= $statement;
-    }
-
-    /**
-     * Add a new operation to the transaction statement
-     * @param $statement
-     */
-    protected function addTransactionStatement($statement)
-    {
-        $this->writeTransactionStatement(
-            'LET ' . $this->incrementTransactionVariables() . ' = ' . $statement . "\n"
-        );
-    }
-
-    /**
-     * Increment transaction variables
-     * @return string
-     */
-    protected function incrementTransactionVariables()
-    {
-        $newIndex = count($this->transactionVariables) + 1;
-        $this->transactionVariables[] = "t" . (string)$newIndex;
-        return 't' . (string)$newIndex;
-    }
-
-    /**
-     * Get the transaction variables for the RETURN array
-     * @return string
-     */
-    protected function getTransactionVariables()
-    {
-        $this->transactionVariables = array_map(function($value) {
-            return '$' . $value;
-        }, $this->transactionVariables);
-
-        return "[" . implode(",", $this->transactionVariables) . "]";
+        $this->transaction->end();
+        return $this->transaction->getScript();
     }
 
     /**
@@ -230,19 +180,11 @@ class Driver extends AbstractDriver implements DriverInterface
     public function executeWriteCommand($command)
     {
         if ($this->inTransaction) {
-            $this->addTransactionStatement($command->getScript());
+            $this->transaction->addStatement($command->getScript());
             return null;
         }
 
-        /* ToDo: DELETE is very sloppy */
-        /* DELETE VERTEX returns an int. DELETE returns either int or before Record */
-        /* Drivers expect an empty array upon successful delete */
-        /* This needs to be reconciled in a better way */
         $response = $this->executeCommand($command, 'command');
-
-        if (strpos(strtolower($command->getScript()), "delete") === 0) {
-            return new Response(['_raw' => [], '_driver' => $this]);
-        }
 
         return $response;
     }
@@ -264,9 +206,17 @@ class Driver extends AbstractDriver implements DriverInterface
             throw new NotSupportedException(__CLASS__ . " does not support " . $command->getScriptLanguage());
         }
 
-        try {
-            $response = $this->client->$method($command->getScript());
+        if (!$this->isBatch($command->getScript())) {
+            $batch = new SqlBatch();
+            $batch->begin();
+            $batch->addStatement($command->getScript());
+            $batch->end();
 
+            $command->setScript($batch->getScript());
+        }
+
+        try {
+            $response = $this->client->sqlBatch($command->getScript());
         } catch (ServerException $e) {
             // Wrap a "class doesn't exist" exception
             if (strpos($e->getMessage(), "not found in database")) {
@@ -275,8 +225,27 @@ class Driver extends AbstractDriver implements DriverInterface
                 throw $e;
             }
         }
-        $response = $this->rawResponseToArray($response);
-        return new Response(['_raw' => $response, '_driver' => $this]);
+
+        /* ToDo: Refactor for a better check for delete */
+        // This is a delete command, return an empty array
+        if (strpos(strtolower($command->getScript()), "delete vertex") || strpos(strtolower($command->getScript()), "delete from")) {
+            return new Response(['_raw' => [], '_driver' => $this]);
+
+        // Otherwise, return the response
+        } else {
+            $response = $this->rawResponseToArray($response);
+            return new Response(['_raw' => $response, '_driver' => $this]);
+        }
+    }
+
+    /**
+     * Checks to see if a sql script is a batch
+     * @param $script
+     * @return bool
+     */
+    protected function isBatch($script)
+    {
+        return substr($script, 0, 5) === "begin";
     }
 
     /**
@@ -339,7 +308,7 @@ class Driver extends AbstractDriver implements DriverInterface
         }
 
         // For multiple records, map each to a Record
-        array_walk($response, function(&$orientRecord) {
+        array_walk($response, function (&$orientRecord) {
             $orientRecord = $this->mapOrientRecordToCollection($orientRecord);
         });
 

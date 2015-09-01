@@ -160,7 +160,8 @@ class DriverTest extends BaseTestSuite
             $expected .= "LET t1 = CREATE VERTEX CONTENT {name:'one'}\n";
             $expected .= "LET t2 = CREATE VERTEX CONTENT {name:'two'}\n";
             $expected .= "LET t3 = CREATE VERTEX CONTENT {name:'three'}\n";
-            $expected .= 'commit return [$t1,$t2,$t3]';
+            $expected .= "commit retry 100\n";
+            $expected .= 'return [$t1,$t2,$t3]';
 
             $driver->stopTransaction(false); // false
 
@@ -188,7 +189,7 @@ class DriverTest extends BaseTestSuite
 
     public function testFormatSingleCollectionAsScalar()
     {
-        $this->specify("it formats a single response as a scalar", function() {
+        $this->specify("it formats a single response as a scalar", function () {
             $driver = $this->driver();
             $driver->open();
 
@@ -205,7 +206,7 @@ class DriverTest extends BaseTestSuite
             $this->assertEquals($this->expected[0]['name'], $scalar, "failed to return the correct scalar");
         });
 
-        $this->specify("it throws exception for multiple projections", function() {
+        $this->specify("it throws exception for multiple projections", function () {
             $driver = $this->driver();
             $driver->open();
 
@@ -218,7 +219,7 @@ class DriverTest extends BaseTestSuite
             $response->getScalar();
         }, ['throws' => 'Spider\Exceptions\FormattingException']);
 
-        $this->specify("it throws exception for multiple records", function() {
+        $this->specify("it throws exception for multiple records", function () {
             $driver = $this->driver();
             $driver->open();
 
