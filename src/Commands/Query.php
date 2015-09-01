@@ -17,7 +17,7 @@ class Query extends Builder
      * Creates a new instance of the Command Builder
      * With a LanguageProcessor and Connection
      * @param ProcessorInterface $processor
-     * @param ConnectionInterface|null $connection
+     * @param ConnectionInterface $connection
      * @param Bag|null $bag
      */
     public function __construct(
