@@ -166,7 +166,7 @@ class Driver extends AbstractDriver implements DriverInterface
 
     /**
      * Write a new clause to the transaction statement
-     * @param $statement
+     * @param string $statement
      */
     protected function writeTransactionStatement($statement)
     {
@@ -225,7 +225,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * These are the "CUD" in CRUD
      *
      * @param CommandInterface|BaseBuilder $command
-     * @return Response mixed values for some write commands
+     * @return Response|null values for some write commands
      */
     public function executeWriteCommand($command)
     {
@@ -250,7 +250,7 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Executes actual command or query
      * @param CommandInterface|BaseBuilder $command
-     * @param $method
+     * @param string $method
      * @return Response
      * @throws NotSupportedException
      * @throws \Exception
@@ -466,7 +466,7 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Ensure that a response can be formatted as desired
      * @param $response
-     * @param $desiredFormat
+     * @param integer $desiredFormat
      * @throws FormattingException
      */
     protected function canFormat($response, $desiredFormat)
@@ -510,7 +510,7 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Can a response set be formatted as a scalar?
      * @param $response
-     * @param $e
+     * @param FormattingException $e
      * @return bool
      */
     protected function canBeScalar($response, $e)

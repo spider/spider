@@ -2,6 +2,7 @@
 namespace Spider\Test\Integration\QueryBuilder;
 
 use Codeception\Specify;
+use Spider\Commands\Languages\OrientSQL\CommandProcessor;
 use Spider\Test\Fixtures\Graph;
 use Spider\Commands\Bag;
 
@@ -261,6 +262,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->from('person')
                 ->where('name', 'marko')
                 ->orWhere('name', 'peter')
+                ->orderBy('name')
                 ->all();
 
             $expected = array_filter($this->expected, function ($record) {
@@ -285,14 +287,26 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
                 ->select()
                 ->from('person')
                 ->limit(3)
+                ->orderBy('name')
                 ->get();
 
+            /* Setup the expected data */
+            // only persons
             $expected = array_filter($this->expected, function ($record) {
                 return $record['label'] === 'person';
             });
 
-            $expected = array_slice($expected, 0, 3);
+            // In the right order
+            foreach ($expected as $key => $row) {
+                $name[$key]  = $row['name'];
+            }
+            array_multisort($name, SORT_ASC, $expected);
 
+            // First three results
+            $expected = array_slice($expected, 0, 3);
+            $expected = array_values($expected);
+
+            /* Assertions */
             $this->assertTrue(is_array($response), 'failed to return an array');
             $this->assertCount(3, $response, 'failed to return the correct number of records');
 

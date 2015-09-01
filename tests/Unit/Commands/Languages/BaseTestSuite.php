@@ -214,8 +214,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $bag->projections = ['field1', 'field2'];
             $bag->target = Bag::ELEMENT_VERTEX;
             $bag->limit = 3;
-            $bag->orderBy = [['field1', 'DESC']];
-            $bag->orderAsc = false;
+            $bag->orderBy = [['field1', Bag::ORDER_DESC]];
             $bag->where = array_merge($this->getWheres(), [[
                 Bag::ELEMENT_LABEL,
                 Bag::COMPARATOR_EQUAL, // convert to constant
