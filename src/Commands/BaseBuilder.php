@@ -13,26 +13,6 @@ class BaseBuilder
     /** @var Bag The CommandBag with command parameters */
     protected $bag;
 
-    /**
-     * A map of operators and conjunctions
-     * These signs on the left are can be used in `where` constraints and such
-     * @var array
-     */
-    public $operators = [
-        '='  => Bag::COMPARATOR_EQUAL,
-        '>'  => Bag::COMPARATOR_GT,
-        '<'  => Bag::COMPARATOR_LT,
-        '<=' => Bag::COMPARATOR_LE,
-        '>=' => Bag::COMPARATOR_GE,
-        '<>' => Bag::COMPARATOR_NE,
-        'IN' => Bag::COMPARATOR_IN,
-
-        'AND' => Bag::CONJUNCTION_AND,
-        'OR'  => Bag::CONJUNCTION_OR,
-        'XOR' => Bag::CONJUNCTION_XOR,
-        'NOT' => Bag::CONJUNCTION_NOT,
-    ];
-
     /** @var  ProcessorInterface The current language processor */
     protected $processor;
 
@@ -169,44 +149,39 @@ class BaseBuilder
     }
 
     /**
-     * Add a single or multiple `where` constraint to the current Command Bag
+     * Add a single or multiple `where` constraints to the Command Bag.
      *
-     * @param string $property Field name
-     * @param mixed $value Value matched against
-     * @param string $operator From the `self::$operators` array
-     * @param string $conjunction From the `self::$operators` array
+     * This method *only* accepts a valid where array:
+     *      ['field', OPERATOR, $value, CONJUNCTION]
+     *
+     * For operator and conjunction, be sure to use the `Bag` constants
+     *      ['name', Bag::COMPARATOR_EQUAL, 'michael', CONJUNCTION_AND]
+     *
+     * For more flexible options, use `Builder`
+     *
+     * @param array $constraints
      * @return $this
+     * @throws \Exception
      */
-    public function where($property, $value = null, $operator = '=', $conjunction = 'AND')
+    public function internalWhere(array $constraints)
     {
-        if (is_array($property)) {
-            if (is_array($property[0])) { // We were handed an array of constraints
-                foreach ($property as $constraint) {
-                    $this->where(
-                        $constraint[0], // property
-                        $constraint[2] ?: $operator, // operator, default =
-                        $constraint[1], // value
-                        isset($constraint[3]) ? $constraint[3] : $conjunction // conjunction, default AND
-                    );
-                }
-                return $this;
-            }
-
-            $this->where(
-                $property[0], // property
-                $property[2] ?: $operator, // operator, default =
-                $property[1], // value
-                isset($property[3]) ? $property[3] : $conjunction // conjunction, default AND
-            );
-            return $this;
+        /* Force to multi-dimensional array */
+        if (!is_array($constraints[0])) {
+            $constraints = [$constraints];
         }
 
-        $this->bag->where[] = [
-            $property,
-            $this->signToConstant($operator), // convert to constant
-            $value,
-            $this->signToConstant($conjunction) // convert to constant
-        ];
+        /* Validate constraints */
+        foreach ($constraints as $constraint) {
+            if (count($constraint) !== 4) {
+                throw new \Exception("Where constraint malformed. Must have four parameters. field, operator, value, conjunction");
+            }
+
+            if (!is_int($constraint[1]) || !is_int($constraint[3])) {
+                throw new \Exception("Where constraint malformed. Operator and Conjunction must be constants from `Bag`.");
+            }
+        }
+
+        $this->bag->where = array_merge($this->bag->where, $constraints);
 
         return $this;
     }
@@ -357,19 +332,5 @@ class BaseBuilder
         }
 
         return $string;
-    }
-
-    /**
-     * Turns a user-inputted sign into a constant
-     *
-     * Used to turn things like '=' into Bag::COMPARATOR_EQUAL
-     * in where constraints
-     *
-     * @param string $sign
-     * @return mixed
-     */
-    protected function signToConstant($sign)
-    {
-        return $this->operators[$sign];
     }
 }

@@ -10,6 +10,26 @@ use Spider\Commands\Languages\ProcessorInterface;
 class Builder extends BaseBuilder
 {
     /**
+     * A map of operators and conjunctions
+     * These signs on the left are can be used in `where` constraints and such
+     * @var array
+     */
+    public $operators = [
+        '='  => Bag::COMPARATOR_EQUAL,
+        '>'  => Bag::COMPARATOR_GT,
+        '<'  => Bag::COMPARATOR_LT,
+        '<=' => Bag::COMPARATOR_LE,
+        '>=' => Bag::COMPARATOR_GE,
+        '<>' => Bag::COMPARATOR_NE,
+        'IN' => Bag::COMPARATOR_IN,
+
+        'AND' => Bag::CONJUNCTION_AND,
+        'OR'  => Bag::CONJUNCTION_OR,
+        'XOR' => Bag::CONJUNCTION_XOR,
+        'NOT' => Bag::CONJUNCTION_NOT,
+    ];
+
+    /**
      * Creates a new instance of the Command Builder
      * With an optional language processor
      *
@@ -71,6 +91,54 @@ class Builder extends BaseBuilder
         if (!is_null($record)) {
             return $this->record($record);
         }
+
+        return $this;
+    }
+
+    /**
+     * Add a single or multiple `where` constraint to the current Command Bag
+     *
+     * @param string $property Field name
+     * @param mixed $value Value matched against
+     * @param string $operator From the `self::$operators` array
+     * @param string $conjunction From the `self::$operators` array
+     * @return $this
+     */
+    public function where($property, $value = null, $operator = '=', $conjunction = 'AND')
+    {
+        /* We were a full constraint array(s) */
+        if (is_array($property)) {
+
+            // We were handed multiple constraints
+            if (is_array($property[0])) {
+                foreach ($property as $constraint) {
+                    $this->where(
+                        $constraint[0], // property
+                        $constraint[2] ?: $operator, // operator, default =
+                        $constraint[1], // value
+                        isset($constraint[3]) ? $constraint[3] : $conjunction // conjunction, default AND
+                    );
+                }
+                return $this;
+            }
+
+            // We were handed a single, full constraint
+            $this->where(
+                $property[0], // property
+                $property[2] ?: $operator, // operator, default =
+                $property[1], // value
+                isset($property[3]) ? $property[3] : $conjunction // conjunction, default AND
+            );
+            return $this;
+        }
+
+        /* Were we handed parameters for arrays? */
+        $this->internalWhere([
+            $property,
+            $this->signToConstant($operator), // convert to constant
+            $value,
+            $this->signToConstant($conjunction) // convert to constant
+        ]);
 
         return $this;
     }
@@ -177,7 +245,7 @@ class Builder extends BaseBuilder
      * @param string $operator From the `self::$operators` array
      * @return $this
      */
-    public function andWhere($property, $value = null, $operator = '=')
+    public function andWhere($property, $value, $operator = '=')
     {
         return $this->where($property, $value, $operator, 'AND');
     }
@@ -210,5 +278,23 @@ class Builder extends BaseBuilder
         }
 
         return parent::update($property);
+    }
+
+    /**
+     * Turns a user-inputted sign into a constant
+     *
+     * Used to turn things like '=' into Bag::COMPARATOR_EQUAL
+     * in where constraints
+     *
+     * @param string $sign
+     * @return mixed
+     */
+    protected function signToConstant($sign)
+    {
+        if (is_int($sign)) {
+            return $sign;
+        }
+
+        return $this->operators[$sign];
     }
 }
