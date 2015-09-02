@@ -89,12 +89,15 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function executeCommand($query)
     {
-        if ($query instanceof BaseBuilder) {
-            $processor = new $this->languages['cypher'];
-            $query = $query->getCommand($processor);
-        } elseif (!$this->isSupportedLanguage($query->getScriptLanguage())) {
-            throw new NotSupportedException(__CLASS__ . " does not support " . $query->getScriptLanguage());
-        }
+        // Generate command from a Builder
+        $query = $this->ensureCommand($query, 'cypher');
+
+//        if ($query instanceof BaseBuilder) {
+//            $processor = new $this->languages['cypher'];
+//            $query = $query->getCommand($processor);
+//        } elseif (!$this->isSupportedLanguage($query->getScriptLanguage())) {
+//            throw new NotSupportedException(__CLASS__ . " does not support " . $query->getScriptLanguage());
+//        }
 
         $neoQuery = new Query($this->client, $query->getScript());
         if ($this->inTransaction) {

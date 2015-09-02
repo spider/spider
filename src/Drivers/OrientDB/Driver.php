@@ -207,12 +207,7 @@ class Driver extends AbstractDriver implements DriverInterface
     protected function dispatchCommand($command)
     {
         // Generate command from a Builder
-        if ($command instanceof BaseBuilder) {
-            $processor = new $this->languages['orientSQL'];
-            $command = $command->getCommand($processor);
-        } elseif (!$this->isSupportedLanguage($command->getScriptLanguage())) {
-            throw new NotSupportedException(__CLASS__ . " does not support " . $command->getScriptLanguage());
-        }
+        $command = $this->ensureCommand($command, 'orientSQL');
 
         // Ensure Command's Script is a SqlBatch
         if (!$this->isBatch($command->getScript())) {
