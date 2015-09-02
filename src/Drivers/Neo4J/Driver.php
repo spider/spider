@@ -87,7 +87,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * @throws NotSupportedException
      * @throws \Exception
      */
-    public function executeReadCommand($query)
+    public function executeCommand($query)
     {
         if ($query instanceof BaseBuilder) {
             $processor = new $this->languages['cypher'];
@@ -105,18 +105,6 @@ class Driver extends AbstractDriver implements DriverInterface
         return new Response(['_raw' => $response, '_driver' => $this]);
     }
 
-    /**
-     * Executes a write command
-     *
-     * These are the "CUD" in CRUD
-     *
-     * @param CommandInterface|BaseBuilder $command
-     * @return Response
-     */
-    public function executeWriteCommand($command)
-    {
-        return $this->executeReadCommand($command);
-    }
 
     /**
      * Executes a read command without waiting for a response
@@ -124,21 +112,10 @@ class Driver extends AbstractDriver implements DriverInterface
      * @param CommandInterface|BaseBuilder $query
      * @return Driver $this
      */
-    public function runReadCommand($query)
+    public function runCommand($query)
     {
-        $this->executeReadCommand($query);
+        $this->executeCommand($query);
         return $this;
-    }
-
-    /**
-     * Executes a write command without waiting for a response
-     *
-     * @param CommandInterface|BaseBuilder $command
-     * @return void
-     */
-    public function runWriteCommand($command)
-    {
-        $this->executeWriteCommand($command);
     }
 
     /**

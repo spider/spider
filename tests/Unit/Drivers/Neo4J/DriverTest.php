@@ -151,7 +151,7 @@ class DriverTest extends BaseTestSuite
     {
         $driver = $this->driver();
         $driver->open();
-        $response = $driver->executeReadCommand(new Command(
+        $response = $driver->executeCommand(new Command(
             "MATCH p =((a)-[:created]->(b)<-[:created]-(c))
              RETURN p
              ORDER BY a.name ASC, c.name DESC
@@ -173,7 +173,7 @@ class DriverTest extends BaseTestSuite
         //$this->assertEquals(2, $consistent[0][2]->meta()->id, "id wasn't properly populated");
         $this->assertEquals('person', $consistent[0][2]->meta()->label, "label wasn't properly populated");
         $this->assertEquals('peter', $consistent[0][2]->name, "name wasn't properly populated");
-        $response = $driver->executeReadCommand(new Command(
+        $response = $driver->executeCommand(new Command(
             "MATCH p =((a)-[:created]->(b)<-[:created]-(c))
              RETURN p
              ORDER BY a.name ASC, c.name DESC

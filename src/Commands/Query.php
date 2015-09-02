@@ -51,11 +51,7 @@ class Query extends Builder
             $message = $this;
         }
 
-        if ($this->bag->command === Bag::COMMAND_RETRIEVE) {
-            $response = $this->connection->executeReadCommand($message);
-        } else {
-            $response = $this->connection->executeWriteCommand($message);
-        }
+        $response = $this->connection->executeCommand($message);
 
         // Reset query and return response
         $this->clear();

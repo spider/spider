@@ -22,40 +22,22 @@ interface DriverInterface extends ManagesItemsInterface
     public function close();
 
     /**
-     * Executes a Query or read command
+     * Executes a Command
      *
      * This is the R in CRUD
      *
      * @param CommandInterface|BaseBuilder $query
      * @return Response
      */
-    public function executeReadCommand($query);
+    public function executeCommand($query);
 
     /**
-     * Executes a write command
-     *
-     * These are the "CUD" in CRUD
-     *
-     * @param CommandInterface|BaseBuilder $command
-     * @return Response
-     */
-    public function executeWriteCommand($command);
-
-    /**
-     * Executes a read command without waiting for a response
-     *
-     * @param CommandInterface|BaseBuilder $query
-     * @return $this
-     */
-    public function runReadCommand($query);
-
-    /**
-     * Executes a write command without waiting for a response
+     * Runs a Command without waiting for a response
      *
      * @param CommandInterface|BaseBuilder $command
      * @return $this
      */
-    public function runWriteCommand($command);
+    public function runCommand($command);
 
     /**
      * Opens a transaction

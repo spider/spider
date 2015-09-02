@@ -1,11 +1,13 @@
 <?php
 namespace Spider\Drivers\OrientDB;
 
+use Michaels\Manager\Contracts\ManagesItemsInterface;
 use PhpOrient\Exceptions\PhpOrientException as ServerException;
 use PhpOrient\PhpOrient;
 use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 use Spider\Base\Collection;
 use Spider\Commands\BaseBuilder;
+use Spider\Commands\Command;
 use Spider\Commands\CommandInterface;
 use Spider\Commands\Languages\OrientSQL\SqlBatch;
 use Spider\Drivers\AbstractDriver;
@@ -137,13 +139,13 @@ class Driver extends AbstractDriver implements DriverInterface
         if ($commit) {
             $this->transaction->end();
 
-            $response = $this->client->sqlBatch(
-                $this->transaction->getScript()
+            $response = $this->dispatchCommand(
+                new Command($this->transaction->getScript(), "orientSQL")
             );
-
-            $this->transaction = null;
-            $this->inTransaction = false;
         }
+
+        $this->transaction = null;
+        $this->inTransaction = false;
 
         return isset($response) ? $response : null;
     }
@@ -158,15 +160,36 @@ class Driver extends AbstractDriver implements DriverInterface
         return $this->transaction->getScript();
     }
 
+    /* Dispatch Commands */
     /**
-     * Executes a Query or read command
+     * Executes a Command
      *
-     * @param CommandInterface|BaseBuilder $query
+     * This is the R in CRUD
+     *
+     * @param CommandInterface|\Spider\Commands\BaseBuilder $command
      * @return Response
      */
-    public function executeReadCommand($query)
+    public function executeCommand($command)
     {
-        return $this->executeCommand($query, 'query');
+        // Add to transaction statement, if in transaction
+        if ($this->inTransaction) {
+            $this->transaction->addStatement($command->getScript());
+            return null;
+        }
+
+        return $this->dispatchCommand($command);
+    }
+
+    /**
+     * Runs a Command without waiting for a response
+     *
+     * @param CommandInterface|\Spider\Commands\BaseBuilder $command
+     * @return $this
+     */
+    public function runCommand($command)
+    {
+        $this->dispatchCommand($command);
+        return $this;
     }
 
     /**
@@ -175,30 +198,15 @@ class Driver extends AbstractDriver implements DriverInterface
      * These are the "CUD" in CRUD
      *
      * @param CommandInterface|BaseBuilder $command
-     * @return Response|null values for some write commands
-     */
-    public function executeWriteCommand($command)
-    {
-        if ($this->inTransaction) {
-            $this->transaction->addStatement($command->getScript());
-            return null;
-        }
-
-        $response = $this->executeCommand($command, 'command');
-
-        return $response;
-    }
-
-    /**
-     * Executes actual command or query
-     * @param CommandInterface|BaseBuilder $command
-     * @param string $method
-     * @return Response
+     * @return mixed|Response Either Response or raw values for some commands
+     * @throws ClassDoesNotExistException
      * @throws NotSupportedException
+     * @throws ServerException
      * @throws \Exception
      */
-    protected function executeCommand($command, $method)
+    protected function dispatchCommand($command)
     {
+        // Generate command from a Builder
         if ($command instanceof BaseBuilder) {
             $processor = new $this->languages['orientSQL'];
             $command = $command->getCommand($processor);
@@ -206,6 +214,7 @@ class Driver extends AbstractDriver implements DriverInterface
             throw new NotSupportedException(__CLASS__ . " does not support " . $command->getScriptLanguage());
         }
 
+        // Ensure Command's Script is a SqlBatch
         if (!$this->isBatch($command->getScript())) {
             $batch = new SqlBatch();
             $batch->begin();
@@ -215,8 +224,11 @@ class Driver extends AbstractDriver implements DriverInterface
             $command->setScript($batch->getScript());
         }
 
+        // Dispatch the command
         try {
             $response = $this->client->sqlBatch($command->getScript());
+
+        // Catch and rethrow a ClassDoesNotExist exception
         } catch (ServerException $e) {
             // Wrap a "class doesn't exist" exception
             if (strpos($e->getMessage(), "not found in database")) {
@@ -226,137 +238,23 @@ class Driver extends AbstractDriver implements DriverInterface
             }
         }
 
-        /* ToDo: Refactor for a better check for delete */
-        // This is a delete command, return an empty array
+        // Response Consistency
+        /* ToDo: Refactor for a better checks or return correct values from driver */
+        if (is_null($response)) {
+            return new Response(['_raw' => [], '_driver' => $this]);
+        }
+
+        // If this was a delete command, return an empty array
         if (strpos(strtolower($command->getScript()), "delete vertex") || strpos(strtolower($command->getScript()), "delete from")) {
             return new Response(['_raw' => [], '_driver' => $this]);
-
-        // Otherwise, return the response
-        } else {
-            $response = $this->rawResponseToArray($response);
-            return new Response(['_raw' => $response, '_driver' => $this]);
-        }
-    }
-
-    /**
-     * Checks to see if a sql script is a batch
-     * @param $script
-     * @return bool
-     */
-    protected function isBatch($script)
-    {
-        return substr($script, 0, 5) === "begin";
-    }
-
-    /**
-     * Executes a read command without waiting for a response
-     *
-     * @param CommandInterface|BaseBuilder $query
-     * @return $this
-     * @throws NotSupportedException
-     * @throws \Exception
-     */
-    public function runReadCommand($query)
-    {
-        if ($query instanceof BaseBuilder) {
-            $processor = new $this->languages['orientSQL'];
-            $query = $query->getCommand($processor);
-        } elseif (!$this->isSupportedLanguage($query->getScriptLanguage())) {
-            throw new NotSupportedException(__CLASS__ . " does not support " . $query->getScriptLanguage());
         }
 
-        $this->client->query($query->getScript());
-        return $this;
+        // Otherwise, return the hydrate and return the Response
+        $response = $this->rawResponseToArray($response);
+        return new Response(['_raw' => $response, '_driver' => $this]);
     }
 
-    /**
-     * Executes a write command without waiting for a response
-     *
-     * @param CommandInterface|BaseBuilder $command
-     * @return $this
-     * @throws NotSupportedException
-     * @throws \Exception
-     */
-    public function runWriteCommand($command)
-    {
-        if ($command instanceof BaseBuilder) {
-            $processor = new $this->languages['orientSQL'];
-            $command = $command->getCommand($processor);
-        } elseif (!$this->isSupportedLanguage($command->getScriptLanguage())) {
-            throw new NotSupportedException(__CLASS__ . " does not support " . $command->getScriptLanguage());
-        }
-
-        $this->client->command($command->getScript());
-        return $this;
-    }
-
-    /**
-     * Map a raw response to a SpiderResponse
-     * @param $response
-     * @return Response
-     */
-    protected function mapRawResponse(array $response)
-    {
-        // Return an empty array immediately
-        if (empty($response)) {
-            return $response;
-        }
-
-        // Receive array with single scalar
-        if (!$response[0] instanceof OrientRecord) {
-            return $response[0];
-        }
-
-        // For multiple records, map each to a Record
-        array_walk($response, function (&$orientRecord) {
-            $orientRecord = $this->mapOrientRecordToCollection($orientRecord);
-        });
-
-        return $response;
-    }
-
-    /**
-     * Hydrate a SpiderRecord from an OrientRecord
-     *
-     * @param $orientRecord
-     * @return Response
-     */
-    protected function mapOrientRecordToCollection(OrientRecord $orientRecord)
-    {
-        // Or we map a single record to a Spider Record
-        $collection = new Collection($orientRecord->getOData());
-
-        $collection->add([
-            'id' => $orientRecord->getRid()->jsonSerialize(),
-            'label' => $orientRecord->getOClass(),
-
-            'meta.rid' => $orientRecord->getRid(),
-            'meta.version' => $orientRecord->getVersion(),
-            'meta.oClass' => $orientRecord->getOClass(),
-        ]);
-
-        $collection->protect('id');
-        $collection->protect('label');
-        $collection->protect('meta');
-
-        return $collection;
-    }
-
-    /**
-     * Ensures that an OrientDB response is an array,
-     * even if only an array of one Record
-     * @param $response
-     * @return array
-     */
-    protected function rawResponseToArray($response)
-    {
-        if (is_array($response)) {
-            return $response;
-        }
-
-        return [$response];
-    }
-
+    /* Formatting */
     /**
      * Format a raw response to a set of collections
      * This is for cases where a set of Vertices or Edges is expected in the response
@@ -431,6 +329,84 @@ class Driver extends AbstractDriver implements DriverInterface
 
         // Otherwise, its a single scalar
         return $response[0];
+    }
+
+    /* Internals */
+    /**
+     * Checks to see if a sql script is a batch
+     * @param $script
+     * @return bool
+     */
+    protected function isBatch($script)
+    {
+        return substr($script, 0, 5) === "begin";
+    }
+
+    /**
+     * Map a raw response to a SpiderResponse
+     * @param $response
+     * @return Response
+     */
+    protected function mapRawResponse(array $response)
+    {
+        // Return an empty array immediately
+        if (empty($response)) {
+            return $response;
+        }
+
+        // Receive array with single scalar
+        if (!$response[0] instanceof OrientRecord) {
+            return $response[0];
+        }
+
+        // For multiple records, map each to a Record
+        array_walk($response, function (&$orientRecord) {
+            $orientRecord = $this->mapOrientRecordToCollection($orientRecord);
+        });
+
+        return $response;
+    }
+
+    /**
+     * Hydrate a SpiderRecord from an OrientRecord
+     *
+     * @param $orientRecord
+     * @return Response
+     */
+    protected function mapOrientRecordToCollection(OrientRecord $orientRecord)
+    {
+        // Or we map a single record to a Spider Record
+        $collection = new Collection($orientRecord->getOData());
+
+        $collection->add([
+            'id' => $orientRecord->getRid()->jsonSerialize(),
+            'label' => $orientRecord->getOClass(),
+
+            'meta.rid' => $orientRecord->getRid(),
+            'meta.version' => $orientRecord->getVersion(),
+            'meta.oClass' => $orientRecord->getOClass(),
+        ]);
+
+        $collection->protect('id');
+        $collection->protect('label');
+        $collection->protect('meta');
+
+        return $collection;
+    }
+
+    /**
+     * Ensures that an OrientDB response is an array,
+     * even if only an array of one Record
+     * @param $response
+     * @return array
+     */
+    protected function rawResponseToArray($response)
+    {
+        if (is_array($response)) {
+            return $response;
+        }
+
+        return [$response];
     }
 
     /**
