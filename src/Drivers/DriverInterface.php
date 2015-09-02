@@ -29,17 +29,7 @@ interface DriverInterface extends ManagesItemsInterface
      * @param CommandInterface|BaseBuilder $query
      * @return Response
      */
-    public function executeReadCommand($query);
-
-    /**
-     * Executes a write command
-     *
-     * These are the "CUD" in CRUD
-     *
-     * @param CommandInterface|BaseBuilder $command
-     * @return Response
-     */
-    public function executeWriteCommand($command);
+    public function executeCommand($query);
 
     /**
      * Executes a read command without waiting for a response
@@ -47,15 +37,7 @@ interface DriverInterface extends ManagesItemsInterface
      * @param CommandInterface|BaseBuilder $query
      * @return $this
      */
-    public function runReadCommand($query);
-
-    /**
-     * Executes a write command without waiting for a response
-     *
-     * @param CommandInterface|BaseBuilder $command
-     * @return $this
-     */
-    public function runWriteCommand($command);
+    public function runCommand($query);
 
     /**
      * Opens a transaction
