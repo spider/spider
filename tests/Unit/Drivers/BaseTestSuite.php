@@ -293,7 +293,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             );
 
             // Clean up
-            $driver->runWriteCommand(
+            $driver->runCommand(
                 $this->getCommand(
                     'delete-one-item',
                     'testVertex'
