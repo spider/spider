@@ -1,7 +1,6 @@
 <?php
 namespace Spider\Drivers\OrientDB;
 
-use Michaels\Manager\Contracts\ManagesItemsInterface;
 use PhpOrient\Exceptions\PhpOrientException as ServerException;
 use PhpOrient\PhpOrient;
 use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
@@ -198,7 +197,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * These are the "CUD" in CRUD
      *
      * @param CommandInterface|BaseBuilder $command
-     * @return mixed|Response Either Response or raw values for some commands
+     * @return Response Either Response or raw values for some commands
      * @throws ClassDoesNotExistException
      * @throws NotSupportedException
      * @throws ServerException
@@ -329,7 +328,7 @@ class Driver extends AbstractDriver implements DriverInterface
     /* Internals */
     /**
      * Checks to see if a sql script is a batch
-     * @param $script
+     * @param string $script
      * @return bool
      */
     protected function isBatch($script)
