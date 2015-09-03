@@ -4,12 +4,16 @@ namespace Spider\Commands;
 use Spider\Base\Collection;
 use Spider\Commands\Languages\ProcessorInterface;
 use Spider\Connections\ConnectionInterface;
+use Spider\Integrations\Events\DispatcherInterface;
+use Spider\Integrations\Events\UsesEventsTrait;
 
 /**
  * Command Builder with connections and CommandProcessor
  */
 class Query extends Builder
 {
+    use UsesEventsTrait;
+
     /** @var ConnectionInterface Valid connection containing a driver */
     protected $connection;
 
@@ -17,14 +21,16 @@ class Query extends Builder
     /**
      * Creates a new instance of the Command Builder
      * With a LanguageProcessor and Connection
-     * @param ProcessorInterface $processor
      * @param ConnectionInterface $connection
+     * @param ProcessorInterface $processor
      * @param Bag|null $bag
+     * @param DispatcherInterface $events
      */
     public function __construct(
         ConnectionInterface $connection,
         ProcessorInterface $processor = null,
-        Bag $bag = null
+        Bag $bag = null,
+        DispatcherInterface $events = null
     )
     {
         parent::__construct($processor, $bag);
@@ -161,5 +167,25 @@ class Query extends Builder
     {
         parent::clear($properties);
         $this->script = null;
+    }
+
+    /**
+     * Gets current connection
+     * @return ConnectionInterface
+     */
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
+    /**
+     * Sets current Connection
+     * @param ConnectionInterface $connection
+     * @return $this
+     */
+    public function setConnection($connection)
+    {
+        $this->connection = $connection;
+        return $this;
     }
 }

@@ -3,7 +3,6 @@ namespace Spider\Commands\Languages\Cypher;
 
 use Spider\Commands\Bag;
 use Spider\Commands\Command;
-use Spider\Commands\CommandInterface;
 use Spider\Commands\Languages\ProcessorInterface;
 use Spider\Exceptions\NotSupportedException;
 

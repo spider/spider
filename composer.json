@@ -24,10 +24,11 @@
   ],
   "require": {
     "php": ">=5.4.0",
-    "michaels/data-manager": "0.8.*",
+    "michaels/data-manager": "dev-dependency-injection",
     "ostico/phporient": "1.2.*",
     "brightzone/gremlin-php": "*",
-    "everyman/neo4jphp": "dev-master"
+    "everyman/neo4jphp": "dev-master",
+    "league/event": "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "4.*",

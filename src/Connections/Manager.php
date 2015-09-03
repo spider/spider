@@ -3,15 +3,22 @@ namespace Spider\Connections;
 
 use Michaels\Manager\Contracts\ManagesItemsInterface;
 use Michaels\Manager\Exceptions\ItemNotFoundException;
+use Michaels\Manager\Manager as ConfigManager;
 use Spider\Base\Collection;
+use Spider\Base\ConfigurableInterface;
+use Spider\Base\ConfigurableTrait;
 use Spider\Exceptions\ConnectionNotFoundException;
+use Spider\Integrations\Events\DispatcherInterface;
+use Spider\Integrations\Events\UsesEventsTrait;
 
 /**
  * Manages and Builds Connections from a stored list
  * @package Spider\Connections
  */
-class Manager extends Collection implements ManagesItemsInterface
+class Manager extends Collection implements ManagesItemsInterface, ConfigurableInterface
 {
+    use ConfigurableTrait, UsesEventsTrait;
+
     /**
      * @inherits from Collection:
      *      init(), add(), get(), getAll(), exists(), has(), set(),
@@ -22,14 +29,19 @@ class Manager extends Collection implements ManagesItemsInterface
      * Build a new manager instance
      *
      * @param array $connections
+     * @param DispatcherInterface $events
+     * @param \Michaels\Manager\Manager $config
      */
-    public function __construct($connections = [])
+    public function __construct($connections = [], $config = null, DispatcherInterface $events = null)
     {
-        $properties = [
-            'connections' => $connections,
-        ];
+        // Connections and credentials
+        $this->initManager($connections);
 
-        $this->initManager($properties);
+        // Optional configuration (to be passed to connections)
+        $this->setConfigManager($config);
+
+        // Optional Event Dispatcher
+        $this->setDispatcher($events);
     }
 
     /**
@@ -45,6 +57,8 @@ class Manager extends Collection implements ManagesItemsInterface
      */
     public function make($alias = null)
     {
+        $this->emit('connections.manager.before_make');
+
         // We were handed the properties for a Connection
         if (is_array($alias)) {
             return $this->buildConnection($alias);
@@ -54,13 +68,15 @@ class Manager extends Collection implements ManagesItemsInterface
         $alias = (string)$alias ?: $this->getDefault();
 
         // Verify the connection properties are set
-        if (!$this->has("connections.$alias")) {
+        if (!$this->has($alias)) {
             throw new ConnectionNotFoundException("$alias has not been registered");
         }
 
         // Produce and cache the Connection
         $connection = $this->buildConnection($alias);
         $this->cache($alias, $connection);
+
+        $this->emit('connections.manager.after_make');
 
         return $connection;
     }
@@ -110,18 +126,18 @@ class Manager extends Collection implements ManagesItemsInterface
     {
         // Get properties from stored, if needed
         if (is_string($properties)) {
-            $properties = $this->get("connections.$properties");
+            $properties = $this->get($properties);
         }
 
         // Extract the driver
         if (!isset($properties['driver'])) {
-                    throw new ConnectionNotFoundException("There is no driver set in the Connection parameters");
+            throw new ConnectionNotFoundException("There is no driver set in the Connection parameters");
         }
 
         $diverClassName = $properties['driver'];
         unset($properties['driver']);
 
-        return new Connection($diverClassName, $properties);
+        return new Connection($diverClassName, $properties, $this->config(), $this->getDispatcher());
     }
 
     /**
@@ -136,7 +152,7 @@ class Manager extends Collection implements ManagesItemsInterface
     {
         // Set the default connection
         try {
-            $alias = $this->get('connections.default');
+            $alias = $this->get('default');
         } catch (ItemNotFoundException $e) {
             throw new ConnectionNotFoundException("There is no default connection set");
         }

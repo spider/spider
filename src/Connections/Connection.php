@@ -1,15 +1,22 @@
 <?php
 namespace Spider\Connections;
 
+use Michaels\Manager\Manager as ConfigManager;
 use Spider\Base\Collection;
+use Spider\Base\ConfigurableInterface;
+use Spider\Base\ConfigurableTrait;
 use Spider\Drivers\DriverInterface;
+use Spider\Integrations\Events\DispatcherInterface;
+use Spider\Integrations\Events\UsesEventsTrait;
 
 /**
  * Facilitates two-way communication with a driver store
  * @package Spider\Test\Unit\Connections
  */
-class Connection extends Collection implements ConnectionInterface
+class Connection extends Collection implements ConnectionInterface, ConfigurableInterface
 {
+    use ConfigurableTrait, UsesEventsTrait;
+
     /** @var  DriverInterface Instance of the driver */
     protected $driver;
 
@@ -23,14 +30,25 @@ class Connection extends Collection implements ConnectionInterface
      * Constructs a new connection with driver and properties
      *
      * @param DriverInterface|string $driver
-     * @param array $configuration Credentials and configuration
+     * @param array $driverConfig Credentials and configuration
+     * @param ConfigManager|Manager $optionalConfig
+     * @param DispatcherInterface $events
      */
-    public function __construct($driver, array $configuration = [])
+    public function __construct(
+        $driver,
+        array $driverConfig = [],
+        $optionalConfig = null,
+        DispatcherInterface $events = null)
     {
-        /* I am sure all this could be refactored */
+        /* Configure the connection */
 
+        /* Optional dependencies */
+        $this->setConfigManager($optionalConfig);
+        $this->setDispatcher($events);
+
+        /* Connection Properties */
         // Were we passed all the properties through the first argument?
-        $config = (is_array($driver) ? $driver : $configuration);
+        $config = (is_array($driver) ? $driver : $driverConfig);
         $this->initManager($config);
 
         /* Setup the driver */
@@ -44,7 +62,7 @@ class Connection extends Collection implements ConnectionInterface
             if (is_string($config['driver'])) {
                 $this->driverFromString($config['driver']);
             } elseif ($config['driver'] instanceof DriverInterface) {
-                            $this->driver = $config['driver'];
+                $this->driver = $config['driver'];
             }
         }
     }
@@ -54,7 +72,7 @@ class Connection extends Collection implements ConnectionInterface
      */
     public function open()
     {
-        $this->driver->setProperties($this->getAll()); // from given properties
+        $this->driver->setProperties($this->getAll()); // from given credentials properties
         return $this->driver->open();
     }
 
@@ -115,11 +133,11 @@ class Connection extends Collection implements ConnectionInterface
         // As an alias
         if (isset($this->driverAliases[$driver])) {
             $driverClass = $this->driverAliases[$driver];
-            $this->driver = new $driverClass();
+            $this->driver = new $driverClass([], $this->config());
 
             // As a classname
         } else {
-            $this->driver = new $driver();
+            $this->driver = new $driver([], $this->config());
         }
     }
 

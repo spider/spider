@@ -122,6 +122,26 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
         }, ['throws' => new ConnectionNotFoundException()]);
     }
 
+    public function testUsesDriverAliases()
+    {
+        $this->specify("it creates a connection using a driver alias", function () {
+            $manager = new Manager([
+                'default' => 'orient',
+                'orient' => [
+                    'driver' => 'orientdb',
+                ]
+            ]);
+
+            $connection = $manager->make();
+
+            $this->assertInstanceOf(
+                'Spider\Drivers\OrientDB\Driver',
+                $connection->getDriver(),
+                "failed to set correct driver"
+            );
+        });
+    }
+
     public function testCacheConnections()
     {
         $this->specify("it caches connection with make", function () {

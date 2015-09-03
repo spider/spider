@@ -1,13 +1,14 @@
 <?php
 namespace Spider\Test\Stubs;
 
+use Spider\Base\Collection;
+use Spider\Base\ThrowsNotSupportedTrait;
 use Spider\Commands\CommandInterface;
+use Spider\Connections\Manager;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
-use Spider\Base\Collection;
 use Spider\Drivers\Response;
 use Spider\Exceptions\FormattingException;
-use Spider\Exceptions\NotSupportedException;
 
 /**
  * This driver stub should pretend to receive a certain format of DB response and allow to format these.
@@ -35,6 +36,8 @@ use Spider\Exceptions\NotSupportedException;
  */
 class DriverStub extends AbstractDriver implements DriverInterface
 {
+    use ThrowsNotSupportedTrait;
+
     protected $languages = [
         'stub' => '\Spider\Test\Stubs\CommandProcessorStub',
     ];
@@ -43,6 +46,17 @@ class DriverStub extends AbstractDriver implements DriverInterface
      * @var string some unique identifier in the event of wanting to test multiple drivers
      */
     public $identifier = "one";
+
+    /**
+     * Create a new instance with a client
+     * @param array $properties Configuration properties
+     * @param Manager $config
+     */
+    public function __construct(array $properties = [], Manager $config = null)
+    {
+        // Populate configuration
+        parent::__construct($properties, $config);
+    }
 
     public function open()
     {
@@ -112,8 +126,8 @@ class DriverStub extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in the response
      *
      * @param mixed $response the raw DB response
-     *
      * @return Response Spider consistent response
+     * @throws FormattingException
      */
     public function formatAsSet($response)
     {
@@ -152,7 +166,7 @@ class DriverStub extends AbstractDriver implements DriverInterface
      */
     public function formatAsTree($response)
     {
-        throw new NotSupportedException(__FUNCTION__ . "is not currently supported for the Gremlin Driver");
+        $this->notSupported(__FUNCTION__ . "is not currently supported for the Gremlin Driver");
     }
 
     /**
@@ -160,7 +174,6 @@ class DriverStub extends AbstractDriver implements DriverInterface
      * This is for cases where a set of Vertices or Edges is expected in path format from the response
      *
      * @param mixed $response the raw DB response
-     *
      * @return Response Spider consistent response
      */
     public function formatAsPath($response)
