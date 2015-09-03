@@ -2,14 +2,18 @@
 namespace Spider\Drivers;
 
 use Spider\Base\Collection;
+use Spider\Base\ConfigurableInterface;
+use Spider\Base\ConfigurableTrait;
+use Spider\Base\ThrowsNotSupportedTrait;
 use Spider\Commands\BaseBuilder;
 use Spider\Commands\Command;
 use Spider\Commands\Languages\ProcessorInterface;
 use Spider\Exceptions\NotSupportedException;
-use Symfony\Component\Config\Definition\Exception\Exception;
 
-abstract class AbstractDriver extends Collection implements DriverInterface
+abstract class AbstractDriver extends Collection implements DriverInterface, ConfigurableInterface
 {
+    use ConfigurableTrait, ThrowsNotSupportedTrait;
+
     /**
      * set of possible formats for responses.
      */
@@ -28,6 +32,15 @@ abstract class AbstractDriver extends Collection implements DriverInterface
      * @var bool whether or not the driver is currently handling an open transaction
      */
     public $inTransaction = false;
+
+    public function __construct(array $properties = [], $config = null)
+    {
+        // Set optional configuration (not supported handling, etc)
+        $this->setConfigManager($config);
+
+        // configure driver
+        parent::__construct($properties);
+    }
 
     public function __destruct()
     {
@@ -64,7 +77,7 @@ abstract class AbstractDriver extends Collection implements DriverInterface
     public function getProcessor($language)
     {
         if (!$this->isSupportedLanguage($language)) {
-            throw new NotSupportedException("$language does not have a supported languabe processor");
+            $this->notSupported("$language does not have a supported languabe processor");
         }
 
         $class = $this->languages[$language];
@@ -92,7 +105,7 @@ abstract class AbstractDriver extends Collection implements DriverInterface
         }
 
         if (!$this->isSupportedLanguage($command->getScriptLanguage())) {
-            throw new NotSupportedException(__CLASS__ . " does not support " . $command->getScriptLanguage());
+            $this->notSupported(__CLASS__ . " does not support " . $command->getScriptLanguage());
         }
 
         return $command;

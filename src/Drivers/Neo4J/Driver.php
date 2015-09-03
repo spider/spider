@@ -4,6 +4,7 @@ namespace Spider\Drivers\Neo4J;
 
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Cypher\Query;
+use Michaels\Manager\Manager;
 use Spider\Base\Collection;
 use Spider\Commands\BaseBuilder;
 use Spider\Commands\CommandInterface;
@@ -12,7 +13,6 @@ use Spider\Drivers\DriverInterface;
 use Spider\Drivers\Response;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
-use Spider\Exceptions\NotSupportedException;
 
 class Driver extends AbstractDriver implements DriverInterface
 {
@@ -52,6 +52,17 @@ class Driver extends AbstractDriver implements DriverInterface
      * @var \brightzone\rexpro\Connection The client library this driver uses to communicate with the DB
      */
     protected $client;
+
+    /**
+     * Create a new instance
+     *
+     * @param array $properties an array of the properties to set for this class
+     * @param Manager $config Configuration
+     */
+    public function __construct(array $properties = [], $config = null)
+    {
+        parent::__construct($properties, $config);
+    }
 
     /**
      * Open a database connection
@@ -183,7 +194,7 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function formatAsTree($response)
     {
-        throw new NotSupportedException(__FUNCTION__ . "is not currently supported for the Gremlin Driver");
+        $this->notSupported(__FUNCTION__ . "is not currently supported for the Gremlin Driver");
     }
 
     /**

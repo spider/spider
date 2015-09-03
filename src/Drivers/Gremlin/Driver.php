@@ -1,6 +1,7 @@
 <?php
 namespace Spider\Drivers\Gremlin;
 
+use brightzone\rexpro\Connection;
 use Spider\Base\Collection;
 use Spider\Commands\BaseBuilder;
 use Spider\Commands\CommandInterface;
@@ -9,8 +10,6 @@ use Spider\Drivers\DriverInterface;
 use Spider\Drivers\Response;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
-use Spider\Exceptions\NotSupportedException;
-use brightzone\rexpro\Connection;
 
 /**
  * Driver for Gremlin Server
@@ -56,9 +55,9 @@ class Driver extends AbstractDriver implements DriverInterface
      *
      * @param array $properties an array of the properties to set for this class
      */
-    public function __construct(array $properties = [])
+    public function __construct(array $properties = [], $config = null)
     {
-        parent::__construct($properties);
+        parent::__construct($properties, $config);
         $this->client = new Connection();
     }
 
@@ -96,9 +95,9 @@ class Driver extends AbstractDriver implements DriverInterface
     public function executeCommand($query)
     {
         if ($query instanceof BaseBuilder) {
-            throw new NotSupportedException("There are currently no processors for gremlin/cypher.");
+            $this->notSupported("There are currently no processors for gremlin/cypher.");
         } elseif (!$this->isSupportedLanguage($query->getScriptLanguage())) {
-            throw new NotSupportedException(__CLASS__ . " does not support " . $query->getScriptLanguage());
+            $this->notSupported(__CLASS__ . " does not support " . $query->getScriptLanguage());
         }
 
         try {
@@ -252,7 +251,7 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function formatAsTree($response)
     {
-        throw new NotSupportedException(__FUNCTION__ . "is not currently supported for the Gremlin Driver");
+        $this->notSupported(__FUNCTION__ . "is not currently supported for the Gremlin Driver");
     }
 
     /**

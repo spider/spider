@@ -1,10 +1,12 @@
 <?php
 namespace Spider\Drivers\OrientDB;
 
+use Michaels\Manager\Manager;
 use PhpOrient\Exceptions\PhpOrientException as ServerException;
 use PhpOrient\PhpOrient;
 use PhpOrient\Protocols\Binary\Data\Record as OrientRecord;
 use Spider\Base\Collection;
+use Spider\Base\ConfigurableInterface;
 use Spider\Commands\BaseBuilder;
 use Spider\Commands\Command;
 use Spider\Commands\CommandInterface;
@@ -14,13 +16,12 @@ use Spider\Drivers\DriverInterface;
 use Spider\Drivers\Response;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
-use Spider\Exceptions\NotSupportedException;
 
 /**
  * Driver for Native OrientDB (not using gremlin)
  * @package Spider\Drivers\OrientDB
  */
-class Driver extends AbstractDriver implements DriverInterface
+class Driver extends AbstractDriver implements DriverInterface, ConfigurableInterface
 {
     /* Driver Credentials */
     /** @var  string OrientDB server hostname */
@@ -61,11 +62,12 @@ class Driver extends AbstractDriver implements DriverInterface
     /**
      * Create a new instance with a client
      * @param array $properties Configuration properties
+     * @param Manager|array|null $config
      */
-    public function __construct(array $properties = [])
+    public function __construct(array $properties = [], $config = null)
     {
-        // Populate configuration
-        parent::__construct($properties);
+        /* Configure Driver */
+        parent::__construct($properties, $config);
 
         // Initialize the language binding client
         $this->client = new PhpOrient();
@@ -137,7 +139,6 @@ class Driver extends AbstractDriver implements DriverInterface
 
         if ($commit) {
             $this->transaction->end();
-
             $response = $this->dispatchCommand(
                 new Command($this->transaction->getScript(), "orientSQL")
             );
@@ -280,8 +281,7 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function formatAsTree($response)
     {
-        // TODO: Implement formatAsTree() method.
-        throw new NotSupportedException(__FUNCTION__ . " is not currently supported for OrientDB driver");
+        $this->notSupported(__FUNCTION__ . " is not currently supported for OrientDB driver");
     }
 
     /**
@@ -294,8 +294,7 @@ class Driver extends AbstractDriver implements DriverInterface
      */
     public function formatAsPath($response)
     {
-        // TODO: Implement formatAsPath() method.
-        throw new NotSupportedException(__FUNCTION__ . " is not currently supported for OrientDB driver");
+        $this->notSupported(__FUNCTION__ . " is not currently supported for OrientDB driver");
     }
 
     /**
