@@ -39,7 +39,7 @@ class Manager extends Collection implements ManagesItemsInterface
      * Hand alias for stored Connection
      * Hand array for implicit Connection
      *
-     * @param string $alias alias | properties | default
+     * @param string|null $alias alias | properties | default
      * @return Connection
      * @throws \Spider\Exceptions\ConnectionNotFoundException
      */

@@ -37,7 +37,7 @@ class Query extends Builder
      * If no instance of CommandInterface is provided, then the
      * current Command Bag is processed via the Command Processor
      * @param CommandInterface|null $command
-     * @return Response the DB response in SpiderResponse format
+     * @return \Spider\Drivers\Response the DB response in SpiderResponse format
      */
     protected function dispatch($command = null)
     {
@@ -51,11 +51,7 @@ class Query extends Builder
             $message = $this;
         }
 
-        if ($this->bag->command === Bag::COMMAND_RETRIEVE) {
-            $response = $this->connection->executeReadCommand($message);
-        } else {
-            $response = $this->connection->executeWriteCommand($message);
-        }
+        $response = $this->connection->executeCommand($message);
 
         // Reset query and return response
         $this->clear();
@@ -65,7 +61,7 @@ class Query extends Builder
 
     /**
      * Alias of dispatch
-     * @return Response
+     * @return \Spider\Drivers\Response
      */
     public function go()
     {
@@ -149,7 +145,7 @@ class Query extends Builder
     /**
      * Execute a command through dispatch
      * @param CommandInterface|null $command
-     * @return Response
+     * @return \Spider\Drivers\Response
      */
     public function execute(CommandInterface $command = null)
     {

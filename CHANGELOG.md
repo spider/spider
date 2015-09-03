@@ -4,6 +4,7 @@ All Notable changes to `Spider` will be documented in this file
 ## v0.4 - NEXT
 - Query api uses verb-based dispatch methods (getAll(), getOne(), etc)
 - Refactor: OrientDB uses SqlBatch for commands consistently
+- Simplified Drivers by replacing read/writeCommand() with single executeCommand() and runCommand()
 
 ## v0.3.1 - 9-1-2015
 - Bug: Added ordering to select tests so Neo would consistently pass #63

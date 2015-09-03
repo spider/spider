@@ -93,7 +93,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * @throws \Exception
      * @throws \brightzone\rexpro\ServerException
      */
-    public function executeReadCommand($query)
+    public function executeCommand($query)
     {
         if ($query instanceof BaseBuilder) {
             throw new NotSupportedException("There are currently no processors for gremlin/cypher.");
@@ -116,20 +116,6 @@ class Driver extends AbstractDriver implements DriverInterface
     }
 
     /**
-     * Executes a write command
-     *
-     * These are the "CUD" in CRUD
-     *
-     * @param CommandInterface|BaseBuilder $command
-     *
-     * @return Response
-     */
-    public function executeWriteCommand($command)
-    {
-        return $this->executeReadCommand($command);
-    }
-
-    /**
      * Executes a read command without waiting for a response
      *
      * @param CommandInterface|BaseBuilder $query
@@ -137,23 +123,10 @@ class Driver extends AbstractDriver implements DriverInterface
      * @throws \Exception
      * @throws \brightzone\rexpro\ServerException
      */
-    public function runReadCommand($query)
+    public function runCommand($query)
     {
-        $this->executeReadCommand($query);
+        $this->executeCommand($query);
         return $this;
-    }
-
-
-    /**
-     * Executes a write command without waiting for a response
-     *
-     * @param CommandInterface|BaseBuilder $command
-     *
-     * @return $this
-     */
-    public function runWriteCommand($command)
-    {
-        return $this->runReadCommand($command);
     }
 
     /**
