@@ -4,7 +4,7 @@ namespace Spider\Test\Stubs;
 use Spider\Base\Collection;
 use Spider\Base\ThrowsNotSupportedTrait;
 use Spider\Commands\CommandInterface;
-use Spider\Connections\Manager;
+use Michaels\Manager\Manager;
 use Spider\Drivers\AbstractDriver;
 use Spider\Drivers\DriverInterface;
 use Spider\Drivers\Response;
@@ -136,20 +136,17 @@ class DriverStub extends AbstractDriver implements DriverInterface
                 "The response from the database was incorrectly formatted for this operation"
             );
         }
-        if(empty($response))
-        {
+        if (empty($response)) {
             return $response;
         }
 
-        if(count($response) == 1)
-        {
+        if (count($response) == 1) {
             return $this->mapToCollection($response[0]);
         }
 
         //several items
         $result = [];
-        foreach($response as $row)
-        {
+        foreach ($response as $row) {
             $result[] = $this->mapToCollection($row);
         }
 
@@ -175,6 +172,7 @@ class DriverStub extends AbstractDriver implements DriverInterface
      *
      * @param mixed $response the raw DB response
      * @return Response Spider consistent response
+     * @throws FormattingException
      */
     public function formatAsPath($response)
     {
@@ -184,17 +182,14 @@ class DriverStub extends AbstractDriver implements DriverInterface
             );
         }
 
-        if(empty($response))
-        {
+        if (empty($response)) {
             return $response;
         }
 
         $result = [];
-        foreach($response as $path)
-        {
+        foreach ($response as $path) {
             $resultPath = [];
-            foreach($path as $row)
-            {
+            foreach ($path as $row) {
                 $resultPath[] = $this->mapToCollection($row);
             }
             $result[] = $resultPath;
@@ -260,8 +255,7 @@ class DriverStub extends AbstractDriver implements DriverInterface
     {
         $collection = new Collection();
 
-        if(isset($row['id']))
-        {
+        if (isset($row['id'])) {
             // We're in an Element scenario
             $collection->add($row['properties']);
             $collection->add([
@@ -273,9 +267,7 @@ class DriverStub extends AbstractDriver implements DriverInterface
             $collection->protect('meta');
             $collection->protect('id');
             $collection->protect('label');
-        }
-        else
-        {
+        } else {
             //custom scenarios:
             $collection->add($row);
         }
