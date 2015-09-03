@@ -49,8 +49,8 @@ class Driver extends AbstractDriver implements DriverInterface
     /** @var string Messge for exception thrown at formatting error */
     protected $formatMessage = "The response from the database was incorrectly formatted for this operation";
 
-    /** @var string Current transaction (batch) statement */
-    protected $transaction = '';
+    /** @var SqlBatch Current transaction (batch) statement */
+    protected $transaction;
 
     /**
      * @var array The supported languages and their processors
@@ -127,7 +127,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * Closes a transaction
      *
      * @param bool $commit whether this is a commit (TRUE) or a rollback (FALSE)
-     * @return Response
+     * @return Response|null
      * @throws \Exception
      */
     public function stopTransaction($commit = true)
@@ -167,7 +167,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * This is the R in CRUD
      *
      * @param CommandInterface|\Spider\Commands\BaseBuilder $command
-     * @return Response
+     * @return Response|null
      */
     public function executeCommand($command)
     {
@@ -198,7 +198,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * These are the "CUD" in CRUD
      *
      * @param CommandInterface|BaseBuilder $command
-     * @return mixed|Response Either Response or raw values for some commands
+     * @return mixed Either Response or raw values for some commands
      * @throws ClassDoesNotExistException
      * @throws NotSupportedException
      * @throws ServerException

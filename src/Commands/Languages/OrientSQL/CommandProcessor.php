@@ -60,7 +60,7 @@ class CommandProcessor implements ProcessorInterface
      * script for whichever driver is specified
      *
      * @param Bag $bag
-     * @return CommandInterface
+     * @return Command
      */
     public function process(Bag $bag)
     {

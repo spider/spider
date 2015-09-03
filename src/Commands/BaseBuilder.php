@@ -23,7 +23,7 @@ class BaseBuilder
      * Creates a new instance of the Command Builder
      * With an optional language processor
      *
-     * @param ProcessorInterface $processor
+     * @param ProcessorInterface|null $processor
      * @param Bag|null $bag
      */
     public function __construct(
@@ -262,7 +262,7 @@ class BaseBuilder
 
     /**
      * Processes the current command bag
-     * @param ProcessorInterface $processor
+     * @param ProcessorInterface|null $processor
      * @return String the script in string form
      * @throws \Exception
      */
@@ -291,7 +291,7 @@ class BaseBuilder
 
     /**
      * Processes the current command bag
-     * @param ProcessorInterface $processor
+     * @param ProcessorInterface|null $processor
      * @return Command
      * @throws \Exception
      */

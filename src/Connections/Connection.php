@@ -121,4 +121,51 @@ class Connection extends Collection implements ConnectionInterface
             $this->driver = new $driver();
         }
     }
+
+    /**
+     * Executes a Command
+     *
+     * This is the R in CRUD
+     *
+     * @param CommandInterface|BaseBuilder $query
+     * @return Response
+     */
+    public function executeCommand($query)
+    {
+        return $this->driver->executeCommand($query);
+    }
+
+    /**
+     * Runs a Command without waiting for a response
+     *
+     * @param CommandInterface|BaseBuilder $command
+     * @return $this
+     */
+    public function runCommand($command)
+    {
+        $this->driver->runCommand($command);
+        return $this;
+    }
+
+    /**
+     * Opens a transaction
+     *
+     * @return bool
+     */
+    public function startTransaction()
+    {
+        // TODO: Implement startTransaction() method.
+    }
+
+    /**
+     * Closes a transaction
+     *
+     * @param bool $commit whether this is a commit (true) or a rollback (false)
+     *
+     * @return bool
+     */
+    public function stopTransaction($commit = true)
+    {
+        // TODO: Implement stopTransaction() method.
+    }
 }
