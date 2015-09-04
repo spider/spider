@@ -29,8 +29,7 @@ class BaseBuilder
     public function __construct(
         ProcessorInterface $processor = null,
         Bag $bag = null
-    )
-    {
+    ) {
         $this->processor = $processor;
         $this->bag = $bag ?: new Bag();
     }
