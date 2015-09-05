@@ -291,7 +291,7 @@ class BaseBuilder
     /**
      * Processes the current command bag
      * @param ProcessorInterface|null $processor
-     * @return Command
+     * @return \Spider\Commands\Command
      * @throws \Exception
      */
     public function getCommand(ProcessorInterface $processor = null)

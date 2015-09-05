@@ -4,7 +4,9 @@ filter:
         - 'vendor/*'
 
 checks:
-    php: true
+    php:
+        code_rating: true
+        duplication: true
 
 tools:
     php_code_sniffer:

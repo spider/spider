@@ -70,7 +70,7 @@ class Manager extends Collection implements ManagesItemsInterface
      * See make() for details
      *
      * @param string|array|null $alias alias | properties | default
-     * @return Connection
+     * @return \Spider\Connections\Connection
      * @throws ConnectionNotFoundException
      */
     public function fetch($alias = null)

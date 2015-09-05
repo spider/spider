@@ -61,7 +61,7 @@ interface DriverInterface extends ManagesItemsInterface
      *
      * @param mixed $response the raw DB response
      *
-     * @return Response Spider consistent response
+     * @return \Spider\Base\Collection|array Spider consistent response
      */
     public function formatAsSet($response);
 
@@ -71,7 +71,7 @@ interface DriverInterface extends ManagesItemsInterface
      *
      * @param mixed $response the raw DB response
      *
-     * @return Response Spider consistent response
+     * @return array Spider consistent response
      */
     public function formatAsTree($response);
 
@@ -81,7 +81,7 @@ interface DriverInterface extends ManagesItemsInterface
      *
      * @param mixed $response the raw DB response
      *
-     * @return Response Spider consistent response
+     * @return array Spider consistent response
      */
     public function formatAsPath($response);
 
