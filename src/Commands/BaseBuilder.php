@@ -29,8 +29,7 @@ class BaseBuilder
     public function __construct(
         ProcessorInterface $processor = null,
         Bag $bag = null
-    )
-    {
+    ) {
         $this->processor = $processor;
         $this->bag = $bag ?: new Bag();
     }
@@ -292,7 +291,7 @@ class BaseBuilder
     /**
      * Processes the current command bag
      * @param ProcessorInterface|null $processor
-     * @return Command
+     * @return \Spider\Commands\Command
      * @throws \Exception
      */
     public function getCommand(ProcessorInterface $processor = null)

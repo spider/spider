@@ -25,8 +25,7 @@ class Query extends Builder
         ConnectionInterface $connection,
         ProcessorInterface $processor = null,
         Bag $bag = null
-    )
-    {
+    ) {
         parent::__construct($processor, $bag);
         $this->connection = $connection;
     }
