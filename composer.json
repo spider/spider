@@ -24,7 +24,7 @@
   ],
   "require": {
     "php": ">=5.4.0",
-    "michaels/data-manager": "dev-dependency-injection",
+    "michaels/data-manager": "dev-develop",
     "ostico/phporient": "1.2.*",
     "brightzone/gremlin-php": "*",
     "everyman/neo4jphp": "dev-master",

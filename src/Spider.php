@@ -111,51 +111,36 @@ class Spider extends Query
      */
     public function configure(array $config = [], $connection = null)
     {
-        /* Merge cascading defaults into config */
-        if (empty($config)) {
-            $config = $this->getDefaults();
-        } else {
-            /* Set Defaults Where Needed */
-            foreach ($this->getDefaults() as $key => $value) {
-                if (!isset($config[$key])) {
-                    $config[$key] = $value;
-                } elseif (is_array($value)) {
-                    $config[$key] = array_merge($this->getDefaults()[$key], $config[$key]);
-                }
-            }
-        }
-
-        /* General Configuration */
-        $general = $config;
-        unset($general['connections']);
-        $this->config->reset($general);
+        /* General Configuration with cascading defaults */
+        $this->config->initManager($config);
+        $this->config->loadDefaults($this->getDefaults());
 
         /* Components for the IoC Manager */
-        $this->di->initDI($config['integrations']);
-        unset($config['integrations']);
-
-        /* Event Dispatcher */
+        $integrations = $this->config->get('integrations');
+        $this->di->initDi($integrations);
+        $this->di->set('_diManifest.original', $integrations);
         $this->di->share('events'); // turns dispatcher into a cached singleton
+        $this->config->remove('integrations');
 
         /* Connection Manager and Current Connection */
-        if (isset($config['connections'])) {
-            // Set the connection manifest
-            $this->connections->reset($config['connections']);
-            unset($config['connections']);
-
-            // Optional configuration (not supported, etc)
-            $this->connections->setConfigManager($config);
-
-            // Set the Event Dispatcher in Manager
-            $this->connections->setDispatcher($this->di->fetch('events'));
-
-            // Set the current connection for the Query Builder
-            parent::__construct(
-                $this->connections->fetch($connection)
-            );
-        } else {
+        if (!$this->config->has('connections')) {
             throw new ConnectionNotFoundException("Spider cannot be instantiated without a connection");
         }
+
+        // Set the connection manifest
+        $this->connections->initManager($this->config->get('connections'));
+        $this->config->remove('connections');
+
+        // Optional configuration (not supported, etc)
+        $this->connections->setConfigManager($this->config->getAll());
+
+        // Set the Event Dispatcher in Manager
+        $this->connections->setDispatcher($this->di->fetch('events'));
+
+        // Set the current connection for the Query Builder
+        parent::__construct(
+            $this->connections->fetch($connection)
+        );
     }
 
     /* Instance Public API: Factories */
@@ -202,6 +187,7 @@ class Spider extends Query
         $config['connections'] = $this->connections->all();
         unset($config['connections']['cache']);
 
+        $config['integrations'] = $this->di->get('_diManifest.original');
         return $config;
     }
 
