@@ -17,19 +17,15 @@ class RetrieveTest extends TestSetup
     {
         $this->specify("it adds a single array of a valid constraint", function () {
             $actual = $this->builder
-                ->retrieve()
-                ->type(Bag::ELEMENT_VERTEX)
+                ->internalRetrieve()
                 ->internalWhere(['name', Bag::COMPARATOR_EQUAL, 'michael', Bag::CONJUNCTION_OR])
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
+                'retrieve' => [],
                 'where' => [
                     ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_OR],
-
-                ]
+                ],
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -37,21 +33,20 @@ class RetrieveTest extends TestSetup
 
         $this->specify("it adds multiple valid constraint", function () {
             $actual = $this->builder
-                ->retrieve()
-                ->type(Bag::ELEMENT_VERTEX)
+                ->internalRetrieve()
                 ->internalWhere([
+                    [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
                     ['name', Bag::COMPARATOR_EQUAL, 'michael', Bag::CONJUNCTION_AND],
                     ['price', Bag::COMPARATOR_GT, 2, Bag::CONJUNCTION_OR]
                 ])
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
+                'retrieve' => [],
                 'where' => [
+                    [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
                     ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
-                    ['price', Bag::COMPARATOR_GT, 2, Bag::CONJUNCTION_OR]
+                    ['price', Bag::COMPARATOR_GT, 2, Bag::CONJUNCTION_OR],
                 ]
             ]);
 
@@ -60,28 +55,27 @@ class RetrieveTest extends TestSetup
 
         $this->specify("it throws an exception for invalid constraint: too few parameters", function () {
             $this->builder
-                ->retrieve()
-                ->type(Bag::ELEMENT_VERTEX)
-                ->internalWhere(
+                ->internalRetrieve()
+                ->internalWhere([
+                    [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
                     ['name', Bag::COMPARATOR_EQUAL, 'michael']
-                )
+                ])
                 ->getBag();
         }, ['throws' => 'Exception']);
 
         $this->specify("it throws an exception for invalid constraint: operator not a constant", function () {
             $this->builder
-                ->retrieve()
-                ->type(Bag::ELEMENT_VERTEX)
-                ->internalWhere(
+                ->internalRetrieve()
+                ->internalWhere([
+                    [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
                     ['name', '=', 'michael', Bag::CONJUNCTION_AND]
-                )
+                ])
                 ->getBag();
         }, ['throws' => 'Exception']);
 
         $this->specify("it throws an exception for invalid constraint: conjunction not a constant", function () {
             $this->builder
-                ->retrieve()
-                ->type(Bag::ELEMENT_VERTEX)
+                ->internalRetrieve()
                 ->internalWhere(
                     [true, Bag::COMPARATOR_EQUAL, 'michael', 'AND']
                 )
@@ -93,16 +87,13 @@ class RetrieveTest extends TestSetup
     {
         $this->specify("it adds a specified limit", function () {
             $actual = $this->builder
-                ->retrieve()
-                ->type(Bag::ELEMENT_VERTEX)
+                ->internalRetrieve()
                 ->limit(2)
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
-                'limit' => 2
+                'retrieve' => [],
+                'limit' => 2,
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -113,16 +104,13 @@ class RetrieveTest extends TestSetup
     {
         $this->specify("it groups results by a single field", function () {
             $actual = $this->builder
-                ->retrieve()
-                ->type(Bag::ELEMENT_VERTEX)
+                ->internalRetrieve()
                 ->groupBy('certified')
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
-                'groupBy' => ['certified']
+                'retrieve' => [],
+                'groupBy' => ['certified'],
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -130,16 +118,13 @@ class RetrieveTest extends TestSetup
 
         $this->specify("it groups results by a multiple fields array", function () {
             $actual = $this->builder
-                ->retrieve()
-                ->type(Bag::ELEMENT_VERTEX)
+                ->internalRetrieve()
                 ->groupBy(['certified', 'price'])
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
-                'groupBy' => ['certified', 'price']
+                'retrieve' => [],
+                'groupBy' => ['certified', 'price'],
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -147,16 +132,13 @@ class RetrieveTest extends TestSetup
 
         $this->specify("it groups results by a multiple fields string", function () {
             $actual = $this->builder
-                ->retrieve()
-                ->type(Bag::ELEMENT_VERTEX)
+                ->internalRetrieve()
                 ->groupBy('certified, price')
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
-                'groupBy' => ['certified', 'price']
+                'retrieve' => [],
+                'groupBy' => ['certified', 'price'],
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -167,16 +149,13 @@ class RetrieveTest extends TestSetup
     {
         $this->specify("it orders results by a field, asc by default", function () {
             $actual = $this->builder
-                ->retrieve()
-                ->type(Bag::ELEMENT_VERTEX)
+                ->internalRetrieve()
                 ->orderBy('price')
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
-                'orderBy' => [['price', Bag::ORDER_ASC]]
+                'retrieve' => [],
+                'orderBy' => [['price', Bag::ORDER_ASC]],
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -184,15 +163,12 @@ class RetrieveTest extends TestSetup
 
         $this->specify("it orders results by a field, desc", function () {
             $actual = $this->builder
-                ->retrieve()
-                ->type(Bag::ELEMENT_VERTEX)
+                ->internalRetrieve()
                 ->orderBy('price', Bag::ORDER_DESC)
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
+                'retrieve' => [],
                 'orderBy' => [['price', Bag::ORDER_DESC]],
             ]);
 
@@ -201,53 +177,16 @@ class RetrieveTest extends TestSetup
 
         $this->specify("it orders results by a field, asc", function () {
             $actual = $this->builder
-                ->retrieve()
-                ->type(Bag::ELEMENT_VERTEX)
+                ->internalRetrieve()
                 ->orderBy('price', Bag::ORDER_ASC)
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
+                'retrieve' => [],
                 'orderBy' => [['price', Bag::ORDER_ASC]],
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
         });
-
-        //~ $this->specify("it orders results by multiple fields, array", function () {
-            //~ $actual = $this->builder
-                //~ ->retrieve()
-                //~ ->type(Bag::ELEMENT_VERTEX)
-                //~ ->orderBy(['price', 'owner'])
-                //~ ->getBag();
-//~
-            //~ $expected = $this->buildExpectedBag([
-                //~ 'command' => Bag::COMMAND_RETRIEVE,
-                //~ 'projections' => [],
-                //~ 'target' => Bag::ELEMENT_VERTEX,
-                //~ 'orderBy' => [['price', Bag::ORDER_ASC],['owner', Bag::ORDER_ASC]],
-            //~ ]);
-//~
-            //~ $this->assertEquals($expected, $actual, "failed to return correct command bag");
-        //~ });
-//~
-        //~ $this->specify("it orders results by multiple fields, string", function () {
-            //~ $actual = $this->builder
-                //~ ->retrieve()
-                //~ ->type(Bag::ELEMENT_VERTEX)
-                //~ ->orderBy('price, owner')
-                //~ ->getBag();
-//~
-            //~ $expected = $this->buildExpectedBag([
-                //~ 'command' => Bag::COMMAND_RETRIEVE,
-                //~ 'projections' => [],
-                //~ 'target' => Bag::ELEMENT_VERTEX,
-                //~ 'orderBy' => ['price', 'owner'],
-            //~ ]);
-//~
-            //~ $this->assertEquals($expected, $actual, "failed to return correct command bag");
-        //~ });
     }
 }

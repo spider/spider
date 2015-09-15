@@ -10,29 +10,27 @@ class DeleteTest extends TestSetup
 
     public function testDrop()
     {
-        $this->specify("it drops a single record dispatching from `drop()`", function () {
+        $this->specify("it drops a single record dispatching from `delete()`", function () {
             $actual = $this->builder
-                ->drop(3)
+                ->delete(3)
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_DELETE,
-                'target' => Bag::ELEMENT_VERTEX,
-                'where' => [[Bag::ELEMENT_ID, Bag::COMPARATOR_EQUAL, 3, Bag::CONJUNCTION_AND]]
+                'where' => [[Bag::ELEMENT_ID, Bag::COMPARATOR_EQUAL, 3, Bag::CONJUNCTION_AND]],
+                'delete' => true,
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
         });
 
-        $this->specify("it drops multiple records dispatching from `drop()`", function () {
+        $this->specify("it drops multiple records dispatching from `delete()`", function () {
             $actual = $this->builder
-                ->drop([1, 2, 3])
+                ->delete([1, 2, 3])
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_DELETE,
-                'target' => Bag::ELEMENT_VERTEX,
-                'where' => [[Bag::ELEMENT_ID, Bag::COMPARATOR_IN, [1, 2, 3], Bag::CONJUNCTION_AND]]
+                'where' => [[Bag::ELEMENT_ID, Bag::COMPARATOR_IN, [1, 2, 3], Bag::CONJUNCTION_AND]],
+                'delete' => true,
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -40,15 +38,14 @@ class DeleteTest extends TestSetup
 
         $this->specify("it drops multiple records via constraints", function () {
             $actual = $this->builder
-                ->drop()
+                ->delete()
                 ->from('target')
                 ->where('birthday', 'apr')
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_DELETE,
-                'target' => Bag::ELEMENT_VERTEX,
                 'where' => [[Bag::ELEMENT_LABEL, Bag::COMPARATOR_EQUAL, 'target', Bag::CONJUNCTION_AND],['birthday', Bag::COMPARATOR_EQUAL, 'apr', Bag::CONJUNCTION_AND]],
+                'delete' => true,
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");

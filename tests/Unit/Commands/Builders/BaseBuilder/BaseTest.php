@@ -3,6 +3,7 @@ namespace Spider\Test\Unit\Commands\Builders\BaseBuilder;
 
 use Codeception\Specify;
 use Spider\Commands\Bag;
+use Spider\Test\Stubs\CommandProcessorStub;
 use Spider\Test\Unit\Commands\Builders\TestSetup;
 
 class BaseTest extends TestSetup
@@ -10,16 +11,10 @@ class BaseTest extends TestSetup
     use Specify;
 
     /* Manage the Command Bag */
-    public function testCreateBag()
-    {
-        $this->assertEquals(new Bag(), $this->builder->getBag(), "failed to return an empty bag");
-    }
-
     public function testClearBag()
     {
         $this->builder
-            ->retrieve()
-            ->type(Bag::ELEMENT_VERTEX);
+            ->internalRetrieve();
 
         $this->builder->clear();
 
@@ -32,10 +27,11 @@ class BaseTest extends TestSetup
     {
         $this->specify("it returns nothing by default", function () {
             $actual = $this->builder
+                ->internalRetrieve()
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'projections' => []
+                'retrieve' => []
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -43,11 +39,11 @@ class BaseTest extends TestSetup
 
         $this->specify("it returns a single value", function () {
             $actual = $this->builder
-                ->projections('username')
+                ->internalRetrieve('username')
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'projections' => ['username']
+                'retrieve' => ['username']
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -55,11 +51,11 @@ class BaseTest extends TestSetup
 
         $this->specify("it several properties from array", function () {
             $actual = $this->builder
-                ->projections(['username', 'password'])
+                ->internalRetrieve(['username', 'password'])
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'projections' => ['username', 'password']
+                'retrieve' => ['username', 'password']
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -67,11 +63,11 @@ class BaseTest extends TestSetup
 
         $this->specify("it several properties from csv string (one space)", function () {
             $actual = $this->builder
-                ->projections('username, password')
+                ->internalRetrieve('username, password')
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'projections' => ['username', 'password']
+                'retrieve' => ['username', 'password']
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -79,11 +75,11 @@ class BaseTest extends TestSetup
 
         $this->specify("it returns several properties from csv string (no spaces)", function () {
             $actual = $this->builder
-                ->projections('username,password')
+                ->internalRetrieve('username,password')
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'projections' => ['username', 'password']
+                'retrieve' => ['username', 'password']
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -91,11 +87,11 @@ class BaseTest extends TestSetup
 
         $this->specify("it returns several properties from csv string (many spaces)", function () {
             $actual = $this->builder
-                ->projections('username,           password')
+                ->internalRetrieve('username,           password')
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'projections' => ['username', 'password']
+                'retrieve' => ['username', 'password']
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -103,12 +99,59 @@ class BaseTest extends TestSetup
 
         $this->specify("it throws exception if projections is not array or string", function () {
             $this->builder
-                ->retrieve()
-                ->type(Bag::ELEMENT_VERTEX)
-                ->projections(3)
+                ->internalRetrieve()
+                ->internalRetrieve(3)
                 ->getBag();
 
         }, ['throws' => new \InvalidArgumentException("Projections must be a comma-separated string or an array")]);
+    }
 
+    // Does not dispatch, only flags the `Bag`
+    public function testResponseFormats()
+    {
+        $this->specify("sets response format as tree", function () {
+            $this->builder->setProcessor(new CommandProcessorStub());
+
+            $actual = $this->builder
+                ->mapAsTree()
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'map' => Bag::MAP_TREE
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+
+        $this->specify("sets response format as path", function () {
+            $this->builder->setProcessor(new CommandProcessorStub());
+
+            $actual = $this->builder
+                ->mapAsPath()
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'map' => Bag::MAP_PATH
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+    }
+
+    public function testGetScript()
+    {
+        $this->specify("sets optional language processors", function () {
+            $this->builder->setProcessor(new CommandProcessorStub());
+
+            $actual = $this->builder
+                ->internalRetrieve('something')
+                ->getScript();
+
+            $expected = $this->buildExpectedCommand([
+                'retrieve' => ['something'],
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
     }
 }

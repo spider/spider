@@ -4,6 +4,7 @@ namespace Spider\Commands\Languages\OrientSQL;
 use Spider\Commands\Bag;
 use Spider\Commands\Command;
 use Spider\Commands\CommandInterface;
+use Spider\Commands\Languages\AbstractProcessor;
 use Spider\Commands\Languages\ProcessorInterface;
 use Spider\Exceptions\NotSupportedException;
 
@@ -12,7 +13,7 @@ use Spider\Exceptions\NotSupportedException;
  * OrientSQL implementation
  * @package Spider\Drivers\OrientDB
  */
-class CommandProcessor implements ProcessorInterface
+class CommandProcessor extends AbstractProcessor
 {
     /**
      * A map of commands from the Command Bag to Orient SQL

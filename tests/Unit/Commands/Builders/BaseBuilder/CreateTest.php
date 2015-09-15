@@ -10,45 +10,134 @@ class CreateTest extends TestSetup
     use Specify;
 
     /* Create Tests */
-    public function testCreateRecords()
+    public function testCreateVertices()
     {
-        $this->specify("it inserts a single record", function () {
-            $record = [
-                'first' => 'first-value',
-                'second' => 'second-value'
+        $this->specify("it inserts a single vertex", function () {
+            $records = [
+                [
+                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                    Bag::ELEMENT_LABEL => 'test',
+                    'first' => 'first-value',
+                    'A' =>  'a'
+                ]
             ];
 
             $actual = $this->builder
-                ->type(Bag::ELEMENT_VERTEX)
-                ->insert($record)
+                ->internalCreate($records)
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_CREATE,
-                'target' => Bag::ELEMENT_VERTEX,
-                'data' => $record,
-                'createCount' => 1
+                'create' => $records
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
         });
 
-        $this->specify("it inserts multiple records", function () {
+        $this->specify("it inserts multiple vertices", function () {
             $records = [
-                ['first' => 'first-value', 'A', 'a'],
-                ['first' => 'second-value', 'B', 'b']
+                [
+                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                    Bag::ELEMENT_LABEL => 'test',
+                    'first' => 'first-value',
+                    'A' =>  'a'
+                ],
+                [
+                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                    Bag::ELEMENT_LABEL => 'test',
+                    'second' => 'second-value',
+                    'B' =>  'b'
+                ],
             ];
 
             $actual = $this->builder
-                ->type(Bag::ELEMENT_VERTEX)
-                ->insert($records)
+                ->internalCreate($records)
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_CREATE,
-                'target' => Bag::ELEMENT_VERTEX,
-                'data' => $records,
-                'createCount' => 2
+                'create' => $records
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+    }
+
+    public function testCreateEdges()
+    {
+        $this->specify("it inserts a single edge", function () {
+            $records = [
+                [
+                    Bag::ELEMENT_TYPE => Bag::ELEMENT_EDGE,
+                    Bag::ELEMENT_LABEL => 'test',
+                    Bag::EDGE_INV => 'in-id',
+                    Bag::EDGE_OUTV => 'out-id',
+                    'first' => 'first-value',
+                    'A' =>  'a'
+                ]
+            ];
+
+            $actual = $this->builder
+                ->internalCreate($records)
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'create' => $records
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+
+        $this->specify("it inserts multiple edges", function () {
+            $records = [
+                [
+                    Bag::ELEMENT_TYPE => Bag::ELEMENT_EDGE,
+                    Bag::ELEMENT_LABEL => 'test',
+                    Bag::EDGE_INV => 'in-id',
+                    Bag::EDGE_OUTV => 'out-id',
+                    'first' => 'first-value',
+                    'A' =>  'a'
+                ],
+                [
+                    Bag::ELEMENT_TYPE => Bag::ELEMENT_EDGE,
+                    Bag::ELEMENT_LABEL => 'test',
+                    Bag::EDGE_INV => 'in-id',
+                    Bag::EDGE_OUTV => 'out-id',
+                    'second' => 'second-value',
+                    'B' =>  'b'
+                ],
+            ];
+
+            $actual = $this->builder
+                ->internalCreate($records)
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'create' => $records
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+    }
+
+    public function testCreateVerticesAndEdges()
+    {
+        $this->specify("it inserts a two vertices and an edge", function () {
+            $records = [
+                [Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX, Bag::ELEMENT_LABEL => 'person', "name" => 'what'],
+                [Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX, Bag::ELEMENT_LABEL => 'person', "name" => 'ever'],
+                [
+                    Bag::ELEMENT_TYPE => Bag::ELEMENT_EDGE,
+                    Bag::ELEMENT_LABEL => 'label',
+                    Bag::EDGE_INV => 'a',
+                    Bag::EDGE_OUTV => 'b',
+                ]
+            ];
+
+            $actual = $this->builder
+                ->internalCreate($records)
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'create' => $records
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");

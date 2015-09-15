@@ -12,62 +12,64 @@ use Spider\Base\Object;
 class Bag extends Object
 {
     /* Required Bag Contents */
-    /** @var string Create, Retrieve, Update, Delete */
-    public $command = null;
-
     /**
-     * Type of the Target of the command.
-     * Either a vertex (500) or an edge (510)
+     * Data for edges and vertices to be created
      *
-     * @var int
+     * [
+     *     TYPE => EDGE|VERTEX,
+     *     LABEL => 'friend',
+     *
+     *      // For Edges
+     *     INV => VertexID or `BaseBuilder` instance,
+     *     OUTV =>  VertexID or `BaseBuilder` instance,
+     *     'other' => 'properties',
+     *     'here' => true
+     * ]
+     *
+     * @var null|array
      */
-    public $target = 500; // defaults to a vertex
+    public $create = null;
 
-    /* Optional Bag Contents with defaults */
     /**
      * @var array list of projections (fields affected)
-     * Empty array default to all fields (*)
+     * Null default to all fields (*)
+     *
+     * @var null|array
      */
-    public $projections = [];
+    public $retrieve = null;
 
+    /**
+     * Data for edges and vertices to be updated
+     * Will merge this array of data with the vertex/edge data
+     *
+     * @var null|array
+     */
+    public $update = null;
+
+    /**
+     * Whether or not to delete
+     * @var null|bool
+     */
+    public $delete = null;
+
+    /* Optional Bag Contents with defaults */
     /**
      * @var array list of constraints
      *
      * `[projection, operator, value, conjunction]`
-     * `['username', static::COMPARATOR_EQUAL, 'michael', 'AND']`
-     * AND WHERE username = 'michael' for example
+     * `['username', static::COMPARATOR_EQUAL, 'michael', static::CONJUNCTION_AND]`
+     * `AND WHERE username = 'michael'` for example
      */
     public $where = [];
 
-    /** @var array Data to be inserted/updated */
-    public $data = [];
-
-    /** @var int How many records to create */
-    public $createCount = 0;
-
-    /**
-     * What do you want after an operation is complete?
-     *
-     * In some cases, choose what the database sends back
-     * after the operation. For instance, if deleting
-     * Do you want the records affected, record
-     * before, or a simple `true` for success?
-     *
-     * defaults to `false`, to be handled accordingly by processor
-     *
-     * $builder->drop(3)->fromDb('AFTER')
-     * @var mixed
-     */
-    public $return = false;
-
     /** @var bool|int How many results to return. `false` no limit */
-    public $limit = false;
+    public $limit = null;
 
-    /** @var bool|string|array Which field to group results by. `false` no grouping */
-    public $groupBy = false;
+    /** @var bool|array Which field to group results by. `false` no grouping */
+    public $groupBy = null;
 
     /** @var bool|array Which field to order results by. `false` no ordering */
-    public $orderBy = false;
+    public $orderBy = null;
 
     /**
      * Flag a mapping format for the query to return
@@ -97,18 +99,12 @@ class Bag extends Object
     const CONJUNCTION_XOR = 120;
     const CONJUNCTION_NOT = 130;
 
-    /* CRUD commands (equivalent to SELECT, UPDATE, INSERT, DROP) */
-    const COMMAND_CREATE   = 200;
-    const COMMAND_RETRIEVE = 210;
-    const COMMAND_UPDATE   = 220;
-    const COMMAND_DELETE   = 230;
-
     /* Maps */
     const MAP_SET  = 300;
     const MAP_PATH = 310;
     const MAP_TREE = 320;
 
-    /* orders */
+    /* Orders */
     const ORDER_ASC  = 400;
     const ORDER_DESC = 410;
 
@@ -117,4 +113,16 @@ class Bag extends Object
     const ELEMENT_EDGE   = 510;
     const ELEMENT_LABEL  = 520;
     const ELEMENT_ID     = 530;
+    const ELEMENT_TYPE = 540;
+    const EDGE_INV = 550;
+    const EDGE_OUTV = 560;
+
+    public function prepare()
+    {
+        /*
+         * Should validate that
+         *     1. Any edge creation includes INV and OUTV
+         *     2. Every 'where' clause defaults to ELEMENT_TYPE = ELEMENT_VERTEX
+         */
+    }
 }
