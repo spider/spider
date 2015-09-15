@@ -12,7 +12,7 @@ class CreateTest extends TestSetup
     /* Create Tests */
     public function testCreateSugars()
     {
-        $this->specify("it uses insert aliase", function () {
+        $this->specify("it uses insert aliases", function () {
             $record = [
                 'first' => 'first-value',
                 'second' => 'second-value',

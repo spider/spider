@@ -42,9 +42,6 @@ class Bag extends Object
     /** @var array Data to be inserted/updated */
     public $data = [];
 
-    /** @var int How many records to create */
-    public $createCount = 0;
-
     /**
      * What do you want after an operation is complete?
      *

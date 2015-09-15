@@ -19,15 +19,13 @@ class CreateTest extends TestSetup
             ];
 
             $actual = $this->builder
-                ->type(Bag::ELEMENT_VERTEX)
-                ->insert($record)
+                ->internalCreate($record)
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_CREATE,
-                'target' => Bag::ELEMENT_VERTEX,
-                'data' => $record,
-                'createCount' => 1
+                'target'=> Bag::ELEMENT_VERTEX,
+                'data' => $record
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -40,15 +38,38 @@ class CreateTest extends TestSetup
             ];
 
             $actual = $this->builder
-                ->type(Bag::ELEMENT_VERTEX)
-                ->insert($records)
+                ->internalCreate($records)
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_CREATE,
-                'target' => Bag::ELEMENT_VERTEX,
                 'data' => $records,
-                'createCount' => 2
+                'target'=> Bag::ELEMENT_VERTEX,
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+    }
+
+    public function testCreateEdges()
+    {
+        $this->specify("it inserts a single edge", function () {
+            $record = [
+                'first' => 'first-value',
+                'second' => 'second-value',
+                'inV' => 'a',
+                'outV' => 'b',
+            ];
+
+            $actual = $this->builder
+                ->internalCreate($record)
+                ->type(Bag::ELEMENT_EDGE)
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'command' => Bag::COMMAND_CREATE,
+                'target' => Bag::ELEMENT_EDGE,
+                'data' => $record
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");

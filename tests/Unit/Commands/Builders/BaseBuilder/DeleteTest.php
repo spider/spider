@@ -13,11 +13,19 @@ class DeleteTest extends TestSetup
     {
         $this->specify("it drops a single record dispatching from `delete()`", function () {
             $actual = $this->builder
-                ->delete()
+                ->internalRetrieve()
+                ->internalWhere(['name', Bag::COMPARATOR_EQUAL, 'test-name', Bag::CONJUNCTION_AND])
+                ->internalDelete()
                 ->getBag();
 
-            $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_DELETE
+            $expected = $this->buildExpectedBags([
+                [
+                    'command' => Bag::COMMAND_RETRIEVE,
+                    'where' => [
+                        ['name', Bag::COMPARATOR_EQUAL, 'test-name', Bag::CONJUNCTION_AND]
+                    ]
+                ],
+                ['command' => Bag::COMMAND_DELETE],
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
