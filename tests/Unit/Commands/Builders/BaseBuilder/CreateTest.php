@@ -24,7 +24,6 @@ class CreateTest extends TestSetup
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_CREATE,
-                'target'=> Bag::ELEMENT_VERTEX,
                 'data' => $record
             ]);
 
@@ -44,32 +43,34 @@ class CreateTest extends TestSetup
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_CREATE,
                 'data' => $records,
-                'target'=> Bag::ELEMENT_VERTEX,
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
         });
     }
 
-    public function testCreateEdges()
+    public function testCreateVerticesAndEdges()
     {
-        $this->specify("it inserts a single edge", function () {
-            $record = [
-                'first' => 'first-value',
-                'second' => 'second-value',
-                'inV' => 'a',
-                'outV' => 'b',
+        $this->specify("it inserts a two vertices and an edge", function () {
+            $records = [
+                [Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX, Bag::ELEMENT_LABEL => 'person', "name" => 'what'],
+                [Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX, Bag::ELEMENT_LABEL => 'person', "name" => 'ever'],
+                [
+                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                    Bag::ELEMENT_LABEL => 'label',
+                    Bag::EDGE_INV => 'a',
+                    Bag::EDGE_OUTV => 'b',
+                ]
+
             ];
 
             $actual = $this->builder
-                ->internalCreate($record)
-                ->type(Bag::ELEMENT_EDGE)
+                ->internalCreate($records)
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_CREATE,
-                'target' => Bag::ELEMENT_EDGE,
-                'data' => $record
+                'data' => $records
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");

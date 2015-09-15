@@ -144,6 +144,17 @@ class Builder extends BaseBuilder
     }
 
     /**
+     * Set the type of the target in the current Command Bag
+     * @param $type
+     * @return $this
+     */
+    public function type($type)
+    {
+        $this->addToCurrentBag('target', $type);
+        return $this;
+    }
+
+    /**
      * Alias of `data()`
      * @param $property
      * @param null $value

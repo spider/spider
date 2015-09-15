@@ -158,17 +158,6 @@ class BaseBuilder
 
     /* Fluent methods for building queries */
     /**
-     * Set the type of the target in the current Command Bag
-     * @param $type
-     * @return $this
-     */
-    public function type($type)
-    {
-        $this->addToCurrentBag('target', $type);
-        return $this;
-    }
-
-    /**
      * Add data to the current command bag (for insert and update)
      * @param $property
      * @param null $value

@@ -74,14 +74,12 @@ class UpdateTest extends TestSetup
 
             $actual = $this->builder
                 ->internalUpdate()
-                ->type(Bag::ELEMENT_VERTEX)
                 ->data($data)
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
                 'command' => Bag::COMMAND_UPDATE,
                 'data' => [['name' => 'chris', 'birthday' => 'april']],
-                'target' => Bag::ELEMENT_VERTEX
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
