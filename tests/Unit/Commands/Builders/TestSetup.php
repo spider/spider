@@ -42,15 +42,6 @@ class TestSetup extends \PHPUnit_Framework_TestCase
         foreach ($properties as $key => $value) {
             $expected->$key = $value;
         }
-        return [$expected];
-    }
-
-    public function buildExpectedBags(array $bags)
-    {
-        $expected = [];
-        foreach ($bags as $bag) {
-            $expected[] = $this->buildExpectedBag($bag)[0];
-        }
         return $expected;
     }
 }

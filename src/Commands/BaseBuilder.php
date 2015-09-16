@@ -24,28 +24,25 @@ class BaseBuilder
      * With an optional language processor
      *
      * @param ProcessorInterface|null $processor
-     * @param array|null $bag
+     * @param Bag $bag
      */
     public function __construct(
         ProcessorInterface $processor = null,
-        array $bag = null
+        Bag $bag = null
     ) {
         $this->processor = $processor;
-        $this->bag = $bag ?: [];
+        $this->bag = $bag ?: new Bag();
     }
 
     /* Internal methods for building queries */
     /**
      * Add an `insert` clause to the current command bag
      * @param array $data
-     * @return BaseBuilder
+     * @return $this
      */
     public function internalCreate(array $data)
     {
-        $this->addNewBag();
-        $this->addToCurrentBag('command', Bag::COMMAND_CREATE);
-        $this->addToCurrentBag('data', $data);
-
+        $this->addToBag('create', $data);
         return $this;
     }
 
@@ -57,9 +54,17 @@ class BaseBuilder
      */
     public function internalRetrieve($projections = null)
     {
-        $this->addNewBag();
-        $this->addToCurrentBag('command', Bag::COMMAND_RETRIEVE);
-        $this->internalProjections($projections);
+        if (is_null($projections)) {
+            $this->addToBag('retrieve', []);
+            return $this;
+        }
+
+        // Ensure $projects is usable
+        if (!is_string($projections) && !is_array($projections)) {
+            throw new InvalidArgumentException("Projections must be a comma-separated string or an array");
+        }
+
+        $this->addToBag('retrieve', $this->csvToArray($projections));
         return $this;
     }
 
@@ -70,15 +75,7 @@ class BaseBuilder
      */
     public function internalUpdate($properties = null)
     {
-        $this->addNewBag();
-        $this->addToCurrentBag('command', Bag::COMMAND_UPDATE);
-
-        if (is_null($properties)) {
-            return $this;
-        }
-
-        $this->data($properties);
-
+        $this->addToBag('update', $properties);
         return $this;
     }
 
@@ -88,33 +85,7 @@ class BaseBuilder
      */
     public function internalDelete()
     {
-        $this->addNewBag();
-        $this->addToCurrentBag('command', Bag::COMMAND_DELETE);
-        return $this;
-    }
-
-    /**
-     * Set the projection fields in the current Command Bag
-     *
-     * This is used by `only()`, `select()`, and others. A projection is
-     * a field affected by the current command. Like `SELECT fieldname` in SQL
-     *
-     * @param $projections
-     * @return $this
-     */
-    public function internalProjections($projections)
-    {
-        if (is_null($projections)) {
-            $this->addToCurrentBag('projections', []);
-            return $this;
-        }
-
-        // Ensure $projects is usable
-        if (!is_string($projections) && !is_array($projections)) {
-            throw new InvalidArgumentException("Projections must be a comma-separated string or an array");
-        }
-
-        $this->addToCurrentBag('projections', $this->csvToArray($projections));
+        $this->addToBag('delete', true);
         return $this;
     }
 
@@ -139,42 +110,20 @@ class BaseBuilder
         if (!is_array($constraints[0])) {
             $constraints = [$constraints];
         }
-
         /* Validate constraints */
         foreach ($constraints as $constraint) {
             if (count($constraint) !== 4) {
                 throw new \Exception("Where constraint malformed. Must have four parameters. field, operator, value, conjunction");
             }
-
             if (!is_int($constraint[1]) || !is_int($constraint[3])) {
                 throw new \Exception("Where constraint malformed. Operator and Conjunction must be constants from `Bag`.");
             }
         }
-
-        $this->addToCurrentBag('where', array_merge($this->getFromCurrentBag('where'), $constraints));
-
+        $this->bag->where = array_merge($this->bag->where, $constraints);
         return $this;
     }
 
     /* Fluent methods for building queries */
-    /**
-     * Add data to the current command bag (for insert and update)
-     * @param $property
-     * @param null $value
-     * @return $this
-     */
-    public function data($property, $value = null)
-    {
-        if (!is_array($property)) {
-            return $this->data([$property => $value]);
-        } else {
-            $newData = $this->getFromCurrentBag('data');
-            $newData[] = $property;
-            $this->addToCurrentBag('data', $newData);
-            return $this;
-        }
-    }
-
     /**
      * Set the result limit in the current Command Bag
      * @param $limit
@@ -182,7 +131,7 @@ class BaseBuilder
      */
     public function limit($limit)
     {
-        $this->addToCurrentBag('limit', $limit);
+        $this->addToBag('limit', $limit);
         return $this;
     }
 
@@ -194,7 +143,7 @@ class BaseBuilder
     public function groupBy($fields)
     {
         $fields = $this->csvToArray($fields);
-        $this->addToCurrentBag('groupBy', $fields);
+        $this->addToBag('groupBy', $fields);
         return $this;
     }
 
@@ -206,7 +155,7 @@ class BaseBuilder
      */
     public function orderBy($field, $direction = Bag::ORDER_ASC)
     {
-        $this->addToCurrentBag('orderBy', [[$field, $direction]]);
+        $this->addToBag('orderBy', [[$field, $direction]]);
         return $this;
     }
 
@@ -216,7 +165,7 @@ class BaseBuilder
      */
     public function setAsTree()
     {
-        $this->addToCurrentBag('map', Bag::MAP_TREE);
+        $this->addToBag('map', Bag::MAP_TREE);
         return $this;
     }
 
@@ -226,7 +175,7 @@ class BaseBuilder
      */
     public function setAsPath()
     {
-        $this->addToCurrentBag('map', Bag::MAP_PATH);
+        $this->addToBag('map', Bag::MAP_PATH);
         return $this;
     }
 
@@ -235,23 +184,23 @@ class BaseBuilder
      * Sets an alias for the current command bag
      * @param $alias
      */
-    function set($alias)
-    {
-        $keys = array_keys($this->bag);
-        $index = end($keys);
-        $this->bag[$alias] = $this->getCurrentBag();
-        unset($this->bag[$index]);
-    }
-
-    /**
-     * Returns a Command Bag by alias
-     * @param $alias
-     * @return mixed
-     */
-    function get($alias)
-    {
-        return $this->bag[$alias];
-    }
+//    function set($alias)
+//    {
+//        $keys = array_keys($this->bag);
+//        $index = end($keys);
+//        $this->bag[$alias] = $this->getCurrentBag();
+//        unset($this->bag[$index]);
+//    }
+//
+//    /**
+//     * Returns a Command Bag by alias
+//     * @param $alias
+//     * @return mixed
+//     */
+//    function get($alias)
+//    {
+//        return $this->bag[$alias];
+//    }
 
     /* Manage the Builder itself */
     /**
@@ -260,10 +209,7 @@ class BaseBuilder
      */
     public function clear($properties = [])
     {
-        $this->bag = [];
-        if (!empty($properties)) {
-            $this->bag[] = new Bag($properties);
-        }
+        $this->bag = new Bag($properties);
     }
 
     /**
@@ -354,37 +300,8 @@ class BaseBuilder
      * @param $property
      * @param $value
      */
-    protected function addToCurrentBag($property, $value)
+    protected function addToBag($property, $value)
     {
-
-        if (! end($this->bag) instanceof Bag) {
-            $this->addNewBag();
-        }
-
-        $this->getCurrentBag()->$property = $value;
-    }
-
-    protected function getCurrentBag()
-    {
-        return end($this->bag);
-    }
-
-    /**
-     * Get's a property from the current Command Bag
-     * @param $property
-     * @return mixed
-     */
-    protected function getFromCurrentBag($property)
-    {
-        return $this->getCurrentBag()->$property;
-    }
-
-    /**
-     * Adds a new CommandBag for the beginning of a new operation.
-     * @param null $alias
-     */
-    protected function addNewBag($alias = null)
-    {
-        $this->bag[] = new Bag();
+        $this->bag->$property = $value;
     }
 }

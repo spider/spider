@@ -150,8 +150,26 @@ class Builder extends BaseBuilder
      */
     public function type($type)
     {
-        $this->addToCurrentBag('target', $type);
+        $this->addToBag('target', $type);
         return $this;
+    }
+
+    /**
+     * Add data to the current command bag (for insert and update)
+     * @param $property
+     * @param null $value
+     * @return $this
+     */
+    public function data($property, $value = null)
+    {
+        if (!is_array($property)) {
+            return $this->data([$property => $value]);
+        } else {
+            $newData = $this->getFromCurrentBag('data');
+            $newData[] = $property;
+            $this->addToBag('data', $newData);
+            return $this;
+        }
     }
 
     /**

@@ -22,12 +22,10 @@ class RetrieveTest extends TestSetup
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
+                'retrieve' => [],
                 'where' => [
                     ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_OR],
-                ]
+                ],
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -37,18 +35,18 @@ class RetrieveTest extends TestSetup
             $actual = $this->builder
                 ->internalRetrieve()
                 ->internalWhere([
+                    [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
                     ['name', Bag::COMPARATOR_EQUAL, 'michael', Bag::CONJUNCTION_AND],
                     ['price', Bag::COMPARATOR_GT, 2, Bag::CONJUNCTION_OR]
                 ])
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
+                'retrieve' => [],
                 'where' => [
+                    [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
                     ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
-                    ['price', Bag::COMPARATOR_GT, 2, Bag::CONJUNCTION_OR]
+                    ['price', Bag::COMPARATOR_GT, 2, Bag::CONJUNCTION_OR],
                 ]
             ]);
 
@@ -58,18 +56,20 @@ class RetrieveTest extends TestSetup
         $this->specify("it throws an exception for invalid constraint: too few parameters", function () {
             $this->builder
                 ->internalRetrieve()
-                ->internalWhere(
+                ->internalWhere([
+                    [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
                     ['name', Bag::COMPARATOR_EQUAL, 'michael']
-                )
+                ])
                 ->getBag();
         }, ['throws' => 'Exception']);
 
         $this->specify("it throws an exception for invalid constraint: operator not a constant", function () {
             $this->builder
                 ->internalRetrieve()
-                ->internalWhere(
+                ->internalWhere([
+                    [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
                     ['name', '=', 'michael', Bag::CONJUNCTION_AND]
-                )
+                ])
                 ->getBag();
         }, ['throws' => 'Exception']);
 
@@ -92,10 +92,8 @@ class RetrieveTest extends TestSetup
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
-                'limit' => 2
+                'retrieve' => [],
+                'limit' => 2,
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -111,10 +109,8 @@ class RetrieveTest extends TestSetup
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
-                'groupBy' => ['certified']
+                'retrieve' => [],
+                'groupBy' => ['certified'],
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -127,10 +123,8 @@ class RetrieveTest extends TestSetup
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
-                'groupBy' => ['certified', 'price']
+                'retrieve' => [],
+                'groupBy' => ['certified', 'price'],
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -143,10 +137,8 @@ class RetrieveTest extends TestSetup
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
-                'groupBy' => ['certified', 'price']
+                'retrieve' => [],
+                'groupBy' => ['certified', 'price'],
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -162,10 +154,8 @@ class RetrieveTest extends TestSetup
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
-                'orderBy' => [['price', Bag::ORDER_ASC]]
+                'retrieve' => [],
+                'orderBy' => [['price', Bag::ORDER_ASC]],
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag");
@@ -178,9 +168,7 @@ class RetrieveTest extends TestSetup
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
+                'retrieve' => [],
                 'orderBy' => [['price', Bag::ORDER_DESC]],
             ]);
 
@@ -194,9 +182,7 @@ class RetrieveTest extends TestSetup
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
-                'command' => Bag::COMMAND_RETRIEVE,
-                'projections' => [],
-                'target' => Bag::ELEMENT_VERTEX,
+                'retrieve' => [],
                 'orderBy' => [['price', Bag::ORDER_ASC]],
             ]);
 
