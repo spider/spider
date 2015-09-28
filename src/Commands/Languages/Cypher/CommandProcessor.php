@@ -4,6 +4,7 @@ namespace Spider\Commands\Languages\Cypher;
 use Spider\Commands\Bag;
 use Spider\Commands\Command;
 use Spider\Commands\CommandInterface;
+use Spider\Commands\Languages\AbstractProcessor;
 use Spider\Commands\Languages\ProcessorInterface;
 use Spider\Exceptions\NotSupportedException;
 
@@ -11,7 +12,7 @@ use Spider\Exceptions\NotSupportedException;
  * Class CommandProcessor
  * Cypher implementation
  */
-class CommandProcessor implements ProcessorInterface
+class CommandProcessor extends AbstractProcessor
 {
     /**
      * A map of commands from the Command Bag to Orient SQL
