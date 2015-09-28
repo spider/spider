@@ -24,7 +24,7 @@
   ],
   "require": {
     "php": ">=5.4.0",
-    "michaels/data-manager": "dev-develop",
+    "michaels/data-manager": "0.8.5",
     "ostico/phporient": "1.2.*",
     "brightzone/gremlin-php": "*",
     "everyman/neo4jphp": "dev-master",
