@@ -3,6 +3,7 @@ namespace Spider\Test\Unit\Commands\Builders\BaseBuilder;
 
 use Codeception\Specify;
 use Spider\Commands\Bag;
+use Spider\Test\Stubs\CommandProcessorStub;
 use Spider\Test\Unit\Commands\Builders\TestSetup;
 
 class BaseTest extends TestSetup
@@ -103,5 +104,54 @@ class BaseTest extends TestSetup
                 ->getBag();
 
         }, ['throws' => new \InvalidArgumentException("Projections must be a comma-separated string or an array")]);
+    }
+
+    // Does not dispatch, only flags the `Bag`
+    public function testResponseFormats()
+    {
+        $this->specify("sets response format as tree", function () {
+            $this->builder->setProcessor(new CommandProcessorStub());
+
+            $actual = $this->builder
+                ->mapAsTree()
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'map' => Bag::MAP_TREE
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+
+        $this->specify("sets response format as path", function () {
+            $this->builder->setProcessor(new CommandProcessorStub());
+
+            $actual = $this->builder
+                ->mapAsPath()
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'map' => Bag::MAP_PATH
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+    }
+
+    public function testGetScript()
+    {
+        $this->specify("sets optional language processors", function () {
+            $this->builder->setProcessor(new CommandProcessorStub());
+
+            $actual = $this->builder
+                ->internalRetrieve('something')
+                ->getScript();
+
+            $expected = $this->buildExpectedCommand([
+                'retrieve' => ['something'],
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
     }
 }

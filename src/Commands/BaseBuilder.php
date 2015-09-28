@@ -163,7 +163,7 @@ class BaseBuilder
      * Flag the desired response as `tree`
      * @return $this
      */
-    public function setAsTree()
+    public function mapAsTree()
     {
         $this->addToBag('map', Bag::MAP_TREE);
         return $this;
@@ -173,7 +173,7 @@ class BaseBuilder
      * Flag the desired response as `path`
      * @return $this
      */
-    public function setAsPath()
+    public function mapAsPath()
     {
         $this->addToBag('map', Bag::MAP_PATH);
         return $this;

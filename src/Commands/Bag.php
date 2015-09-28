@@ -62,21 +62,6 @@ class Bag extends Object
      */
     public $where = [];
 
-    /**
-     * What do you want after an operation is complete?
-     *
-     * In some cases, choose what the database sends back
-     * after the operation. For instance, if deleting
-     * Do you want the records affected, record
-     * before, or a simple `true` for success?
-     *
-     * defaults to `false`, to be handled accordingly by processor
-     *
-     * $builder->drop(3)->fromDb('AFTER')
-     * @var mixed
-     */
-    public $return = null;
-
     /** @var bool|int How many results to return. `false` no limit */
     public $limit = null;
 
