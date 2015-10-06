@@ -80,7 +80,7 @@ foreach ($characters as $character) {
 ```
 
 Of course, there's a lot more you can do.
-Check out **[the full documentation](http://http://spider-ogm.readthedocs.org/)**.
+Check out **[the full documentation](http://spider-ogm.readthedocs.org/)**.
 
 ## Inspired By
   * [Eloquent ORM](http://laravel.com/docs/5.0/eloquent)
