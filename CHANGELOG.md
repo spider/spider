@@ -1,7 +1,15 @@
 # Changelog
 All Notable changes to `Spider` will be documented in this file
 
-## v0.3 - NEXT
+## v0.3.2 - 10-8-2015
+- Fixes dependency versions in composer.json
+- Fixes bug #91: Gremlin-PHP updated version was breaking change
+
+## v0.3.1 - 9-1-2015
+- Fixes bug #63: Set ordering in tests for Neo4j
+- Cleans up scrutinizer
+
+## v0.3.0 - 8-22-2015
 - Basic Query Builder (without traversals)
   - Where filters
   - limit and group
