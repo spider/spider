@@ -27,7 +27,7 @@ interface ConnectionInterface
      * This is the R in CRUD
      *
      * @param CommandInterface|BaseBuilder $query
-     * @return Response
+     * @return \Spider\Drivers\Response
      */
     public function executeCommand($query);
 
