@@ -25,14 +25,14 @@
   "require": {
     "php": ">=5.4.0",
     "michaels/data-manager": "0.8.*",
-    "ostico/phporient": "1.2.*",
-    "brightzone/gremlin-php": "*",
+    "ostico/phporient": "1.*",
+    "brightzone/gremlin-php": "1.0.*",
     "everyman/neo4jphp": "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "4.*",
-    "satooshi/php-coveralls": "dev-master",
-    "codeception/specify": "*"
+    "satooshi/php-coveralls": "0.6.*",
+    "codeception/specify": "0.4.*"
   },
   "autoload": {
     "psr-4": {
