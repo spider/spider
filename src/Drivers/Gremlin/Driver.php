@@ -10,7 +10,7 @@ use Spider\Drivers\Response;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
 use Spider\Exceptions\NotSupportedException;
-use brightzone\rexpro\Connection;
+use Brightzone\GremlinDriver\Connection;
 
 /**
  * Driver for Gremlin Server
@@ -39,6 +39,16 @@ class Driver extends AbstractDriver implements DriverInterface
     public $traversal = "g";
 
     /**
+     * @var string the authentication username
+     */
+    public $username;
+
+    /**
+     * @var string the authentication password
+     */
+    public $password;
+
+    /**
      * @var array The supported languages and their processors
      */
     protected $languages = [
@@ -47,7 +57,7 @@ class Driver extends AbstractDriver implements DriverInterface
     ];
 
     /**
-     * @var \brightzone\rexpro\Connection The client library this driver uses to communicate with the DB
+     * @var \Brightzone\GremlinDriver\Connection The client library this driver uses to communicate with the DB
      */
     protected $client;
 
@@ -59,7 +69,13 @@ class Driver extends AbstractDriver implements DriverInterface
     public function __construct(array $properties = [])
     {
         parent::__construct($properties);
-        $this->client = new Connection();
+        $this->client = new Connection([
+            'host' => $this->hostname,
+            'port' => $this->port,
+            'graph' => $this->graph,
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
     }
 
     /**
@@ -70,7 +86,7 @@ class Driver extends AbstractDriver implements DriverInterface
     public function open()
     {
         //multiple open scenario is handled by the client.
-        $this->client->open($this->hostname . ':' . $this->port, $this->graph);
+        $this->client->open();
         return $this;
     }
 
@@ -91,7 +107,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * @param CommandInterface|BaseBuilder $query
      * @return Response
      * @throws \Exception
-     * @throws \brightzone\rexpro\ServerException
+     * @throws \Brightzone\GremlinDriver\ServerException
      */
     public function executeCommand($query)
     {
@@ -105,7 +121,7 @@ class Driver extends AbstractDriver implements DriverInterface
             $response = $this->client->send($query->getScript());
         } catch (\Exception $e) {
             //Check for empty return error from server.
-            if (($e instanceof \brightzone\rexpro\ServerException) && ($e->getCode() == 204)) {
+            if (($e instanceof \Brightzone\GremlinDriver\ServerException) && ($e->getCode() == 204)) {
                 $response = [];
             } else {
                 throw $e;
@@ -121,7 +137,7 @@ class Driver extends AbstractDriver implements DriverInterface
      * @param CommandInterface|BaseBuilder $query
      * @return $this
      * @throws \Exception
-     * @throws \brightzone\rexpro\ServerException
+     * @throws \Brightzone\GremlinDriver\ServerException
      */
     public function runCommand($query)
     {
