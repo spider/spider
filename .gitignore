@@ -1,4 +1,5 @@
-composer.lock
 vendor
 build/
 docs/api/cache
+.vagrant
+vagrant*
