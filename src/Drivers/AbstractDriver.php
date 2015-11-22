@@ -2,11 +2,8 @@
 namespace Spider\Drivers;
 
 use Spider\Base\Collection;
-use Spider\Commands\BaseBuilder;
-use Spider\Commands\Command;
 use Spider\Commands\Languages\ProcessorInterface;
 use Spider\Exceptions\NotSupportedException;
-use Symfony\Component\Config\Definition\Exception\Exception;
 
 abstract class AbstractDriver extends Collection implements DriverInterface
 {
@@ -69,32 +66,5 @@ abstract class AbstractDriver extends Collection implements DriverInterface
 
         $class = $this->languages[$language];
         return new $class;
-    }
-
-    /**
-     * Transforms a Builder to a Command if needed
-     * @param $command
-     * @param $language
-     * @return Command
-     * @throws NotSupportedException
-     * @throws \Exception
-     */
-    protected function ensureCommand($command, $language)
-    {
-        if ($command instanceof BaseBuilder) {
-            $processor = new $this->languages[$language];
-            $command = $command->getCommand($processor);
-            return $command;
-        }
-
-        if (!$command instanceof Command) {
-            throw new \Exception("Drivers only accept Commands or instances of BaseBuilder");
-        }
-
-        if (!$this->isSupportedLanguage($command->getScriptLanguage())) {
-            throw new NotSupportedException(__CLASS__ . " does not support " . $command->getScriptLanguage());
-        }
-
-        return $command;
     }
 }

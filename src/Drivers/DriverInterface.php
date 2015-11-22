@@ -22,22 +22,40 @@ interface DriverInterface extends ManagesItemsInterface
     public function close();
 
     /**
-     * Executes a Command
+     * Executes a Query or read command
      *
      * This is the R in CRUD
      *
      * @param CommandInterface|BaseBuilder $query
      * @return Response
      */
-    public function executeCommand($query);
+    public function executeReadCommand($query);
 
     /**
-     * Runs a Command without waiting for a response
+     * Executes a write command
+     *
+     * These are the "CUD" in CRUD
+     *
+     * @param CommandInterface|BaseBuilder $command
+     * @return Response
+     */
+    public function executeWriteCommand($command);
+
+    /**
+     * Executes a read command without waiting for a response
+     *
+     * @param CommandInterface|BaseBuilder $query
+     * @return $this
+     */
+    public function runReadCommand($query);
+
+    /**
+     * Executes a write command without waiting for a response
      *
      * @param CommandInterface|BaseBuilder $command
      * @return $this
      */
-    public function runCommand($command);
+    public function runWriteCommand($command);
 
     /**
      * Opens a transaction
@@ -61,7 +79,7 @@ interface DriverInterface extends ManagesItemsInterface
      *
      * @param mixed $response the raw DB response
      *
-     * @return \Spider\Base\Collection|array Spider consistent response
+     * @return Response Spider consistent response
      */
     public function formatAsSet($response);
 
@@ -71,7 +89,7 @@ interface DriverInterface extends ManagesItemsInterface
      *
      * @param mixed $response the raw DB response
      *
-     * @return array Spider consistent response
+     * @return Response Spider consistent response
      */
     public function formatAsTree($response);
 
@@ -81,7 +99,7 @@ interface DriverInterface extends ManagesItemsInterface
      *
      * @param mixed $response the raw DB response
      *
-     * @return array Spider consistent response
+     * @return Response Spider consistent response
      */
     public function formatAsPath($response);
 

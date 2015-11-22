@@ -25,7 +25,8 @@ class Query extends Builder
         ConnectionInterface $connection,
         ProcessorInterface $processor = null,
         Bag $bag = null
-    ) {
+    )
+    {
         parent::__construct($processor, $bag);
         $this->connection = $connection;
     }
@@ -36,7 +37,7 @@ class Query extends Builder
      * If no instance of CommandInterface is provided, then the
      * current Command Bag is processed via the Command Processor
      * @param CommandInterface|null $command
-     * @return \Spider\Drivers\Response the DB response in SpiderResponse format
+     * @return Response the DB response in SpiderResponse format
      */
     protected function dispatch($command = null)
     {
@@ -50,7 +51,11 @@ class Query extends Builder
             $message = $this;
         }
 
-        $response = $this->connection->executeCommand($message);
+        if ($this->bag->command === Bag::COMMAND_RETRIEVE) {
+            $response = $this->connection->executeReadCommand($message);
+        } else {
+            $response = $this->connection->executeWriteCommand($message);
+        }
 
         // Reset query and return response
         $this->clear();
@@ -60,7 +65,7 @@ class Query extends Builder
 
     /**
      * Alias of dispatch
-     * @return \Spider\Drivers\Response
+     * @return Response
      */
     public function go()
     {
@@ -144,7 +149,7 @@ class Query extends Builder
     /**
      * Execute a command through dispatch
      * @param CommandInterface|null $command
-     * @return \Spider\Drivers\Response
+     * @return Response
      */
     public function execute(CommandInterface $command = null)
     {

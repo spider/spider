@@ -1,7 +1,7 @@
 <?php
 namespace Spider\Test\Fixtures;
 
-use Brightzone\GremlinDriver\Connection;
+use brightzone\rexpro\Connection;
 
 class GremlinFixture extends DbFixture
 {
@@ -14,7 +14,7 @@ class GremlinFixture extends DbFixture
             $client->send("TinkerFactory.generateModern(graph)");
         } catch (\Exception $e) {
             //Check for empty return error from server.
-            if (!($e instanceof \Brightzone\GremlinDriver\ServerException) || ($e->getCode() != 204)) {
+            if (!($e instanceof \brightzone\rexpro\ServerException) || ($e->getCode() != 204)) {
                 throw $e;
             }
         }
@@ -33,7 +33,7 @@ class GremlinFixture extends DbFixture
             $client->send("g.V().drop().iterate()");
         } catch (\Exception $e) {
             //Check for empty return error from server.
-            if (!($e instanceof \Brightzone\GremlinDriver\ServerException) || ($e->getCode() != 204)) {
+            if (!($e instanceof \brightzone\rexpro\ServerException) || ($e->getCode() != 204)) {
                 throw $e;
             }
         }

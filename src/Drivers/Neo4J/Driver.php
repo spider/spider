@@ -49,7 +49,7 @@ class Driver extends AbstractDriver implements DriverInterface
     ];
 
     /**
-     * @var \Brightzone\GremlinDriver\Connection The client library this driver uses to communicate with the DB
+     * @var \brightzone\rexpro\Connection The client library this driver uses to communicate with the DB
      */
     protected $client;
 
@@ -87,10 +87,14 @@ class Driver extends AbstractDriver implements DriverInterface
      * @throws NotSupportedException
      * @throws \Exception
      */
-    public function executeCommand($query)
+    public function executeReadCommand($query)
     {
-        // Generate command from a Builder
-        $query = $this->ensureCommand($query, 'cypher');
+        if ($query instanceof BaseBuilder) {
+            $processor = new $this->languages['cypher'];
+            $query = $query->getCommand($processor);
+        } elseif (!$this->isSupportedLanguage($query->getScriptLanguage())) {
+            throw new NotSupportedException(__CLASS__ . " does not support " . $query->getScriptLanguage());
+        }
 
         $neoQuery = new Query($this->client, $query->getScript());
         if ($this->inTransaction) {
@@ -101,6 +105,18 @@ class Driver extends AbstractDriver implements DriverInterface
         return new Response(['_raw' => $response, '_driver' => $this]);
     }
 
+    /**
+     * Executes a write command
+     *
+     * These are the "CUD" in CRUD
+     *
+     * @param CommandInterface|BaseBuilder $command
+     * @return Response
+     */
+    public function executeWriteCommand($command)
+    {
+        return $this->executeReadCommand($command);
+    }
 
     /**
      * Executes a read command without waiting for a response
@@ -108,10 +124,21 @@ class Driver extends AbstractDriver implements DriverInterface
      * @param CommandInterface|BaseBuilder $query
      * @return Driver $this
      */
-    public function runCommand($query)
+    public function runReadCommand($query)
     {
-        $this->executeCommand($query);
+        $this->executeReadCommand($query);
         return $this;
+    }
+
+    /**
+     * Executes a write command without waiting for a response
+     *
+     * @param CommandInterface|BaseBuilder $command
+     * @return void
+     */
+    public function runWriteCommand($command)
+    {
+        $this->executeWriteCommand($command);
     }
 
     /**
