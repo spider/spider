@@ -10,7 +10,7 @@ use Spider\Drivers\Response;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
 use Spider\Exceptions\NotSupportedException;
-use brightzone\rexpro\Connection;
+use Brightzone\GremlinDriver\Connection;
 
 /**
  * Driver for Gremlin Server
@@ -47,7 +47,7 @@ class Driver extends AbstractDriver implements DriverInterface
     ];
 
     /**
-     * @var \brightzone\rexpro\Connection The client library this driver uses to communicate with the DB
+     * @var \Brightzone\GremlinDriver\Connection The client library this driver uses to communicate with the DB
      */
     protected $client;
 
