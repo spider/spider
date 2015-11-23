@@ -1,5 +1,5 @@
-composer.lock
 vendor
 build/
 docs/api/cache
-.idea/
+.vagrant
+vagrant*
