@@ -22,40 +22,6 @@ interface ConnectionInterface
     public function close();
 
     /**
-     * Executes a Command
-     *
-     * This is the R in CRUD
-     *
-     * @param CommandInterface|BaseBuilder $query
-     * @return \Spider\Drivers\Response
-     */
-    public function executeCommand($query);
-
-    /**
-     * Runs a Command without waiting for a response
-     *
-     * @param CommandInterface|BaseBuilder $command
-     * @return $this
-     */
-    public function runCommand($command);
-
-    /**
-     * Opens a transaction
-     *
-     * @return bool
-     */
-    public function startTransaction();
-
-    /**
-     * Closes a transaction
-     *
-     * @param bool $commit whether this is a commit (true) or a rollback (false)
-     *
-     * @return bool
-     */
-    public function stopTransaction($commit = true);
-
-    /**
      * Returns the class name of the active driver
      * @return string
      */

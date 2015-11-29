@@ -17,7 +17,7 @@ interface ProcessorInterface
      * script for whichever driver is specified
      *
      * @param \Spider\Commands\Bag $bag
-     * @return \Spider\Commands\Command
+     * @return string
      */
     public function process(Bag $bag);
 }

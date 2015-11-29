@@ -144,17 +144,17 @@ class DriverTest extends BaseTestSuite
             $driver->open();
             $driver->startTransaction();
 
-            $driver->executeCommand(new Command(
+            $driver->executeWriteCommand(new Command(
                 "CREATE VERTEX CONTENT {name:'one'}", "orientSQL"
             ));
 
-            $driver->executeCommand(new Command(
+            $driver->executeWriteCommand(new Command(
                 "CREATE VERTEX CONTENT {name:'two'}", "orientSQL"
-            ));
+            ), "orientSQL");
 
-            $driver->executeCommand(new Command(
+            $driver->executeWriteCommand(new Command(
                 "CREATE VERTEX CONTENT {name:'three'}", "orientSQL"
-            ));
+            ), "orientSQL");
 
             $expected = "begin\n";
             $expected .= "LET t1 = CREATE VERTEX CONTENT {name:'one'}\n";
@@ -163,9 +163,9 @@ class DriverTest extends BaseTestSuite
             $expected .= "commit retry 100\n";
             $expected .= 'return [$t1,$t2,$t3]';
 
-            $actual = $driver->getTransactionForTest();
-
             $driver->stopTransaction(false); // false
+
+            $actual = $driver->getTransactionForTest();
 
             $this->assertEquals($expected, $actual, "the transaction statement was incorrectly built");
             $driver->close();
@@ -178,7 +178,7 @@ class DriverTest extends BaseTestSuite
             $driver = $this->driver();
             $driver->open();
 
-            $driver->executeCommand(new Command(
+            $driver->executeWriteCommand(new Command(
                 "INSERT INTO nothing CONTENT {name: 'michael'}",
                 "orientSQL"
             ));
@@ -193,7 +193,7 @@ class DriverTest extends BaseTestSuite
             $driver = $this->driver();
             $driver->open();
 
-            $response = $driver->executeCommand(new Command(
+            $response = $driver->executeReadCommand(new Command(
                 "SELECT name FROM V LIMIT 1", 'orientSQL',
                 "orientSQL"
             ));
@@ -210,7 +210,7 @@ class DriverTest extends BaseTestSuite
             $driver = $this->driver();
             $driver->open();
 
-            $response = $driver->executeCommand(new Command(
+            $response = $driver->executeReadCommand(new Command(
                 "SELECT FROM V LIMIT 1", 'orientSQL',
                 "orientSQL"
             ));
@@ -223,7 +223,7 @@ class DriverTest extends BaseTestSuite
             $driver = $this->driver();
             $driver->open();
 
-            $response = $driver->executeCommand(new Command(
+            $response = $driver->executeReadCommand(new Command(
                 "SELECT name FROM V", 'orientSQL',
                 "orientSQL"
             ));
@@ -251,7 +251,7 @@ class DriverTest extends BaseTestSuite
         $driver = $this->driver();
         $driver->open();
 
-        $response = $driver->executeCommand($builder);
+        $response = $driver->executeReadCommand($builder);
 
         $consistent = $response->getSet();
         $this->assertEquals(6, count($consistent), "wrong number of elements found");

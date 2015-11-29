@@ -23,13 +23,14 @@ class BaseBuilder
      * Creates a new instance of the Command Builder
      * With an optional language processor
      *
-     * @param ProcessorInterface|null $processor
+     * @param ProcessorInterface $processor
      * @param Bag|null $bag
      */
     public function __construct(
         ProcessorInterface $processor = null,
         Bag $bag = null
-    ) {
+    )
+    {
         $this->processor = $processor;
         $this->bag = $bag ?: new Bag();
     }
@@ -261,7 +262,7 @@ class BaseBuilder
 
     /**
      * Processes the current command bag
-     * @param ProcessorInterface|null $processor
+     * @param ProcessorInterface $processor
      * @return String the script in string form
      * @throws \Exception
      */
@@ -290,8 +291,8 @@ class BaseBuilder
 
     /**
      * Processes the current command bag
-     * @param ProcessorInterface|null $processor
-     * @return \Spider\Commands\Command
+     * @param ProcessorInterface $processor
+     * @return Command
      * @throws \Exception
      */
     public function getCommand(ProcessorInterface $processor = null)

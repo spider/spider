@@ -33,7 +33,7 @@ class Builder extends BaseBuilder
      * Creates a new instance of the Command Builder
      * With an optional language processor
      *
-     * @param ProcessorInterface|null $processor
+     * @param ProcessorInterface $processor
      * @param Bag|null $bag
      */
     public function __construct(

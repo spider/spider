@@ -3,8 +3,8 @@ echo "------------ RUNNING STARTUP COMMANDS ------------"
 
 ### Set variables
 export NEO4J_VERSION="2.2.4"
-export GREMLINSERVER_VERSION="3.0.0"
-export ORIENT_VERSION="2.1.0"
+export GREMLINSERVER_VERSION="3.0.2"
+export ORIENT_VERSION="2.1.6"
 
 export INSTALL_DIR="/home/vagrant"
 export VAGRANT_DIR="/vagrant"
@@ -14,7 +14,7 @@ export GREMLIN_DIR="apache-gremlin-server-$GREMLINSERVER_VERSION-incubating"
 
 ## start gremlin-server
 cd $INSTALL_DIR/$GREMLIN_DIR
-sudo bin/gremlin-server.sh conf/gremlin-server-spider.yaml > /dev/null 2>&1 &
+sudo bin/gremlin-server.sh conf/gremlin-server-php.yaml > /dev/null 2>&1 &
 cd $VAGRANT_DIR
 sleep 30
 
@@ -26,6 +26,7 @@ sleep 15
 sudo curl -vX POST http://neo4j:neo4j@localhost:7474/user/neo4j/password -d"password=j4oen"
 
 ## start orient
+sed -i 's/password=".*" name="root"/password="root"  name="root"/' $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/config/orientdb-server-config.xml
 sudo nohup $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/bin/server.sh > $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/log/server.out&
 sleep 15
 
