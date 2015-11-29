@@ -15,7 +15,7 @@ class OrientFixture extends DbFixture
             'hostname' => 'localhost',
             'port' => 2424,
             'username' => 'root',
-            'password' => "root",
+            'password' => 'root',
         ]);
         $client->connect();
 
