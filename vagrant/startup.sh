@@ -28,13 +28,10 @@ sudo curl -vX POST http://neo4j:neo4j@localhost:7474/user/neo4j/password -d"pass
 ## start orient to initially and properly set up the orientdb-server-config.xml file
 sudo nohup $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/bin/orientdb.sh start
 
-##   > $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/log/server.out&
-
 sleep 15
 
 ## stop orient
 sudo nohup $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/bin/orientdb.sh stop
-
 
 sleep 15
 
@@ -43,8 +40,6 @@ sed -i 's/password=".*" name="root"/password="root"  name="root"/' $INSTALL_DIR/
 
 ## restart the orient server
 sudo nohup $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/bin/orientdb.sh start
-
-# > $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/log/server.out&
 
 sleep 15
 
