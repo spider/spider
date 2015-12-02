@@ -5,6 +5,7 @@ All Notable changes to `Spider` will be documented in this file
 - Query api uses verb-based dispatch methods (getAll(), getOne(), etc)
 - Refactor: OrientDB uses SqlBatch for commands consistently
 - Simplified Drivers by replacing read/writeCommand() with single executeCommand() and runCommand()
+- Adds a Vagrant box for easier development environment.
 - Adds first-party driver aliasing to Connection Manager
 
 ## v0.3.2 - 10-8-2015
