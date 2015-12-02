@@ -42,7 +42,7 @@ This couldn't be simpler. Both are free. Directions on each website.
 
 Once these are installed simply use terminal or command prompt to `cd` into the directory and run `vagrant up`.
 The first time you run it, it may take a while to download everything (several Gigabytes). 
-From there, you can `vagrant ssh` into the virtual machine and `cd /vagrant`. Then run `phpunit` to see the magic happen.
+From there, you can `vagrant ssh` into the virtual machine and `cd /vagrant`. Then run `vendor/bin/phpunit` to see the magic happen.
 
 Please read up on Vagrant. Its super simple and powerful.
 
