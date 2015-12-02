@@ -4,7 +4,7 @@ echo "------------ RUNNING STARTUP COMMANDS ------------"
 ### Set variables
 export NEO4J_VERSION="2.2.4"
 export GREMLINSERVER_VERSION="3.0.2"
-export ORIENT_VERSION="2.1.0"
+export ORIENT_VERSION="2.1.6"
 
 export INSTALL_DIR="/home/vagrant"
 export VAGRANT_DIR="/vagrant"
@@ -25,8 +25,22 @@ sleep 15
 # changing password:
 sudo curl -vX POST http://neo4j:neo4j@localhost:7474/user/neo4j/password -d"password=j4oen"
 
-## start orient
-sudo nohup $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/bin/server.sh > $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/log/server.out&
+## start orient to initially and properly set up the orientdb-server-config.xml file
+sudo nohup $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/bin/orientdb.sh start
+
+sleep 15
+
+## stop orient
+sudo nohup $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/bin/orientdb.sh stop
+
+sleep 15
+
+## set up the password for root
+sed -i 's/password=".*" name="root"/password="root"  name="root"/' $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/config/orientdb-server-config.xml
+
+## restart the orient server
+sudo nohup $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/bin/orientdb.sh start
+
 sleep 15
 
 echo "------------ END: RUNNING STARTUP COMMANDS ------------"
