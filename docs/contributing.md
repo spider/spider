@@ -28,16 +28,46 @@ Be sure to fetch often so you keep your sources up-to-date!
 
 ## Test Databases
 In order to really test Spider, you need to install the test databases for the different drivers.
-At the moment, there are three drivers. These are instructions for installing each db so all tests will pass.
+At the moment, there are three drivers. 
 
-### Gremlin-Server
-#### Download
+You have two options in setting up your development environment. Instructions are provided for installing each database individually, or a [Vagrant](http://vagrantup.com/) box is provided to use a pre-configured virtual machine.
+
+### Vagrant
+It is easy to setup a development environment to test Spider by using [Vagrant](http://vagrantup.com/), which creates a virtual machine. This isolates things like the databases and ensure that the correct php configuration is set. Simply turn on the Vagrant box when developing and turn it off when you are done.
+
+To use the vagrant box, you must have 
+[Vagrant](https://www.vagrantup.com/downloads.html) and 
+[Virtual box](https://www.virtualbox.org/wiki/Downloads) installed. 
+This couldn't be simpler. Both are free. Directions on each website.
+
+Once these are installed simply use terminal or command prompt to `cd` into the directory and run `vagrant up`.
+The first time you run it, it may take a while to download everything (several Gigabytes). 
+From there, you can `vagrant ssh` into the virtual machine and `cd /vagrant`. Then run `vendor/bin/phpunit` to see the magic happen.
+
+Please read up on Vagrant. Its super simple and powerful.
+
+Once you are finished developing, you have 3 options to turn off vagrant:
+`vagrant suspend` will keep the box as it is, but dump it all to the hard disk. Takes up some Hard drive space, but no extra ram. Fastest when turning it back on.
+
+`vagrant halt` will totally shutdown the box.
+
+With the above two options, you will NOT have to re-download anything next time, but it does eat up a few gigs of hard drive space.
+
+`vagrant destroy` totally removes the box. You will have to re-download some things next time. All is automatic.
+
+When ready to begin again, `vagrant up`.
+
+### Install locally
+You may also setup the databases locally. These are instructions for installing each db so all tests will pass.
+
+#### Gremlin-Server
+##### Download
 - [Gremlin-server](https://www.apache.org/dist/incubator/tinkerpop/3.0.0-incubating/apache-gremlin-server-3.0.0-incubating-bin.zip)
 - [gremlin-server-php.yaml](https://raw.githubusercontent.com/PommeVerte/gremlin-php/master/src/tests/gremlin-server-php.yaml)
 - [gremlin-php-script.groovy](https://raw.githubusercontent.com/PommeVerte/gremlin-php/master/src/tests/gremlin-php-script.groovy)
 - [neo4j-empty.properties](https://raw.githubusercontent.com/PommeVerte/gremlin-php/master/src/tests/neo4j-empty.properties)
 
-#### Installation
+##### Installation
 Extract Gremlin-server and go into the created folder.
 
 Neo4J is required for the full test suit (it serves as the transaction enabled graph). It is not bundled with gremlin-server by default so you will need to manually install it with:
@@ -65,20 +95,20 @@ and use .bat files:
 bin\gremlin-server.bat conf\gremlin-server-php.yaml
 ```
 
-### Neo4J
-#### Download
+#### Neo4J
+##### Download
 - [Neo4J Server](http://neo4j.com/download/) (Community version is tested)
 
-#### Installation
+##### Installation
 Once the server is up and running, connect to [http://localhost:7474/browser](http://localhost:7474/browser) 
 - Change the username:password from `neo4j:neo4j` to `neo4j:j4oen`
 - It is recommended to create a 'testing' graph or similar, as the test suite will wipe all existing data before and after each test.
 
-### OrientDB
-#### Download
+#### OrientDB
+##### Download
 - [OrientDB Community](http://orientdb.com/download/) (Community version is tested)
 
-#### Installation
+##### Installation
 Simply extract the directory and place it anywhere you like.
 
 That's really it. The server can be accessed by connecting to : [http://localhost:2480/](http://localhost:2480/).

@@ -15,7 +15,7 @@ class OrientFixture extends DbFixture
             'hostname' => 'localhost',
             'port' => 2424,
             'username' => 'root',
-            'password' => "root",
+            'password' => 'root',
         ]);
         $client->connect();
 
@@ -29,7 +29,7 @@ class OrientFixture extends DbFixture
             PhpOrient::DATABASE_TYPE_GRAPH
         );
 
-        $client->dbOpen('modern_graph', 'root', 'root');
+        $client->dbOpen('modern_graph', 'admin', 'admin');
 
         $client->command('create class person extends V');
         $client->command('create class software extends V');

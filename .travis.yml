@@ -11,7 +11,7 @@ matrix:
     - php: nightly
     - php: 7.0
 env:
-  - NEO4J_VERSION="2.2.4" GREMLINSERVER_VERSION="3.0.0" ORIENT_VERSION="2.1.0"
+  - NEO4J_VERSION="2.2.4" GREMLINSERVER_VERSION="3.0.2" ORIENT_VERSION="2.1.6"
 
 before_install:
   - sudo apt-get update > /dev/null
