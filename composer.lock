@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5eae3d83cfc353d10a61eefc1b13ce5e",
-    "content-hash": "16b4a530c0e02c95dd07410aad3b3b8b",
+    "hash": "5f62f125795736d105f82ecd2005f579",
+    "content-hash": "cb75dc96c4f63d1b5e63c7739b4f20bf",
     "packages": [
         {
             "name": "brightzone/gremlin-php",
@@ -136,16 +136,16 @@
         },
         {
             "name": "league/event",
-            "version": "dev-master",
+            "version": "2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/event.git",
-                "reference": "45a180b4f987ff73839054403ae69dabc14e8cbd"
+                "reference": "e4bfc88dbcb60c8d8a2939a71f9813e141bbe4cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/event/zipball/45a180b4f987ff73839054403ae69dabc14e8cbd",
-                "reference": "45a180b4f987ff73839054403ae69dabc14e8cbd",
+                "url": "https://api.github.com/repos/thephpleague/event/zipball/e4bfc88dbcb60c8d8a2939a71f9813e141bbe4cd",
+                "reference": "e4bfc88dbcb60c8d8a2939a71f9813e141bbe4cd",
                 "shasum": ""
             },
             "require": {
@@ -153,7 +153,7 @@
             },
             "require-dev": {
                 "henrikbjorn/phpspec-code-coverage": "~1.0.1",
-                "phpspec/phpspec": "^2.2"
+                "phpspec/phpspec": "~2.0.0"
             },
             "type": "library",
             "extra": {
@@ -182,20 +182,20 @@
                 "event",
                 "listener"
             ],
-            "time": "2015-11-07 20:20:19"
+            "time": "2015-05-21 12:24:47"
         },
         {
             "name": "michaels/data-manager",
-            "version": "v0.8.6",
+            "version": "v0.8.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/chrismichaels84/data-manager.git",
-                "reference": "86a551f69075ac0eae0585ee3a20ccb663b1ed91"
+                "reference": "88b8c977c6ff4a98473d0aa7bfb90a83502d638f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/chrismichaels84/data-manager/zipball/86a551f69075ac0eae0585ee3a20ccb663b1ed91",
-                "reference": "86a551f69075ac0eae0585ee3a20ccb663b1ed91",
+                "url": "https://api.github.com/repos/chrismichaels84/data-manager/zipball/88b8c977c6ff4a98473d0aa7bfb90a83502d638f",
+                "reference": "88b8c977c6ff4a98473d0aa7bfb90a83502d638f",
                 "shasum": ""
             },
             "require": {
@@ -207,7 +207,7 @@
                 "satooshi/php-coveralls": "dev-master"
             },
             "suggest": {
-                "bocharsky-bw/arrayzy": "If you are using the Collections feature, you will need to 'dev-master' until 0.3 is released.",
+                "bocharsky-bw/arrayzy": "If you are using the Collections feature, you will need to '0.5.*",
                 "symfony/yaml": "If you are using the YAML decoder. ~2.7"
             },
             "type": "library",
@@ -248,7 +248,7 @@
                 "nest",
                 "nested"
             ],
-            "time": "2015-11-03 22:36:49"
+            "time": "2015-12-02 23:39:47"
         },
         {
             "name": "ostico/phporient",
@@ -1864,8 +1864,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "everyman/neo4jphp": 20,
-        "league/event": 20
+        "everyman/neo4jphp": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
