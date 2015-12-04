@@ -66,6 +66,7 @@ class CommandProcessor extends AbstractProcessor
     public function process(Bag $bag)
     {
         $this->init($bag);
+        $this->validateBag();
 
         // Process a single command using select(), insert(), update(), delete()
         call_user_func([$this, $this->getBagsCommand()]);

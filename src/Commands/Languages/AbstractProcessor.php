@@ -1,5 +1,6 @@
 <?php
 namespace Spider\Commands\Languages;
+use Spider\Commands\Bag;
 
 /**
  * Class AbstractProcessor
@@ -7,8 +8,14 @@ namespace Spider\Commands\Languages;
  */
 abstract class AbstractProcessor implements ProcessorInterface
 {
-    public function validateBag()
+    public function validateBag(Bag $bag = null)
     {
-        // validate CommandBag
+        if ($bag) {
+            $bag->validate();
+        }
+
+        if (isset($this->bag)) {
+           $this->bag->validate();
+        }
     }
 }
