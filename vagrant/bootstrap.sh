@@ -9,15 +9,36 @@ export ORIENT_VERSION="2.1.6"
 export INSTALL_DIR="/home/vagrant"
 export VAGRANT_DIR="/vagrant"
 export BOOTSTRAP_DIR="$VAGRANT_DIR/vagrant"
+export INITIAL_BUILD_DIR=$(pwd)
 
 
-### INSTALL jdk8
-## Get dependencies (for adding repos)
-sudo apt-get install -y python-software-properties
+### Install PHP 5.6, Extensions, and Composer
+echo "\n---- Installing PHP and Extensions ----\n"
+#echo "\n-- Updating PHP repository--\n"
+sudo apt-get update #> /dev/null
+apt-get install software-properties-common python-software-properties -y #> /dev/null
+add-apt-repository ppa:ondrej/php5-5.6 -y #> /dev/null
+apt-get update #> /dev/null
+
+#echo "\n-- Installing PHP --\n"
+apt-get install php5 -y #> /dev/null
+
+#echo "\n-- Installing PHP extensions --\n"
+sudo apt-get install curl php5-curl php5-gd php5-mcrypt -y #> /dev/null
+sudo apt-get install php5-xdebug #> /dev/null
+
+#echo "\n-- Installing Composer and PHPUnit --\n"
+curl --silent https://getcomposer.org/installer | php #> /dev/null 2>&1
+mv composer.phar /usr/local/bin/composer
+#composer require -global phpunit/phpunit:4.*
+alias phpunit=/vagrant/vendor/bin/phpunit
+
+#### INSTALL jdk8
+### Add Repository
 sudo add-apt-repository -y ppa:webupd8team/java
 sudo apt-get update
 
-## install oracle jdk 8
+## Install oracle jdk 8
 # no interaction
 echo debconf shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
 echo debconf shared/accepted-oracle-license-v1-1 seen true | /usr/bin/debconf-set-selections
@@ -42,9 +63,6 @@ unzip $INSTALL_DIR/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating-bin.z
 # get gremlin-server configuration files
 cp $BOOTSTRAP_DIR/gremlin-spider-script.groovy $INSTALL_DIR/$GREMLIN_DIR/scripts/
 cp $BOOTSTRAP_DIR/gremlin-server-spider.yaml $INSTALL_DIR/$GREMLIN_DIR/conf/
-
-# get neo4j dependencies
-#$INSTALL_DIR/$GREMLIN_DIR/bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin $GREMLINSERVER_VERSION-incubating
 
 # get neo4j dependencies
 cd $INSTALL_DIR/$GREMLIN_DIR
@@ -72,8 +90,5 @@ chown -R root:root $INSTALL_DIR/orientdb-community-$ORIENT_VERSION
 # sed -i '/<users>/a <user name="root" password="root" resources="*"><\/user>' $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/config/orientdb-server-config.xml
 sed -i '/ORIENTDB_DIR="YOUR_ORIENTDB_INSTALLATION_PATH"/ c\ORIENTDB_DIR="'$INSTALL_DIR'/orientdb-community-'$ORIENT_VERSION'"' $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/bin/orientdb.sh
 sed -i '/ORIENTDB_USER="USER_YOU_WANT_ORIENTDB_RUN_WITH"/ c\ORIENTDB_USER="root"' $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/bin/orientdb.sh
-
-### install X-debug for code coverage
-sudo apt-get install php5-xdebug
 
 echo "------------ END: PROVISIONING SYSTEM FROM BOOTSTRAP ------------"
