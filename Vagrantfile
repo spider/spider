@@ -12,17 +12,13 @@ Vagrant.configure(2) do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "scotch/box"
+  config.vm.box = "puphpet/ubuntu1404-x64"
 
   # For internet connectivity
   config.vm.provider "virtualbox" do |v|
       v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
       v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
   end
-
-  # Not sure this is needed for spider
-  config.vm.network "private_network", ip: "192.168.33.10"
-  config.vm.hostname = "scotchbox"
 
   # Install test databases when building machine
   config.vm.provision :shell, path: "./vagrant/bootstrap.sh"
