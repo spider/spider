@@ -17,151 +17,168 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
     use Specify;
 
     /* Begin Tests */
-    public function testInsert()
-    {
-        $this->specify("it processes a simple insert V bag", function () {
-            $bag = new Bag();
-            $bag->command = Bag::COMMAND_CREATE;
-            $bag->target = Bag::ELEMENT_VERTEX;
-            $bag->data = [$this->getData() + [Bag::ELEMENT_LABEL => 'target']];
-
-            $expected = $this->getExpectedCommand('insert-simple');
-
-            $actual = $this->processor()->process($bag);
-            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
-        });
-
-        $this->specify("it processes a multiple insert V bag", function () {
-            $bag = new Bag();
-            $bag->command = Bag::COMMAND_CREATE;
-            $bag->target = Bag::ELEMENT_VERTEX;
-
-            /* ToDo: data is too rigid. See note in BaseTest */
-            $bag->data = [
-                [
-                    'name' => 'mal',
-                    'role' => 'captain',
-                    'ship' => 'firefly',
-                    Bag::ELEMENT_LABEL => 'target',
-                ],
-                [
-                    'name' => 'zoe',
-                    'role' => 'first',
-                    'husband' => 'wash',
-                    Bag::ELEMENT_LABEL => 'target',
-                ],
-                [
-                    'name' => 'book',
-                    'role' => 'shepherd',
-                    'past' => 'unknown',
-                    Bag::ELEMENT_LABEL => 'target',
-                ]
-            ];
-
-            $expected = $this->getExpectedCommand('insert-multiple');
-
-            $actual = $this->processor()->process($bag);
-            $this->assertEquals($expected, $actual, 'failed to return expected Command for multiple insert');
-        });
-    }
-
-
-    public function testUpdate()
-    {
-        $this->specify("it processes a simple update bag", function () {
-
-            $bag = new Bag();
-            $bag->command = Bag::COMMAND_UPDATE;
-            $bag->target = Bag::ELEMENT_VERTEX;
-            $bag->data = [$this->getData()];
-            $bag->where = [[
-                Bag::ELEMENT_ID,
-                Bag::COMPARATOR_EQUAL, // convert to constant
-                'target_id',
-                Bag::CONJUNCTION_AND // convert to constant
-            ]];
-
-            $expected = $this->getExpectedCommand('update-simple');
-
-            $actual = $this->processor()->process($bag);
-            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
-        });
-
-        $this->specify("it processes a complex update bag", function () {
-
-            $bag = new Bag();
-            $bag->command = Bag::COMMAND_UPDATE;
-            $bag->target = Bag::ELEMENT_VERTEX; // don't forget about TargetID
-            $bag->data = [$this->getData()];
-            $bag->where = array_merge($this->getWheres(), [[
-                Bag::ELEMENT_LABEL,
-                Bag::COMPARATOR_EQUAL, // convert to constant
-                'target',
-                Bag::CONJUNCTION_AND // convert to constant
-            ]]);
-            $bag->limit = 10;
-
-            $expected = $this->getExpectedCommand('update-complex');
-
-            $actual = $this->processor()->process($bag);
-            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
-        });
-    }
-
-    public function testDelete()
-    {
-        $this->specify("it processes a simple delete bag", function () {
-
-            $bag = new Bag();
-            $bag->command = Bag::COMMAND_DELETE;
-            $bag->target = Bag::ELEMENT_VERTEX;
-            //$bag->data = $this->getData();
-            $bag->where = [[
-                Bag::ELEMENT_ID,
-                Bag::COMPARATOR_EQUAL, // convert to constant
-                'target_id',
-                Bag::CONJUNCTION_AND // convert to constant
-            ]];
-
-            $expected = $this->getExpectedCommand('delete-simple');
-
-            $actual = $this->processor()->process($bag);
-            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
-        });
-
-        $this->specify("it processes a complex delete bag", function () {
-
-            $bag = new Bag();
-            $bag->command = Bag::COMMAND_DELETE;
-            $bag->target = Bag::ELEMENT_VERTEX;
-            $bag->where = array_merge($this->getWheres(), [[
-                Bag::ELEMENT_LABEL,
-                Bag::COMPARATOR_EQUAL, // convert to constant
-                'target',
-                Bag::CONJUNCTION_AND // convert to constant
-            ]]);
-            $bag->limit = 10;
-
-            $expected = $this->getExpectedCommand('delete-complex');
-
-            $actual = $this->processor()->process($bag);
-            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
-        });
-    }
-
+    /* Simple Tests */
+//    public function testInsert()
+//    {
+//        $this->specify("it processes a simple insert V bag", function () {
+//            $bag = new Bag();
+//            $bag->command = Bag::COMMAND_CREATE;
+//            $bag->target = Bag::ELEMENT_VERTEX;
+//            $bag->data = [$this->getData() + [Bag::ELEMENT_LABEL => 'target']];
+//
+//            $expected = $this->getExpectedCommand('insert-simple');
+//
+//            $actual = $this->processor()->process($bag);
+//            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+//        });
+//
+//        $this->specify("it processes a multiple insert V bag", function () {
+//            $bag = new Bag();
+//            $bag->command = Bag::COMMAND_CREATE;
+//            $bag->target = Bag::ELEMENT_VERTEX;
+//
+//            /* ToDo: data is too rigid. See note in BaseTest */
+//            $bag->data = [
+//                [
+//                    'name' => 'mal',
+//                    'role' => 'captain',
+//                    'ship' => 'firefly',
+//                    Bag::ELEMENT_LABEL => 'target',
+//                ],
+//                [
+//                    'name' => 'zoe',
+//                    'role' => 'first',
+//                    'husband' => 'wash',
+//                    Bag::ELEMENT_LABEL => 'target',
+//                ],
+//                [
+//                    'name' => 'book',
+//                    'role' => 'shepherd',
+//                    'past' => 'unknown',
+//                    Bag::ELEMENT_LABEL => 'target',
+//                ]
+//            ];
+//
+//            $expected = $this->getExpectedCommand('insert-multiple');
+//
+//            $actual = $this->processor()->process($bag);
+//            $this->assertEquals($expected, $actual, 'failed to return expected Command for multiple insert');
+//        });
+//    }
+//
+//
+//    public function testUpdate()
+//    {
+//        $this->specify("it processes a simple update bag", function () {
+//
+//            $bag = new Bag();
+//            $bag->command = Bag::COMMAND_UPDATE;
+//            $bag->target = Bag::ELEMENT_VERTEX;
+//            $bag->data = [$this->getData()];
+//            $bag->where = [[
+//                Bag::ELEMENT_ID,
+//                Bag::COMPARATOR_EQUAL, // convert to constant
+//                'target_id',
+//                Bag::CONJUNCTION_AND // convert to constant
+//            ]];
+//
+//            $expected = $this->getExpectedCommand('update-simple');
+//
+//            $actual = $this->processor()->process($bag);
+//            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+//        });
+//
+//        $this->specify("it processes a complex update bag", function () {
+//
+//            $bag = new Bag();
+//            $bag->command = Bag::COMMAND_UPDATE;
+//            $bag->target = Bag::ELEMENT_VERTEX; // don't forget about TargetID
+//            $bag->data = [$this->getData()];
+//            $bag->where = array_merge($this->getWheres(), [[
+//                Bag::ELEMENT_LABEL,
+//                Bag::COMPARATOR_EQUAL, // convert to constant
+//                'target',
+//                Bag::CONJUNCTION_AND // convert to constant
+//            ]]);
+//            $bag->limit = 10;
+//
+//            $expected = $this->getExpectedCommand('update-complex');
+//
+//            $actual = $this->processor()->process($bag);
+//            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+//        });
+//    }
+//
+//    public function testDelete()
+//    {
+//        $this->specify("it processes a simple delete bag", function () {
+//
+//            $bag = new Bag();
+//            $bag->command = Bag::COMMAND_DELETE;
+//            $bag->target = Bag::ELEMENT_VERTEX;
+//            //$bag->data = $this->getData();
+//            $bag->where = [[
+//                Bag::ELEMENT_ID,
+//                Bag::COMPARATOR_EQUAL, // convert to constant
+//                'target_id',
+//                Bag::CONJUNCTION_AND // convert to constant
+//            ]];
+//
+//            $expected = $this->getExpectedCommand('delete-simple');
+//
+//            $actual = $this->processor()->process($bag);
+//            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+//        });
+//
+//        $this->specify("it processes a complex delete bag", function () {
+//
+//            $bag = new Bag();
+//            $bag->command = Bag::COMMAND_DELETE;
+//            $bag->target = Bag::ELEMENT_VERTEX;
+//            $bag->where = array_merge($this->getWheres(), [[
+//                Bag::ELEMENT_LABEL,
+//                Bag::COMPARATOR_EQUAL, // convert to constant
+//                'target',
+//                Bag::CONJUNCTION_AND // convert to constant
+//            ]]);
+//            $bag->limit = 10;
+//
+//            $expected = $this->getExpectedCommand('delete-complex');
+//
+//            $actual = $this->processor()->process($bag);
+//            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+//        });
+//    }
+//
     public function testSelect()
     {
-        $this->specify("it processes a simple select bag for vertices", function () {
+        $this->specify("(R) by a single where constraint and no label", function () {
+            $bag = new Bag([
+                'retrieve' => [],
+                'where' => [
+                    ['name', Bag::COMPARATOR_EQUAL, "josh", Bag::CONJUNCTION_AND],
+                ],
+            ]);
 
-            $bag = new Bag();
-            $bag->command = Bag::COMMAND_RETRIEVE;
-            $bag->target = Bag::ELEMENT_VERTEX;
-            $bag->where = [[
-                Bag::ELEMENT_LABEL,
-                Bag::COMPARATOR_EQUAL, // convert to constant
-                'target',
-                Bag::CONJUNCTION_AND // convert to constant
-            ]];
+            $expected = $this->getExpectedCommand('select-no-label-one-constraint');
+
+            $actual = $this->processor()->process($bag);
+            $this->assertEquals($expected, $actual, 'failed to return expected Command');
+        });
+
+        $this->specify("(R) by type and label", function () {
+            $bag = new Bag([
+                'retrieve' => [],
+                'where' => [
+                    [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
+                    [
+                        Bag::ELEMENT_LABEL,
+                        Bag::COMPARATOR_EQUAL, // convert to constant
+                        'target',
+                        Bag::CONJUNCTION_AND // convert to constant
+                    ]
+                ],
+            ]);
 
             $expected = $this->getExpectedCommand('select-simple');
 
@@ -169,17 +186,19 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
         });
 
-        $this->specify("it processes a simple select bag for edges", function () {
-
-            $bag = new Bag();
-            $bag->command = Bag::COMMAND_RETRIEVE;
-            $bag->target = Bag::ELEMENT_EDGE;
-            $bag->where = [[
-                Bag::ELEMENT_LABEL,
-                Bag::COMPARATOR_EQUAL, // convert to constant
-                'target',
-                Bag::CONJUNCTION_AND // convert to constant
-            ]];
+        $this->specify("(R) EDGE by label, type, and single where", function () {
+            $bag = new Bag([
+                'retrieve' => [],
+                'where' => [
+                    [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_EDGE, Bag::CONJUNCTION_AND],
+                    [
+                        Bag::ELEMENT_LABEL,
+                        Bag::COMPARATOR_EQUAL, // convert to constant
+                        'target',
+                        Bag::CONJUNCTION_AND // convert to constant
+                    ]
+                ],
+            ]);
 
             $expected = $this->getExpectedCommand('select-simple-edge');
 
@@ -189,17 +208,20 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
         // @todo do the same as above for both (requires traversals for neo
 
-        $this->specify("it processes where constraints in select", function () {
+        $this->specify("(R) by label, type, and multiple wheres", function () {
+            $bag = new Bag([
+                'retrieve' => [],
+            ]);
 
-            $bag = new Bag();
-            $bag->command = Bag::COMMAND_RETRIEVE;
-            $bag->target = Bag::ELEMENT_VERTEX;
-            $bag->where = array_merge($this->getWheres(), [[
-                Bag::ELEMENT_LABEL,
-                Bag::COMPARATOR_EQUAL, // convert to constant
-                'target',
-                Bag::CONJUNCTION_AND // convert to constant
-            ]]);
+            $bag->where = array_merge($this->getWheres(), [
+                [
+                    Bag::ELEMENT_LABEL,
+                    Bag::COMPARATOR_EQUAL, // convert to constant
+                    'target',
+                    Bag::CONJUNCTION_AND // convert to constant
+                ],
+                [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
+            ]);
 
             $expected = $this->getExpectedCommand('select-constraints');
 
@@ -207,27 +229,127 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
         });
 
-        $this->specify("it processes a complex order by select bag", function () {
+        $this->specify("(R) projections by label, type, and wheres - orders and limits", function () {
+            $bag = new Bag([
+                'retrieve' => ['field1', 'field2'],
+            ]);
 
-            $bag = new Bag();
-            $bag->command = Bag::COMMAND_RETRIEVE;
-            $bag->projections = ['field1', 'field2'];
-            $bag->target = Bag::ELEMENT_VERTEX;
+            $bag->where = array_merge($this->getWheres(), [
+                [
+                    Bag::ELEMENT_LABEL,
+                    Bag::COMPARATOR_EQUAL, // convert to constant
+                    'target',
+                    Bag::CONJUNCTION_AND // convert to constant
+                ],
+                [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
+            ]);
             $bag->limit = 3;
             $bag->orderBy = [['field1', Bag::ORDER_DESC]];
-            $bag->where = array_merge($this->getWheres(), [[
-                Bag::ELEMENT_LABEL,
-                Bag::COMPARATOR_EQUAL, // convert to constant
-                'target',
-                Bag::CONJUNCTION_AND // convert to constant
-            ]]);
 
             $expected = $this->getExpectedCommand('select-order-by');
 
             $actual = $this->processor()->process($bag);
             $this->assertEquals($expected, $actual, 'failed to return expected Command');
         });
+
+        $this->specify("(R) by label, type, and wheres - groups and limits", function () {
+            $bag = new Bag([
+                'retrieve' => [],
+            ]);
+
+            $bag->where = array_merge($this->getWheres(), [
+                [
+                    Bag::ELEMENT_LABEL,
+                    Bag::COMPARATOR_EQUAL, // convert to constant
+                    'target',
+                    Bag::CONJUNCTION_AND // convert to constant
+                ],
+                [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
+            ]);
+            $bag->limit = 3;
+            $bag->groupBy = ['field1'];
+
+            $expected = $this->getExpectedCommand('select-group-by');
+
+            $actual = $this->processor()->process($bag);
+            $this->assertEquals($expected, $actual, 'failed to return expected Command');
+        });
     }
+
+    /* Scenario Tests */
+    public function testCreateEdges()
+    {
+        $this->specify("finds (R) two vertices and creates (C) an edge in between", function () {
+            $bag = new Bag([
+                'create' => [
+                    [
+                        Bag::ELEMENT_TYPE => Bag::ELEMENT_EDGE,
+                        Bag::ELEMENT_LABEL => 'knows',
+                        Bag::EDGE_INV => new Bag([
+                            'retrieve' => [],
+                            'where' => [
+                                ['name', Bag::COMPARATOR_EQUAL, "peter", Bag::CONJUNCTION_AND],
+                            ],
+                        ]),
+                        Bag::EDGE_OUTV => new Bag([
+                            'retrieve' => [],
+                            'where' => [
+                                ['name', Bag::COMPARATOR_EQUAL, "josh", Bag::CONJUNCTION_AND],
+                            ],
+                        ]),
+                    ],
+                ]
+            ]);
+
+            $expected = $this->getExpectedCommand('find-two-vertices-and-create-edge');
+
+            $actual = $this->processor()->process($bag);
+            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+        });
+
+        $this->specify("it creates (C) two vertices and creates (C) an edge in between (R)", function () {
+            $bag = new Bag([
+                'create' => [
+                    [
+                        Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                        Bag::ELEMENT_LABEL => 'person',
+                        'name' => 'michael'
+                    ],
+                    [
+                        Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                        Bag::ELEMENT_LABEL => 'person',
+                        'name' => 'dylan'
+                    ],
+                    [
+                        Bag::ELEMENT_TYPE => Bag::ELEMENT_EDGE,
+                        Bag::ELEMENT_LABEL => 'knows',
+                        Bag::EDGE_INV => new Bag([
+                            'retrieve' => [],
+                            'where' => [
+                                ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
+                            ],
+                        ]),
+                        Bag::EDGE_OUTV => new Bag([
+                            'retrieve' => [],
+                            'where' => [
+                                ['name', Bag::COMPARATOR_EQUAL, "dylan", Bag::CONJUNCTION_AND],
+                            ],
+                        ]),
+                    ],
+                ]
+            ]);
+
+            $expected = $this->getExpectedCommand('create-two-vertices-and-create-edge');
+
+            $actual = $this->processor()->process($bag);
+            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+        });
+    }
+
+    /* Multiple CRUD scenarios */
+    abstract public function findTwoVerticesAndCreateEdge();
+
+    abstract public function createTwoVerticesAndCreateEdge();
 
     /* Internals */
     public function getExpectedCommand($alias)
@@ -261,60 +383,60 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
     }
 
     /* Methods to Implement */
-    /** Returns a valid CommandProcesor */
-    abstract public function processor();
+    /** Returns a valid CommandProcessor */
+//    abstract public function processor();
 
     /**
      * Returns a command for the the Bag tested in
      * testInsert:it processes a simple insert bag
      */
-    abstract public function insertSimple();
+//    abstract public function insertSimple();
 
     /**
      * Returns a command for the the Bag tested in
      * testUpdate:it processes a simple update bag
      */
-    abstract public function updateSimple();
+//    abstract public function updateSimple();
 
     /**
      * Returns a command for the the Bag tested in
      * testUpdate:it processes a complex update bag
      */
-    abstract public function updateComplex();
+//    abstract public function updateComplex();
 
     /**
      * Returns a command for the the Bag tested in
      * testDelete:it processes a simple delete bag
      */
-    abstract public function deleteSimple();
+//    abstract public function deleteSimple();
 
     /**
      * Returns a command for the the Bag tested in
      * testDelete:it processes a complex delete bag
      */
-    abstract public function deleteComplex();
+//    abstract public function deleteComplex();
 
     /**
      * Returns a command for the the Bag tested in
      * testSelect:it processes a simple select bag
      */
-    abstract public function selectSimple();
+//    abstract public function selectSimple();
 
     /**
      * Returns a command for the the Bag tested in
      * testSelect:it processes a select bag with here constraints
      */
-    abstract  public function selectConstraints();
+//    abstract  public function selectConstraints();
 
     /**
      * Returns a command for the the Bag tested in
      * testSelect:it processes a complex group by select bag
      */
-    abstract public function selectGroupBy();
+//    abstract public function selectGroupBy();
 
     /**
      * Returns a command for the the Bag tested in
      * testSelect:it processes a complex order byselect bag
      */
-    abstract public function selectOrderBy();
+//    abstract public function selectOrderBy();
 }
