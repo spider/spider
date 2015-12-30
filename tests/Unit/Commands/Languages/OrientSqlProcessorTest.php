@@ -136,7 +136,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
     public function selectSimple()
     {
         $query = $this->getBatchOpening();
-        $query .= 'SELECT';
+        $query .= 'LET t1 = SELECT';
         $query .= ' FROM target';
         $query .= $this->getBatchClosing();
 
@@ -152,7 +152,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
     public function selectSimpleEdge()
     {
         $query = $this->getBatchOpening();
-        $query .= 'SELECT';
+        $query .= 'LET t1 = SELECT';
         $query .= ' FROM target';
         $query .= $this->getBatchClosing();
 
@@ -168,7 +168,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
     public function selectConstraints()
     {
         $query = $this->getBatchOpening();
-        $query .= 'SELECT';
+        $query .= 'LET t1 = SELECT';
         $query .= ' FROM target';
         $query .= $this->getWhereSql();
         $query .= $this->getBatchClosing();
@@ -185,7 +185,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
     public function selectOrderBy()
     {
         $query = $this->getBatchOpening();
-        $query .= 'SELECT field1, field2';
+        $query .= 'LET t1 = SELECT field1, field2';
         $query .= ' FROM target';
         $query .= $this->getWhereSql();
         $query .= ' ORDER BY field1 DESC';
@@ -204,7 +204,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
     public function selectGroupBy()
     {
         $query = $this->getBatchOpening();
-        $query .= 'SELECT';
+        $query .= 'LET t1 = SELECT';
         $query .= ' FROM target';
         $query .= $this->getWhereSql();
         $query .= ' GROUP BY field1';
@@ -216,27 +216,62 @@ class OrientSqlProcessorTest extends BaseTestSuite
         return $command;
     }
 
-    /* Orient Specific Tests */
-    public function testSelectFromVByDefault()
+    public function selectNoLabelOneConstraint()
     {
-        $this->specify("it selects from V by default", function () {
-            $bag = new Bag();
-            $bag->command = Bag::COMMAND_RETRIEVE;
-            // equivalent to $builder->select();
-            // Issue #41
+        $query = $this->getBatchOpening();
+        $query .= "LET t1 = SELECT FROM V WHERE name = 'josh'";
+        $query .= $this->getBatchClosing();
 
-            $query = $this->getBatchOpening();
-            $query .= 'SELECT';
-            $query .= ' FROM V';
-            $query .= $this->getBatchClosing();
-
-            $expected = new Command($query);
-            $expected->setScriptLanguage('orientSQL');
-
-            $actual = $this->processor()->process($bag);
-            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
-        });
+        $command = new Command($query);
+        $command->setScriptLanguage('orientSQL');
+        return $command;
     }
+
+    public function findTwoVerticesAndCreateEdge()
+    {
+        $query = $this->getBatchOpening();
+        $query .= "LET t1 = CREATE EDGE knows FROM (SELECT FROM V WHERE name = 'josh') TO (SELECT FROM V WHERE name = 'peter')";
+        $query .= $this->getBatchClosing();
+
+        $command = new Command($query);
+        $command->setScriptLanguage('orientSQL');
+        return $command;
+    }
+
+    public function createTwoVerticesAndCreateEdge()
+    {
+        $query = $this->getBatchOpening();
+        $query .= "let t1 = CREATE VERTEX person CONTENT {name: 'michael'}";
+        $query .= "\nlet t2 = CREATE VERTEX person CONTENT {name: 'dylan'}";
+        $query .= "\nlet t3 = CREATE EDGE knows FROM (SELECT FROM V WHERE name = 'michael') TO (SELECT FROM V WHERE name ='dylan')";
+        $query .= $this->getBatchClosing();
+
+        $command = new Command($query);
+        $command->setScriptLanguage('orientSQL');
+        return $command;
+    }
+
+    /* Orient Specific Tests */
+//    public function testSelectFromVByDefault()
+//    {
+//        $this->specify("it selects from V by default", function () {
+//            $bag = new Bag();
+//            $bag->command = Bag::COMMAND_RETRIEVE;
+//            // equivalent to $builder->select();
+//            // Issue #41
+//
+//            $query = $this->getBatchOpening();
+//            $query .= 'SELECT';
+//            $query .= ' FROM V';
+//            $query .= $this->getBatchClosing();
+//
+//            $expected = new Command($query);
+//            $expected->setScriptLanguage('orientSQL');
+//
+//            $actual = $this->processor()->process($bag);
+//            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+//        });
+//    }
 
     /* Internal */
     protected function getWhereSql()
@@ -247,7 +282,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
     protected function getBatchOpening()
     {
         $opening = "begin\n";
-        $opening .= "LET t1 = ";
+//        $opening .= "LET t1 = ";
         return $opening;
     }
 
