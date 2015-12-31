@@ -47,7 +47,7 @@ class Select extends AbstractOrientSqlProcessor
         $this->appendTarget("from", $this->script);
 
         /* WHERE last_name = 'wilson' */
-        $this->appendWheres();
+        $this->appendWheres($this->bag->where, $this->script);
 
         /* GROUP BY country */
         $this->appendGroupBy();
@@ -56,7 +56,7 @@ class Select extends AbstractOrientSqlProcessor
         $this->appendOrderBy();
 
         /* LIMIT 20 */
-        $this->appendLimit();
+        $this->appendLimit($this->bag, $this->script);
     }
 
     /**
@@ -67,34 +67,6 @@ class Select extends AbstractOrientSqlProcessor
     {
         if (!empty($this->bag->retrieve)) {
             $this->addToScript(implode(", ", $this->bag->retrieve), $this->script);
-        }
-    }
-
-    /**
-     * Append where constraints to current script
-     * @throws \Exception
-     */
-    protected function appendWheres()
-    {
-        $wheres = '';
-        foreach ($this->bag->where as $index => $value) {
-            /* Skip the Element Type, not needed for Orient */
-            if ($value[0] === Bag::ELEMENT_TYPE) {
-                continue;
-            }
-
-            if ($index !== 0) { // don't add conjunction to the first clause
-                $wheres .= " " . (string)$this->toSqlOperator($value[3]);
-            }
-
-            $wheres .= " " . (string)$value[0]; // field
-            $wheres .= " " . (string)$this->toSqlOperator($value[1]); // operator
-            $wheres .= " " . $this->castValue($value[2]); // value
-        }
-
-        if ($wheres !== '') {
-            $this->addToScript("WHERE", $this->script);
-            $this->addToScript(ltrim($wheres), $this->script);
         }
     }
 
@@ -132,17 +104,6 @@ class Select extends AbstractOrientSqlProcessor
             }
 
             $this->addToScript(implode(", ", $orders), $this->script);
-        }
-    }
-
-    /**
-     * Append Limit to current script
-     * @throws \Exception
-     */
-    protected function appendLimit()
-    {
-        if ($this->bag->limit) {
-            $this->addToScript("LIMIT " . (string)$this->bag->limit, $this->script);
         }
     }
 

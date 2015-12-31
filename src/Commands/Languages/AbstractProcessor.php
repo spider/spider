@@ -38,4 +38,24 @@ abstract class AbstractProcessor
     {
         return (!empty($bag->create));
     }
+
+    /**
+     * Is this bag creating records
+     * @param Bag $bag
+     * @return bool
+     */
+    protected function isUpdating(Bag $bag)
+    {
+        return (!empty($bag->update) && !empty($bag->where));
+    }
+
+    /**
+     * Is this bag creating records
+     * @param Bag $bag
+     * @return bool
+     */
+    protected function isDeleting(Bag $bag)
+    {
+        return boolval($bag->delete);
+    }
 }

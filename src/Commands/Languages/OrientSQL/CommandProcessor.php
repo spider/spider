@@ -51,17 +51,37 @@ class CommandProcessor extends AbstractProcessor implements ProcessorInterface
                 return $statements[0];
             }
 
-            $this->batch->addStatements($statements);
+            $this->batch->addStatements($statements, SqlBatch::SELECT_STATEMENT);
         }
 
         if ($this->isCreating($bag)) {
-            $statements = (new Create($this))->process($bag); // returns ARRAY of statements to be consistent with other Processors
+            $statements = (new Create($this))->process($bag);
 
             if ($embedded && count($statements) === 1) {
                 return $statements[0];
             }
 
-            $this->batch->addStatements($statements);
+            $this->batch->addStatements($statements, SqlBatch::CREATE_STATEMENT);
+        }
+
+        if ($this->isUpdating($bag)) {
+            $statements = (new Update($this))->process($bag);
+
+            if ($embedded) {
+                return $statements[0];
+            }
+
+            $this->batch->addStatements($statements, SqlBatch::UPDATE_STATEMENT);
+        }
+
+        if ($this->isDeleting($bag)) {
+            $statements = (new Delete($this))->process($bag);
+
+            if ($embedded) {
+                return $statements[0];
+            }
+
+            $this->batch->addStatements($statements, SqlBatch::DELETE_STATEMENT);
         }
 
         $this->batch->end();

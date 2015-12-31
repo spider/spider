@@ -18,89 +18,95 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
     /* Begin Tests */
     /* Simple Tests */
-//    public function testUpdate()
-//    {
-//        $this->specify("it processes a simple update bag", function () {
+    public function testDelete()
+    {
+        $this->specify("it deletes (D) a vertex by default using id", function () {
+
+            $bag = new Bag();
+            $bag->delete = true;
+            $bag->where = [[
+                Bag::ELEMENT_ID,
+                Bag::COMPARATOR_EQUAL, // convert to constant
+                'target_id',
+                Bag::CONJUNCTION_AND // convert to constant
+            ]];
+
+            $expected = $this->getExpectedCommand('delete-vertex-id');
+
+            $actual = $this->processor()->process($bag);
+            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+        });
+
+        $this->specify("it deletes (D) a vertex explicitly using a constraint", function () {
+
+            $bag = new Bag();
+            $bag->delete = true;
+            $bag->where = [
+                [
+                    Bag::ELEMENT_TYPE,
+                    Bag::COMPARATOR_EQUAL, // convert to constant
+                    Bag::ELEMENT_VERTEX,
+                    Bag::CONJUNCTION_AND // convert to constant
+                ],
+                [
+                    'name',
+                    Bag::COMPARATOR_EQUAL, // convert to constant
+                    'marko',
+                    Bag::CONJUNCTION_AND // convert to constant
+                ]
+            ];
+            $bag->limit = 1;
+
+            $expected = $this->getExpectedCommand('delete-vertex-one-constraint');
+
+            $actual = $this->processor()->process($bag);
+            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+        });
+
+//        $this->specify("it deletes (D) edges by constraints", function () {
 //
 //            $bag = new Bag();
-//            $bag->command = Bag::COMMAND_UPDATE;
-//            $bag->target = Bag::ELEMENT_VERTEX;
-//            $bag->data = [$this->getData()];
-//            $bag->where = [[
-//                Bag::ELEMENT_ID,
-//                Bag::COMPARATOR_EQUAL, // convert to constant
-//                'target_id',
-//                Bag::CONJUNCTION_AND // convert to constant
-//            ]];
+//            $bag->delete = true;
+//            $bag->where = array_merge($this->getWheres(), [
+//                [
+//                    Bag::ELEMENT_LABEL,
+//                    Bag::COMPARATOR_EQUAL, // convert to constant
+//                    'label',
+//                    Bag::CONJUNCTION_AND // convert to constant
+//                ],
+//                [
+//                    Bag::ELEMENT_TYPE,
+//                    Bag::COMPARATOR_EQUAL, // convert to constant
+//                    Bag::ELEMENT_EDGE,
+//                    Bag::CONJUNCTION_AND // convert to constant
+//                ]
+//            ]);
 //
-//            $expected = $this->getExpectedCommand('update-simple');
+//            $expected = $this->getExpectedCommand('delete-edges');
 //
 //            $actual = $this->processor()->process($bag);
 //            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
 //        });
-//
-//        $this->specify("it processes a complex update bag", function () {
-//
-//            $bag = new Bag();
-//            $bag->command = Bag::COMMAND_UPDATE;
-//            $bag->target = Bag::ELEMENT_VERTEX; // don't forget about TargetID
-//            $bag->data = [$this->getData()];
-//            $bag->where = array_merge($this->getWheres(), [[
-//                Bag::ELEMENT_LABEL,
-//                Bag::COMPARATOR_EQUAL, // convert to constant
-//                'target',
-//                Bag::CONJUNCTION_AND // convert to constant
-//            ]]);
-//            $bag->limit = 10;
-//
-//            $expected = $this->getExpectedCommand('update-complex');
-//
-//            $actual = $this->processor()->process($bag);
-//            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
-//        });
-//    }
-//
-//    public function testDelete()
-//    {
-//        $this->specify("it processes a simple delete bag", function () {
-//
-//            $bag = new Bag();
-//            $bag->command = Bag::COMMAND_DELETE;
-//            $bag->target = Bag::ELEMENT_VERTEX;
-//            //$bag->data = $this->getData();
-//            $bag->where = [[
-//                Bag::ELEMENT_ID,
-//                Bag::COMPARATOR_EQUAL, // convert to constant
-//                'target_id',
-//                Bag::CONJUNCTION_AND // convert to constant
-//            ]];
-//
-//            $expected = $this->getExpectedCommand('delete-simple');
-//
-//            $actual = $this->processor()->process($bag);
-//            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
-//        });
-//
-//        $this->specify("it processes a complex delete bag", function () {
-//
-//            $bag = new Bag();
-//            $bag->command = Bag::COMMAND_DELETE;
-//            $bag->target = Bag::ELEMENT_VERTEX;
-//            $bag->where = array_merge($this->getWheres(), [[
-//                Bag::ELEMENT_LABEL,
-//                Bag::COMPARATOR_EQUAL, // convert to constant
-//                'target',
-//                Bag::CONJUNCTION_AND // convert to constant
-//            ]]);
-//            $bag->limit = 10;
-//
-//            $expected = $this->getExpectedCommand('delete-complex');
-//
-//            $actual = $this->processor()->process($bag);
-//            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
-//        });
-//    }
-//
+
+        $this->specify("it deletes (D) vertices by default by complex constraints", function () {
+
+            $bag = new Bag();
+            $bag->delete = true;
+            $bag->where = array_merge($this->getWheres(), [[
+                Bag::ELEMENT_LABEL,
+                Bag::COMPARATOR_EQUAL, // convert to constant
+                'label',
+                Bag::CONJUNCTION_AND // convert to constant
+            ]]);
+            $bag->limit = 10;
+
+            $expected = $this->getExpectedCommand('delete-complex');
+
+            $actual = $this->processor()->process($bag);
+            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+        });
+    }
+
     public function testSelect()
     {
         $this->specify("(R) by a single where constraint and no label", function () {
@@ -338,6 +344,159 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
         });
     }
+
+    public function testUpdate()
+    {
+        $this->specify("it updates (U) vertices by ID", function () {
+            $bag = new Bag();
+            $bag->update = $this->getData();
+            $bag->where = [[
+                Bag::ELEMENT_ID,
+                Bag::COMPARATOR_EQUAL, // convert to constant
+                'target_id',
+                Bag::CONJUNCTION_AND // convert to constant
+            ]];
+
+            $expected = $this->getExpectedCommand('update-simple');
+
+            $actual = $this->processor()->process($bag);
+            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+        });
+
+        $this->specify("it updates (U) vertices by complex constraints", function () {
+
+            $bag = new Bag();
+            $bag->update = $this->getData();
+            $bag->where = array_merge($this->getWheres(), [[
+                Bag::ELEMENT_LABEL,
+                Bag::COMPARATOR_EQUAL, // convert to constant
+                'target',
+                Bag::CONJUNCTION_AND // convert to constant
+            ]]);
+            $bag->limit = 10;
+
+            $expected = $this->getExpectedCommand('update-complex');
+
+            $actual = $this->processor()->process($bag);
+            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+        });
+
+        $this->specify("it creates (C) vertices and updates (U) them with data", function () {
+
+            $bag = new Bag();
+            $bag->create = [
+                [
+                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                    Bag::ELEMENT_LABEL => 'person',
+                    'name' => 'michael'
+                ],
+                [
+                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                    Bag::ELEMENT_LABEL => 'person',
+                    'name' => 'dylan'
+                ],
+            ];
+            $bag->update = $this->getData();
+            $bag->where = [
+                [
+                    Bag::ELEMENT_LABEL,
+                    Bag::COMPARATOR_EQUAL, // convert to constant
+                    'person',
+                    Bag::CONJUNCTION_AND // convert to constant
+                ],
+                [
+                    "name",
+                    Bag::COMPARATOR_EQUAL, // convert to constant
+                    'michael',
+                    Bag::CONJUNCTION_AND // convert to constant
+                ],
+            ];
+            $bag->limit = 15;
+
+            $expected = $this->getExpectedCommand('create-and-update');
+
+            $actual = $this->processor()->process($bag);
+            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+        });
+
+        $this->specify("it creates (C) vertices and updates (U) using an embedded retrieve (R)", function () {
+            $bag = new Bag();
+            $bag->create = [
+                [
+                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                    Bag::ELEMENT_LABEL => 'person',
+                    'name' => 'michael'
+                ],
+                [
+                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                    Bag::ELEMENT_LABEL => 'person',
+                    'name' => 'dylan'
+                ],
+            ];
+            $bag->update = $this->getData();
+            $bag->where = [
+                [
+                    Bag::ELEMENT_LABEL,
+                    Bag::COMPARATOR_EQUAL, // convert to constant
+                    'person',
+                    Bag::CONJUNCTION_AND // convert to constant
+                ],
+                [
+                    "name",
+                    Bag::COMPARATOR_EQUAL, // convert to constant
+                    'michael',
+                    Bag::CONJUNCTION_AND // convert to constant
+                ],
+            ];
+            $bag->limit = 15;
+
+            $expected = $this->getExpectedCommand('create-and-update');
+
+            $actual = $this->processor()->process($bag);
+            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+        });
+    }
+
+    public function testScenarios()
+    {
+//        $this->specify(
+//            "it find (R) existing vertices and creates (C) an edge between them then updates (U) that edge", function () {
+//            $bag = new Bag();
+//            $bag->create = [
+//                [
+//                    Bag::ELEMENT_TYPE => Bag::ELEMENT_EDGE,
+//                    Bag::ELEMENT_LABEL => 'knows',
+//                    Bag::EDGE_INV => new Bag([
+//                        'retrieve' => [],
+//                        'where' => [
+//                            ['name', Bag::COMPARATOR_EQUAL, "peter", Bag::CONJUNCTION_AND],
+//                        ],
+//                    ]),
+//                    Bag::EDGE_OUTV => new Bag([
+//                        'retrieve' => [],
+//                        'where' => [
+//                            ['name', Bag::COMPARATOR_EQUAL, "josh", Bag::CONJUNCTION_AND],
+//                        ],
+//                    ]),
+//                ],
+//            ];
+//            $bag->update = $this->getData();
+//            $bag->where = [
+//                [
+//                    Bag::ELEMENT_ID,
+//                    Bag::COMPARATOR_EQUAL, // convert to constant
+//                    Bag::CREATED_ENTITIES,
+//                    Bag::CONJUNCTION_AND // convert to constant
+//                ]
+//            ];
+//
+//            $expected = $this->getExpectedCommand('find-vertices-create-edge-update');
+//
+//            $actual = $this->processor()->process($bag);
+//            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+//        });
+    }
+
 
     /* Internals */
     public function getExpectedCommand($alias)
