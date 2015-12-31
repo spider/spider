@@ -3,6 +3,26 @@ namespace Spider\Test\Unit\Commands\Languages;
 
 use Codeception\Specify;
 use Spider\Commands\Bag;
+use Spider\Test\Scenarios\CreateSingleVertex;
+use Spider\Test\Scenarios\CreateVertices;
+use Spider\Test\Scenarios\CreateVerticesAndEdge;
+use Spider\Test\Scenarios\CreateVerticesAndupdate;
+use Spider\Test\Scenarios\CreateVerticesAndUpdateEmbedded;
+use Spider\Test\Scenarios\DeleteVertexByConstraint;
+use Spider\Test\Scenarios\DeleteVertexById;
+use Spider\Test\Scenarios\DeleteVerticesByConstraints;
+use Spider\Test\Scenarios\RetrieveByTypeAndLabel;
+use Spider\Test\Scenarios\RetrieveComplexGroup;
+use Spider\Test\Scenarios\RetrieveComplexWithProjections;
+use Spider\Test\Scenarios\RetrieveEdgeByLabelAndSingleConstraint;
+use Spider\Test\Scenarios\RetrieveEdgeByLableAndSingleConstraint;
+use Spider\Test\Scenarios\RetrieveTwoVerticesAndCreateEdge;
+use Spider\Test\Scenarios\RetrieveVertexByConstraint;
+use Spider\Test\Scenarios\RetrieveVertexByLabel;
+use Spider\Test\Scenarios\RetrieveVertexBySingleConstraint;
+use Spider\Test\Scenarios\RetrieveVerticesByConstraints;
+use Spider\Test\Scenarios\UpdateVertexById;
+use Spider\Test\Scenarios\UpdateVerticesByConstraints;
 
 /**
  * This is the base tests for all language processors.
@@ -21,15 +41,9 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
     public function testDelete()
     {
         $this->specify("it deletes (D) a vertex by default using id", function () {
-
-            $bag = new Bag();
-            $bag->delete = true;
-            $bag->where = [[
-                Bag::ELEMENT_ID,
-                Bag::COMPARATOR_EQUAL, // convert to constant
-                'target_id',
-                Bag::CONJUNCTION_AND // convert to constant
-            ]];
+            $bag = (new DeleteVertexById([
+                'id' => $this->getNativeId()
+            ]))->getCommandBag();
 
             $expected = $this->getExpectedCommand('delete-vertex-id');
 
@@ -38,25 +52,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("it deletes (D) a vertex explicitly using a constraint", function () {
-
-            $bag = new Bag();
-            $bag->delete = true;
-            $bag->where = [
-                [
-                    Bag::ELEMENT_TYPE,
-                    Bag::COMPARATOR_EQUAL, // convert to constant
-                    Bag::ELEMENT_VERTEX,
-                    Bag::CONJUNCTION_AND // convert to constant
-                ],
-                [
-                    'name',
-                    Bag::COMPARATOR_EQUAL, // convert to constant
-                    'marko',
-                    Bag::CONJUNCTION_AND // convert to constant
-                ]
-            ];
-            $bag->limit = 1;
-
+            $bag = (new DeleteVertexByConstraint())->getCommandBag();
             $expected = $this->getExpectedCommand('delete-vertex-one-constraint');
 
             $actual = $this->processor()->process($bag);
@@ -64,24 +60,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
 
 //        $this->specify("it deletes (D) edges by constraints", function () {
-//
-//            $bag = new Bag();
-//            $bag->delete = true;
-//            $bag->where = array_merge($this->getWheres(), [
-//                [
-//                    Bag::ELEMENT_LABEL,
-//                    Bag::COMPARATOR_EQUAL, // convert to constant
-//                    'label',
-//                    Bag::CONJUNCTION_AND // convert to constant
-//                ],
-//                [
-//                    Bag::ELEMENT_TYPE,
-//                    Bag::COMPARATOR_EQUAL, // convert to constant
-//                    Bag::ELEMENT_EDGE,
-//                    Bag::CONJUNCTION_AND // convert to constant
-//                ]
-//            ]);
-//
+//            $bag = (new DeleteVertexByConstraints())->getCommandBag();
 //            $expected = $this->getExpectedCommand('delete-edges');
 //
 //            $actual = $this->processor()->process($bag);
@@ -89,17 +68,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 //        });
 
         $this->specify("it deletes (D) vertices by default by complex constraints", function () {
-
-            $bag = new Bag();
-            $bag->delete = true;
-            $bag->where = array_merge($this->getWheres(), [[
-                Bag::ELEMENT_LABEL,
-                Bag::COMPARATOR_EQUAL, // convert to constant
-                'label',
-                Bag::CONJUNCTION_AND // convert to constant
-            ]]);
-            $bag->limit = 10;
-
+            $bag = (new DeleteVerticesByConstraints())->getCommandBag();
             $expected = $this->getExpectedCommand('delete-complex');
 
             $actual = $this->processor()->process($bag);
@@ -110,13 +79,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
     public function testSelect()
     {
         $this->specify("(R) by a single where constraint and no label", function () {
-            $bag = new Bag([
-                'retrieve' => [],
-                'where' => [
-                    ['name', Bag::COMPARATOR_EQUAL, "josh", Bag::CONJUNCTION_AND],
-                ],
-            ]);
-
+            $bag = (new RetrieveVertexBySingleConstraint())->getCommandBag();
             $expected = $this->getExpectedCommand('select-no-label-one-constraint');
 
             $actual = $this->processor()->process($bag);
@@ -124,19 +87,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("(R) by type and label", function () {
-            $bag = new Bag([
-                'retrieve' => [],
-                'where' => [
-                    [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
-                    [
-                        Bag::ELEMENT_LABEL,
-                        Bag::COMPARATOR_EQUAL, // convert to constant
-                        'target',
-                        Bag::CONJUNCTION_AND // convert to constant
-                    ]
-                ],
-            ]);
-
+            $bag = (new RetrieveVertexByLabel())->getCommandBag();
             $expected = $this->getExpectedCommand('select-simple');
 
             $actual = $this->processor()->process($bag);
@@ -144,19 +95,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("(R) EDGE by label, type, and single where", function () {
-            $bag = new Bag([
-                'retrieve' => [],
-                'where' => [
-                    [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_EDGE, Bag::CONJUNCTION_AND],
-                    [
-                        Bag::ELEMENT_LABEL,
-                        Bag::COMPARATOR_EQUAL, // convert to constant
-                        'target',
-                        Bag::CONJUNCTION_AND // convert to constant
-                    ]
-                ],
-            ]);
-
+            $bag = (new RetrieveEdgeByLabelAndSingleConstraint())->getCommandBag();
             $expected = $this->getExpectedCommand('select-simple-edge');
 
             $actual = $this->processor()->process($bag);
@@ -166,20 +105,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         // @todo do the same as above for both (requires traversals for neo
 
         $this->specify("(R) by label, type, and multiple wheres", function () {
-            $bag = new Bag([
-                'retrieve' => [],
-            ]);
-
-            $bag->where = array_merge($this->getWheres(), [
-                [
-                    Bag::ELEMENT_LABEL,
-                    Bag::COMPARATOR_EQUAL, // convert to constant
-                    'target',
-                    Bag::CONJUNCTION_AND // convert to constant
-                ],
-                [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
-            ]);
-
+            $bag = (new RetrieveVerticesByConstraints())->getCommandBag();
             $expected = $this->getExpectedCommand('select-constraints');
 
             $actual = $this->processor()->process($bag);
@@ -187,22 +113,8 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("(R) projections by label, type, and wheres - orders and limits", function () {
-            $bag = new Bag([
-                'retrieve' => ['field1', 'field2'],
-            ]);
 
-            $bag->where = array_merge($this->getWheres(), [
-                [
-                    Bag::ELEMENT_LABEL,
-                    Bag::COMPARATOR_EQUAL, // convert to constant
-                    'target',
-                    Bag::CONJUNCTION_AND // convert to constant
-                ],
-                [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
-            ]);
-            $bag->limit = 3;
-            $bag->orderBy = [['field1', Bag::ORDER_DESC]];
-
+            $bag = (new RetrieveComplexWithProjections())->getCommandBag();
             $expected = $this->getExpectedCommand('select-order-by');
 
             $actual = $this->processor()->process($bag);
@@ -210,22 +122,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("(R) by label, type, and wheres - groups and limits", function () {
-            $bag = new Bag([
-                'retrieve' => [],
-            ]);
-
-            $bag->where = array_merge($this->getWheres(), [
-                [
-                    Bag::ELEMENT_LABEL,
-                    Bag::COMPARATOR_EQUAL, // convert to constant
-                    'target',
-                    Bag::CONJUNCTION_AND // convert to constant
-                ],
-                [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
-            ]);
-            $bag->limit = 3;
-            $bag->groupBy = ['field1'];
-
+            $bag = (new RetrieveComplexGroup())->getCommandBag();
             $expected = $this->getExpectedCommand('select-group-by');
 
             $actual = $this->processor()->process($bag);
@@ -236,13 +133,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
     public function testInsert()
     {
         $this->specify("it inserts (C) a single vertex", function () {
-            $bag = new Bag();
-            $bag->create = [[
-                Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
-                Bag::ELEMENT_LABEL => 'person',
-                'name' => 'michael'
-            ]];
-
+            $bag = (new CreateSingleVertex())->getCommandBag();
             $expected = $this->getExpectedCommand('insert-simple');
 
             $actual = $this->processor()->process($bag);
@@ -250,24 +141,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("it inserts (C) multiple vertices", function () {
-            $bag = new Bag();
-            $bag->create = [
-                [
-                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
-                    Bag::ELEMENT_LABEL => 'person',
-                    'name' => 'michael'
-                ],
-                [
-                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
-                    Bag::ELEMENT_LABEL => 'target',
-                    'name' => 'dylan'
-                ],
-                [
-                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
-                    'name' => 'peter'
-                ],
-            ];
-
+            $bag = (new CreateVertices())->getCommandBag();
             $expected = $this->getExpectedCommand('insert-multiple');
 
             $actual = $this->processor()->process($bag);
@@ -279,27 +153,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
     public function testCreateEdges()
     {
         $this->specify("finds (R) two vertices and creates (C) an edge in between", function () {
-            $bag = new Bag([
-                'create' => [
-                    [
-                        Bag::ELEMENT_TYPE => Bag::ELEMENT_EDGE,
-                        Bag::ELEMENT_LABEL => 'knows',
-                        Bag::EDGE_INV => new Bag([
-                            'retrieve' => [],
-                            'where' => [
-                                ['name', Bag::COMPARATOR_EQUAL, "peter", Bag::CONJUNCTION_AND],
-                            ],
-                        ]),
-                        Bag::EDGE_OUTV => new Bag([
-                            'retrieve' => [],
-                            'where' => [
-                                ['name', Bag::COMPARATOR_EQUAL, "josh", Bag::CONJUNCTION_AND],
-                            ],
-                        ]),
-                    ],
-                ]
-            ]);
-
+            $bag = (new RetrieveTwoVerticesAndCreateEdge())->getCommandBag();
             $expected = $this->getExpectedCommand('find-two-vertices-and-create-edge');
 
             $actual = $this->processor()->process($bag);
@@ -307,37 +161,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("it creates (C) two vertices and creates (C) an edge in between (R)", function () {
-            $bag = new Bag([
-                'create' => [
-                    [
-                        Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
-                        Bag::ELEMENT_LABEL => 'person',
-                        'name' => 'michael'
-                    ],
-                    [
-                        Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
-                        Bag::ELEMENT_LABEL => 'person',
-                        'name' => 'dylan'
-                    ],
-                    [
-                        Bag::ELEMENT_TYPE => Bag::ELEMENT_EDGE,
-                        Bag::ELEMENT_LABEL => 'knows',
-                        Bag::EDGE_INV => new Bag([
-                            'retrieve' => [],
-                            'where' => [
-                                ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
-                            ],
-                        ]),
-                        Bag::EDGE_OUTV => new Bag([
-                            'retrieve' => [],
-                            'where' => [
-                                ['name', Bag::COMPARATOR_EQUAL, "dylan", Bag::CONJUNCTION_AND],
-                            ],
-                        ]),
-                    ],
-                ]
-            ]);
-
+            $bag = (new CreateVerticesAndEdge())->getCommandBag();
             $expected = $this->getExpectedCommand('create-two-vertices-and-create-edge');
 
             $actual = $this->processor()->process($bag);
@@ -348,15 +172,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
     public function testUpdate()
     {
         $this->specify("it updates (U) vertices by ID", function () {
-            $bag = new Bag();
-            $bag->update = $this->getData();
-            $bag->where = [[
-                Bag::ELEMENT_ID,
-                Bag::COMPARATOR_EQUAL, // convert to constant
-                'target_id',
-                Bag::CONJUNCTION_AND // convert to constant
-            ]];
-
+            $bag = (new UpdateVertexById(['id' => $this->getNativeId()]))->getCommandBag();
             $expected = $this->getExpectedCommand('update-simple');
 
             $actual = $this->processor()->process($bag);
@@ -364,17 +180,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("it updates (U) vertices by complex constraints", function () {
-
-            $bag = new Bag();
-            $bag->update = $this->getData();
-            $bag->where = array_merge($this->getWheres(), [[
-                Bag::ELEMENT_LABEL,
-                Bag::COMPARATOR_EQUAL, // convert to constant
-                'target',
-                Bag::CONJUNCTION_AND // convert to constant
-            ]]);
-            $bag->limit = 10;
-
+            $bag = (new UpdateVerticesByConstraints())->getCommandBag();
             $expected = $this->getExpectedCommand('update-complex');
 
             $actual = $this->processor()->process($bag);
@@ -382,37 +188,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("it creates (C) vertices and updates (U) them with data", function () {
-
-            $bag = new Bag();
-            $bag->create = [
-                [
-                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
-                    Bag::ELEMENT_LABEL => 'person',
-                    'name' => 'michael'
-                ],
-                [
-                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
-                    Bag::ELEMENT_LABEL => 'person',
-                    'name' => 'dylan'
-                ],
-            ];
-            $bag->update = $this->getData();
-            $bag->where = [
-                [
-                    Bag::ELEMENT_LABEL,
-                    Bag::COMPARATOR_EQUAL, // convert to constant
-                    'person',
-                    Bag::CONJUNCTION_AND // convert to constant
-                ],
-                [
-                    "name",
-                    Bag::COMPARATOR_EQUAL, // convert to constant
-                    'michael',
-                    Bag::CONJUNCTION_AND // convert to constant
-                ],
-            ];
-            $bag->limit = 15;
-
+            $bag = (new CreateVerticesAndupdate())->getCommandBag();
             $expected = $this->getExpectedCommand('create-and-update');
 
             $actual = $this->processor()->process($bag);
@@ -420,36 +196,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
 
         $this->specify("it creates (C) vertices and updates (U) using an embedded retrieve (R)", function () {
-            $bag = new Bag();
-            $bag->create = [
-                [
-                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
-                    Bag::ELEMENT_LABEL => 'person',
-                    'name' => 'michael'
-                ],
-                [
-                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
-                    Bag::ELEMENT_LABEL => 'person',
-                    'name' => 'dylan'
-                ],
-            ];
-            $bag->update = $this->getData();
-            $bag->where = [
-                [
-                    Bag::ELEMENT_LABEL,
-                    Bag::COMPARATOR_EQUAL, // convert to constant
-                    'person',
-                    Bag::CONJUNCTION_AND // convert to constant
-                ],
-                [
-                    "name",
-                    Bag::COMPARATOR_EQUAL, // convert to constant
-                    'michael',
-                    Bag::CONJUNCTION_AND // convert to constant
-                ],
-            ];
-            $bag->limit = 15;
-
+            $bag = (new CreateVerticesAndUpdateEmbedded())->getCommandBag();
             $expected = $this->getExpectedCommand('create-and-update');
 
             $actual = $this->processor()->process($bag);
@@ -457,45 +204,17 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
     }
 
-    public function testScenarios()
-    {
+//    public function testScenarios()
+//    {
 //        $this->specify(
 //            "it find (R) existing vertices and creates (C) an edge between them then updates (U) that edge", function () {
-//            $bag = new Bag();
-//            $bag->create = [
-//                [
-//                    Bag::ELEMENT_TYPE => Bag::ELEMENT_EDGE,
-//                    Bag::ELEMENT_LABEL => 'knows',
-//                    Bag::EDGE_INV => new Bag([
-//                        'retrieve' => [],
-//                        'where' => [
-//                            ['name', Bag::COMPARATOR_EQUAL, "peter", Bag::CONJUNCTION_AND],
-//                        ],
-//                    ]),
-//                    Bag::EDGE_OUTV => new Bag([
-//                        'retrieve' => [],
-//                        'where' => [
-//                            ['name', Bag::COMPARATOR_EQUAL, "josh", Bag::CONJUNCTION_AND],
-//                        ],
-//                    ]),
-//                ],
-//            ];
-//            $bag->update = $this->getData();
-//            $bag->where = [
-//                [
-//                    Bag::ELEMENT_ID,
-//                    Bag::COMPARATOR_EQUAL, // convert to constant
-//                    Bag::CREATED_ENTITIES,
-//                    Bag::CONJUNCTION_AND // convert to constant
-//                ]
-//            ];
-//
+//            $bag = (new RetrieveExistingVerticesCreateEdgeUpdateEdge())->getCommandBag();
 //            $expected = $this->getExpectedCommand('find-vertices-create-edge-update');
 //
 //            $actual = $this->processor()->process($bag);
 //            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
 //        });
-    }
+//    }
 
 
     /* Internals */
@@ -573,7 +292,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
      * Returns a command for the the Bag tested in
      * testSelect:it processes a select bag with here constraints
      */
-    abstract  public function selectConstraints();
+    abstract public function selectConstraints();
 
     /**
      * Returns a command for the the Bag tested in
@@ -586,4 +305,6 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
      * testSelect:it processes a complex order byselect bag
      */
     abstract public function selectOrderBy();
+
+    abstract public function getNativeId();
 }

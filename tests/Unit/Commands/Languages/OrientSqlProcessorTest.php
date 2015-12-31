@@ -53,7 +53,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
         /* ToDo: Update this to use UPDATE #12:0 format when an id is given */
         $query = $this->getBatchOpening();
         $query .= 'LET u1 = UPDATE V MERGE '.json_encode($this->getData());
-        $query .= ' RETURN AFTER WHERE @rid = target_id';
+        $query .= ' RETURN AFTER WHERE @rid = ' . $this->getNativeId();
         $query .= $this->getCommit();
         $query .= 'return $u1';
 
@@ -111,7 +111,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
     public function deleteVertexId()
     {
         $query = $this->getBatchOpening();
-        $query .= "LET d1 = DELETE VERTEX V WHERE @rid = target_id";
+        $query .= "LET d1 = DELETE VERTEX V WHERE @rid = ".$this->getNativeId();
         $query .= $this->getCommit();
         $query .= 'return $d1';
 
@@ -349,5 +349,10 @@ class OrientSqlProcessorTest extends BaseTestSuite
     protected function getCommit()
     {
         return "\ncommit retry 100\n";
+    }
+
+    public function getNativeId()
+    {
+        return "#12:3";
     }
 }
