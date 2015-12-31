@@ -13,8 +13,13 @@ use Spider\Exceptions\NotSupportedException;
  * OrientSQL implementation
  * @package Spider\Drivers\OrientDB
  */
-class CommandProcessor extends  AbstractOrientSqlProcessor
+class CommandProcessor extends AbstractProcessor implements ProcessorInterface
 {
+    public function __construct()
+    {
+        $this->batch = new SqlBatch();
+    }
+
     /**
      * Command Processor
      *
@@ -26,33 +31,9 @@ class CommandProcessor extends  AbstractOrientSqlProcessor
      * @param bool $embedded
      * @return Command
      */
-
-    /* This is a dummy process to return the results I want implicitly */
-//    public function process(Bag $bag)
-//    {
-//        if (count($bag->create) === 1) {
-////            $query = "begin\n";
-////            $query .= "let t1 = CREATE EDGE knows FROM (SELECT FROM V WHERE name = 'peter') TO (SELECT FROM V WHERE name ='josh')";
-////            $query .= "\ncommit retry 100\n";
-////            $query .= 'return $t1';
-////
-////            return $query;
-//            return $this->processInternal($bag);
-//        } else {
-//            $query = "begin\n";
-//            $query .= "let t1 = CREATE VERTEX person CONTENT {name: 'michael'}";
-//            $query .= "let t2 = CREATE VERTEX person CONTENT {name: 'dylan'}";
-//            $query .= "let t3 = CREATE EDGE knows FROM (SELECT FROM V WHERE name = 'michael') TO (SELECT FROM V WHERE name ='dylan')";
-//            $query .= "\ncommit retry 100\n";
-//            $query .= 'return $t1';
-//
-//            return $query;
-//        }
-//    }
-
     public function process(Bag $bag, $embedded = false)
     {
-
+        $this->batch->begin();
 
         /*
          * Order is important:
@@ -63,45 +44,42 @@ class CommandProcessor extends  AbstractOrientSqlProcessor
          */
 
         /* Decide Which Processor To Use Based On Scenarios */
-        //
-        if ($this->isSimpleSelect($bag)) {
-            $command = (new SimpleSelect())->process($bag);
-            return $this->ensureBatchScriptIfNeeded($embedded, $command);
+        if ($this->isSelecting($bag)) {
+            $statements = (new Select($this))->process($bag); // returns ARRAY of statements to be consistent with other Processors
+
+            if ($embedded && count($statements) === 1) {
+                return $statements[0];
+            }
+
+            $this->batch->addStatements($statements);
         }
 
-        if ($this->isSimpleCreate($bag)) {
-            $command = (new SimpleCreate())->process($bag);
-            return $this->ensureBatchScriptIfNeeded($embedded, $command);
+        if ($this->isCreating($bag)) {
+            $statements = (new Create($this))->process($bag); // returns ARRAY of statements to be consistent with other Processors
+
+            if ($embedded && count($statements) === 1) {
+                return $statements[0];
+            }
+
+            $this->batch->addStatements($statements);
         }
 
-        // A Simple Update Scenario
+        $this->batch->end();
+        return $this->createCommand($this->batch->getScript());
 
-        // A Simple Delete Scenario
+        // A Update Scenario
 
-        // Ensure the Command is an OrientBatch SQL Script
-
-        // We are left with a multiple operation scenario
-        return (new MultipleOperation())->process($bag);
+        // A Delete Scenario
     }
 
     /**
-     * @param $embedded
-     * @param $command
-     * @return mixed
+     * @param $script
+     * @return Command
      */
-    protected function ensureBatchScriptIfNeeded($embedded = false, Command $command)
+    protected function createCommand($script)
     {
-        if ($embedded) {
-            return $command;
-        }
-
-        $batchScript = new SqlBatch();
-        $batchScript->begin();
-        $batchScript->addStatement($command->getScript());
-        $batchScript->end();
-
-        $command->setScript($batchScript->getScript());
-
+        $command = new Command($script);
+        $command->setScriptLanguage('orientSQL');
         return $command;
     }
 
@@ -184,14 +162,5 @@ class CommandProcessor extends  AbstractOrientSqlProcessor
 //    {
 //        $this->addToScript("MERGE");
 //        $this->addToScript(json_encode($this->bag->data[0]));
-//    }
-//
-//    /**
-//     * Returns the desired command (select, update, insert, delete)
-//     * @return mixed
-//     */
-//    protected function getBagsCommand()
-//    {
-//        return $this->commandsMap[$this->bag->command];
 //    }
 }

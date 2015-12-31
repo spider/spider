@@ -3,6 +3,7 @@ namespace Spider\Commands\Languages\OrientSQL;
 use Spider\Commands\Bag;
 use Spider\Commands\Command;
 use Spider\Commands\Languages\AbstractProcessor;
+use Spider\Commands\Languages\ProcessorInterface;
 
 /**
  * Class AbstractOrientSqlProcessor
@@ -11,7 +12,6 @@ use Spider\Commands\Languages\AbstractProcessor;
 abstract class AbstractOrientSqlProcessor extends AbstractProcessor
 {
     protected $bag;
-    protected $script;
 
     /**
      * A map of operators from the Command Bag to Orient SQL
@@ -32,6 +32,13 @@ abstract class AbstractOrientSqlProcessor extends AbstractProcessor
         Bag::ORDER_ASC => 'ASC',
     ];
 
+    protected $processor;
+
+    public function __construct(CommandProcessor $processor)
+    {
+        $this->processor = $processor;
+    }
+
     /**
      * Initialize the Command Processor
      * @param Bag $bag
@@ -39,38 +46,42 @@ abstract class AbstractOrientSqlProcessor extends AbstractProcessor
     public function init(Bag $bag)
     {
         $this->bag = $bag;
-        $this->script = '';
     }
 
     /**
      * Begin the current script without a space
      * @param string $clause
+     * @return string
      */
-    public function startScript($clause)
+    public function startScript($clause, &$script)
     {
-        $this->script = $clause;
+        $script .= (string) $clause;
+        return $script;
     }
 
     /**
      * Add to the current script with a space before
      * @param $clause
+     * @return string
      * @throws \Exception
      */
-    public function addToScript($clause)
+    public function addToScript($clause, &$script)
     {
         if (!is_string($clause)) {
             throw new \Exception("Only strings can be added to script");
         }
 
-        $this->script .= " " . $clause;
+        $script .= " " . $clause;
+        return $script;
     }
 
     /**
      * Append target to current script
      * @param string $prefix
+     * @param $script
      * @throws \Exception
      */
-    protected function appendTarget($prefix = "from")
+    protected function appendTarget($prefix = "from", &$script)
     {
         // Set the Default
         $target = 'V';
@@ -85,9 +96,9 @@ abstract class AbstractOrientSqlProcessor extends AbstractProcessor
         }
 
         if ($prefix !== "") {
-            $this->addToScript(strtoupper($prefix)); // FROM
+            $this->addToScript(strtoupper($prefix), $script); // FROM
         }
-        $this->addToScript($target); // ID or Class
+        $this->addToScript($target, $script); // ID or Class
     }
 
     /**
@@ -119,14 +130,6 @@ abstract class AbstractOrientSqlProcessor extends AbstractProcessor
     public function toSqlOperator($operator)
     {
         return $this->operatorsMap[$operator];
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getScript()
-    {
-        return $this->script;
     }
 
     /**

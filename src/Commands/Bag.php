@@ -33,7 +33,8 @@ class Bag extends Object
 
     /**
      * @var array list of projections (fields affected)
-     * Null default to all fields (*)
+     * Null means we are not selecting anything
+     * Empty array defaults to all fields (*)
      *
      * @var null|array
      */

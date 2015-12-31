@@ -18,55 +18,6 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
     /* Begin Tests */
     /* Simple Tests */
-//    public function testInsert()
-//    {
-//        $this->specify("it processes a simple insert V bag", function () {
-//            $bag = new Bag();
-//            $bag->command = Bag::COMMAND_CREATE;
-//            $bag->target = Bag::ELEMENT_VERTEX;
-//            $bag->data = [$this->getData() + [Bag::ELEMENT_LABEL => 'target']];
-//
-//            $expected = $this->getExpectedCommand('insert-simple');
-//
-//            $actual = $this->processor()->process($bag);
-//            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
-//        });
-//
-//        $this->specify("it processes a multiple insert V bag", function () {
-//            $bag = new Bag();
-//            $bag->command = Bag::COMMAND_CREATE;
-//            $bag->target = Bag::ELEMENT_VERTEX;
-//
-//            /* ToDo: data is too rigid. See note in BaseTest */
-//            $bag->data = [
-//                [
-//                    'name' => 'mal',
-//                    'role' => 'captain',
-//                    'ship' => 'firefly',
-//                    Bag::ELEMENT_LABEL => 'target',
-//                ],
-//                [
-//                    'name' => 'zoe',
-//                    'role' => 'first',
-//                    'husband' => 'wash',
-//                    Bag::ELEMENT_LABEL => 'target',
-//                ],
-//                [
-//                    'name' => 'book',
-//                    'role' => 'shepherd',
-//                    'past' => 'unknown',
-//                    Bag::ELEMENT_LABEL => 'target',
-//                ]
-//            ];
-//
-//            $expected = $this->getExpectedCommand('insert-multiple');
-//
-//            $actual = $this->processor()->process($bag);
-//            $this->assertEquals($expected, $actual, 'failed to return expected Command for multiple insert');
-//        });
-//    }
-//
-//
 //    public function testUpdate()
 //    {
 //        $this->specify("it processes a simple update bag", function () {
@@ -276,6 +227,48 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
     }
 
+    public function testInsert()
+    {
+        $this->specify("it inserts (C) a single vertex", function () {
+            $bag = new Bag();
+            $bag->create = [[
+                Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                Bag::ELEMENT_LABEL => 'person',
+                'name' => 'michael'
+            ]];
+
+            $expected = $this->getExpectedCommand('insert-simple');
+
+            $actual = $this->processor()->process($bag);
+            $this->assertEquals($expected, $actual, 'failed to return expected Command for simple select bag');
+        });
+
+        $this->specify("it inserts (C) multiple vertices", function () {
+            $bag = new Bag();
+            $bag->create = [
+                [
+                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                    Bag::ELEMENT_LABEL => 'person',
+                    'name' => 'michael'
+                ],
+                [
+                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                    Bag::ELEMENT_LABEL => 'target',
+                    'name' => 'dylan'
+                ],
+                [
+                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                    'name' => 'peter'
+                ],
+            ];
+
+            $expected = $this->getExpectedCommand('insert-multiple');
+
+            $actual = $this->processor()->process($bag);
+            $this->assertEquals($expected, $actual, 'failed to return expected Command for multiple insert');
+        });
+    }
+
     /* Scenario Tests */
     public function testCreateEdges()
     {
@@ -346,11 +339,6 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
     }
 
-    /* Multiple CRUD scenarios */
-    abstract public function findTwoVerticesAndCreateEdge();
-
-    abstract public function createTwoVerticesAndCreateEdge();
-
     /* Internals */
     public function getExpectedCommand($alias)
     {
@@ -384,13 +372,13 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
     /* Methods to Implement */
     /** Returns a valid CommandProcessor */
-//    abstract public function processor();
+    abstract public function processor();
 
     /**
      * Returns a command for the the Bag tested in
      * testInsert:it processes a simple insert bag
      */
-//    abstract public function insertSimple();
+    abstract public function insertSimple();
 
     /**
      * Returns a command for the the Bag tested in
@@ -420,23 +408,23 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
      * Returns a command for the the Bag tested in
      * testSelect:it processes a simple select bag
      */
-//    abstract public function selectSimple();
+    abstract public function selectSimple();
 
     /**
      * Returns a command for the the Bag tested in
      * testSelect:it processes a select bag with here constraints
      */
-//    abstract  public function selectConstraints();
+    abstract  public function selectConstraints();
 
     /**
      * Returns a command for the the Bag tested in
      * testSelect:it processes a complex group by select bag
      */
-//    abstract public function selectGroupBy();
+    abstract public function selectGroupBy();
 
     /**
      * Returns a command for the the Bag tested in
      * testSelect:it processes a complex order byselect bag
      */
-//    abstract public function selectOrderBy();
+    abstract public function selectOrderBy();
 }

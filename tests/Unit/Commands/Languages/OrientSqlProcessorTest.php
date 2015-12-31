@@ -21,21 +21,11 @@ class OrientSqlProcessorTest extends BaseTestSuite
     public function insertSimple()
     {
         $query = $this->getBatchOpening();
-        $query .= 'INSERT INTO target';
+        $query .= 'LET t1 = CREATE VERTEX person CONTENT {"name":"michael"}';
+        $query .= $this->getCommit();
+        $query .= 'return $t1';
 
-        /* ToDo: insert data should be produced dynamically */
-        /* In order to produce this on the fly, we had to copy processor methods */
-        /* This seemed to defeat the purpose of testing those methods */
-        $query .= " (one, two, three) VALUES (1, 'two', false)";
-
-        $query .= ' RETURN @this';
-        $query .= $this->getBatchClosing();
-
-        $command = new Command($query);
-        $command->setScriptLanguage('orientSQL');
-        $expected = $command;
-
-        return $expected;
+        return new Command($query, 'orientSQL');
     }
 
     /**
@@ -45,89 +35,82 @@ class OrientSqlProcessorTest extends BaseTestSuite
     public function insertMultiple()
     {
         $query = $this->getBatchOpening();
-        $query .= "INSERT INTO target ";
-        $query .= "(name, role, ship, husband, past)";
-        $query .= " VALUES ";
-        $query .= "('mal', 'captain', 'firefly', null, null), ";
-        $query .= "('zoe', 'first', null, 'wash', null), ";
-        $query .= "('book', 'shepherd', null, null, 'unknown')";
-        $query .= " RETURN @this";
-        $query .= $this->getBatchClosing();
+        $query .= 'LET t1 = CREATE VERTEX person CONTENT {"name":"michael"}'."\n";
+        $query .= 'LET t2 = CREATE VERTEX target CONTENT {"name":"dylan"}'."\n";
+        $query .= 'LET t3 = CREATE VERTEX CONTENT {"name":"peter"}';
+        $query .= $this->getCommit();
+        $query .= 'return [$t1,$t2,$t3]';
 
-        $command = new Command($query);
-        $command->setScriptLanguage('orientSQL');
-        $expected = $command;
-
-        return $expected;
+        return new Command($query, 'orientSQL');
     }
 
     /**
      * Returns a command for the the Bag tested in
      * testUpdate:it processes a simple update bag
      */
-    public function updateSimple()
-    {
-        $query = $this->getBatchOpening();
-        $query .= 'UPDATE target_id';
-        $query .= ' MERGE ' . json_encode($this->getData());
-        $query .= ' RETURN AFTER';
-        $query .= $this->getBatchClosing();
-
-        $command = new Command($query);
-        $command->setScriptLanguage('orientSQL');
-        return $command;
-    }
+//    public function updateSimple()
+//    {
+//        $query = $this->getBatchOpening();
+//        $query .= 'UPDATE target_id';
+//        $query .= ' MERGE ' . json_encode($this->getData());
+//        $query .= ' RETURN AFTER';
+//        $query .= $this->getCommit();
+//
+//        $command = new Command($query);
+//        $command->setScriptLanguage('orientSQL');
+//        return $command;
+//    }
 
     /**
      * Returns a command for the the Bag tested in
      * testUpdate:it processes a complex update bag
      */
-    public function updateComplex()
-    {
-        $query = $this->getBatchOpening();
-        $query .= 'UPDATE target';
-        $query .= ' MERGE ' . json_encode($this->getData());
-        $query .= ' RETURN AFTER';
-        $query .= $this->getWhereSql();
-        $query .= ' LIMIT 10';
-        $query .= $this->getBatchClosing();
-
-        $command = new Command($query);
-        $command->setScriptLanguage('orientSQL');
-        return $command;
-    }
+//    public function updateComplex()
+//    {
+//        $query = $this->getBatchOpening();
+//        $query .= 'UPDATE target';
+//        $query .= ' MERGE ' . json_encode($this->getData());
+//        $query .= ' RETURN AFTER';
+//        $query .= $this->getWhereSql();
+//        $query .= ' LIMIT 10';
+//        $query .= $this->getCommit();
+//
+//        $command = new Command($query);
+//        $command->setScriptLanguage('orientSQL');
+//        return $command;
+//    }
 
     /**
      * Returns a command for the the Bag tested in
      * testDelete:it processes a simple delete bag
      */
-    public function deleteSimple()
-    {
-        $query = $this->getBatchOpening();
-        $query .= "DELETE VERTEX V WHERE @rid = 'target_id'";
-        $query .= $this->getBatchClosing();
-
-        $command = new Command($query);
-        $command->setScriptLanguage('orientSQL');
-        return $command;
-    }
+//    public function deleteSimple()
+//    {
+//        $query = $this->getBatchOpening();
+//        $query .= "DELETE VERTEX V WHERE @rid = 'target_id'";
+//        $query .= $this->getCommit();
+//
+//        $command = new Command($query);
+//        $command->setScriptLanguage('orientSQL');
+//        return $command;
+//    }
 
     /**
      * Returns a command for the the Bag tested in
      * testDelete:it processes a complex delete bag
      */
-    public function deleteComplex()
-    {
-        $query = $this->getBatchOpening();
-        $query .= 'DELETE VERTEX FROM target';
-        $query .= $this->getWhereSql();
-        $query .= ' LIMIT 10';
-        $query .= $this->getBatchClosing();
-
-        $command = new Command($query);
-        $command->setScriptLanguage('orientSQL');
-        return $command;
-    }
+//    public function deleteComplex()
+//    {
+//        $query = $this->getBatchOpening();
+//        $query .= 'DELETE VERTEX FROM target';
+//        $query .= $this->getWhereSql();
+//        $query .= ' LIMIT 10';
+//        $query .= $this->getCommit();
+//
+//        $command = new Command($query);
+//        $command->setScriptLanguage('orientSQL');
+//        return $command;
+//    }
 
     /**
      * Returns a command for the the Bag tested in
@@ -138,7 +121,8 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $query = $this->getBatchOpening();
         $query .= 'LET t1 = SELECT';
         $query .= ' FROM target';
-        $query .= $this->getBatchClosing();
+        $query .= $this->getCommit();
+        $query .= 'return $t1';
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -154,7 +138,8 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $query = $this->getBatchOpening();
         $query .= 'LET t1 = SELECT';
         $query .= ' FROM target';
-        $query .= $this->getBatchClosing();
+        $query .= $this->getCommit();
+        $query .= 'return $t1';
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -171,7 +156,8 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $query .= 'LET t1 = SELECT';
         $query .= ' FROM target';
         $query .= $this->getWhereSql();
-        $query .= $this->getBatchClosing();
+        $query .= $this->getCommit();
+        $query .= 'return $t1';
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -190,7 +176,8 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $query .= $this->getWhereSql();
         $query .= ' ORDER BY field1 DESC';
         $query .= ' LIMIT 3';
-        $query .= $this->getBatchClosing();
+        $query .= $this->getCommit();
+        $query .= 'return $t1';
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -209,7 +196,8 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $query .= $this->getWhereSql();
         $query .= ' GROUP BY field1';
         $query .= ' LIMIT 3';
-        $query .= $this->getBatchClosing();
+        $query .= $this->getCommit();
+        $query .= 'return $t1';
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -220,18 +208,21 @@ class OrientSqlProcessorTest extends BaseTestSuite
     {
         $query = $this->getBatchOpening();
         $query .= "LET t1 = SELECT FROM V WHERE name = 'josh'";
-        $query .= $this->getBatchClosing();
+        $query .= $this->getCommit();
+        $query .= 'return $t1';
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
         return $command;
     }
 
+    /* Scenarios */
     public function findTwoVerticesAndCreateEdge()
     {
         $query = $this->getBatchOpening();
         $query .= "LET t1 = CREATE EDGE knows FROM (SELECT FROM V WHERE name = 'josh') TO (SELECT FROM V WHERE name = 'peter')";
-        $query .= $this->getBatchClosing();
+        $query .= $this->getCommit();
+        $query .= 'return $t1';
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -241,10 +232,11 @@ class OrientSqlProcessorTest extends BaseTestSuite
     public function createTwoVerticesAndCreateEdge()
     {
         $query = $this->getBatchOpening();
-        $query .= "let t1 = CREATE VERTEX person CONTENT {name: 'michael'}";
-        $query .= "\nlet t2 = CREATE VERTEX person CONTENT {name: 'dylan'}";
-        $query .= "\nlet t3 = CREATE EDGE knows FROM (SELECT FROM V WHERE name = 'michael') TO (SELECT FROM V WHERE name ='dylan')";
-        $query .= $this->getBatchClosing();
+        $query .= 'LET t1 = CREATE VERTEX person CONTENT {"name":"michael"}'."\n";
+        $query .= 'LET t2 = CREATE VERTEX person CONTENT {"name":"dylan"}'."\n";
+        $query .= "LET t3 = CREATE EDGE knows FROM (SELECT FROM V WHERE name = 'dylan') TO (SELECT FROM V WHERE name = 'michael')";
+        $query .= $this->getCommit();
+        $query .= 'return [$t1,$t2,$t3]';
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -263,7 +255,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
 //            $query = $this->getBatchOpening();
 //            $query .= 'SELECT';
 //            $query .= ' FROM V';
-//            $query .= $this->getBatchClosing();
+//            $query .= $this->getCommit();
 //
 //            $expected = new Command($query);
 //            $expected->setScriptLanguage('orientSQL');
@@ -281,15 +273,11 @@ class OrientSqlProcessorTest extends BaseTestSuite
 
     protected function getBatchOpening()
     {
-        $opening = "begin\n";
-//        $opening .= "LET t1 = ";
-        return $opening;
+        return "begin\n";
     }
 
-    protected function getBatchClosing()
+    protected function getCommit()
     {
-        $closing = "\ncommit retry 100\n";
-        $closing .= 'return $t1';
-        return $closing;
+        return "\ncommit retry 100\n";
     }
 }

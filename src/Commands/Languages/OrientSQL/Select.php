@@ -1,15 +1,16 @@
 <?php
 namespace Spider\Commands\Languages\OrientSQL;
 use Spider\Commands\Bag;
-use Spider\Commands\Command;
 use Spider\Exceptions\NotSupportedException;
 
 /**
  * Class SimpleSelect
  * @package Spider\Commands\Languages\OrientSQL
  */
-class SimpleSelect extends AbstractOrientSqlProcessor
+class Select extends AbstractOrientSqlProcessor
 {
+    protected $script = '';
+
     /**
      * Command Processor
      *
@@ -18,7 +19,7 @@ class SimpleSelect extends AbstractOrientSqlProcessor
      * script for whichever driver is specified
      *
      * @param \Spider\Commands\Bag $bag
-     * @return \Spider\Commands\Command
+     * @return array
      */
     public function process(Bag $bag)
     {
@@ -27,8 +28,7 @@ class SimpleSelect extends AbstractOrientSqlProcessor
 
         $this->processSelect();
 
-        // Create Command
-        return $this->createCommand($this->getScript());
+        return [$this->getScript()]; //$this->createCommand($this->getScript());
     }
 
     /**
@@ -38,13 +38,13 @@ class SimpleSelect extends AbstractOrientSqlProcessor
     public function processSelect()
     {
         /* SELECT */
-        $this->startScript("SELECT");
+        $this->startScript("SELECT", $this->script);
 
         /* name, username */
         $this->appendProjections();
 
         /* FROM Users */
-        $this->appendTarget("from");
+        $this->appendTarget("from", $this->script);
 
         /* WHERE last_name = 'wilson' */
         $this->appendWheres();
@@ -66,7 +66,7 @@ class SimpleSelect extends AbstractOrientSqlProcessor
     protected function appendProjections()
     {
         if (!empty($this->bag->retrieve)) {
-            $this->addToScript(implode(", ", $this->bag->retrieve));
+            $this->addToScript(implode(", ", $this->bag->retrieve), $this->script);
         }
     }
 
@@ -93,8 +93,8 @@ class SimpleSelect extends AbstractOrientSqlProcessor
         }
 
         if ($wheres !== '') {
-            $this->addToScript("WHERE");
-            $this->addToScript(ltrim($wheres));
+            $this->addToScript("WHERE", $this->script);
+            $this->addToScript(ltrim($wheres), $this->script);
         }
     }
 
@@ -111,8 +111,8 @@ class SimpleSelect extends AbstractOrientSqlProcessor
                 throw new NotSupportedException("Orient DB only allows one field in Group By");
             }
 
-            $this->addToScript("GROUP BY");
-            $this->addToScript(implode(",", $this->bag->groupBy));
+            $this->addToScript("GROUP BY", $this->script);
+            $this->addToScript(implode(",", $this->bag->groupBy), $this->script);
         }
     }
 
@@ -124,14 +124,14 @@ class SimpleSelect extends AbstractOrientSqlProcessor
     protected function appendOrderBy()
     {
         if (is_array($this->bag->orderBy)) {
-            $this->addToScript("ORDER BY");
+            $this->addToScript("ORDER BY", $this->script);
 
             $orders = [];
             foreach ($this->bag->orderBy as $field) {
                 $orders[] = "$field[0] " . $this->toSqlOperator($field[1]);
             }
 
-            $this->addToScript(implode(", ", $orders));
+            $this->addToScript(implode(", ", $orders), $this->script);
         }
     }
 
@@ -142,7 +142,15 @@ class SimpleSelect extends AbstractOrientSqlProcessor
     protected function appendLimit()
     {
         if ($this->bag->limit) {
-            $this->addToScript("LIMIT " . (string)$this->bag->limit);
+            $this->addToScript("LIMIT " . (string)$this->bag->limit, $this->script);
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getScript()
+    {
+        return $this->script;
     }
 }

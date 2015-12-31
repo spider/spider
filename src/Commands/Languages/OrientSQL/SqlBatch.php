@@ -49,6 +49,17 @@ class SqlBatch
     }
 
     /**
+     * Add a new statement/operation to the batch
+     * @param array $statements
+     */
+    public function addStatements(array $statements)
+    {
+        foreach ($statements as $statement) {
+            $this->addStatement($statement);
+        }
+    }
+
+    /**
      * Increment transaction variables
      * @return string
      */
