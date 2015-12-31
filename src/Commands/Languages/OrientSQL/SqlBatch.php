@@ -8,10 +8,16 @@ namespace Spider\Commands\Languages\OrientSQL;
 class SqlBatch
 {
     /** @var array Batch variables */
-    protected $transactionVariables;
+    public $transactionVariables;
 
     /** @var  string Working batch script */
     protected $script;
+
+    const SELECT_STATEMENT = 100;
+    const UPDATE_STATEMENT = 200;
+    const CREATE_STATEMENT = 300;
+    const DELETE_STATEMENT = 400;
+    protected $variableIndex = 0;
 
     /**
      * Returns current script
@@ -43,20 +49,39 @@ class SqlBatch
      * Add a new statement/operation to the batch
      * @param $statement
      */
-    public function addStatement($statement)
+    public function addStatement($statement, $type)
     {
-        $this->script .= 'LET ' . $this->incrementVariables() . ' = ' . $statement . "\n";
+        $this->script .= 'LET ' . $this->incrementVariables($type) . ' = ' . $statement . "\n";
+    }
+
+    /**
+     * Add a new statement/operation to the batch
+     * @param array $statements
+     */
+    public function addStatements(array $statements, $type)
+    {
+        foreach ($statements as $statement) {
+            $this->addStatement($statement, $type);
+        }
     }
 
     /**
      * Increment transaction variables
+     * @param $type
      * @return string
      */
-    protected function incrementVariables()
+    protected function incrementVariables($type)
     {
-        $newIndex = count($this->transactionVariables) + 1;
-        $this->transactionVariables[] = "t" . (string)$newIndex;
-        return 't' . (string)$newIndex;
+        $typePrefixes = [
+            static::SELECT_STATEMENT => 's',
+            static::CREATE_STATEMENT => 'c',
+            static::DELETE_STATEMENT => 'd',
+            static::UPDATE_STATEMENT => 'u',
+        ];
+
+        $this->variableIndex++;
+        $this->transactionVariables[$type][] = $typePrefixes[$type] . (string)$this->variableIndex;
+        return $typePrefixes[$type] . (string)$this->variableIndex;
     }
 
     /**
@@ -65,14 +90,19 @@ class SqlBatch
      */
     protected function getVariables()
     {
-        $this->transactionVariables = array_map(function ($value) {
-            return '$' . $value;
-        }, $this->transactionVariables);
+        $allVariables = [];
+        foreach ($this->transactionVariables as $type) {
+            $allVariables = $allVariables + $type;
+        }
 
-        $variables = implode(",", $this->transactionVariables);
+        $allVariables = array_map(function ($value) {
+            return '$' . $value;
+        }, $allVariables);
+
+        $variables = implode(",", $allVariables);
 
         /* @todo Clearer and more programmatic way to decide what to return */
-        if (count($this->transactionVariables) > 1) {
+        if (count($allVariables) > 1) {
             return '[' . $variables . ']';
         }
 

@@ -33,7 +33,8 @@ class Bag extends Object
 
     /**
      * @var array list of projections (fields affected)
-     * Null default to all fields (*)
+     * Null means we are not selecting anything
+     * Empty array defaults to all fields (*)
      *
      * @var null|array
      */
@@ -118,6 +119,10 @@ class Bag extends Object
     const EDGE_INV = 550;
     const EDGE_OUTV = 560;
 
+    /* Internal Pointers */
+    const CREATED_ENTITIES = 600; // [ELEMENT_ID, =, CREATED_ENTITIES, AND]
+    const EMBEDDED_QUERY = 610; // [EMBEDDED_QUERY, =, Bag, AND]
+
     /* Bag dependencies */
     protected $validator;
 
@@ -156,14 +161,15 @@ class Bag extends Object
     protected function setupValidator(array $rules = null)
     {
         /* Setup the basic Bag Validation Rules */
-        // 1. The Bag MUST contain at least a create, retrieve, or update operation
+        // 1. The Bag MUST contain at least a create, retrieve, update, or update operation
         $this->validator->addRule(function ($input) {
            if (
                is_null($input->create)
                && is_null($input->retrieve)
                && is_null($input->update)
+               && $input->delete === false
            ) {
-               return ['The Command Bag must perform at least one operation - create, retrieve, or update'];
+               return ['The Command Bag must perform at least one operation - create, retrieve, delete, or update'];
            }
 
             return true;

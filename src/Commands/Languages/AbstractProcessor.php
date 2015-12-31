@@ -6,7 +6,7 @@ use Spider\Commands\Bag;
  * Class AbstractProcessor
  * @package Spider\Commands\Languages
  */
-abstract class AbstractProcessor implements ProcessorInterface
+abstract class AbstractProcessor
 {
     public function validateBag(Bag $bag = null)
     {
@@ -20,29 +20,42 @@ abstract class AbstractProcessor implements ProcessorInterface
     }
 
     /**
+     * Is this bag retrieving data
      * @param Bag $bag
      * @return bool
      */
-    protected function isSimpleSelect(Bag $bag)
+    protected function isSelecting(Bag $bag)
     {
-        return empty($bag->create) && empty($bag->update) && !$bag->delete;
+        return (!is_null($bag->retrieve));
     }
 
     /**
-     * A Bag is a simple CREATE if it does not contain any other Bags
+     * Is this bag creating records
      * @param Bag $bag
      * @return bool
      */
-    protected function isSimpleCreate(Bag $bag)
+    protected function isCreating(Bag $bag)
     {
-        foreach ($bag->create as $single) {
-            foreach ($single as $value) {
-                if ($value instanceof Bag) {
-                    return false;
-                }
-            }
-        }
+        return (!empty($bag->create));
+    }
 
-        return true;
+    /**
+     * Is this bag creating records
+     * @param Bag $bag
+     * @return bool
+     */
+    protected function isUpdating(Bag $bag)
+    {
+        return (!empty($bag->update) && !empty($bag->where));
+    }
+
+    /**
+     * Is this bag creating records
+     * @param Bag $bag
+     * @return bool
+     */
+    protected function isDeleting(Bag $bag)
+    {
+        return boolval($bag->delete);
     }
 }
