@@ -42,20 +42,16 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Add a `select` clause to the current Command Bag
+     * Add a `insert` clause to the current Command Bag
      *
      * Alias of retrieve
      *
      * @param array|null $data
      * @return Builder
      */
+    /* ToDo: Figure out API Builder sugar for inserting records */
     public function insert(array $data = null)
     {
-        //case of single entry, and case of multiple entries
-        if (!is_array($data) || !isset($data[0]) || !is_array($data[0])) {
-            //single entry situation.
-            $data = [$data];
-        }
         return $this->internalCreate($data);
     }
 
