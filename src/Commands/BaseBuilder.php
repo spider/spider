@@ -42,7 +42,17 @@ class BaseBuilder
      */
     public function internalCreate(array $data)
     {
-        $this->addToBag('create', $data);
+        $this->initializeProperty('create');
+
+        // Is this a multiple record creation?
+        if (isset($data[0])) {
+            foreach($data as $record) {
+                $this->appendToBag('create', $record);
+            }
+        } else {
+            $this->appendToBag('create', $data);
+        }
+
         return $this;
     }
 
@@ -75,7 +85,8 @@ class BaseBuilder
      */
     public function internalUpdate($properties = null)
     {
-        $this->addToBag('update', $properties);
+        $this->initializeProperty('update');
+        $this->addToBag('update', array_merge($this->bag->update, $properties));
         return $this;
     }
 
@@ -303,5 +314,27 @@ class BaseBuilder
     protected function addToBag($property, $value)
     {
         $this->bag->$property = $value;
+    }
+
+    /**
+     * Adds a clause to the current Command Bag
+     * @param $property
+     * @param $value
+     */
+    protected function appendToBag($property, $value)
+    {
+        array_push($this->bag->$property, $value);
+    }
+
+    /**
+     * Initializes the Bag Property if necessary
+     * @param $property
+     * @param array $value
+     */
+    protected function initializeProperty($property, $value = null)
+    {
+        if (is_null($this->bag->$property)) {
+            $this->bag->$property = (is_null($value)) ? [] : $value;
+        }
     }
 }
