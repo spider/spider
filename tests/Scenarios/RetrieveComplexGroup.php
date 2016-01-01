@@ -15,7 +15,7 @@ class RetrieveComplexGroup extends AbstractScenario
             'retrieve' => [],
         ]);
 
-        $bag->where = array_merge($this->getWheres(), [
+        $bag->where = array_merge(static::getWheres(), [
             [
                 Bag::ELEMENT_LABEL,
                 Bag::COMPARATOR_EQUAL, // convert to constant

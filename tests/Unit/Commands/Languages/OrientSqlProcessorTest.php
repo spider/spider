@@ -2,23 +2,32 @@
 namespace Spider\Test\Unit\Commands\Languages;
 
 use Codeception\Specify;
-use Spider\Commands\Bag;
 use Spider\Commands\Command;
 use Spider\Commands\Languages\OrientSQL\CommandProcessor;
 
 class OrientSqlProcessorTest extends BaseTestSuite
 {
     /* Implemented Methods */
+    /**
+     * Returns a valid CommandProcessor
+     * @return \Spider\Commands\Languages\ProcessorInterface
+     */
     public function processor()
     {
         return new CommandProcessor();
     }
 
+    /** Returns a Valid ID formatted as the language requires */
+    public function getNativeId()
+    {
+        return "#12:3";
+    }
+
     /**
-     * Returns a command for the the Bag tested in
-     * testInsert:it processes a simple insert bag
+     * Returns a valid Command for the `CreateSingleVertex` Scenario
+     * @return \Spider\Commands\Command
      */
-    public function insertSimple()
+    public function getCreateSingleVertexCommand()
     {
         $query = $this->getBatchOpening();
         $query .= 'LET c1 = CREATE VERTEX person CONTENT {"name":"michael"}';
@@ -29,10 +38,10 @@ class OrientSqlProcessorTest extends BaseTestSuite
     }
 
     /**
-     * Returns a command for the the Bag tested in
-     * testInsert:it processes a simple insert bag
+     * Returns a valid Command for the `CreateVertices` Scenario
+     * @return \Spider\Commands\Command
      */
-    public function insertMultiple()
+    public function getCreateVerticesCommand()
     {
         $query = $this->getBatchOpening();
         $query .= 'LET c1 = CREATE VERTEX person CONTENT {"name":"michael"}'."\n";
@@ -45,12 +54,11 @@ class OrientSqlProcessorTest extends BaseTestSuite
     }
 
     /**
-     * Returns a command for the the Bag tested in
-     * testUpdate:it processes a simple update bag
+     * Returns a valid Command for the `UpdateVertexById` Scenario
+     * @return \Spider\Commands\Command
      */
-    public function updateSimple()
+    public function getUpdateVertexByIdCommand()
     {
-        /* ToDo: Update this to use UPDATE #12:0 format when an id is given */
         $query = $this->getBatchOpening();
         $query .= 'LET u1 = UPDATE V MERGE '.json_encode($this->getData());
         $query .= ' RETURN AFTER WHERE @rid = ' . $this->getNativeId();
@@ -63,10 +71,10 @@ class OrientSqlProcessorTest extends BaseTestSuite
     }
 
     /**
-     * Returns a command for the the Bag tested in
-     * testUpdate:it processes a complex update bag
+     * Returns a valid Command for the `UpdateVerticesByConstraints` Scenario
+     * @return \Spider\Commands\Command
      */
-    public function updateComplex()
+    public function getUpdateVerticesByConstraintsCommand()
     {
         $query = $this->getBatchOpening();
         $query .= 'LET u1 = UPDATE target';
@@ -83,10 +91,10 @@ class OrientSqlProcessorTest extends BaseTestSuite
     }
 
     /**
-     * Returns a command for the the Bag tested in
-     * testUpdate:it processes a complex update bag
+     * Returns a valid Command for the `CreateVerticesAndUpdate` Scenario
+     * @return \Spider\Commands\Command
      */
-    public function createAndUpdate()
+    public function getCreateVerticesAndUpdateCommand()
     {
         $query = $this->getBatchOpening();
         $query .= 'LET c1 = CREATE VERTEX person CONTENT {"name":"michael"}'."\n";
@@ -105,10 +113,19 @@ class OrientSqlProcessorTest extends BaseTestSuite
     }
 
     /**
-     * Returns a command for the the Bag tested in
-     * testDelete:it processes a simple delete bag
+     * Returns a valid Command for the `CreateVerticesAndUpdateEmbedded` Scenario
+     * @return \Spider\Commands\Command
      */
-    public function deleteVertexId()
+    public function getCreateVerticesAndUpdateEmbeddedCommand()
+    {
+        return $this->getCreateVerticesAndupdateCommand();
+    }
+
+    /**
+     * Returns a valid Command for the `DeleteVertexById` Scenario
+     * @return \Spider\Commands\Command
+     */
+    public function getDeleteVertexByIdCommand()
     {
         $query = $this->getBatchOpening();
         $query .= "LET d1 = DELETE VERTEX V WHERE @rid = ".$this->getNativeId();
@@ -121,13 +138,31 @@ class OrientSqlProcessorTest extends BaseTestSuite
     }
 
     /**
-     * Returns a command for the the Bag tested in
-     * testDelete:it processes a simple delete bag
+     * Returns a valid Command for the `DeleteVertexByConstraint` Scenario
+     * @return \Spider\Commands\Command
      */
-    public function deleteVertexOneConstraint()
+    public function getDeleteVertexByConstraintCommand()
     {
         $query = $this->getBatchOpening();
         $query .= "LET d1 = DELETE VERTEX V WHERE name = 'marko' LIMIT 1";
+        $query .= $this->getCommit();
+        $query .= 'return $d1';
+
+        $command = new Command($query);
+        $command->setScriptLanguage('orientSQL');
+        return $command;
+    }
+
+    /**
+     * Returns a valid Command for the `DeleteVerticesByConstraints` Scenario
+     * @return \Spider\Commands\Command
+     */
+    public function getDeleteVerticesByConstraintsCommand()
+    {
+        $query = $this->getBatchOpening();
+        $query .= 'LET d1 = DELETE VERTEX label';
+        $query .= $this->getWhereSql();
+        $query .= ' LIMIT 10';
         $query .= $this->getCommit();
         $query .= 'return $d1';
 
@@ -153,27 +188,9 @@ class OrientSqlProcessorTest extends BaseTestSuite
 
     /**
      * Returns a command for the the Bag tested in
-     * testDelete:it processes a complex delete bag
-     */
-    public function deleteComplex()
-    {
-        $query = $this->getBatchOpening();
-        $query .= 'LET d1 = DELETE VERTEX label';
-        $query .= $this->getWhereSql();
-        $query .= ' LIMIT 10';
-        $query .= $this->getCommit();
-        $query .= 'return $d1';
-
-        $command = new Command($query);
-        $command->setScriptLanguage('orientSQL');
-        return $command;
-    }
-
-    /**
-     * Returns a command for the the Bag tested in
      * testSelect:it processes a simple select bag
      */
-    public function selectSimple()
+    public function getRetrieveVertexByLabelCommand()
     {
         $query = $this->getBatchOpening();
         $query .= 'LET s1 = SELECT';
@@ -190,7 +207,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
      * Returns a command for the the Bag tested in
      * testSelect:it processes a simple select bag for edges
      */
-    public function selectSimpleEdge()
+    public function getRetrieveEdgeByLabelAndSingleConstraintCommand()
     {
         $query = $this->getBatchOpening();
         $query .= 'LET s1 = SELECT';
@@ -207,7 +224,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
      * Returns a command for the the Bag tested in
      * testSelect:it processes a select bag with here constraints
      */
-    public function selectConstraints()
+    public function getRetrieveVerticesByConstraintsCommand()
     {
         $query = $this->getBatchOpening();
         $query .= 'LET s1 = SELECT';
@@ -225,7 +242,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
      * Returns a command for the the Bag tested in
      * testSelect:it processes a complex select bag
      */
-    public function selectOrderBy()
+    public function getRetrieveComplexWithProjectionsCommand()
     {
         $query = $this->getBatchOpening();
         $query .= 'LET s1 = SELECT field1, field2';
@@ -245,7 +262,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
      * Returns a command for the the Bag tested in
      * testSelect:it processes a complex select bag
      */
-    public function selectGroupBy()
+    public function getRetrieveComplexGroupCommand()
     {
         $query = $this->getBatchOpening();
         $query .= 'LET s1 = SELECT';
@@ -261,7 +278,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
         return $command;
     }
 
-    public function selectNoLabelOneConstraint()
+    public function getRetrieveVertexBySingleConstraintCommand()
     {
         $query = $this->getBatchOpening();
         $query .= "LET s1 = SELECT FROM V WHERE name = 'josh'";
@@ -274,7 +291,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
     }
 
     /* Scenarios */
-    public function findTwoVerticesAndCreateEdge()
+    public function getRetrieveTwoVerticesAndCreateEdgeCommand()
     {
         $query = $this->getBatchOpening();
         $query .= "LET c1 = CREATE EDGE knows FROM (SELECT FROM V WHERE name = 'josh') TO (SELECT FROM V WHERE name = 'peter')";
@@ -286,7 +303,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
         return $command;
     }
 
-    public function createTwoVerticesAndCreateEdge()
+    public function getCreateVerticesAndEdgeCommand()
     {
         $query = $this->getBatchOpening();
         $query .= 'LET c1 = CREATE VERTEX person CONTENT {"name":"michael"}'."\n";
@@ -300,7 +317,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
         return $command;
     }
 
-    public function findVerticesCreateEdgeUpdate()
+    public function getRetrieveExistingVerticesCreateEdgeUpdateEdgeCommand()
     {
         $query = $this->getBatchOpening();
         $query .= 'LET c1 = CREATE EDGE knows FROM (SELECT FROM V WHERE name = \'josh\') TO (SELECT FROM V WHERE name = \'peter\')'."\n";
@@ -311,6 +328,15 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
         return $command;
+    }
+
+    /**
+     * Returns a valid Command for the `DeleteEdgesByConstraints` Scenario
+     * @return \Spider\Commands\Command
+     */
+    public function getDeleteEdgesByConstraintsCommand()
+    {
+        // TODO: Implement getDeleteEdgesByConstraintsCommand() method.
     }
 
     /* Orient Specific Tests */
@@ -349,10 +375,5 @@ class OrientSqlProcessorTest extends BaseTestSuite
     protected function getCommit()
     {
         return "\ncommit retry 100\n";
-    }
-
-    public function getNativeId()
-    {
-        return "#12:3";
     }
 }

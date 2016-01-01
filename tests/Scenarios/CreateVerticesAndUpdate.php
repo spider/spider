@@ -6,7 +6,7 @@ use Spider\Commands\Bag;
  * Class DeleteVertexById
  * @package Spider\Test\Unit\Commands\Languages
  */
-class CreateVerticesAndupdate extends AbstractScenario
+class CreateVerticesAndUpdate extends AbstractScenario
 {
     protected static $description ='it creates (C) vertices and updates (U) them with data';
     protected function buildBag(array $options = null)
@@ -24,7 +24,7 @@ class CreateVerticesAndupdate extends AbstractScenario
                 'name' => 'dylan'
             ],
         ];
-        $bag->update = $this->getData();
+        $bag->update = static::getData();
         $bag->where = [
             [
                 Bag::ELEMENT_LABEL,

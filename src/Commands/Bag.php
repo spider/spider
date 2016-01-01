@@ -124,7 +124,7 @@ class Bag extends Object
     const EMBEDDED_QUERY = 610; // [EMBEDDED_QUERY, =, Bag, AND]
 
     /* Bag dependencies */
-    protected $validator;
+    private $validator;
 
     /**
      * Bag constructor.

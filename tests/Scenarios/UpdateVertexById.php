@@ -14,7 +14,7 @@ class UpdateVertexById extends AbstractScenario
         $this->ensureHasId($options);
 
         $bag = new Bag();
-        $bag->update = $this->getData();
+        $bag->update = static::getData();
         $bag->where = [[
             Bag::ELEMENT_ID,
             Bag::COMPARATOR_EQUAL, // convert to constant

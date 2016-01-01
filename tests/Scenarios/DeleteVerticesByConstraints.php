@@ -15,7 +15,7 @@ class DeleteVerticesByConstraints extends AbstractScenario
     {
         $bag = new Bag();
         $bag->delete = true;
-        $bag->where = array_merge($this->getWheres(), [[
+        $bag->where = array_merge(static::getWheres(), [[
             Bag::ELEMENT_LABEL,
             Bag::COMPARATOR_EQUAL, // convert to constant
             'label',

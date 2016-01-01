@@ -16,7 +16,7 @@ class RetrieveComplexWithProjections extends AbstractScenario
         $bag = new Bag([
             'retrieve' => ['field1', 'field2'],
         ]);
-        $bag->where = array_merge($this->getWheres(), [
+        $bag->where = array_merge(static::getWheres(), [
             [
                 Bag::ELEMENT_LABEL,
                 Bag::COMPARATOR_EQUAL, // convert to constant

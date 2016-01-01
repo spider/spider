@@ -31,7 +31,7 @@ class RetrieveExistingVerticesCreateEdgeUpdateEdge extends AbstractScenario
                 ]),
             ],
         ];
-        $bag->update = $this->getData();
+        $bag->update = static::getData();
         $bag->where = [
             [
                 Bag::ELEMENT_ID,

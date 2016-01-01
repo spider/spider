@@ -12,8 +12,8 @@ class UpdateVerticesByConstraints extends AbstractScenario
     protected function buildBag(array $options = null)
     {
         $bag = new Bag();
-        $bag->update = $this->getData();
-        $bag->where = array_merge($this->getWheres(), [[
+        $bag->update = static::getData();
+        $bag->where = array_merge(static::getWheres(), [[
             Bag::ELEMENT_LABEL,
             Bag::COMPARATOR_EQUAL, // convert to constant
             'target',

@@ -26,7 +26,7 @@ class CreateVerticesAndUpdateEmbedded extends AbstractScenario
                 'name' => 'dylan'
             ],
         ];
-        $bag->update = $this->getData();
+        $bag->update = static::getData();
         $bag->where = [
             [
                 Bag::ELEMENT_LABEL,
