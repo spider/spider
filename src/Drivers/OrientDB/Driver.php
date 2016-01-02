@@ -354,11 +354,19 @@ class Driver extends AbstractDriver implements DriverInterface
         }
 
         // For multiple records, map each to a Record
-        array_walk($response, function (&$orientRecord) {
-            $orientRecord = $this->mapOrientRecordToCollection($orientRecord);
-        });
+        // @todo: Why do some cases add an extra record to the beginning with an rid or #-1:-1
+        $mappedResponse = [];
+        foreach ($response as $orientRecord) {
+            if ((string)$orientRecord->getRid() !== "#-1:-1") {
+                $mappedResponse[] = $this->mapOrientRecordToCollection($orientRecord);
+            }
+        }
 
-        return $response;
+//        array_walk($response, function (&$orientRecord) {
+//            $orientRecord = $this->mapOrientRecordToCollection($orientRecord);
+//        });
+
+        return $mappedResponse;
     }
 
     /**

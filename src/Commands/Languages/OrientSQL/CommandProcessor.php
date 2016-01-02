@@ -85,8 +85,10 @@ class CommandProcessor extends AbstractProcessor implements ProcessorInterface
         }
 
         $this->batch->end();
-        return $this->createCommand($this->batch->getScript());
+        $script = $this->batch->getScript();
+        $this->batch = new SqlBatch();
 
+        return $this->createCommand($script);
         // A Update Scenario
 
         // A Delete Scenario

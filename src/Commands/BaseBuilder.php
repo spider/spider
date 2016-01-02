@@ -86,7 +86,11 @@ class BaseBuilder
     public function internalUpdate($properties = null)
     {
         $this->initializeProperty('update');
-        $this->addToBag('update', array_merge($this->bag->update, $properties));
+
+        if (!is_null($properties)) {
+            $this->addToBag('update', array_merge($this->bag->update, $properties));
+        }
+
         return $this;
     }
 

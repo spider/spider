@@ -180,7 +180,7 @@ class Bag extends Object
             if ($input->create) { // We are creating things
                 $passing = [];
                 foreach ($input->create as $record) {
-                    if ($record[Bag::ELEMENT_TYPE] === Bag::ELEMENT_EDGE) { // We are creating edges
+                    if (isset($record[Bag::ELEMENT_TYPE]) && $record[Bag::ELEMENT_TYPE] === Bag::ELEMENT_EDGE) { // We are creating edges
                         $passing[] = isset($record[Bag::EDGE_INV]);
                         $passing[] = isset($record[Bag::EDGE_OUTV]);
                     }

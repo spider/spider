@@ -35,7 +35,7 @@ class Select extends AbstractOrientSqlProcessor
      * Process a COMMAND_RETRIEVE bag
      * @throws NotSupportedException
      */
-    public function processSelect()
+    protected function processSelect()
     {
         /* SELECT */
         $this->startScript("SELECT", $this->script);
@@ -110,7 +110,7 @@ class Select extends AbstractOrientSqlProcessor
     /**
      * @return mixed
      */
-    public function getScript()
+    protected function getScript()
     {
         return $this->script;
     }

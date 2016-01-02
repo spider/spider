@@ -46,7 +46,7 @@ class Create extends AbstractOrientSqlProcessor
      * @return mixed
      * @throws \Exception
      */
-    public function createEdge(array $record)
+    protected function createEdge(array $record)
     {
         /* CREATE VERTEX */
         $script = '';
@@ -72,7 +72,7 @@ class Create extends AbstractOrientSqlProcessor
      * @return mixed
      * @throws \Exception
      */
-    public function createVertex(array $record)
+    protected function createVertex(array $record)
     {
         /* CREATE VERTEX */
         $script = '';
@@ -88,7 +88,7 @@ class Create extends AbstractOrientSqlProcessor
         return $script;
     }
 
-    public function appendOUTV(array $record, &$script)
+    protected function appendOUTV(array $record, &$script)
     {
         $this->addToScript("FROM", $script);
 
@@ -103,7 +103,7 @@ class Create extends AbstractOrientSqlProcessor
 
     }
 
-    public function appendINV(array $record, &$script)
+    protected function appendINV(array $record, &$script)
     {
         $this->addToScript("TO", $script);
 
@@ -118,7 +118,7 @@ class Create extends AbstractOrientSqlProcessor
 
     }
 
-    public function processEmbedded(Bag $bag)
+    protected function processEmbedded(Bag $bag)
     {
         return $this->processor->process($bag, true);
     }
