@@ -1,15 +1,20 @@
 <?php
-namespace Spider\Test\Unit\Commands\Builders\Builder;
+namespace Spider\Test\Unit\Commands\Builders\BaseBuilder;
 
 use Codeception\Specify;
 use Spider\Commands\Bag;
-use InvalidArgumentException;
+use Spider\Commands\Builder;
+use Spider\Test\Unit\Commands\Builders\TestSetup;
 
-class RetrieveTest extends TestSetup
+class BuilderTest extends TestSetup
 {
     use Specify;
 
-    /* Retrieval Tests */
+    public function setup()
+    {
+        $this->builder = new Builder();
+    }
+
     public function testSelectAndTarget()
     {
         $this->specify("it returns specified data using a SELECT projections array", function () {
@@ -157,7 +162,7 @@ class RetrieveTest extends TestSetup
                 'where' => [
                     [Bag::ELEMENT_TYPE, Bag::COMPARATOR_EQUAL, Bag::ELEMENT_VERTEX, Bag::CONJUNCTION_AND],
                     ['certified', Bag::COMPARATOR_EQUAL, 'yes', Bag::CONJUNCTION_AND],
-            ]
+                ]
             ]);
 
             $this->assertEquals($expected, $actual, "failed to return correct command bag: true");
@@ -334,6 +339,187 @@ class RetrieveTest extends TestSetup
             ]);
 
             $this->assertEquals($expected, $actual, 'failed to return correct command');
+        });
+    }
+
+    public function testInsert()
+    {
+        /* ToDo: Figure out API Builder sugar for inserting records */
+        // This test is copied from BaseBuilderTest::testCreate()#4
+        $this->specify("it adds the `insert` alias", function () {
+            $actual = $this->builder
+                ->insert([
+                    Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                    Bag::ELEMENT_LABEL => 'test',
+                    'first' => 'first-value',
+                    'A' =>  'a'
+                ])
+                ->insert([
+                    [
+                        Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                        Bag::ELEMENT_LABEL => 'test',
+                        'second' => 'second-value',
+                        'B' =>  'b'
+                    ],
+                    [
+                        Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                        Bag::ELEMENT_LABEL => 'test',
+                        'third' => 'third-value',
+                        'C' =>  'c'
+                    ]
+                ])
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'create' => [
+                    [
+                        Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                        Bag::ELEMENT_LABEL => 'test',
+                        'first' => 'first-value',
+                        'A' =>  'a'
+                    ],
+                    [
+                        Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                        Bag::ELEMENT_LABEL => 'test',
+                        'second' => 'second-value',
+                        'B' =>  'b'
+                    ],
+                    [
+                        Bag::ELEMENT_TYPE => Bag::ELEMENT_VERTEX,
+                        Bag::ELEMENT_LABEL => 'test',
+                        'third' => 'third-value',
+                        'C' =>  'c'
+                    ]
+                ]
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+    }
+
+    public function testUpdate()
+    {
+        $this->specify("it adds to update by property and value", function () {
+            $actual = $this->builder
+                ->update('property', 'value')
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'update' => ['property' => 'value'],
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+
+        $this->specify("it adds to update by an array of data", function () {
+            $actual = $this->builder
+                ->update([
+                    'a' => 'A',
+                    'b' => 'B'
+                ])
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'update' => [
+                    'a' => 'A',
+                    'b' => 'B'
+                ],
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+
+        $this->specify("it adds to update by property and value through method chaining", function () {
+            $actual = $this->builder
+                ->update('property', 'value')
+                ->update('b', 'B')
+                ->update([
+                    'c' => 'C',
+                    'd' => 'D'
+                ])
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'update' => [
+                    'property' => 'value',
+                    'b' => 'B',
+                    'c' => 'C',
+                    'd' => 'D'
+                ],
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+
+    }
+
+    public function testDelete()
+    {
+        $this->specify("it drops a single record dispatching from `delete()`", function () {
+            $actual = $this->builder
+                ->delete(3)
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'where' => [[Bag::ELEMENT_ID, Bag::COMPARATOR_EQUAL, 3, Bag::CONJUNCTION_AND]],
+                'delete' => true,
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+
+        $this->specify("it drops multiple records dispatching from `delete()`", function () {
+            $actual = $this->builder
+                ->delete([1, 2, 3])
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'where' => [[Bag::ELEMENT_ID, Bag::COMPARATOR_IN, [1, 2, 3], Bag::CONJUNCTION_AND]],
+                'delete' => true,
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+
+        $this->specify("it drops multiple records via constraints", function () {
+            $actual = $this->builder
+                ->delete()
+                ->from('target')
+                ->where('birthday', 'apr')
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'where' => [[Bag::ELEMENT_LABEL, Bag::COMPARATOR_EQUAL, 'target', Bag::CONJUNCTION_AND],['birthday', Bag::COMPARATOR_EQUAL, 'apr', Bag::CONJUNCTION_AND]],
+                'delete' => true,
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+    }
+
+    public function testByRecords() {
+        $this->specify("it adds a single record id via `record()`", function () {
+            $actual = $this->builder
+                ->record(3)
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'where' => [[Bag::ELEMENT_ID, Bag::COMPARATOR_EQUAL, 3, Bag::CONJUNCTION_AND]]
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+
+        $this->specify("it adds multiple records via ids", function () {
+            $actual = $this->builder
+                ->records([1, 2, 3])
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'where' => [[Bag::ELEMENT_ID, Bag::COMPARATOR_IN, [1, 2, 3], Bag::CONJUNCTION_AND]]
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
         });
     }
 }
