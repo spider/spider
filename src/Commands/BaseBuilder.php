@@ -117,6 +117,8 @@ class BaseBuilder
      */
     public function internalWhere(array $constraints)
     {
+        $this->initializeProperty('where');
+
         /* Force to multi-dimensional array */
         if (!is_array($constraints[0])) {
             $constraints = [$constraints];

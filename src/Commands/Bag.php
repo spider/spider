@@ -62,7 +62,7 @@ class Bag extends Object
      * `['username', static::COMPARATOR_EQUAL, 'michael', static::CONJUNCTION_AND]`
      * `AND WHERE username = 'michael'` for example
      */
-    public $where = [];
+    public $where = null;
 
     /** @var bool|int How many results to return. `false` no limit */
     public $limit = null;
@@ -167,9 +167,9 @@ class Bag extends Object
                is_null($input->create)
                && is_null($input->retrieve)
                && is_null($input->update)
-               && $input->delete === false
+               && ($input->delete === false || is_null($input->delete))
            ) {
-               return ['The Command Bag must perform at least one operation - create, retrieve, delete, or update'];
+               return ['The Command Bag must perform at least one operation - create, retrieve, update, or delete'];
            }
 
             return true;

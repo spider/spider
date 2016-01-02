@@ -48,7 +48,7 @@ class BagTest extends \PHPUnit_Framework_TestCase
 
             $bag = new Bag();
             $bag->validate();
-        }, ['throws' => [new ValidatorException(), "Validation failed: \nThe Command Bag must perform at least one operation - create, retrieve, or update"]]);
+        }, ['throws' => [new ValidatorException(), "Validation failed: \nThe Command Bag must perform at least one operation - create, retrieve, update, or delete"]]);
     }
 
     public function testValidateBagEdgeCreationHasInsAndOuts()

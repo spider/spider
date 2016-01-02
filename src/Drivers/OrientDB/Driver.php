@@ -172,7 +172,7 @@ class Driver extends AbstractDriver implements DriverInterface
     {
         // Add to transaction statement, if in transaction
         if ($this->inTransaction) {
-            $this->transaction->addStatement($command->getScript());
+            $this->transaction->addStatement($command->getScript(), SqlBatch::TRANSACTION_STATEMENT);
             return null;
         }
 
@@ -212,7 +212,7 @@ class Driver extends AbstractDriver implements DriverInterface
         if (!$this->isBatch($command->getScript())) {
             $batch = new SqlBatch();
             $batch->begin();
-            $batch->addStatement($command->getScript());
+            $batch->addStatement($command->getScript(), SqlBatch::UNKNOWN_STATEMENT);
             $batch->end();
 
             $command->setScript($batch->getScript());
