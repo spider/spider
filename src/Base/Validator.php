@@ -47,7 +47,7 @@ class Validator extends Object
      * @param callable $rule A callable that receives an $input and returns true for pass or an array of errors for failure
      * @throws \Exception if rule is invalid
      */
-    public function addRule(callable $rule)
+    public function addRule($rule)
     {
         $this->checkRule($rule);
         $this->rules[] = $rule;
