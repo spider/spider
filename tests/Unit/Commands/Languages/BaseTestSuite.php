@@ -6,7 +6,7 @@ use Spider\Test\Scenarios\AbstractScenario;
 use Spider\Test\Scenarios\CreateSingleVertex;
 use Spider\Test\Scenarios\CreateVertices;
 use Spider\Test\Scenarios\CreateVerticesAndEdge;
-use Spider\Test\Scenarios\CreateVerticesAndupdate;
+use Spider\Test\Scenarios\CreateVerticesAndUpdate;
 use Spider\Test\Scenarios\CreateVerticesAndUpdateEmbedded;
 use Spider\Test\Scenarios\DeleteVertexByConstraint;
 use Spider\Test\Scenarios\DeleteVertexById;
