@@ -105,7 +105,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $query .= ' WHERE name = \'michael\'';
         $query .= ' LIMIT 15';
         $query .= $this->getCommit();
-        $query .= 'return [$c1,$c2]';
+        $query .= 'return [$c1,$c2,$u3]';
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');

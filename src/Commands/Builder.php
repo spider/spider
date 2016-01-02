@@ -224,6 +224,11 @@ class Builder extends BaseBuilder
         return $this->where(Bag::ELEMENT_LABEL, $label, '=');
     }
 
+    public function withData(array $data)
+    {
+        return $this->update($data);
+    }
+
     /**
      * Add a `where` clause with an `OR` conjunction to the current Command Bag
      *

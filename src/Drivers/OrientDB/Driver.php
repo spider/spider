@@ -172,7 +172,7 @@ class Driver extends AbstractDriver implements DriverInterface
     {
         // Add to transaction statement, if in transaction
         if ($this->inTransaction) {
-            $this->transaction->addStatement($command->getScript());
+            $this->transaction->addStatement($command->getScript(), SqlBatch::TRANSACTION_STATEMENT);
             return null;
         }
 
@@ -212,7 +212,7 @@ class Driver extends AbstractDriver implements DriverInterface
         if (!$this->isBatch($command->getScript())) {
             $batch = new SqlBatch();
             $batch->begin();
-            $batch->addStatement($command->getScript());
+            $batch->addStatement($command->getScript(), SqlBatch::UNKNOWN_STATEMENT);
             $batch->end();
 
             $command->setScript($batch->getScript());
@@ -354,11 +354,19 @@ class Driver extends AbstractDriver implements DriverInterface
         }
 
         // For multiple records, map each to a Record
-        array_walk($response, function (&$orientRecord) {
-            $orientRecord = $this->mapOrientRecordToCollection($orientRecord);
-        });
+        // @todo: Why do some cases add an extra record to the beginning with an rid or #-1:-1
+        $mappedResponse = [];
+        foreach ($response as $orientRecord) {
+            if ((string)$orientRecord->getRid() !== "#-1:-1") {
+                $mappedResponse[] = $this->mapOrientRecordToCollection($orientRecord);
+            }
+        }
 
-        return $response;
+//        array_walk($response, function (&$orientRecord) {
+//            $orientRecord = $this->mapOrientRecordToCollection($orientRecord);
+//        });
+
+        return $mappedResponse;
     }
 
     /**

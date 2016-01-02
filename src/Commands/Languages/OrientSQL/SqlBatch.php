@@ -13,11 +13,26 @@ class SqlBatch
     /** @var  string Working batch script */
     protected $script;
 
+    /** @var int variable index */
+    protected $variableIndex = 0;
+
+    /** @var array Map of Statement Types to prefix */
+    protected $prefixMap = [
+        self::CREATE_STATEMENT => 'c',
+        self::SELECT_STATEMENT => 's',
+        self::DELETE_STATEMENT => 'd',
+        self::UPDATE_STATEMENT => 'u',
+        self::TRANSACTION_STATEMENT => 't',
+        self::UNKNOWN_STATEMENT => 'u'
+    ];
+
+    /* Constants */
     const SELECT_STATEMENT = 100;
     const UPDATE_STATEMENT = 200;
     const CREATE_STATEMENT = 300;
     const DELETE_STATEMENT = 400;
-    protected $variableIndex = 0;
+    const TRANSACTION_STATEMENT = 500;
+    const UNKNOWN_STATEMENT = 600;
 
     /**
      * Returns current script
@@ -48,6 +63,7 @@ class SqlBatch
     /**
      * Add a new statement/operation to the batch
      * @param $statement
+     * @param string $type of statement (c,r,u,d)
      */
     public function addStatement($statement, $type)
     {
@@ -57,6 +73,7 @@ class SqlBatch
     /**
      * Add a new statement/operation to the batch
      * @param array $statements
+     * @param string $type of statement (c,r,u,d)
      */
     public function addStatements(array $statements, $type)
     {
@@ -72,16 +89,8 @@ class SqlBatch
      */
     protected function incrementVariables($type)
     {
-        $typePrefixes = [
-            static::SELECT_STATEMENT => 's',
-            static::CREATE_STATEMENT => 'c',
-            static::DELETE_STATEMENT => 'd',
-            static::UPDATE_STATEMENT => 'u',
-        ];
-
         $this->variableIndex++;
-        $this->transactionVariables[$type][] = $typePrefixes[$type] . (string)$this->variableIndex;
-        return $typePrefixes[$type] . (string)$this->variableIndex;
+        return $this->transactionVariables[] = $this->prefixMap[$type] . (string)$this->variableIndex;
     }
 
     /**
@@ -90,14 +99,9 @@ class SqlBatch
      */
     protected function getVariables()
     {
-        $allVariables = [];
-        foreach ($this->transactionVariables as $type) {
-            $allVariables = $allVariables + $type;
-        }
-
         $allVariables = array_map(function ($value) {
             return '$' . $value;
-        }, $allVariables);
+        }, $this->transactionVariables);
 
         $variables = implode(",", $allVariables);
 

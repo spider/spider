@@ -52,7 +52,7 @@ class Delete extends AbstractOrientSqlProcessor
      * @throws \Exception
      * @internal param array $record
      */
-    public function deleteEdge()
+    protected function deleteEdge()
     {
         throw new \Exception("This should not be used yet");
     }
@@ -62,7 +62,7 @@ class Delete extends AbstractOrientSqlProcessor
      * @return mixed
      * @internal param array $record
      */
-    public function deleteVertex()
+    protected function deleteVertex()
     {
         $script = '';
         $this->startScript("DELETE VERTEX", $script);

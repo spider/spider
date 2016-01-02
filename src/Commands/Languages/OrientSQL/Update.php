@@ -35,7 +35,7 @@ class Update extends AbstractOrientSqlProcessor
      * Process a COMMAND_RETRIEVE bag
      * @throws NotSupportedException
      */
-    public function processUpdate()
+    protected function processUpdate()
     {
         $this->startScript("UPDATE", $this->script);
 
@@ -50,7 +50,7 @@ class Update extends AbstractOrientSqlProcessor
         $this->appendLimit($this->bag, $this->script);
     }
 
-    public function appendReturn()
+    protected function appendReturn()
     {
         $this->addToScript("RETURN AFTER", $this->script);
     }

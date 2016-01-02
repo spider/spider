@@ -62,7 +62,7 @@ class Bag extends Object
      * `['username', static::COMPARATOR_EQUAL, 'michael', static::CONJUNCTION_AND]`
      * `AND WHERE username = 'michael'` for example
      */
-    public $where = [];
+    public $where = null;
 
     /** @var bool|int How many results to return. `false` no limit */
     public $limit = null;
@@ -167,9 +167,9 @@ class Bag extends Object
                is_null($input->create)
                && is_null($input->retrieve)
                && is_null($input->update)
-               && $input->delete === false
+               && ($input->delete === false || is_null($input->delete))
            ) {
-               return ['The Command Bag must perform at least one operation - create, retrieve, delete, or update'];
+               return ['The Command Bag must perform at least one operation - create, retrieve, update, or delete'];
            }
 
             return true;
@@ -180,7 +180,7 @@ class Bag extends Object
             if ($input->create) { // We are creating things
                 $passing = [];
                 foreach ($input->create as $record) {
-                    if ($record[Bag::ELEMENT_TYPE] === Bag::ELEMENT_EDGE) { // We are creating edges
+                    if (isset($record[Bag::ELEMENT_TYPE]) && $record[Bag::ELEMENT_TYPE] === Bag::ELEMENT_EDGE) { // We are creating edges
                         $passing[] = isset($record[Bag::EDGE_INV]);
                         $passing[] = isset($record[Bag::EDGE_OUTV]);
                     }
