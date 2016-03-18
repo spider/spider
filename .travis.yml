@@ -16,8 +16,8 @@ before_install:
 
 install:
   # setup travis variables
-  - sh -c ./myci/provision.sh
-  - sh -c ./myci/startup.sh
+  - bash -c ./myci/provision.sh
+  - bash -c ./myci/startup.sh
 
 
 before_script:

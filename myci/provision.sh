@@ -10,10 +10,12 @@
 if [ -z ${TRAVIS_BUILD_DIR+x} ]
     then
     # Using vagrant
+    export CONTEXT="VAGRANT"
     export SPIDER_DIR="/vagrant"
     export INSTALL_DIR="/home/vagrant"
 else
     # Using Travis UPDATE
+    export CONTEXT="TRAVIS"
     export SPIDER_DIR=${TRAVIS_BUILD_DIR}
     export INSTALL_DIR=${HOME}
 fi
@@ -23,21 +25,24 @@ export CI_DIR=${SPIDER_DIR}/myci
 export BUILD_DIR=$(pwd)
 source $CI_DIR/versions.sh
 
-### INSTALL PHP AND TOOLS ###
-sudo apt-get update #> /dev/null
-apt-get install software-properties-common python-software-properties -y #> /dev/null
-add-apt-repository ppa:ondrej/php5-5.6 -y #> /dev/null
-apt-get update #> /dev/null
+if [ $CONTEXT = 'VAGRANT' ]
+    then
+        ### INSTALL PHP AND TOOLS ###
+        sudo apt-get update #> /dev/null
+        apt-get install software-properties-common python-software-properties -y #> /dev/null
+        add-apt-repository ppa:ondrej/php5-5.6 -y #> /dev/null
+        apt-get update #> /dev/null
 
-apt-get install php5 -y #> /dev/null
+        apt-get install php5 -y #> /dev/null
 
-sudo apt-get install curl php5-curl php5-gd php5-mcrypt -y #> /dev/null
-sudo apt-get install php5-xdebug #> /dev/null
+        sudo apt-get install curl php5-curl php5-gd php5-mcrypt -y #> /dev/null
+        sudo apt-get install php5-xdebug #> /dev/null
 
-curl --silent https://getcomposer.org/installer | php #> /dev/null 2>&1
-mv composer.phar /usr/local/bin/composer
+        curl --silent https://getcomposer.org/installer | php #> /dev/null 2>&1
+        mv composer.phar /usr/local/bin/composer
 
-alias phpunit=/vagrant/vendor/bin/phpunit
+        alias phpunit=/vagrant/vendor/bin/phpunit
+fi
 
 
 #### INSTALL JDK8
