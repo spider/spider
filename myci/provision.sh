@@ -1,6 +1,7 @@
 #!/bin/bash
 echo "------------ PROVISIONING SYSTEM FROM provision.sh ------------"
 
+### SETUP
 # Load the Vagrant context if there is none present
 if [ -z ${TRAVIS_BUILD_DIR+x} ]
     then
@@ -56,94 +57,65 @@ if [ $CONTEXT = 'VAGRANT' ]
         alias phpunit=/vagrant/vendor/bin/phpunit
 fi
 
-echo "--- INSTALLING JAVA ---"
-#### INSTALL JDK8
-### Add Repository
+
+
+
+
+
+
+### JAVA
+# Get dependencies (for adding repos)
+sudo apt-get install -y python-software-properties
 sudo add-apt-repository -y ppa:webupd8team/java
 sudo apt-get update
 
-### Install oracle jdk 8
-# no interaction
-echo debconf shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
-echo debconf shared/accepted-oracle-license-v1-1 seen true | /usr/bin/debconf-set-selections
-
-## Run installer
+# install oracle jdk 8
 sudo apt-get install -y oracle-java8-installer
 sudo update-alternatives --auto java
 sudo update-alternatives --auto javac
 
-### Add to environment
+# Add to environment
 export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 export JRE_HOME=/usr/lib/jvm/java-8-oracle
 
-#echo "--- INSTALLING JAVA ---"
-## Get dependencies (for adding repos)
-#sudo apt-get install -y python-software-properties
-#sudo add-apt-repository -y ppa:webupd8team/java
-#sudo apt-get update
-#
-## install oracle jdk 8
-#sudo apt-get install -y oracle-java8-installer
-#sudo update-alternatives --auto java
-#sudo update-alternatives --auto javac
-#
-## Add to environment
-#export JAVA_HOME=/usr/lib/jvm/java-8-oracle
-#export JRE_HOME=/usr/lib/jvm/java-8-oracle
-#
-#
-echo "Java V: $(java -version)"
-echo "--- end INSTALLING JAVA ---"
 
-#### INSTALL GREMLIN SERVER
-### download and unzip
-#wget --no-check-certificate -O $INSTALL_DIR/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating-bin.zip https://www.apache.org/dist/incubator/tinkerpop/$GREMLINSERVER_VERSION-incubating/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating-bin.zip
-#unzip $INSTALL_DIR/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating-bin.zip -d $INSTALL_DIR/
-#
-### get gremlin-server configuration files
-#cp $CI_DIR/gremlin-spider-script.groovy $GREMLIN_DIR/scripts/
-#cp $CI_DIR/gremlin-server-spider.yaml $GREMLIN_DIR/conf/
-#
-## get neo4j dependencies
-#cd $GREMLIN_DIR
-#bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin $GREMLINSERVER_VERSION-incubating
-#sleep 30
-#cd $BUILD_DIR
+### GREMLIN
+# Install gremlin-server
+wget --no-check-certificate -O $INSTALL_DIR/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating-bin.zip https://www.apache.org/dist/incubator/tinkerpop/$GREMLINSERVER_VERSION-incubating/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating-bin.zip
+unzip $INSTALL_DIR/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating-bin.zip -d $INSTALL_DIR/
+
+# get gremlin-server configuration files
+cp ./myci/gremlin-spider-script.groovy $INSTALL_DIR/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating/scripts/
+cp ./myci/gremlin-server-spider.yaml $INSTALL_DIR/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating/conf/
+
+# get neo4j dependencies
+cd $INSTALL_DIR/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating
+bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin $GREMLINSERVER_VERSION-incubating
+
+# Start gremlin-server in the background and wait for it to be available
+bin/gremlin-server.sh conf/gremlin-server-spider.yaml > /dev/null 2>&1 &
+cd $BUILD_DIR
+sleep 30
 
 
-#### install neo4j
-## install Neo4j locally:
-#wget -O $INSTALL_DIR/neo4j-community-$NEO4J_VERSION-unix.tar.gz dist.neo4j.org/neo4j-community-$NEO4J_VERSION-unix.tar.gz
-#tar -xzf $INSTALL_DIR/neo4j-community-$NEO4J_VERSION-unix.tar.gz -C $INSTALL_DIR/
-#
-#sed -i 's/#org.neo4j.server.webserver.address=0.0.0.0/org.neo4j.server.webserver.address=0.0.0.0/' $INSTALL_DIR/neo4j-community-$NEO4J_VERSION/conf/neo4j-server.properties
+### NEO4J
+# install Neo4j locally:
+wget -O $INSTALL_DIR/neo4j-community-$NEO4J_VERSION-unix.tar.gz dist.neo4j.org/neo4j-community-$NEO4J_VERSION-unix.tar.gz
+tar -xzf $INSTALL_DIR/neo4j-community-$NEO4J_VERSION-unix.tar.gz -C $INSTALL_DIR/
+$INSTALL_DIR/neo4j-community-$NEO4J_VERSION/bin/neo4j start
+sleep 10
 
-echo "--- INSTALLING ORIENT ---"
-### INSTALL ORIENT DB (vagrant)
+# changing password:
+curl -vX POST http://neo4j:neo4j@localhost:7474/user/neo4j/password -d"password=j4oen"
+
+### ORIENT
 # Download orient
-wget -O $INSTALL_DIR/orientdb-community-$ORIENT_VERSION.tar.gz http://www.orientechnologies.com/download.php?file=orientdb-community-$ORIENT_VERSION.tar.gz
+wget -O $INSTALL_DIR/orientdb-community-$ORIENT_VERSION.tar.gz wget http://www.orientechnologies.com/download.php?file=orientdb-community-$ORIENT_VERSION.tar.gz
 tar -xzf $INSTALL_DIR/orientdb-community-$ORIENT_VERSION.tar.gz -C $INSTALL_DIR/
 
-### fix to make sure the orient install is also owned by root
-chown -R root:root $ORIENT_DIR
+#update config with correct user/password
+sed -i '/<users>/a <user name="root" password="root" resources="*"><\/user>' $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/config/orientdb-server-config.xml
 
-### update server.sh with correct user and path
-#sed -i '(password=".*?") c\password="root"' $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/config/orientdb-server-config.xml
-# sed -i '/<users>/a <user name="root" password="root" resources="*"><\/user>' $INSTALL_DIR/orientdb-community-$ORIENT_VERSION/config/orientdb-server-config.xml
-sed -i '/ORIENTDB_DIR="YOUR_ORIENTDB_INSTALLATION_PATH"/ c\ORIENTDB_DIR="'$ORIENT_DIR'"' $ORIENT_DIR/bin/orientdb.sh
-sed -i '/ORIENTDB_USER="USER_YOU_WANT_ORIENTDB_RUN_WITH"/ c\ORIENTDB_USER="root"' $ORIENT_DIR/bin/orientdb.sh
-echo "--- end INSTALLING ORIENT ---"
-
-
-
-
-
-
-#echo "--- INSTALLING ORIENT ---"
-## Download orient
-#wget -O $INSTALL_DIR/orientdb-community-$ORIENT_VERSION.tar.gz wget http://www.orientechnologies.com/download.php?file=orientdb-community-$ORIENT_VERSION.tar.gz
-#tar -xzf $INSTALL_DIR/orientdb-community-$ORIENT_VERSION.tar.gz -C $INSTALL_DIR/
-#
-##update config with correct user/password
-#sed -i '/<users>/a <user name="root" password="root" resources="*"><\/user>' $ORIENT-DIR/config/orientdb-server-config.xml
-#echo "--- end INSTALLING ORIENT ---"
+# run and wait for it to init
+$INSTALL_DIR/orientdb-community-$ORIENT_VERSION/bin/server.sh > /dev/null 2>&1 &
+sleep 15

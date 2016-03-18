@@ -15,10 +15,7 @@ before_install:
   - sudo apt-get update > /dev/null
 
 install:
-  # setup travis variables
-  - sudo bash ./myci/provision.sh
-  - sudo bash ./myci/startup.sh
-
+  - sh -c ./myci/provision.sh
 
 before_script:
   - travis_retry composer self-update

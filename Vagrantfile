@@ -24,5 +24,5 @@ Vagrant.configure(2) do |config|
   config.vm.provision :shell, path: "./myci/provision.sh"
 
   # Start databases every time
-  config.vm.provision :shell, path: "./myci/startup.sh", run: "always"
+  #config.vm.provision :shell, path: "./myci/startup.sh", run: "always"
 end
