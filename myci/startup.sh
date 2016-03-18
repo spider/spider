@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #echo "------------ STARTING UP SYSTEM ------------"
 
 #echo "Neo: ${NEO4J_VERSION}"
