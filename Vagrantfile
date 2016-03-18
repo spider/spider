@@ -21,8 +21,8 @@ Vagrant.configure(2) do |config|
   end
 
   # Install test databases when building machine
-  config.vm.provision :shell, path: "./vagrant/bootstrap.sh"
+  config.vm.provision :shell, path: "./myci/provision.sh"
 
   # Start databases every time
-  config.vm.provision :shell, path: "./vagrant/startup.sh", run: "always"
+  config.vm.provision :shell, path: "./myci/startup.sh", run: "always"
 end
