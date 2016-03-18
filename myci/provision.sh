@@ -15,7 +15,7 @@ if [ -z ${TRAVIS_BUILD_DIR+x} ]
 else
     # Using Travis UPDATE
     export SPIDER_DIR=${TRAVIS_BUILD_DIR}
-    export INSTALL_DIR=${TRAVIS_BUILD_DIR}/installed
+    export INSTALL_DIR=${HOME}
 fi
 
 # Load the versions and directories
