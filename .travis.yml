@@ -10,11 +10,14 @@ matrix:
   allow_failures:
     - php: nightly
     - php: 7.0
+env:
+  - NEO4J_VERSION="2.2.4" GREMLINSERVER_VERSION="3.0.2" ORIENT_VERSION="2.1.6"
 
 before_install:
   - sudo apt-get update > /dev/null
 
 install:
+  # install Oracle JDK8
   - sh -c ./myci/provision.sh
 
 before_script:
@@ -27,4 +30,3 @@ script:
 
 after_script:
   - php vendor/bin/coveralls -v
-

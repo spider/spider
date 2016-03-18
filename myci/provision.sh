@@ -85,8 +85,8 @@ wget --no-check-certificate -O $INSTALL_DIR/apache-gremlin-server-$GREMLINSERVER
 unzip $INSTALL_DIR/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating-bin.zip -d $INSTALL_DIR/
 
 # get gremlin-server configuration files
-cp ./myci/gremlin-spider-script.groovy $INSTALL_DIR/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating/scripts/
-cp ./myci/gremlin-server-spider.yaml $INSTALL_DIR/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating/conf/
+cp $CI_DIR/gremlin-spider-script.groovy $INSTALL_DIR/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating/scripts/
+cp $CI_DIR/gremlin-server-spider.yaml $INSTALL_DIR/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating/conf/
 
 # get neo4j dependencies
 cd $INSTALL_DIR/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating
