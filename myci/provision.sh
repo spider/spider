@@ -11,7 +11,7 @@ if [ -z ${TRAVIS_BUILD_DIR+x} ]
     then
     # Using vagrant
     export SPIDER_DIR="/vagrant"
-    export INSTALL_DIR="${SPIDER_DIR}/installed"
+    export INSTALL_DIR="/home/vagrant"
 else
     # Using Travis UPDATE
     export SPIDER_DIR=${TRAVIS_BUILD_DIR}
@@ -76,12 +76,20 @@ sleep 30
 cd $BUILD_DIR
 
 
-### INSTALL NEO4J
-# Download
+#### INSTALL NEO4J
+## Download
+#wget -O $INSTALL_DIR/neo4j-community-$NEO4J_VERSION-unix.tar.gz dist.neo4j.org/neo4j-community-$NEO4J_VERSION-unix.tar.gz
+#tar -xzf $INSTALL_DIR/neo4j-community-$NEO4J_VERSION-unix.tar.gz -C $INSTALL_DIR/
+#
+#sed -i 's/#org.neo4j.server.webserver.address=0.0.0.0/org.neo4j.server.webserver.address=0.0.0.0/' $NEO4J_DIR/conf/neo4j-server.properties
+
+
+### install neo4j
+# install Neo4j locally:
 wget -O $INSTALL_DIR/neo4j-community-$NEO4J_VERSION-unix.tar.gz dist.neo4j.org/neo4j-community-$NEO4J_VERSION-unix.tar.gz
 tar -xzf $INSTALL_DIR/neo4j-community-$NEO4J_VERSION-unix.tar.gz -C $INSTALL_DIR/
 
-sed -i 's/#org.neo4j.server.webserver.address=0.0.0.0/org.neo4j.server.webserver.address=0.0.0.0/' $NEO4J_DIR/conf/neo4j-server.properties
+sed -i 's/#org.neo4j.server.webserver.address=0.0.0.0/org.neo4j.server.webserver.address=0.0.0.0/' $INSTALL_DIR/neo4j-community-$NEO4J_VERSION/conf/neo4j-server.properties
 
 
 ### INSTALL ORIENT DB

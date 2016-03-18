@@ -12,7 +12,7 @@ if [ -z ${TRAVIS_BUILD_DIR+x} ]
     then
     # Using vagrant
     export SPIDER_DIR="/vagrant"
-    export INSTALL_DIR="${SPIDER_DIR}/installed"
+    export INSTALL_DIR="/home/vagrant"
 else
     # Using Travis UPDATE
     export SPIDER_DIR=${TRAVIS_BUILD_DIR}
