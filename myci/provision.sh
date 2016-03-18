@@ -44,25 +44,38 @@ if [ $CONTEXT = 'VAGRANT' ]
         alias phpunit=/vagrant/vendor/bin/phpunit
 fi
 
-
-#### INSTALL JDK8
-### Add Repository
+# Get dependencies (for adding repos)
+sudo apt-get install -y python-software-properties
 sudo add-apt-repository -y ppa:webupd8team/java
 sudo apt-get update
 
-### Install oracle jdk 8
-# no interaction
-echo debconf shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
-echo debconf shared/accepted-oracle-license-v1-1 seen true | /usr/bin/debconf-set-selections
-
-## Run installer
+# install oracle jdk 8
 sudo apt-get install -y oracle-java8-installer
 sudo update-alternatives --auto java
 sudo update-alternatives --auto javac
 
-### Add to environment
+# Add to environment
 export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 export JRE_HOME=/usr/lib/jvm/java-8-oracle
+
+##### INSTALL JDK8
+#### Add Repository
+#sudo add-apt-repository -y ppa:webupd8team/java
+#sudo apt-get update
+#
+#### Install oracle jdk 8
+## no interaction
+#echo debconf shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+#echo debconf shared/accepted-oracle-license-v1-1 seen true | /usr/bin/debconf-set-selections
+#
+### Run installer
+#sudo apt-get install -y oracle-java8-installer
+#sudo update-alternatives --auto java
+#sudo update-alternatives --auto javac
+#
+#### Add to environment
+#export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+#export JRE_HOME=/usr/lib/jvm/java-8-oracle
 
 
 ### INSTALL GREMLIN SERVER
