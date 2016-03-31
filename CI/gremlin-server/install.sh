@@ -1,19 +1,28 @@
 #!/bin/bash
 
-export GREMLINSERVER_VERSION="3.0.2"
-
-# Load the Vagrant context if there is none present
-if [ -z ${TRAVIS_BUILD_DIR+x} ]
-    then
-    # Using vagrant
-    export BUILD_DIR="/home/vagrant"
-    export SPIDER_DIR="/vagrant"
-
-else
-    # Using Travis UPDATE
+# Setup Directories and Versions
+if [ -n "${TRAVIS_BUILD_DIR}" ]; then
+    # We are using travis and must set the directories
     export SPIDER_DIR=${TRAVIS_BUILD_DIR}
     export BUILD_DIR=${TRAVIS_BUILD_DIR}
 fi
+export CI_DIR = ${SPIDER_DIR}/CI
+source ${CI_DIR}/versions.sh
+
+#export GREMLINSERVER_VERSION="3.0.2"
+#
+## Load the Vagrant context if there is none present
+#if [ -z ${TRAVIS_BUILD_DIR+x} ]
+#    then
+#    # Using vagrant
+#    export BUILD_DIR="/home/vagrant"
+#    export SPIDER_DIR="/vagrant"
+#
+#else
+#    # Using Travis UPDATE
+#    export SPIDER_DIR=${TRAVIS_BUILD_DIR}
+#    export BUILD_DIR=${TRAVIS_BUILD_DIR}
+#fi
 
 
 # Add environment java vars

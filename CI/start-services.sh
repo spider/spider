@@ -1,25 +1,13 @@
 #!/bin/bash
 
-export GREMLINSERVER_VERSION="3.0.2"
-export ORIENT_VERSION="2.1.6"
-export NEO4J_VERSION="2.2.4"
-
-# Add environment java vars
-export JAVA_HOME=/usr/lib/jvm/java-8-oracle
-export JRE_HOME=/usr/lib/jvm/java-8-oracle
-
-# Load the Vagrant context if there is none present
-if [ -z ${TRAVIS_BUILD_DIR+x} ]
-    then
-    # Using vagrant
-    export BUILD_DIR="/home/vagrant"
-    export SPIDER_DIR="/vagrant"
-
-else
-    # Using Travis UPDATE
+# Setup Directories and Versions
+if [ -n "${TRAVIS_BUILD_DIR}" ]; then
+    # We are using travis and must set the directories
     export SPIDER_DIR=${TRAVIS_BUILD_DIR}
     export BUILD_DIR=${TRAVIS_BUILD_DIR}
 fi
+export CI_DIR = ${SPIDER_DIR}/CI
+source ${CI_DIR}/versions.sh
 
 
 ## Start OrientDB

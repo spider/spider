@@ -1,9 +1,18 @@
 #!/bin/bash
-export NEO4J_VERSION="2.2.4"
+# Setup Directories and Versions
+if [ -n "${TRAVIS_BUILD_DIR}" ]; then
+    # We are using travis and must set the directories
+    export SPIDER_DIR=${TRAVIS_BUILD_DIR}
+    export BUILD_DIR=${TRAVIS_BUILD_DIR}
+fi
+export CI_DIR = ${SPIDER_DIR}/CI
+source ${CI_DIR}/versions.sh
 
-# Add environment java vars
-export JAVA_HOME=/usr/lib/jvm/java-8-oracle
-export JRE_HOME=/usr/lib/jvm/java-8-oracle
+#export NEO4J_VERSION="2.2.4"
+#
+## Add environment java vars
+#export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+#export JRE_HOME=/usr/lib/jvm/java-8-oracle
 
 # install Neo4j locally:
 wget -O $HOME/neo4j-community-$NEO4J_VERSION-unix.tar.gz dist.neo4j.org/neo4j-community-$NEO4J_VERSION-unix.tar.gz

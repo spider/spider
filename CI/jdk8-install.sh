@@ -17,8 +17,8 @@ sudo update-alternatives --auto javac
 
 
 ## add to environment
-export JAVA_HOME=/usr/lib/jvm/java-8-oracle
-export JRE_HOME=/usr/lib/jvm/java-8-oracle
+#export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+#export JRE_HOME=/usr/lib/jvm/java-8-oracle
 
 
 
