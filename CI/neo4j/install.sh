@@ -1,5 +1,4 @@
 #!/bin/bash
-
 export NEO4J_VERSION="2.2.4"
 
 # Add environment java vars
