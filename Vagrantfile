@@ -25,10 +25,10 @@ Vagrant.configure(2) do |config|
 
 
 
-  config.vm.provision :shell, path: "./CI/jdk8-install.sh"
-  config.vm.provision :shell, path: "./CI/gremlin-server/install.sh"
-  config.vm.provision :shell, path: "./CI/neo4j/install.sh"
-  config.vm.provision :shell, path: "./CI/orient/install.sh"
+  config.vm.provision :shell, inline: "sh -c /vagrant/CI/jdk8-install.sh"
+  #config.vm.provision :shell, inline: "sh -c ./CI/gremlin-server/install.sh"
+  #config.vm.provision :shell, inline: "sh -c ./CI/neo4j/install.sh"
+  #config.vm.provision :shell, inline: "sh -c ./CI/orient/install.sh"
 
 
 
