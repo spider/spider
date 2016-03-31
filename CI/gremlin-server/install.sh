@@ -33,6 +33,6 @@ cd $HOME/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating
 bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin $GREMLINSERVER_VERSION-incubating
 
 # Start gremlin-server in the background and wait for it to be available
-bin/gremlin-server.sh conf/gremlin-server-spider.yaml > /dev/null 2>&1 &
+#bin/gremlin-server.sh conf/gremlin-server-spider.yaml > /dev/null 2>&1 &
 cd $BUILD_DIR
-sleep 30
+#sleep 30
