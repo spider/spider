@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export NEO4J_VERSION="2.2.4"
+
 # Add environment java vars
 export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 export JRE_HOME=/usr/lib/jvm/java-8-oracle

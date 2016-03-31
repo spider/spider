@@ -20,8 +20,21 @@ Vagrant.configure(2) do |config|
       v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
   end
 
+
+
+
+
+
+  config.vm.provision :shell, path: "./CI/jdk8-install.sh"
+  config.vm.provision :shell, path: "./CI/gremlin-server/install.sh"
+  config.vm.provision :shell, path: "./CI/neo4j/install.sh"
+  config.vm.provision :shell, path: "./CI/orient/install.sh"
+
+
+
+
   # Install test databases when building machine
-  config.vm.provision :shell, path: "./myci/provision.sh"
+  #config.vm.provision :shell, path: "./myci/provision.sh"
 
   # Start databases every time
   #config.vm.provision :shell, path: "./myci/startup.sh", run: "always"

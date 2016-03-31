@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export GREMLINSERVER_VERSION="3.0.2"
+
+
 # Add environment java vars
 export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 export JRE_HOME=/usr/lib/jvm/java-8-oracle
