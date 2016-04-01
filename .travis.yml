@@ -25,6 +25,8 @@ install:
   - sh -c ./CI/neo4j/install.sh
   # install orient
   - sh -c ./CI/orient/install.sh
+  # start services
+  - sh -c ./CI/start-services.sh
 
 before_script:
   - travis_retry composer self-update
@@ -36,4 +38,3 @@ script:
 
 after_script:
   - php vendor/bin/coveralls -v
-
