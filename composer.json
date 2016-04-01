@@ -27,7 +27,7 @@
     "michaels/data-manager": "0.8.*",
     "ostico/phporient": "1.*",
     "brightzone/gremlin-php": "2.*",
-    "everyman/neo4jphp": "dev-master#6021d88dfa7082cefab5caf5d8834c889fd28138"
+    "everyman/neo4jphp": "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "4.*",
