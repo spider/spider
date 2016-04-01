@@ -1,4 +1,6 @@
 # Spider Graphs
+
+[![Join the chat at https://gitter.im/spider/spider](https://badges.gitter.im/spider/spider.svg)](https://gitter.im/spider/spider?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Latest Version](https://img.shields.io/github/release/spider/spider.svg?style=flat-square)](https://github.com/spider/spider/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Build Status](https://travis-ci.org/spider/spider.svg?branch=master)](https://travis-ci.org/spider/spider)
