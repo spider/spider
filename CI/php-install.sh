@@ -1,4 +1,12 @@
 #!/bin/bash
+# Setup Directories and Versions
+if [ -n "${TRAVIS_BUILD_DIR}" ]; then
+    # We are using travis and must set the directories
+    export SPIDER_DIR=${TRAVIS_BUILD_DIR}
+    export BUILD_DIR=${TRAVIS_BUILD_DIR}
+fi
+export CI_DIR = ${SPIDER_DIR}/CI
+source ${CI_DIR}/versions.sh
 
 ### INSTALL PHP AND TOOLS ###
 sudo apt-get update #> /dev/null

@@ -14,8 +14,3 @@ echo debconf shared/accepted-oracle-license-v1-1 seen true | /usr/bin/debconf-se
 sudo apt-get install -y oracle-java8-installer
 sudo update-alternatives --auto java
 sudo update-alternatives --auto javac
-
-
-## add to environment
-export JAVA_HOME=/usr/lib/jvm/java-8-oracle
-export JRE_HOME=/usr/lib/jvm/java-8-oracle

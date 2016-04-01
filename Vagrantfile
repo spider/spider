@@ -21,12 +21,12 @@ Vagrant.configure(2) do |config|
   end
 
   # Provision the Machine
-  config.vm.provision :shell, inline: "sh -c /vagrant/CI/php-install.sh"
-  config.vm.provision :shell, inline: "sh -c /vagrant/CI/jdk8-install.sh"
-  config.vm.provision :shell, inline: "sh -c /vagrant/CI/neo4j/install.sh"
-  config.vm.provision :shell, inline: "sh -c /vagrant/CI/orient/install.sh"
-  config.vm.provision :shell, inline: "sh -c /vagrant/CI/gremlin-server/install.sh"
+  config.vm.provision :shell, inline: "sh -c /vagrant/CI/php-install.sh", env: Hash["SPIDER_DIR" => "/vargrant", "BUILD_DIR" => "/home/vagrant"]
+  config.vm.provision :shell, inline: "sh -c /vagrant/CI/jdk8-install.sh", env: Hash["SPIDER_DIR" => "/vargrant", "BUILD_DIR" => "/home/vagrant"]
+  config.vm.provision :shell, inline: "sh -c /vagrant/CI/neo4j/install.sh", env: Hash["SPIDER_DIR" => "/vargrant", "BUILD_DIR" => "/home/vagrant"]
+  config.vm.provision :shell, inline: "sh -c /vagrant/CI/orient/install.sh", env: Hash["SPIDER_DIR" => "/vargrant", "BUILD_DIR" => "/home/vagrant"]
+  config.vm.provision :shell, inline: "sh -c /vagrant/CI/gremlin-server/install.sh", env: Hash["SPIDER_DIR" => "/vargrant", "BUILD_DIR" => "/home/vagrant"]
 
   # Start databases every time
-  config.vm.provision :shell, inline: "sh -c /vagrant/CI/start-services.sh", run: "always"
+  config.vm.provision :shell, inline: "sh -c /vagrant/CI/start-services.sh", run: "always", env: Hash["SPIDER_DIR" => "/vargrant", "BUILD_DIR" => "/home/vagrant"]
 end
