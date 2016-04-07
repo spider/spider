@@ -18,9 +18,6 @@ class Command implements CommandInterface
     /** @var  string Optional specified script language */
     protected $language;
 
-    /** @var string Is this a read or write command */
-    protected $rw = 'write';
-
     /**
      * Create a new Command from a text string
      * @param string $script

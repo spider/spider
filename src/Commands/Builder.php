@@ -1,8 +1,6 @@
 <?php
 namespace Spider\Commands;
 
-use Spider\Commands\Languages\ProcessorInterface;
-
 /**
  * Command Builder with sugar, no awareness of connections
  * Optional CommandProcessor
@@ -29,20 +27,6 @@ class Builder extends BaseBuilder
         'NOT' => Bag::CONJUNCTION_NOT,
     ];
 
-    /**
-     * Creates a new instance of the Command Builder
-     * With an optional language processor
-     *
-     * @param ProcessorInterface|null $processor
-     * @param Bag|null $bag
-     */
-    public function __construct(
-        ProcessorInterface $processor = null,
-        Bag $bag = null
-    ) {
-        parent::__construct($bag);
-    }
-
     /* Fluent Methods for building queries */
     /**
      * Add a `select` clause to the current Command Bag
@@ -54,25 +38,21 @@ class Builder extends BaseBuilder
      */
     public function select($projections = null)
     {
-        return $this->retrieve($projections);
+        return $this->internalRetrieve($projections);
     }
 
     /**
-     * Add a `select` clause to the current Command Bag
+     * Add a `insert` clause to the current Command Bag
      *
      * Alias of retrieve
      *
      * @param array|null $data
      * @return Builder
      */
+    /* ToDo: Figure out API Builder sugar for inserting records */
     public function insert(array $data = null)
     {
-        //case of single entry, and case of multiple entries
-        if (!is_array($data) || !isset($data[0]) || !is_array($data[0])) {
-            //single entry situation.
-            $data = [$data];
-        }
-        return parent::insert($data);
+        return $this->internalCreate($data);
     }
 
     /**
@@ -80,9 +60,9 @@ class Builder extends BaseBuilder
      * @param null $record
      * @return Builder
      */
-    public function drop($record = null)
+    public function delete($record = null)
     {
-        $this->delete(); // set the delete command
+        $this->internalDelete(); // set the delete command
 
         if (is_array($record)) {
             return $this->records($record);
@@ -93,6 +73,22 @@ class Builder extends BaseBuilder
         }
 
         return $this;
+    }
+
+    /**
+     * An an `update` clause to the current command bag
+     * @param null $property
+     * @param null $value
+     * @return $this
+     */
+    public function update($property = null, $value = null)
+    {
+        // We're adding a single bit of data as well
+        if (!is_null($value)) {
+            return $this->internalUpdate([$property => $value]);
+        }
+
+        return $this->internalUpdate($property);
     }
 
     /**
@@ -144,25 +140,29 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Alias of `data()`
-     * @param $property
-     * @param null $value
-     * @return Builder
+     * Set the type of the target in the current Command Bag
+     * @param $type
+     * @return $this
+     * @throws \Exception
      */
-    public function withData($property, $value = null)
+    public function type($type)
     {
-        return $this->data($property, $value);
-    }
+        if (is_string($type)) {
+            switch (strtolower($type)) {
+                case 'edge':
+                    $type = Bag::ELEMENT_EDGE;
+                    break;
 
-    /**
-     * Add specific projections to the current Command Bag
-     * @param $projections
-     * @return Builder
-     */
-    public function only($projections)
-    {
-        $this->projections($projections);
-        return $this;
+                case 'vertex':
+                    $type = Bag::ELEMENT_VERTEX;
+                    break;
+
+                default:
+                    throw new \Exception("$type is not a valid element type");
+            }
+        }
+
+        return $this->where(Bag::ELEMENT_TYPE, $type);
     }
 
     /**
@@ -224,6 +224,11 @@ class Builder extends BaseBuilder
         return $this->where(Bag::ELEMENT_LABEL, $label, '=');
     }
 
+    public function withData(array $data)
+    {
+        return $this->update($data);
+    }
+
     /**
      * Add a `where` clause with an `OR` conjunction to the current Command Bag
      *
@@ -258,26 +263,8 @@ class Builder extends BaseBuilder
      */
     public function one()
     {
-        $this->bag->limit = 1;
+        $this->limit(1);
         return $this;
-    }
-
-    /**
-     * An an `update` clause to the current command bag
-     * @param null $property
-     * @param null $value
-     * @return $this
-     */
-    public function update($property = null, $value = null)
-    {
-        //The is one situation in which we will want to reformat
-
-        // Or, We're adding a single bit of data as well
-        if (!is_null($value)) {
-            return parent::update([$property => $value]);
-        }
-
-        return parent::update($property);
     }
 
     /**

@@ -312,8 +312,15 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
     public function testInsertAndDeleteById()
     {
         $this->specify("it inserts and deletes a single record", function () {
+
+            // Make sure we start with six
+            $response = $this->query
+                ->select()
+                ->getAll();
+            $this->assertCount(6, $response, "make sure we are starting with six records");
+
             $record = [
-                'first' => 'first-value',
+                'first' => 'first-valueabcdef',
                 'second' => 'second-value',
                 Bag::ELEMENT_LABEL => 'person',
             ];
@@ -325,7 +332,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $response = $this->query
                 ->select()
                 ->from('person')
-                ->where('first', 'first-value')
+                ->where('first', 'first-valueabcdef')
                 ->getOne();
 
             $this->assertInstanceOf('Spider\Base\Collection', $response, "failed to return one record");
@@ -333,7 +340,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
             // Delete
             $this->query
-                ->drop($response->id)->go();
+                ->delete($response->id)->go();
 
             // Check for it again
             $response = $this->query
@@ -388,7 +395,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
             // Delete
             $this->query
-                ->drop([$response[0]->id, $response[1]->id])->go();
+                ->delete([$response[0]->id, $response[1]->id])->go();
 
             // Check for it again
             $response = $this->query
@@ -408,13 +415,13 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         });
     }
 
-    public function testDrop()
+    public function testDelete()
     {
         $this->specify("it drops a single record via `execute()`", function () {
             $recordToDelete = $this->query->select()->from('person')->where('name', 'marko')->getOne();
 
             $this->query
-                ->drop()
+                ->delete()
                 ->record($recordToDelete->id)
                 ->execute();
 
@@ -432,7 +439,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             }
 
             $this->query
-                ->drop()
+                ->delete()
                 ->record($ids)
                 ->execute();
 

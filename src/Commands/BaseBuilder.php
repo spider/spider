@@ -10,7 +10,7 @@ use Spider\Commands\Languages\ProcessorInterface;
  */
 class BaseBuilder
 {
-    /** @var Bag The CommandBag with command parameters */
+    /** @var array An array of CommandBags with command parameters */
     protected $bag;
 
     /** @var  ProcessorInterface The current language processor */
@@ -24,7 +24,7 @@ class BaseBuilder
      * With an optional language processor
      *
      * @param ProcessorInterface|null $processor
-     * @param Bag|null $bag
+     * @param Bag $bag
      */
     public function __construct(
         ProcessorInterface $processor = null,
@@ -34,23 +34,24 @@ class BaseBuilder
         $this->bag = $bag ?: new Bag();
     }
 
-    /* Fluent Methods for building queries */
+    /* Internal methods for building queries */
     /**
      * Add an `insert` clause to the current command bag
      * @param array $data
-     * @return BaseBuilder
+     * @return $this
      */
-    public function insert(array $data)
+    public function internalCreate(array $data)
     {
-        $this->bag->command = Bag::COMMAND_CREATE;
+        $this->initializeProperty('create');
 
-        if (isset($data[0]) && is_array($data[0])) {
-            $this->bag->createCount = count($data);
+        // Is this a multiple record creation?
+        if (isset($data[0])) {
+            foreach($data as $record) {
+                $this->appendToBag('create', $record);
+            }
         } else {
-            $this->bag->createCount = 1;
+            $this->appendToBag('create', $data);
         }
-
-        $this->bag->data += $data;
 
         return $this;
     }
@@ -61,80 +62,10 @@ class BaseBuilder
      * @param null $projections Specific fields to retrieve (defaults to *)
      * @return $this
      */
-    public function retrieve($projections = null)
-    {
-        $this->bag->command = Bag::COMMAND_RETRIEVE;
-        $this->projections($projections);
-        return $this;
-    }
-
-    /**
-     * An an `update` clause to the current command bag
-     * @param array|null $properties should be in the format [props=>values, props2=>values2, ...]
-     * @return $this
-     */
-    public function update($properties = null)
-    {
-        $this->bag->command = Bag::COMMAND_UPDATE;
-
-        if (is_null($properties)) {
-            return $this;
-        }
-
-        $this->data($properties);
-        return $this;
-    }
-
-    /**
-     * Add a `delete` clause to the current command bag
-     * @return BaseBuilder
-     */
-    public function delete()
-    {
-        $this->bag->command = Bag::COMMAND_DELETE;
-        return $this;
-    }
-
-    /**
-     * Add data to the current command bag (for insert and update)
-     * @param $property
-     * @param null $value
-     * @return $this
-     */
-    public function data($property, $value = null)
-    {
-        if (!is_array($property)) {
-            return $this->data([$property => $value]);
-        } else {
-            $this->bag->data[] = $property;
-            return $this;
-        }
-    }
-
-    /**
-     * Set the type of the target in the current Command Bag
-     * @param $type
-     * @return $this
-     */
-    public function type($type)
-    {
-        $this->bag->target = $type;
-        return $this;
-    }
-
-    /**
-     * Set the projection fields in the current Command Bag
-     *
-     * This is used by `only()`, `select()`, and others. A projection is
-     * a field affected by the current command. Like `SELECT fieldname` in SQL
-     *
-     * @param $projections
-     * @return $this
-     */
-    public function projections($projections)
+    public function internalRetrieve($projections = null)
     {
         if (is_null($projections)) {
-            $this->bag->projections = [];
+            $this->addToBag('retrieve', []);
             return $this;
         }
 
@@ -143,7 +74,33 @@ class BaseBuilder
             throw new InvalidArgumentException("Projections must be a comma-separated string or an array");
         }
 
-        $this->bag->projections = $this->csvToArray($projections);
+        $this->addToBag('retrieve', $this->csvToArray($projections));
+        return $this;
+    }
+
+    /**
+     * An an `update` clause to the current command bag
+     * @param array|null $properties should be in the format [props=>values, props2=>values2, ...]
+     * @return $this
+     */
+    public function internalUpdate($properties = null)
+    {
+        $this->initializeProperty('update');
+
+        if (!is_null($properties)) {
+            $this->addToBag('update', array_merge($this->bag->update, $properties));
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add a `delete` clause to the current command bag
+     * @return BaseBuilder
+     */
+    public function internalDelete()
+    {
+        $this->addToBag('delete', true);
         return $this;
     }
 
@@ -164,27 +121,26 @@ class BaseBuilder
      */
     public function internalWhere(array $constraints)
     {
+        $this->initializeProperty('where');
+
         /* Force to multi-dimensional array */
         if (!is_array($constraints[0])) {
             $constraints = [$constraints];
         }
-
         /* Validate constraints */
         foreach ($constraints as $constraint) {
             if (count($constraint) !== 4) {
                 throw new \Exception("Where constraint malformed. Must have four parameters. field, operator, value, conjunction");
             }
-
             if (!is_int($constraint[1]) || !is_int($constraint[3])) {
                 throw new \Exception("Where constraint malformed. Operator and Conjunction must be constants from `Bag`.");
             }
         }
-
         $this->bag->where = array_merge($this->bag->where, $constraints);
-
         return $this;
     }
 
+    /* Fluent methods for building queries */
     /**
      * Set the result limit in the current Command Bag
      * @param $limit
@@ -192,7 +148,7 @@ class BaseBuilder
      */
     public function limit($limit)
     {
-        $this->bag->limit = $limit;
+        $this->addToBag('limit', $limit);
         return $this;
     }
 
@@ -204,7 +160,7 @@ class BaseBuilder
     public function groupBy($fields)
     {
         $fields = $this->csvToArray($fields);
-        $this->bag->groupBy = $fields;
+        $this->addToBag('groupBy', $fields);
         return $this;
     }
 
@@ -216,7 +172,7 @@ class BaseBuilder
      */
     public function orderBy($field, $direction = Bag::ORDER_ASC)
     {
-        $this->bag->orderBy[] = [$field, $direction];
+        $this->addToBag('orderBy', [[$field, $direction]]);
         return $this;
     }
 
@@ -224,9 +180,9 @@ class BaseBuilder
      * Flag the desired response as `tree`
      * @return $this
      */
-    public function tree()
+    public function mapAsTree()
     {
-        $this->bag->map = Bag::MAP_TREE;
+        $this->addToBag('map', Bag::MAP_TREE);
         return $this;
     }
 
@@ -234,11 +190,34 @@ class BaseBuilder
      * Flag the desired response as `path`
      * @return $this
      */
-    public function path()
+    public function mapAsPath()
     {
-        $this->bag->map = Bag::MAP_PATH;
+        $this->addToBag('map', Bag::MAP_PATH);
         return $this;
     }
+
+    /* Sub Queries */
+    /**
+     * Sets an alias for the current command bag
+     * @param $alias
+     */
+//    function set($alias)
+//    {
+//        $keys = array_keys($this->bag);
+//        $index = end($keys);
+//        $this->bag[$alias] = $this->getCurrentBag();
+//        unset($this->bag[$index]);
+//    }
+//
+//    /**
+//     * Returns a Command Bag by alias
+//     * @param $alias
+//     * @return mixed
+//     */
+//    function get($alias)
+//    {
+//        return $this->bag[$alias];
+//    }
 
     /* Manage the Builder itself */
     /**
@@ -331,5 +310,37 @@ class BaseBuilder
         }
 
         return $string;
+    }
+
+    /**
+     * Adds a clause to the current Command Bag
+     * @param $property
+     * @param $value
+     */
+    protected function addToBag($property, $value)
+    {
+        $this->bag->$property = $value;
+    }
+
+    /**
+     * Adds a clause to the current Command Bag
+     * @param $property
+     * @param $value
+     */
+    protected function appendToBag($property, $value)
+    {
+        array_push($this->bag->$property, $value);
+    }
+
+    /**
+     * Initializes the Bag Property if necessary
+     * @param $property
+     * @param array $value
+     */
+    protected function initializeProperty($property, $value = null)
+    {
+        if (is_null($this->bag->$property)) {
+            $this->bag->$property = (is_null($value)) ? [] : $value;
+        }
     }
 }

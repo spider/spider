@@ -12,6 +12,10 @@
     <testsuites>
         <testsuite name="Spider">
             <directory>tests</directory>
+            <exclude>tests/Integration/QueryBuilder/WithNeo4jTest</exclude>
+            <exclude>test/Unit/Commands/Languages/CypherProcessorTest</exclude>
+            <exclude>tests/Unit/Drivers/Gremlin</exclude>
+            <exclude>tests/Unit/Drivers/Neo4J</exclude>
         </testsuite>
     </testsuites>
     <filter>
