@@ -21,10 +21,10 @@ class WithOrientTest extends BaseTestSuite
         $manager = new Manager([
             'default' => 'orient',
             'orient' => [
-                'hostname' => 'localhost',
+                'hostname' => 'orientdb',
                 'port' => 2424,
                 'username' => 'root',
-                'password' => "root",
+                'password' => "rootpwd",
                 'database' => 'modern_graph',
                 'driver' => 'orientdb'
             ]

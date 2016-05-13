@@ -12,10 +12,10 @@ class OrientFixture extends DbFixture
     {
         $client = new PhpOrient();
         $client->configure([
-            'hostname' => 'localhost',
+            'hostname' => 'orientdb',
             'port' => 2424,
             'username' => 'root',
-            'password' => 'root',
+            'password' => 'rootpwd',
         ]);
         $client->connect();
 
@@ -64,10 +64,10 @@ class OrientFixture extends DbFixture
     {
         $client = new PhpOrient();
         $client->configure([
-            'hostname' => 'localhost',
+            'hostname' => 'orientdb',
             'port' => 2424,
             'username' => 'root',
-            'password' => "root",
+            'password' => "rootpwd",
             'database' => 'modern_graph',
         ]);
         $client->connect();

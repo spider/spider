@@ -2,11 +2,14 @@ version: '2'
 services:
   php:
     build: .
+    image: spider/php
+    container_name: spider_php
     links:
-       - "orientdb:orientdb"
+      - "orientdb:orientdb"
 
   orientdb:
     image: orientdb:latest
+    container_name: spider_orientdb
     environment:
       ORIENTDB_ROOT_PASSWORD: rootpwd
     ports:
