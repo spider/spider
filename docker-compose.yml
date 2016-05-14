@@ -4,11 +4,9 @@ services:
     build: .
     image: spider/php
     container_name: spider_php
-    links:
-      - "orientdb:orientdb"
 
   orientdb:
-    image: orientdb:latest
+    image: orientdb:2.1.16
     container_name: spider_orientdb
     environment:
       ORIENTDB_ROOT_PASSWORD: rootpwd

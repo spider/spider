@@ -29,7 +29,7 @@ class OrientFixture extends DbFixture
             PhpOrient::DATABASE_TYPE_GRAPH
         );
 
-        $client->dbOpen('modern_graph', 'admin', 'admin');
+        $client->dbOpen('modern_graph', 'root', 'rootpwd');
 
         $client->command('create class person extends V');
         $client->command('create class software extends V');
@@ -52,7 +52,7 @@ class OrientFixture extends DbFixture
             CREATE EDGE created FROM $d TO $f CONTENT { "weight" : 1.0 };
 
             commit retry 100;
-            return a;'
+            '
         );
 
         $client->dbClose();

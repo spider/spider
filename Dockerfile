@@ -1,22 +1,11 @@
-FROM php:5.6-cli
-COPY . /spider
-WORKDIR /spider
+FROM ubuntu:15.10
 
-RUN pecl install xdebug
-RUN docker-php-ext-enable xdebug
+RUN apt-get update
+RUN apt-get install software-properties-common python-software-properties -y #> /dev/null
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
+RUN yes | apt-get install php5
+RUN yes | apt-get install php5-xdebug
+RUN apt-get install curl php5-curl php5-gd php5-mcrypt -y #> /dev/null
 
-RUN apt-get update && apt-get install -y \
-        libfreetype6-dev \
-        libjpeg62-turbo-dev \
-        libmcrypt-dev \
-        libpng12-dev \
-    && docker-php-ext-install -j$(nproc) iconv mcrypt \
-    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd
-
-RUN touch /usr/local/etc/php/php.ini
-RUN echo "error_reporting = E_ALL" >> /usr/local/etc/php/php.ini
-RUN echo "display_errors = On" >> /usr/local/etc/php/php.ini
-RUN echo "display_startup_errors = On" >> /usr/local/etc/php/php.ini
+RUN curl --silent https://getcomposer.org/installer | php #> /dev/null 2>&1
+RUN mv composer.phar /usr/local/bin/composer
