@@ -7,8 +7,11 @@ class GremlinFixture extends DbFixture
 {
     public function load()
     {
+        $host = getenv('GREMLIN_HOSTNAME');
+        $port = getenv('GREMLIN_PORT');
+
         $client = new Connection();
-        $client->open('localhost:8182', 'graph');
+        $client->open("{$host}:{$port}", 'graph');
 
         try{
             $client->send("TinkerFactory.generateModern(graph)");
@@ -26,8 +29,11 @@ class GremlinFixture extends DbFixture
 
     public function unload()
     {
+        $host = getenv('GREMLIN_HOSTNAME');
+        $port = getenv('GREMLIN_PORT');
+        
         $client = new Connection();
-        $client->open('localhost:8182', 'graph');
+        $client->open("{$host}:{$port}", 'graph');
 
         try {
             $client->send("g.V().drop().iterate()");
