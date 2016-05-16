@@ -29,7 +29,7 @@ class OrientFixture extends DbFixture
             PhpOrient::DATABASE_TYPE_GRAPH
         );
 
-        $client->dbOpen('modern_graph', 'root', 'rootpwd');
+        $client->dbOpen('modern_graph', 'root', getenv('ORIENTDB_PASSWORD'));
 
         $client->command('create class person extends V');
         $client->command('create class software extends V');

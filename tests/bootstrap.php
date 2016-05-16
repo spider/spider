@@ -11,7 +11,7 @@ if (getenv('SPIDER_DOCKER')) {
     // We are in spider's special docker php container
     $dotenv = new Dotenv\Dotenv(__DIR__, '.env.docker');
 
-} elseif (getenv('TRAVIS_BUILD_DIR')) {
+} elseif (getenv('TRAVIS')) {
     // We are in travis
     $dotenv = new Dotenv\Dotenv(__DIR__, '.env.travis');
 
