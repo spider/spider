@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c973bcff2dadd51f93c11ab495a70ee3",
-    "content-hash": "9ff43bce67eecf2d51c91a23afb420ad",
+    "hash": "fdeef35e9bbeca4b08b859e43b04bf8b",
+    "content-hash": "fecbfea4a7b9330a1028a2677322e7ba",
     "packages": [
         {
             "name": "brightzone/gremlin-php",
@@ -877,16 +877,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.8.24",
+            "version": "4.8.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "a1066c562c52900a142a0e2bbf0582994671385e"
+                "reference": "6d1588a6542a52ed89636e5a9876bc7502bbb853"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a1066c562c52900a142a0e2bbf0582994671385e",
-                "reference": "a1066c562c52900a142a0e2bbf0582994671385e",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/6d1588a6542a52ed89636e5a9876bc7502bbb853",
+                "reference": "6d1588a6542a52ed89636e5a9876bc7502bbb853",
                 "shasum": ""
             },
             "require": {
@@ -900,7 +900,7 @@
                 "phpunit/php-code-coverage": "~2.1",
                 "phpunit/php-file-iterator": "~1.4",
                 "phpunit/php-text-template": "~1.2",
-                "phpunit/php-timer": ">=1.0.6",
+                "phpunit/php-timer": "^1.0.6",
                 "phpunit/phpunit-mock-objects": "~2.3",
                 "sebastian/comparator": "~1.1",
                 "sebastian/diff": "~1.2",
@@ -945,7 +945,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-03-14 06:16:08"
+            "time": "2016-05-10 18:47:12"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -1810,6 +1810,56 @@
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
             "time": "2016-03-04 07:55:57"
+        },
+        {
+            "name": "vlucas/phpdotenv",
+            "version": "v2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vlucas/phpdotenv.git",
+                "reference": "63f37b9395e8041cd4313129c08ece896d06ca8e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/63f37b9395e8041cd4313129c08ece896d06ca8e",
+                "reference": "63f37b9395e8041cd4313129c08ece896d06ca8e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.9"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8 || ^5.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dotenv\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause-Attribution"
+            ],
+            "authors": [
+                {
+                    "name": "Vance Lucas",
+                    "email": "vance@vancelucas.com",
+                    "homepage": "http://www.vancelucas.com"
+                }
+            ],
+            "description": "Loads environment variables from `.env` to `getenv()`, `$_ENV` and `$_SERVER` automagically.",
+            "keywords": [
+                "dotenv",
+                "env",
+                "environment"
+            ],
+            "time": "2016-04-15 10:48:49"
         }
     ],
     "aliases": [],
