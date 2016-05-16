@@ -9,7 +9,11 @@ ini_set('display_startup_errors', '1');
 /* Load Environment Credentials */
 if (getenv('SPIDER_DOCKER')) {
     // We are in spider's special docker php container
-    $dotenv = new Dotenv\Dotenv(__DIR__, '.env.defaults');
+    $dotenv = new Dotenv\Dotenv(__DIR__, '.env.docker');
+
+} elseif (getenv('TRAVIS_BUILD_DIR')) {
+    // We are in travis
+    $dotenv = new Dotenv\Dotenv(__DIR__, '.env.travis');
 
 } elseif (file_exists(__DIR__ . '/../.env')) {
     // We are not in our docker container, and the user has supplied credentials
