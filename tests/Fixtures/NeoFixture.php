@@ -12,9 +12,9 @@ class NeoFixture extends DbFixture
 {
     public function load()
     {
-        $client = new Client('localhost', 7474);
+        $client = new Client(getenv('NEO4J_HOSTNAME'), getenv('NEO4J_PORT'));
         $client->getTransport()
-            ->setAuth('neo4j', 'j4oen');
+            ->setAuth(getenv('NEO4J_USERNAME'), getenv('NEO4J_PASSWORD'));
 
         $queryString = "CREATE (a:person {name:'marko',age:29 }),
             (b:person {name:'vadas',age:27 }),
@@ -35,9 +35,9 @@ class NeoFixture extends DbFixture
 
     public function unload()
     {
-        $client = new Client('localhost', 7474);
+        $client = new Client(getenv('NEO4J_HOSTNAME'), getenv('NEO4J_PORT'));
         $client->getTransport()
-            ->setAuth('neo4j', 'j4oen');
+            ->setAuth(getenv('NEO4J_USERNAME'), getenv('NEO4J_PASSWORD'));
 
         $queryString = "MATCH (n)
             OPTIONAL MATCH (n)-[r]-()
