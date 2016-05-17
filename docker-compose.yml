@@ -1,15 +1,27 @@
 version: '2'
 services:
   php:
-    build: .
-    image: spider/php
+    image: skooppaos/php7
     container_name: spider_php
     links:
       - orientdb:orientdb
       - neo4j:neo4j
+    volumes:
+      - ./:/spider
+    working_dir: /spider
+    command: ["sleep 10", "vendor/bin/phpunit"] #vendor/bin/phpunit
+    environment:
+      - SPIDER_DOCKER=true
+
+      # @todo: make this more dynamic
+      # These are the services that phpunit will wait on to run tests
+      # Change the enviornment variables in your `docker-compose run` to switch on and off
+      #- SPIDER_SERVICE_ORIENTDB=true
+      #- SPIDER_SERIVCE_NEO4J=true
+      #- SPIDER_SERVICE_GREMLIN=false
 
   orientdb:
-    image: orientdb:2.1.16
+    image: orientdb:2.1.16 #:${ORIENTDB_VERSION}
     container_name: spider_orientdb
     environment:
       ORIENTDB_ROOT_PASSWORD: rootpwd
@@ -18,7 +30,7 @@ services:
        - "2480:2480"
 
   neo4j:
-    image: neo4j:2.3
+    image: neo4j:2.3 #:${NEO4J_VERSION}
     container_name: spider_neo4j
     environment:
       NEO4J_AUTH: neo4j/j4oen

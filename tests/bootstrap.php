@@ -1,4 +1,6 @@
 <?php
+use PhpOrient\PhpOrient;
+
 require __DIR__ . "/../vendor/autoload.php";
 
 /* Set error display appropriately */
@@ -26,3 +28,5 @@ if (getenv('SPIDER_DOCKER')) {
 $dotenv->load();
 
 //e.g.: getenv('ORIENTDB_HOSTNAME');
+
+/* Wait until services are started */
