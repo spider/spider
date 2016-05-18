@@ -9,16 +9,8 @@ services:
     volumes:
       - ./:/spider
     working_dir: /spider
-    command: ["sleep 10", "vendor/bin/phpunit"] #vendor/bin/phpunit
     environment:
       - SPIDER_DOCKER=true
-
-      # @todo: make this more dynamic
-      # These are the services that phpunit will wait on to run tests
-      # Change the enviornment variables in your `docker-compose run` to switch on and off
-      #- SPIDER_SERVICE_ORIENTDB=true
-      #- SPIDER_SERIVCE_NEO4J=true
-      #- SPIDER_SERVICE_GREMLIN=false
 
   orientdb:
     image: orientdb:2.1.16 #:${ORIENTDB_VERSION}

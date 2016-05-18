@@ -12,7 +12,7 @@
     <ini name="display_errors" value="On" />
     <ini name="display_startup_errors" value="On" />
     <testsuites>
-        <testsuite name="Spider">
+        <testsuite name="all">
             <directory>tests</directory>
         </testsuite>
     </testsuites>

@@ -1,0 +1,175 @@
+#!/usr/bin/env bash
+########################
+# API ##################
+########################
+# spider-dev [version options] up
+#       --orientdb="x.x.x"      Specify version to run
+#       --neo4j="x.x.x"         Specify version to run
+#       --php="x.x.x"           Specify version to run
+#
+# spider-dev down       Stops and kills all spider containers
+#
+# spider-dev [version options] [tests options] test      Runs specific test suites
+#       [version options]       See `up`
+#       -i                      Run integration tests
+#       -u                      Run unit tests
+#       (No flag defaults to all tests)
+#
+# spider-dev [mac flag] [version options] shell        Starts all services and opens a shell session on php
+#       --mac                   Flag only if using Mac OSX with the docker native beta (temporarily)
+#       [version ooptions]      See `up`
+#
+# spider-dev version      Outputs the version of spider with the release date, the currently released version of spider, and supported service versions
+########################
+
+
+### Default Variables
+# @todo: make these service versions dynamic so the script can do a check
+# offer feedback if they try an unsupported version
+odb_version="2.1.6"
+neo_version="1.7.3"
+php_version="7.0"
+
+spider_version="0.4.1"
+spider_dev_version="0.4.1"
+
+### Paths
+SPIDER_PATH=$(pwd)                    # @todo: make this dynamic
+SPIDER_BIN_PATH=${SPIDER_PATH}/bin
+
+### Option Defaults
+is_mac=0
+using_test_flags=0
+run_unit_tests=0
+run_integration_tests=0
+
+### Loads the dispatch library from  https://github.com/Mosai/workshop/blob/doc/dispatch.md
+# Changes zsh globbing patterns
+unsetopt NO_MATCH >/dev/null 2>&1 || :
+
+# Dispatches calls of commands and arguments
+dispatch ()
+{
+	namespace="$1"     # Namespace to be dispatched
+	arg="${2:-}"       # First argument
+	short="${arg#*-}"  # First argument without trailing -
+	long="${short#*-}" # First argument without trailing --
+
+	# Exit and warn if no first argument is found
+	if [ -z "$arg" ]; then
+		"${namespace}_" # Call empty call placeholder
+		return 1
+	fi
+
+	shift 2 # Remove namespace and first argument from $@
+
+	# Detects if a command, --long or -short option was called
+	if [ "$arg" = "--$long" ];then
+		longname="${long%%=*}" # Long argument before the first = sign
+
+		# Detects if the --long=option has = sign
+		if [ "$long" != "$longname" ]; then
+			longval="${long#*=}"
+			long="$longname"
+			set -- "$longval" "${@:-}"
+		fi
+
+		main_call=${namespace}_option_${long}
+
+
+	elif [ "$arg" = "-$short" ];then
+		main_call=${namespace}_option_${short}
+	else
+		main_call=${namespace}_command_${long}
+	fi
+
+	$main_call "${@:-}" && dispatch_returned=$? || dispatch_returned=$?
+
+	if [ $dispatch_returned = 127 ]; then
+		"${namespace}_call_" "$namespace" "$arg" # Empty placeholder
+		return 1
+	fi
+
+	return $dispatch_returned
+}
+
+
+
+### Default Commands
+spider-dev_ () ( echo "No commands given" ) # A placeholder if not commands were given
+spider-dev_call () ( echo "Invalid call '$@'" ) # General error response for command not found
+
+### Active Commands
+## UP: spider-dev --orient="x.x" --neo4j="x.x" --php="x.x" --gremlin="x.x" up
+spider-dev_command_up () (
+    # @todo: Add versioning to docker-compose.yml
+    #docker-compose up -d -e ORIENTDB_VERSION=${odb_version} -e PHP_VERSION=${php_version} -e NEO4J_VERSION=${neo_version}
+#    echo "Orient Version: ${odb_version}"
+#    echo "Neo Version: ${neo_version}"
+#    echo "PHP Version: ${php_version}"
+
+    docker-compose up -d
+)
+
+
+## DOWN: spider-dev down
+spider-dev_command_down () ( docker-compose down )
+
+
+## TEST: spider-dev --orient="x.x" --neo4j="x.x" --php="x.x" --gremlin="x.x" -i -u test
+spider-dev_command_test () (
+    # Create the PHPUnit command
+    phpunit_command="/spider/vendor/bin/phpunit -c /spider/phpunit.xml.dist"
+    if [ $using_test_flags = 1 ]; then
+        phpunit_command="${phpunit_command} "'--filter="'
+        if [ $run_unit_tests = 1 ]; then
+            phpunit_command="${phpunit_command}Unit|"
+        fi
+
+        if [ $run_integration_tests = 1 ]; then
+            phpunit_command="${phpunit_command}Integration"
+        fi
+
+        phpunit_command="$(echo -e "${phpunit_command}" | sed -e 's/\|*$//')"
+        phpunit_command="${phpunit_command}"'"' #@todo: enclose in ""?
+    fi
+
+    # Run the tests and kill the container
+    spider-dev_command_up
+    docker-compose run php ${phpunit_command}
+)
+
+
+## TEST: spider-dev --orient="x.x" --neo4j="x.x" --php="x.x" --gremlin="x.x" -i -u -a test
+spider-dev_command_shell () (
+    # Find the correct volume path (temporary workaround for docker native betas)
+    if [ $is_mac = 0 ]; then
+        volume_path=${SPIDER_PATH}
+    else
+        volume_path=/Mac${SPIDER_PATH}
+    fi
+
+    echo "Sorry, the php container does not yet support bash"
+#    spider-dev_command_up
+#    sleep 5
+#    docker run -it --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider skooppaos/php7 shell
+)
+
+
+# Versioning
+spider-dev_option_orientdb () ( odb_version="$1"; shift; dispatch spider-dev "$@" )
+spider-dev_option_neo4j () ( neo_version="$1"; shift; dispatch spider-dev "$@" )
+spider-dev_option_php () ( php_version="$1"; shift; dispatch spider-dev "$@" )
+
+
+# Testing Suites Flags
+spider-dev_option_u () ( using_test_flags=1; run_unit_tests=1; dispatch spider-dev "$@" )
+spider-dev_option_i () ( using_test_flags=1; run_integration_tests=1; dispatch spider-dev "$@" )
+
+
+# Temporary Mac Flag for shell
+spider-dev_option_mac () ( is_mac=1; dispatch spider-dev "$@" )
+
+
+# Let'er Fly! (Dispatch the arguments)
+dispatch spider-dev "$@"
