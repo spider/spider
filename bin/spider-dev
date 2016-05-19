@@ -151,7 +151,7 @@ spider-dev_command_shell () (
 
     spider-dev_command_up
     sleep 5
-    docker run -it --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider skooppaos/php${php_version} bash
+    docker run -it --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider "skooppaos/php:${php_version}" bash
 )
 
 
