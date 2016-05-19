@@ -24,20 +24,24 @@
 
 
 ###### To Do ########
-# Add versioning support
-# Check versions against supported, offer feedback
 # Have tests or `spider-dev` (I think spider-dev. Tests *should* fail of no service) wait for database service to be up
+# spider-dev versions
+# find correct directory automatically
 ####################
 
 ### Default Variables
-# @todo: make these service versions dynamic so the script can do a check
-# offer feedback if they try an unsupported version
-odb_version="latest"
-neo_version="latest"
+odb_version="2.1.16"
+neo_version="2.3.3"
 php_version="7.0"
 
 spider_version="0.4.1"
 spider_dev_version="0.4.1"
+
+### Supported versions
+supported_php="7.0 5.6"
+supported_odb="2.1.16 2.1.17 2.2.0"
+supported_neo="2.3.3 2.3"
+
 
 ### Paths
 SPIDER_PATH=$(pwd)                    # @todo: make this dynamic
@@ -99,25 +103,65 @@ dispatch ()
 	return $dispatch_returned
 }
 
+in_array() {
+    needle=$1
+    haystack=$2
+    found="false"
+
+    for item in $haystack
+    do
+        if [ "$item" = "$needle" ]; then
+            found="true"
+            break
+        fi
+    done
+
+    echo "$found"
+}
+
+check_versions() {
+    is_php_supported=$(in_array $php_version "$supported_php")
+    if [ "$is_php_supported" = "false" ]; then
+        echo "WARNING: The php version you provided (${php_version}) is not officially supported, and may not have a valid docker container"
+    fi
+
+    is_odb_supported=$(in_array $odb_version "$supported_odb")
+    if [ "$is_odb_supported" = "false" ]; then
+        echo "WARNING: The orientdb version you provided (${odb_version}) is not officially supported, and may not have a valid docker container"
+    fi
+
+    is_neo_supported=$(in_array $neo_version "$supported_neo")
+    if [ "$is_neo_supported" = "false" ]; then
+        echo "WARNING: The neo4j version you provided (${neo_version}) is not officially supported, and may not have a valid docker container"
+    fi
+}
 
 
 ### Default Commands
 spider-dev_ () ( echo "No commands given" ) # A placeholder if not commands were given
 spider-dev_call () ( echo "Invalid call '$@'" ) # General error response for command not found
 
+
+
 ### Active Commands
 ## UP: spider-dev --orient="x.x" --neo4j="x.x" --php="x.x" --gremlin="x.x" up
 spider-dev_command_up () (
+    check_versions
     PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" docker-compose up -d
 )
 
 
 ## DOWN: spider-dev down
-spider-dev_command_down () ( PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" docker-compose down )
+spider-dev_command_down () (
+    check_versions
+    PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" docker-compose down
+)
 
 
 ## TEST: spider-dev --orient="x.x" --neo4j="x.x" --php="x.x" --gremlin="x.x" -i -u test
 spider-dev_command_test () (
+    check_versions
+
     # Create the PHPUnit command
     phpunit_command="/spider/vendor/bin/phpunit -c /spider/phpunit.xml.dist"
     if [ $using_test_flags = 1 ]; then
@@ -142,6 +186,8 @@ spider-dev_command_test () (
 
 ## TEST: spider-dev --orient="x.x" --neo4j="x.x" --php="x.x" --gremlin="x.x" -i -u -a test
 spider-dev_command_shell () (
+    check_versions
+
     # Find the correct volume path (temporary workaround for docker native betas)
     if [ $is_mac = 0 ]; then
         volume_path=${SPIDER_PATH}
@@ -152,6 +198,22 @@ spider-dev_command_shell () (
     spider-dev_command_up
     sleep 5
     docker run -it --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider "skooppaos/php:${php_version}" bash
+)
+
+
+## VERSIONS: spider-dev versions
+spider-dev_command_versions () (
+    echo "Default versions of your development environment: "
+    echo " - spider     ${spider_version}"
+    echo " - spider-dev ${spider_dev_version}"
+    echo " - php        ${php_version}"
+    echo " - orientdb   ${odb_version}"
+    echo " - neo4j      ${neo_version}"
+
+    echo "Versions currently supported by Spider: "
+    echo " - php        ${supported_php}"
+    echo " - orientdb   ${supported_odb}"
+    echo " - neo4j      ${supported_neo}"
 )
 
 
