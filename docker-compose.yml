@@ -1,7 +1,7 @@
 version: '2'
 services:
   php:
-    image: skooppaos/php7
+    image: skooppaos/php${PHP_VERSION}
     container_name: spider_php
     links:
       - orientdb:orientdb
@@ -13,7 +13,7 @@ services:
       - SPIDER_DOCKER=true
 
   orientdb:
-    image: orientdb:2.1.16 #:${ORIENTDB_VERSION}
+    image: orientdb #${ORIENTDB_VERSION}
     container_name: spider_orientdb
     environment:
       ORIENTDB_ROOT_PASSWORD: rootpwd
@@ -22,7 +22,7 @@ services:
        - "2480:2480"
 
   neo4j:
-    image: neo4j:2.3 #:${NEO4J_VERSION}
+    image: neo4j #${NEO4J_VERSION}
     container_name: spider_neo4j
     environment:
       NEO4J_AUTH: neo4j/j4oen

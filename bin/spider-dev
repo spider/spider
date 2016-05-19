@@ -23,11 +23,17 @@
 ########################
 
 
+###### To Do ########
+# Add versioning support
+# Check versions against supported, offer feedback
+# Have tests or `spider-dev` (I think spider-dev. Tests *should* fail of no service) wait for database service to be up
+####################
+
 ### Default Variables
 # @todo: make these service versions dynamic so the script can do a check
 # offer feedback if they try an unsupported version
-odb_version="2.1.6"
-neo_version="1.7.3"
+odb_version="latest"
+neo_version="latest"
 php_version="7.0"
 
 spider_version="0.4.1"
@@ -102,18 +108,12 @@ spider-dev_call () ( echo "Invalid call '$@'" ) # General error response for com
 ### Active Commands
 ## UP: spider-dev --orient="x.x" --neo4j="x.x" --php="x.x" --gremlin="x.x" up
 spider-dev_command_up () (
-    # @todo: Add versioning to docker-compose.yml
-    #docker-compose up -d -e ORIENTDB_VERSION=${odb_version} -e PHP_VERSION=${php_version} -e NEO4J_VERSION=${neo_version}
-#    echo "Orient Version: ${odb_version}"
-#    echo "Neo Version: ${neo_version}"
-#    echo "PHP Version: ${php_version}"
-
-    docker-compose up -d
+    PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" docker-compose up -d
 )
 
 
 ## DOWN: spider-dev down
-spider-dev_command_down () ( docker-compose down )
+spider-dev_command_down () ( PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" docker-compose down )
 
 
 ## TEST: spider-dev --orient="x.x" --neo4j="x.x" --php="x.x" --gremlin="x.x" -i -u test
@@ -131,12 +131,12 @@ spider-dev_command_test () (
         fi
 
         phpunit_command="$(echo -e "${phpunit_command}" | sed -e 's/\|*$//')"
-        phpunit_command="${phpunit_command}"'"' #@todo: enclose in ""?
+        phpunit_command="${phpunit_command}"'"'
     fi
 
     # Run the tests and kill the container
     spider-dev_command_up
-    docker-compose run php ${phpunit_command}
+    PHP_VERSION=":${php_version}" docker-compose run php ${phpunit_command}
 )
 
 
@@ -149,10 +149,9 @@ spider-dev_command_shell () (
         volume_path=/Mac${SPIDER_PATH}
     fi
 
-    echo "Sorry, the php container does not yet support bash"
-#    spider-dev_command_up
-#    sleep 5
-#    docker run -it --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider skooppaos/php7 shell
+    spider-dev_command_up
+    sleep 5
+    docker run -it --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider skooppaos/php${php_version} bash
 )
 
 
