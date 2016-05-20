@@ -1,3 +1,5 @@
+sudo: required
+
 language: php
 
 php:
@@ -14,7 +16,10 @@ services:
   - docker
 
 before_install:
-  - ./bin/spider-dev up
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/1.7.1/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
 
 before_script:
   - travis_retry composer self-update
@@ -22,7 +27,7 @@ before_script:
 
 script:
   - mkdir -p build/logs
-  - php vendor/bin/phpunit -c phpunit.xml.dist
+  - bin/spider-dev test
 
 after_script:
   - php vendor/bin/coveralls -v
