@@ -26,8 +26,9 @@ SPIDER_BIN_PATH=${SPIDER_PATH}/bin
 
 ## Current default service versions
 odb_version="2.1.16"
-neo_version="2.3.3"
+neo_version="3.0"
 php_version="7.0"
+gremlin_version="3.0.0"
 
 ## Spider package versions
 spider_version="0.4.0"
@@ -35,9 +36,10 @@ spider_dev_version="0.4.0"
 
 ## Officially supported versions (separated by space)
 # These correspond to docker-image tags (orientdb:2.1.16)
-supported_php="7.0 5.6"
-supported_odb="2.1.16 2.1.17 2.2.0"
-supported_neo="2.3.3 2.3"
+supported_php="7.0" # @todo: build a 5.6 container
+supported_odb="2.1.16 2.1.17"
+supported_neo="2.3 2.3-enterprise 3.0 3.0-enterprise"
+supported_gremlin="3.0.0"
 
 ## Flag defaults
 is_mac=0 # This is temporary for the docker private beta release. Will be removed
@@ -46,6 +48,7 @@ is_mac=0 # This is temporary for the docker private beta release. Will be remove
 using_test_flags=0 # if -i or -u is used
 run_unit_tests=0 # -i
 run_integration_tests=0 # -u
+kill_after_tests_flag=1 # --nokill to keep db services alive after tests
 
 ### Loads the `dispatch` library
 # Mad love to https://github.com/Mosai/workshop/blob/doc/dispatch.md
@@ -91,6 +94,11 @@ check_versions() {
     if [ "$is_neo_supported" = "false" ]; then
         echo "WARNING: The neo4j version you provided (${neo_version}) is not officially supported, and may not have a valid docker container"
     fi
+
+    is_gremlin_supported=$(in_array $gremlin_version "$supported_gremlin")
+    if [ "$is_gremlin_supported" = "false" ]; then
+        echo "WARNING: The gremlin version you provided (${gremlin_version}) is not officially supported, and may not have a valid docker container"
+    fi
 }
 
 
@@ -104,14 +112,14 @@ spider-dev_call () ( echo "Invalid call '$@'" ) # General error response for com
 # @options [versions] See `bin/spider-dev help`
 spider-dev_command_up () (
     check_versions
-    PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" docker-compose up -d
+    PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" GREMLIN_VERSION=":${gremlin_version}" docker-compose up -d
 )
 
 
 ## `down` Stops docker services
 spider-dev_command_down () (
     check_versions
-    PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" docker-compose down
+    PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" GREMLIN_VERSION=":${gremlin_version}" docker-compose down
 )
 
 
@@ -139,7 +147,12 @@ spider-dev_command_test () (
 
     # Run the tests and kill the container
     spider-dev_command_up
-    PHP_VERSION=":${php_version}" docker-compose run php ${phpunit_command}
+    sleep 10
+    PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}"  GREMLIN_VERSION=":${gremlin_version}" docker-compose run php ${phpunit_command}
+
+    if [ $kill_after_tests_flag = 1 ]; then
+        spider-dev_command_down
+    fi
 )
 
 
@@ -157,7 +170,7 @@ spider-dev_command_shell () (
 
     spider-dev_command_up
     sleep 5
-    docker run -it --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider "skooppaos/php:${php_version}" bash
+    docker run -it --link spider_gremlin:gremlin --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider "skooppaos/php:${php_version}" bash
 )
 
 
@@ -169,11 +182,14 @@ spider-dev_command_versions () (
     echo " - php        ${php_version}"
     echo " - orientdb   ${odb_version}"
     echo " - neo4j      ${neo_version}"
+    echo " - gremlin    ${gremlin_version}"
+
 
     echo "Versions currently supported by Spider: "
     echo " - php        ${supported_php}"
     echo " - orientdb   ${supported_odb}"
     echo " - neo4j      ${supported_neo}"
+    echo " - gremlin    ${gremlin_version}"
 )
 
 
@@ -192,8 +208,9 @@ Also note that options and flags must come BEFORE commands, e.g. bin/spider-dev 
     echo "      Version Flags:"
     echo "      --orientdb="x.x.x"   Sets the OrientDB service version (corresponds directly to docker image tag, e.g. orientdb:2.1.16)"
     echo "      --neo="x.x.x"        Sets the Neo4j service version (corresponds directly to docker image tag, e.g. neo:2.1.16)"
+    echo "      --gremlin="x.x.x"    Sets the Gremlin service version (corresponds directly to docker image tag, e.g. gremlin:2.1.16)"
     echo "      --php="x.x.x"        Sets the PHP service version (corresponds directly to docker image tag, e.g. php:7.0)"
-
+    echo ""
     echo "      --mac                Flag the host system as a Mac using Docker's Private Beta, which (for now) has different path needs"
     echo ""
     echo "COMMANDS: [options] [flags] command"
@@ -205,6 +222,7 @@ Also note that options and flags must come BEFORE commands, e.g. bin/spider-dev 
     echo "   test          Starts services and runs phpunit tests"
     echo "      -u         Run unit tests"
     echo "      -i         Run integration tests"
+    echo "      --nokill   Keep the database services running after the tests complete."
     echo "      [versions] See above."
     echo ""
     echo "   shell         Starts services and opens a shell in the php container."
@@ -220,12 +238,14 @@ Also note that options and flags must come BEFORE commands, e.g. bin/spider-dev 
 ## Service versioning
 spider-dev_option_orientdb () ( odb_version="$1"; shift; dispatch spider-dev "$@" )
 spider-dev_option_neo4j () ( neo_version="$1"; shift; dispatch spider-dev "$@" )
+spider-dev_option_gremlin () ( gremlin="$1"; shift; dispatch spider-dev "$@" )
 spider-dev_option_php () ( php_version="$1"; shift; dispatch spider-dev "$@" )
 
 
 ## Testing suites flags
 spider-dev_option_u () ( using_test_flags=1; run_unit_tests=1; dispatch spider-dev "$@" )
 spider-dev_option_i () ( using_test_flags=1; run_integration_tests=1; dispatch spider-dev "$@" )
+spider-dev_option_nokill () ( kill_after_tests_flag=0; dispatch spider-dev "$@" )
 
 
 # Temporary Mac Flag for shell
