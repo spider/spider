@@ -22,7 +22,7 @@ env:
 
 before_install:
   # list docker-engine versions
-#  - apt-cache madison docker-engine
+  - apt-cache madison docker-engine
 
   # upgrade docker-engine to specific version
   - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
@@ -40,7 +40,7 @@ before_script:
 
 script:
   - mkdir -p build/logs
-  - vendor/bin/phpunit phpunit.xml.dist
+  - php vendor/bin/phpunit -c phpunit.xml.dist
 
 after_script:
   - php vendor/bin/coveralls -v
