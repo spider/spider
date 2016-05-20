@@ -28,5 +28,3 @@ if (getenv('SPIDER_DOCKER')) {
 $dotenv->load();
 
 //e.g.: getenv('ORIENTDB_HOSTNAME');
-
-/* Wait until services are started */

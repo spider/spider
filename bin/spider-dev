@@ -1,108 +1,63 @@
 #!/usr/bin/env bash
-########################
-# API ##################
-########################
-# spider-dev [version options] up
-#       --orientdb="x.x.x"      Specify version to run
-#       --neo4j="x.x.x"         Specify version to run
-#       --php="x.x.x"           Specify version to run
-#
-# spider-dev down       Stops and kills all spider containers
-#
-# spider-dev [version options] [tests options] test      Runs specific test suites
-#       [version options]       See `up`
-#       -i                      Run integration tests
-#       -u                      Run unit tests
-#       (No flag defaults to all tests)
-#
-# spider-dev [mac flag] [version options] shell        Starts all services and opens a shell session on php
-#       --mac                   Flag only if using Mac OSX with the docker native beta (temporarily)
-#       [version ooptions]      See `up`
-#
-# spider-dev version      Outputs the version of spider with the release date, the currently released version of spider, and supported service versions
-########################
+##############################################################
+#    _________            .__       .___                     #
+#   /   _____/  ______    |__|    __| _/    ____    _______  #
+#   \_____  \   \____ \   |  |   / __ |   _/ __ \   \_  __ \ #
+#   /        \  |  |_> >  |  |  / /_/ |   \  ___/    |  | \/ #
+#  /_______  /  |   __/   |__|  \____ |    \___  >   |__|    #
+#          \/   |__|                 \/        \/            #
+##############################################################
+#  Version 0.4.0 -- http://github.com/spider/spider -- MIT   #
+##############################################################
+
+# Spider-Dev is a command line utility for managing docker environments for the
+# Spider project. For a more complete utility use `spider` in this directory
+
+# Please note this utility MUST be run from the spider package directory
+# (where the docker-compose.yml and composer.json file life
+
+# For help please `bin/spider-dev help`
 
 
-###### To Do ########
-# Have tests or `spider-dev` (I think spider-dev. Tests *should* fail of no service) wait for database service to be up
-# spider-dev versions
-# find correct directory automatically
-####################
+### Let's get this party started! Declare our variables
+## Paths
+SPIDER_PATH=$(pwd)
+SPIDER_BIN_PATH=${SPIDER_PATH}/bin
 
-### Default Variables
+## Current default service versions
 odb_version="2.1.16"
 neo_version="2.3.3"
 php_version="7.0"
 
-spider_version="0.4.1"
-spider_dev_version="0.4.1"
+## Spider package versions
+spider_version="0.4.0"
+spider_dev_version="0.4.0"
 
-### Supported versions
+## Officially supported versions (separated by space)
+# These correspond to docker-image tags (orientdb:2.1.16)
 supported_php="7.0 5.6"
 supported_odb="2.1.16 2.1.17 2.2.0"
 supported_neo="2.3.3 2.3"
 
+## Flag defaults
+is_mac=0 # This is temporary for the docker private beta release. Will be removed
 
-### Paths
-SPIDER_PATH=$(pwd)                    # @todo: make this dynamic
-SPIDER_BIN_PATH=${SPIDER_PATH}/bin
+# Testing flags
+using_test_flags=0 # if -i or -u is used
+run_unit_tests=0 # -i
+run_integration_tests=0 # -u
 
-### Option Defaults
-is_mac=0
-using_test_flags=0
-run_unit_tests=0
-run_integration_tests=0
+### Loads the `dispatch` library
+# Mad love to https://github.com/Mosai/workshop/blob/doc/dispatch.md
+. ${SPIDER_BIN_PATH}/vendor/dispatch.sh
 
-### Loads the dispatch library from  https://github.com/Mosai/workshop/blob/doc/dispatch.md
-# Changes zsh globbing patterns
-unsetopt NO_MATCH >/dev/null 2>&1 || :
+### Setup our custom functions
 
-# Dispatches calls of commands and arguments
-dispatch ()
-{
-	namespace="$1"     # Namespace to be dispatched
-	arg="${2:-}"       # First argument
-	short="${arg#*-}"  # First argument without trailing -
-	long="${short#*-}" # First argument without trailing --
-
-	# Exit and warn if no first argument is found
-	if [ -z "$arg" ]; then
-		"${namespace}_" # Call empty call placeholder
-		return 1
-	fi
-
-	shift 2 # Remove namespace and first argument from $@
-
-	# Detects if a command, --long or -short option was called
-	if [ "$arg" = "--$long" ];then
-		longname="${long%%=*}" # Long argument before the first = sign
-
-		# Detects if the --long=option has = sign
-		if [ "$long" != "$longname" ]; then
-			longval="${long#*=}"
-			long="$longname"
-			set -- "$longval" "${@:-}"
-		fi
-
-		main_call=${namespace}_option_${long}
-
-
-	elif [ "$arg" = "-$short" ];then
-		main_call=${namespace}_option_${short}
-	else
-		main_call=${namespace}_command_${long}
-	fi
-
-	$main_call "${@:-}" && dispatch_returned=$? || dispatch_returned=$?
-
-	if [ $dispatch_returned = 127 ]; then
-		"${namespace}_call_" "$namespace" "$arg" # Empty placeholder
-		return 1
-	fi
-
-	return $dispatch_returned
-}
-
+## Mimics PHP's `in_array()` function
+# @param string $needle The term to search for
+# @param string $haystack List seperated by a " "
+# @return string Echoes "true" or "false"
+# @usage switch=$(in_array "two" "one two three")
 in_array() {
     needle=$1
     haystack=$2
@@ -119,6 +74,8 @@ in_array() {
     echo "$found"
 }
 
+## Raises warnings if user is requesting unsupported service versions
+# @errors Echoes warnings, but does not stop execution
 check_versions() {
     is_php_supported=$(in_array $php_version "$supported_php")
     if [ "$is_php_supported" = "false" ]; then
@@ -137,28 +94,30 @@ check_versions() {
 }
 
 
-### Default Commands
+### Register `spider-dev` commands
+## Boilerplate Commands
 spider-dev_ () ( echo "No commands given" ) # A placeholder if not commands were given
 spider-dev_call () ( echo "Invalid call '$@'" ) # General error response for command not found
 
 
-
-### Active Commands
-## UP: spider-dev --orient="x.x" --neo4j="x.x" --php="x.x" --gremlin="x.x" up
+## `up` brings up docker services
+# @options [versions] See `bin/spider-dev help`
 spider-dev_command_up () (
     check_versions
     PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" docker-compose up -d
 )
 
 
-## DOWN: spider-dev down
+## `down` Stops docker services
 spider-dev_command_down () (
     check_versions
     PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" docker-compose down
 )
 
 
-## TEST: spider-dev --orient="x.x" --neo4j="x.x" --php="x.x" --gremlin="x.x" -i -u test
+## `test` Runs spider tests
+# @options [versions] See `bin/spider-dev help`
+# @flags u|i Optional test suites to run
 spider-dev_command_test () (
     check_versions
 
@@ -184,7 +143,8 @@ spider-dev_command_test () (
 )
 
 
-## TEST: spider-dev --orient="x.x" --neo4j="x.x" --php="x.x" --gremlin="x.x" -i -u -a test
+## `shell` Starts spider services and opens a shell to php container
+# @options [versions] See `bin/spider-dev help`
 spider-dev_command_shell () (
     check_versions
 
@@ -201,7 +161,7 @@ spider-dev_command_shell () (
 )
 
 
-## VERSIONS: spider-dev versions
+## `versions` Displays version information
 spider-dev_command_versions () (
     echo "Default versions of your development environment: "
     echo " - spider     ${spider_version}"
@@ -217,13 +177,53 @@ spider-dev_command_versions () (
 )
 
 
-# Versioning
+## `help` Displays help information
+spider-dev_command_help () (
+    echo "Spider-Dev is a command line utility for managing docker environments for the
+Spider project. For a more complete utility use spider in this directory
+
+Please note this utility MUST be run from the spider package directory
+(where the docker-compose.yml and composer.json file life
+
+Also note that options and flags must come BEFORE commands, e.g. bin/spider-dev -i -u test"
+    echo ""
+    echo "OPTIONS and FLAGS"
+    echo "   Many commands take multiple options and flags. They are always the same."
+    echo "      Version Flags:"
+    echo "      --orientdb="x.x.x"   Sets the OrientDB service version (corresponds directly to docker image tag, e.g. orientdb:2.1.16)"
+    echo "      --neo="x.x.x"        Sets the Neo4j service version (corresponds directly to docker image tag, e.g. neo:2.1.16)"
+    echo "      --php="x.x.x"        Sets the PHP service version (corresponds directly to docker image tag, e.g. php:7.0)"
+
+    echo "      --mac                Flag the host system as a Mac using Docker's Private Beta, which (for now) has different path needs"
+    echo ""
+    echo "COMMANDS: [options] [flags] command"
+    echo "   up            Starts docker services for all databases and builds a php image. Versions are optional."
+    echo "      [versions] See above."
+    echo ""
+    echo "   down          Stops all running docker services."
+    echo ""
+    echo "   test          Starts services and runs phpunit tests"
+    echo "      -u         Run unit tests"
+    echo "      -i         Run integration tests"
+    echo "      [versions] See above."
+    echo ""
+    echo "   shell         Starts services and opens a shell in the php container."
+    echo "      [versions] See above."
+    echo ""
+    echo "   versions      Displays version information."
+    echo ""
+    echo "   help          This help message."
+)
+
+
+### Handle Options and Flags
+## Service versioning
 spider-dev_option_orientdb () ( odb_version="$1"; shift; dispatch spider-dev "$@" )
 spider-dev_option_neo4j () ( neo_version="$1"; shift; dispatch spider-dev "$@" )
 spider-dev_option_php () ( php_version="$1"; shift; dispatch spider-dev "$@" )
 
 
-# Testing Suites Flags
+## Testing suites flags
 spider-dev_option_u () ( using_test_flags=1; run_unit_tests=1; dispatch spider-dev "$@" )
 spider-dev_option_i () ( using_test_flags=1; run_integration_tests=1; dispatch spider-dev "$@" )
 
@@ -232,5 +232,5 @@ spider-dev_option_i () ( using_test_flags=1; run_integration_tests=1; dispatch s
 spider-dev_option_mac () ( is_mac=1; dispatch spider-dev "$@" )
 
 
-# Let'er Fly! (Dispatch the arguments)
+#### Let'er Fly! (Dispatch the arguments)
 dispatch spider-dev "$@"

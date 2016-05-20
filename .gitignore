@@ -1,6 +1,6 @@
-vendor
-build/
+/vendor
+/build/
 docs/api/cache
-.vagrant
-.idea/
+/.vagrant
+/.idea/
 .env
