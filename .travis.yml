@@ -18,12 +18,9 @@ services:
 env:
   global:
     - DOCKER_VERSION=1.10.1-0~trusty
-    - DOCKER_COMPOSE_VERSION=1.6.0
+    - DOCKER_COMPOSE_VERSION=1.7.1
 
 before_install:
-  # list docker-engine versions
-  - apt-cache madison docker-engine
-
   # upgrade docker-engine to specific version
   - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
 
@@ -34,8 +31,8 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
 
 before_script:
-  - bin/spider-dev up
-  - sleep 20
+  - PHP_VERSION=":7.0" ORIENTDB_VERSION=":2.1.16" NEO4J_VERSION=":2.3" GREMLIN_VERSION=":3.0.0" docker-compose up -d
+  - sleep 40
   - travis_retry composer self-update
   - travis_retry composer install --no-interaction --prefer-source --dev
 

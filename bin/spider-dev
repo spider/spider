@@ -36,7 +36,7 @@ spider_dev_version="0.4.0"
 
 ## Officially supported versions (separated by space)
 # These correspond to docker-image tags (orientdb:2.1.16)
-supported_php="7.0" # @todo: build a 5.6 container
+supported_php="7.0 5.6"
 supported_odb="2.1.16 2.1.17"
 supported_neo="2.3 2.3-enterprise 3.0 3.0-enterprise"
 supported_gremlin="3.0.0"
