@@ -15,19 +15,32 @@ matrix:
 services:
   - docker
 
+env:
+  global:
+    - DOCKER_VERSION=1.10.1-0~trusty
+    - DOCKER_COMPOSE_VERSION=1.6.0
+
 before_install:
+  # list docker-engine versions
+#  - apt-cache madison docker-engine
+
+  # upgrade docker-engine to specific version
+  - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
+
+  # reinstall docker-compose at specific version
   - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/1.7.1/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
 
 before_script:
+  - bin/spider-dev up
   - travis_retry composer self-update
   - travis_retry composer install --no-interaction --prefer-source --dev
 
 script:
   - mkdir -p build/logs
-  - bin/spider-dev test
+  - vendor/bin/phpunit phpunit.xml.dist
 
 after_script:
   - php vendor/bin/coveralls -v
