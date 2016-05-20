@@ -8,13 +8,13 @@ php:
 
 matrix:
   allow_failures:
-    - php: nightly
+   - php: nightly
 
 services:
-   - docker
+  - docker
 
- before_install:
- - ./bin/spider-dev up
+before_install:
+  - ./bin/spider-dev up
 
 before_script:
   - travis_retry composer self-update
