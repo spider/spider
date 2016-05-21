@@ -1,6 +1,4 @@
 <?php
-use PhpOrient\PhpOrient;
-
 require __DIR__ . "/../vendor/autoload.php";
 
 /* Set error display appropriately */
@@ -23,8 +21,10 @@ if (getenv('TRAVIS')) {
 
 } else {
     // We are not in our docker container and there are no credentials supplied
-    throw new \Exception("No Database Credentials Supplied. Please use the supplied docker container or add a .env file. Tests cancelled.");
+    // Use the from .env.travis (localhost)
+    echo "WARNING: No Database Credentials Supplied. Please use the supplied docker container or add a .env file.";
+    $dotenv = new Dotenv\Dotenv(__DIR__, '.env.travis');
 }
 $dotenv->load();
 
-//e.g.: getenv('ORIENTDB_HOSTNAME');
+//echo getenv('GREMLIN_HOSTNAME');

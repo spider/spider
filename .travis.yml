@@ -11,6 +11,7 @@ php:
 matrix:
   allow_failures:
    - php: nightly
+   - php: hhvm      # only until docker container can be built
 
 services:
   - docker
@@ -43,3 +44,5 @@ script:
 after_script:
   - php vendor/bin/coveralls -v
 
+## The other option is to run bin/spider-dev AS the test
+## But how to specify different php versions and builds?

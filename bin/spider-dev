@@ -50,6 +50,8 @@ run_unit_tests=0 # -i
 run_integration_tests=0 # -u
 kill_after_tests_flag=1 # --nokill to keep db services alive after tests
 
+final_exit_code=0 # status
+
 ### Loads the `dispatch` library
 # Mad love to https://github.com/Mosai/workshop/blob/doc/dispatch.md
 . ${SPIDER_BIN_PATH}/vendor/dispatch.sh
@@ -147,12 +149,16 @@ spider-dev_command_test () (
 
     # Run the tests and kill the container
     spider-dev_command_up
-    sleep 10
-    PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}"  GREMLIN_VERSION=":${gremlin_version}" docker-compose run php ${phpunit_command}
+    sleep 20
+    PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}"  GREMLIN_VERSION=":${gremlin_version}" docker-compose run --rm php ${phpunit_command}
+
+    final_exit_code=$?
 
     if [ $kill_after_tests_flag = 1 ]; then
         spider-dev_command_down
     fi
+
+    exit $final_exit_code
 )
 
 
