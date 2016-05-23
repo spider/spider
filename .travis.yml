@@ -1,25 +1,21 @@
 sudo: required
-
 language: php
-
-php:
-  - 5.6
-  - 7.0
-  - hhvm
-  - nightly
-
-matrix:
-  allow_failures:
-   - php: nightly
-   - php: hhvm      # only until docker container can be built
-
 services:
   - docker
 
 env:
-  global:
-    - DOCKER_VERSION=1.10.1-0~trusty
-    - DOCKER_COMPOSE_VERSION=1.7.1
+  - DOCKER_VERSION=1.10.1-0~trusty DOCKER_COMPOSE_VERSION=1.7.1 TEST_SCRIPT="bin/spider-dev --php=7.0 test"
+  - DOCKER_VERSION=1.10.1-0~trusty DOCKER_COMPOSE_VERSION=1.7.1 TEST_SCRIPT="bin/spider-dev --php=5.6 test"
+  - DOCKER_VERSION=1.10.1-0~trusty DOCKER_COMPOSE_VERSION=1.7.1 TTEST_SCRIPT="bin/spider-dev --hhvm=latest test"
+#  - nightly
+
+#matrix:
+#  allow_failures:
+#   - php: nightly
+
+cache:
+  directories:
+    - ./vendor
 
 before_install:
   # upgrade docker-engine to specific version
@@ -31,18 +27,15 @@ before_install:
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
 
+install:
+  - curl -sS https://getcomposer.org/installer | php
+  - travis_retry php composer.phar install
+
 before_script:
-  - PHP_VERSION=":7.0" ORIENTDB_VERSION=":2.1.16" NEO4J_VERSION=":2.3" GREMLIN_VERSION=":3.0.0" docker-compose up -d
-  - sleep 40
-  - travis_retry composer self-update
-  - travis_retry composer install --no-interaction --prefer-source --dev
+  - mkdir -p build/logs
 
 script:
-  - mkdir -p build/logs
-  - php vendor/bin/phpunit -c phpunit.xml.dist
+  - $TEST_SCRIPT
 
 after_script:
   - php vendor/bin/coveralls -v
-
-## The other option is to run bin/spider-dev AS the test
-## But how to specify different php versions and builds?
