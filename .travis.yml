@@ -26,7 +26,7 @@ matrix:
     - php: nightly
       env: TEST_SCRIPT="bin/spider-dev --hhvm=latest test"
     - php: 5.6
-      env: TEST_SCRIPT="php vendor/bin/phpunit -c phpunit.xml.dist"
+      env: TEST_SCRIPT="bin/run-ci-test.sh"
   allow_failures:
    - php: nightly
 
