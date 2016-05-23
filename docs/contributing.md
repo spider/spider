@@ -26,14 +26,18 @@ the **develop** branch holds work in progress for the next release. Any work her
 
 Be sure to fetch often so you keep your sources up-to-date!
 
-## Test Databases
+## Test Databases and Development Environment
 In order to really test Spider, you need to install the test databases for the different drivers.
 At the moment, there are three drivers. 
 
-You have two options in setting up your development environment. Instructions are provided for installing each database individually, or a [Vagrant](http://vagrantup.com/) box is provided to use a pre-configured virtual machine.
+You have three options in setting up your development environment. Instructions are provided for installing each database individually, you may use the provided `spider-dev` utility (with docker), or a [Vagrant](http://vagrantup.com/) box is provided to use a pre-configured virtual machine.
 
 ### Spider-Dev command line utility
-It is easy to setup a development environment to test Spider by using the `spider-dev` command line utility that ships with Spider.
+NOTE: For the moment, this utility is not totally compatible with Windows or Mac versions of docker that do not run native.
+You may use the second option (vagrant) on these environments, or use the new new native docker apps (http://beta.docker.com)
+
+It is easy to setup a development environment to test Spider by using the `spider-dev` command line utility that ships with Spider. It also includes
+configured boxes for several versions of all the database systems, and all supported versions of php and hhvm.
 
 Spider-Dev uses Docker to create and maintain docker containers that are supported by Spider.
 
@@ -51,6 +55,9 @@ For more information (including options about choosing which versions and tests 
 ```
 bin/spider-dev help
 ```
+
+### Spider Vagrant Box
+See https://github.com/spider/spider-box for full instructions. It's easy, we promise :)
 
 ### Install locally
 You may also setup the databases locally. These are instructions for installing each db so all tests will pass.

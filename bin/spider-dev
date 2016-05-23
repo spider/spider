@@ -167,7 +167,7 @@ spider-dev_command_test () (
 
     # Run the tests and kill the container
     spider-dev_command_up
-    sleep 40
+    sleep 40 # @todo: Find a better way to wait for db services to be up and running
     HHVM_VERSION=":${hhvm_version}" PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}"  GREMLIN_VERSION=":${gremlin_version}" docker-compose run --rm "${test_service}" ${phpunit_command}
 
     final_exit_code=$?
@@ -199,7 +199,6 @@ spider-dev_command_shell () (
     fi
 
     spider-dev_command_up
-    sleep 5
     ## @todo: re-enable the first docker command once gremlin is working
 #   --link spider_gremlin:gremlin
     docker run -it --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider "${interpreter}:${interpreter_version}" bash

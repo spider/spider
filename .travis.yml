@@ -15,7 +15,7 @@ env:
     - TEST_SCRIPT="bin/spider-dev --php=7.0 test"
     - TEST_SCRIPT="bin/spider-dev --php=5.6 test"
     - TEST_SCRIPT="bin/spider-dev --hhvm=latest test"
-    - TEST_SCRIPT="php vendor/bin/phpunit -c phpunit.xml.dist"
+    - TEST_SCRIPT="bin/spider-dev up; sleep 40; php vendor/bin/phpunit -c phpunit.xml.dist"
 
 matrix:
   exclude:
