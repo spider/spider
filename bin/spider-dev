@@ -271,6 +271,7 @@ Also note that options and flags must come BEFORE commands, e.g. bin/spider-dev 
 
 ### Handle Options and Flags
 ## Service versioning
+# php/hvm will flag which interpreter to use
 spider-dev_option_orientdb () ( odb_version="$1"; shift; dispatch spider-dev "$@" )
 spider-dev_option_neo4j () ( neo_version="$1"; shift; dispatch spider-dev "$@" )
 spider-dev_option_gremlin () ( gremlin="$1"; shift; dispatch spider-dev "$@" )
