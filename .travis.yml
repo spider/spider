@@ -1,6 +1,7 @@
 language: php
 php:
   - 5.6
+  - nightly
 
 sudo: required
 services:
@@ -14,11 +15,20 @@ env:
     - TEST_SCRIPT="bin/spider-dev --php=7.0 test"
     - TEST_SCRIPT="bin/spider-dev --php=5.6 test"
     - TEST_SCRIPT="bin/spider-dev --hhvm=latest test"
-#  - nightly
+    - TEST_SCRIPT="php vendor/bin/phpunit -c phpunit.xml.dist"
 
-#matrix:
-#  allow_failures:
-#   - php: nightly
+matrix:
+  exclude:
+    - php: nightly
+      env: TEST_SCRIPT="bin/spider-dev --php=7.0 test"
+    - php: nightly
+      env: TEST_SCRIPT="bin/spider-dev --php=5.6 test"
+    - php: nightly
+      env: TEST_SCRIPT="bin/spider-dev --hhvm=latest test"
+    - php: 5.6
+      env: TEST_SCRIPT="php vendor/bin/phpunit -c phpunit.xml.dist"
+  allow_failures:
+   - php: nightly
 
 cache:
   directories:
