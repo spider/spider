@@ -4,9 +4,13 @@ services:
   - docker
 
 env:
-  - DOCKER_VERSION=1.10.1-0~trusty DOCKER_COMPOSE_VERSION=1.7.1 TEST_SCRIPT="bin/spider-dev --php=7.0 test"
-  - DOCKER_VERSION=1.10.1-0~trusty DOCKER_COMPOSE_VERSION=1.7.1 TEST_SCRIPT="bin/spider-dev --php=5.6 test"
-  - DOCKER_VERSION=1.10.1-0~trusty DOCKER_COMPOSE_VERSION=1.7.1 TTEST_SCRIPT="bin/spider-dev --hhvm=latest test"
+  global:
+    - DOCKER_VERSION=1.10.1-0~trusty
+    - DOCKER_COMPOSE_VERSION=1.7.1
+  matrix:
+    - TEST_SCRIPT="bin/spider-dev --php=7.0 test"
+    - TEST_SCRIPT="bin/spider-dev --php=5.6 test"
+    - TEST_SCRIPT="bin/spider-dev --hhvm=latest test"
 #  - nightly
 
 #matrix:
