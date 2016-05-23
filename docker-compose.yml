@@ -25,7 +25,7 @@ services:
       working_dir: /spider
       environment:
         - SPIDER_DOCKER=true
-      entrypoint: ["hhvm", "/spider/bin/vendor/kill/php"]
+      entrypoint: ["hhvm", "/spider/bin/vendor/kill.php"]
 
   orientdb:
     image: orientdb${ORIENTDB_VERSION}
