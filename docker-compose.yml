@@ -13,6 +13,20 @@ services:
     environment:
       - SPIDER_DOCKER=true
 
+  hhvm:
+      image: baptistedonaux/hhvm${HHVM_VERSION}
+      container_name: spider_hhvm
+      links:
+        - orientdb:orientdb
+        - neo4j:neo4j
+  #      - gremlin:gremlin
+      volumes:
+        - ./:/spider
+      working_dir: /spider
+      environment:
+        - SPIDER_DOCKER=true
+      entrypoint: ["hhvm", "/spider/bin/vendor/kill/php"]
+
   orientdb:
     image: orientdb${ORIENTDB_VERSION}
     container_name: spider_orientdb

@@ -28,6 +28,7 @@ SPIDER_BIN_PATH=${SPIDER_PATH}/bin
 odb_version="2.1.16"
 neo_version="3.0"
 php_version="7.0"
+hhvm_version="3.13"
 gremlin_version="3.0.0"
 
 ## Spider package versions
@@ -36,13 +37,15 @@ spider_dev_version="0.4.0"
 
 ## Officially supported versions (separated by space)
 # These correspond to docker-image tags (orientdb:2.1.16)
-supported_php="7.0 5.6"
-supported_odb="2.1.16 2.1.17"
-supported_neo="2.3 2.3-enterprise 3.0 3.0-enterprise"
+supported_hhvm="3.12 3.13 latest"
+supported_php="7.0 5.6 latest"
+supported_odb="2.1.16 2.1.17 latest"
+supported_neo="2.3 2.3-enterprise 3.0 3.0-enterprise latest"
 supported_gremlin="3.0.0"
 
 ## Flag defaults
 is_mac=0 # This is temporary for the docker private beta release. Will be removed
+interpreter="skooppaos/php" # Do we want to use HHVM instead of PHP?
 
 # Testing flags
 using_test_flags=0 # if -i or -u is used
@@ -55,6 +58,10 @@ final_exit_code=0 # status
 ### Loads the `dispatch` library
 # Mad love to https://github.com/Mosai/workshop/blob/doc/dispatch.md
 . ${SPIDER_BIN_PATH}/vendor/dispatch.sh
+
+### Loads the `require_docker` library
+# And awesome props to https://github.com/cweagans/mcrypt-polyfill/blob/master/util.sh#L9
+. ${SPIDER_BIN_PATH}/vendor/require_docker.sh
 
 ### Setup our custom functions
 
@@ -87,6 +94,11 @@ check_versions() {
         echo "WARNING: The php version you provided (${php_version}) is not officially supported, and may not have a valid docker container"
     fi
 
+    is_hhvm_supported=$(in_array $hhvm_version "$supported_hhvm")
+    if [ "$is_hhvm_supported" = "false" ]; then
+        echo "WARNING: The hhvm version you provided (${hhvm_version}) is not officially supported, and may not have a valid docker container"
+    fi
+
     is_odb_supported=$(in_array $odb_version "$supported_odb")
     if [ "$is_odb_supported" = "false" ]; then
         echo "WARNING: The orientdb version you provided (${odb_version}) is not officially supported, and may not have a valid docker container"
@@ -114,14 +126,14 @@ spider-dev_call () ( echo "Invalid call '$@'" ) # General error response for com
 # @options [versions] See `bin/spider-dev help`
 spider-dev_command_up () (
     check_versions
-    PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" GREMLIN_VERSION=":${gremlin_version}" docker-compose up -d
+    HHVM_VERSION=":${hhvm_version}" PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" GREMLIN_VERSION=":${gremlin_version}" docker-compose up -d
 )
 
 
 ## `down` Stops docker services
 spider-dev_command_down () (
     check_versions
-    PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" GREMLIN_VERSION=":${gremlin_version}" docker-compose down
+    HHVM_VERSION=":${hhvm_version}" PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" GREMLIN_VERSION=":${gremlin_version}" docker-compose down
 )
 
 
@@ -147,10 +159,16 @@ spider-dev_command_test () (
         phpunit_command="${phpunit_command}"'"'
     fi
 
+    # Are we using HHVM or PHP?
+    test_service="php"
+    if [ $interpreter = "baptistedonaux/hhvm" ]; then
+        test_service="hhvm"
+    fi
+
     # Run the tests and kill the container
     spider-dev_command_up
     sleep 20
-    PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}"  GREMLIN_VERSION=":${gremlin_version}" docker-compose run --rm php ${phpunit_command}
+    HHVM_VERSION=":${hhvm_version}" PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}"  GREMLIN_VERSION=":${gremlin_version}" docker-compose run --rm "${test_service}" ${phpunit_command}
 
     final_exit_code=$?
 
@@ -174,11 +192,17 @@ spider-dev_command_shell () (
         volume_path=/Mac${SPIDER_PATH}
     fi
 
+    # Are we using HHVM or PHP?
+    interpreter_version=${php_version}
+    if [ $interpreter = "baptistedonaux/hhvm" ]; then
+        interpreter_version=${hhvm_version}
+    fi
+
     spider-dev_command_up
     sleep 5
     ## @todo: re-enable the first docker command once gremlin is working
-#    docker run -it --link spider_gremlin:gremlin --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider "skooppaos/php:${php_version}" bash
-    docker run -it --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider "skooppaos/php:${php_version}" bash
+#   --link spider_gremlin:gremlin
+    docker run -it --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider "${interpreter}:${interpreter_version}" bash
 )
 
 
@@ -188,6 +212,7 @@ spider-dev_command_versions () (
     echo " - spider     ${spider_version}"
     echo " - spider-dev ${spider_dev_version}"
     echo " - php        ${php_version}"
+    echo " - hhvm       ${hhvm_version}"
     echo " - orientdb   ${odb_version}"
     echo " - neo4j      ${neo_version}"
     echo " - gremlin    ${gremlin_version}"
@@ -195,6 +220,7 @@ spider-dev_command_versions () (
 
     echo "Versions currently supported by Spider: "
     echo " - php        ${supported_php}"
+    echo " - hhvm       ${supported_hhvm}"
     echo " - orientdb   ${supported_odb}"
     echo " - neo4j      ${supported_neo}"
     echo " - gremlin    ${gremlin_version}"
@@ -217,7 +243,8 @@ Also note that options and flags must come BEFORE commands, e.g. bin/spider-dev 
     echo "      --orientdb="x.x.x"   Sets the OrientDB service version (corresponds directly to docker image tag, e.g. orientdb:2.1.16)"
     echo "      --neo="x.x.x"        Sets the Neo4j service version (corresponds directly to docker image tag, e.g. neo:2.1.16)"
     echo "      --gremlin="x.x.x"    Sets the Gremlin service version (corresponds directly to docker image tag, e.g. gremlin:2.1.16)"
-    echo "      --php="x.x.x"        Sets the PHP service version (corresponds directly to docker image tag, e.g. php:7.0)"
+    echo "      --php="x.x.x"        Sets the PHP service version (corresponds directly to docker image tag, e.g. php:7.0). Note that PHP is used by default."
+    echo "      --hhvm="x.x.x"       Sets the HHVM service version, and sets HHVM as the interpreter (corresponds directly to docker image tag, e.g. hhvm:3.1.13)"
     echo ""
     echo "      --mac                Flag the host system as a Mac using Docker's Private Beta, which (for now) has different path needs"
     echo ""
@@ -247,7 +274,8 @@ Also note that options and flags must come BEFORE commands, e.g. bin/spider-dev 
 spider-dev_option_orientdb () ( odb_version="$1"; shift; dispatch spider-dev "$@" )
 spider-dev_option_neo4j () ( neo_version="$1"; shift; dispatch spider-dev "$@" )
 spider-dev_option_gremlin () ( gremlin="$1"; shift; dispatch spider-dev "$@" )
-spider-dev_option_php () ( php_version="$1"; shift; dispatch spider-dev "$@" )
+spider-dev_option_php () ( interpreter="skooppaos/php"; php_version="$1"; shift; dispatch spider-dev "$@" )
+spider-dev_option_hhvm () ( interpreter="baptistedonaux/hhvm"; hhvm_version="$1"; shift; dispatch spider-dev "$@" )
 
 
 ## Testing suites flags
@@ -261,4 +289,5 @@ spider-dev_option_mac () ( is_mac=1; dispatch spider-dev "$@" )
 
 
 #### Let'er Fly! (Dispatch the arguments)
+requireDocker
 dispatch spider-dev "$@"
