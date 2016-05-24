@@ -53,6 +53,7 @@ run_unit_tests=0 # -i
 run_integration_tests=0 # -u
 kill_after_tests_flag=1 # --nokill to keep db services alive after tests
 
+# Private properties
 final_exit_code=0 # status
 
 ### Loads the `dispatch` library
@@ -136,6 +137,25 @@ spider-dev_command_down () (
     HHVM_VERSION=":${hhvm_version}" PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" GREMLIN_VERSION=":${gremlin_version}" docker-compose down
 )
 
+execute_command () (
+    cmd_to_execute="$1"
+
+    # Are we using HHVM or PHP?
+    interpreter_version=${php_version}
+    if [ $interpreter = "baptistedonaux/hhvm" ]; then
+        interpreter_version=${hhvm_version}
+    fi
+
+    # Find the correct volume path (temporary workaround for docker native betas)
+    if [ $is_mac = 0 ]; then
+        volume_path=${SPIDER_PATH}
+    else
+        volume_path=/Mac${SPIDER_PATH}
+    fi
+
+    docker run -it --link spider_gremlin:gremlin --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider "${interpreter}:${interpreter_version}" ${cmd_to_execute}
+)
+
 
 ## `test` Runs spider tests
 # @options [versions] See `bin/spider-dev help`
@@ -159,16 +179,10 @@ spider-dev_command_test () (
         phpunit_command="${phpunit_command}"'"'
     fi
 
-    # Are we using HHVM or PHP?
-    test_service="php"
-    if [ $interpreter = "baptistedonaux/hhvm" ]; then
-        test_service="hhvm"
-    fi
-
     # Run the tests and kill the container
     spider-dev_command_up
-    sleep 30 # @todo: Find a better way to wait for db services to be up and running
-    HHVM_VERSION=":${hhvm_version}" PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}"  GREMLIN_VERSION=":${gremlin_version}" docker-compose run --rm "${test_service}" ${phpunit_command}
+    sleep 40 # @todo: Find a better way to wait for db services to be up and running
+    execute_command $phpunit_command
 
     final_exit_code=$?
 
@@ -199,9 +213,7 @@ spider-dev_command_shell () (
     fi
 
     spider-dev_command_up
-    ## @todo: re-enable the first docker command once gremlin is working
-#   --link spider_gremlin:gremlin
-    docker run -it --link spider_gremlin:gremlin --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider "${interpreter}:${interpreter_version}" bash
+    execute_command bash
 )
 
 
@@ -276,6 +288,10 @@ spider-dev_option_neo4j () ( neo_version="$1"; shift; dispatch spider-dev "$@" )
 spider-dev_option_gremlin () ( gremlin="$1"; shift; dispatch spider-dev "$@" )
 spider-dev_option_php () ( interpreter="skooppaos/php"; php_version="$1"; shift; dispatch spider-dev "$@" )
 spider-dev_option_hhvm () ( interpreter="baptistedonaux/hhvm"; hhvm_version="$1"; shift; dispatch spider-dev "$@" )
+
+
+## Private commands
+spider-dev_option_cmd () ( cmd_to_execute="$1"; dispatch spider-dev "$@" )
 
 
 ## Testing suites flags
