@@ -265,4 +265,9 @@ class DriverTest extends BaseTestSuite
         }, ['throws' => new FormattingException()]);
 
     }
+
+    public function testTransactions()
+    {
+        $this->markTestSkipped("The docker container does not yet support transactional graphs");
+    }
 }
