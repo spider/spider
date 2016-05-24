@@ -29,7 +29,7 @@ odb_version="2.1.16"
 neo_version="3.0"
 php_version="7.0"
 hhvm_version="3.13"
-gremlin_version="3.0.0"
+gremlin_version="3.1.1"
 
 ## Spider package versions
 spider_version="0.4.0"
@@ -41,7 +41,7 @@ supported_hhvm="3.12 3.13 latest"
 supported_php="7.0 5.6 latest"
 supported_odb="2.1.16 2.1.17 latest"
 supported_neo="2.3 2.3-enterprise 3.0 3.0-enterprise latest"
-supported_gremlin="3.0.0"
+supported_gremlin="3.1.1"
 
 ## Flag defaults
 is_mac=0 # This is temporary for the docker private beta release. Will be removed
@@ -201,7 +201,7 @@ spider-dev_command_shell () (
     spider-dev_command_up
     ## @todo: re-enable the first docker command once gremlin is working
 #   --link spider_gremlin:gremlin
-    docker run -it --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider "${interpreter}:${interpreter_version}" bash
+    docker run -it --link spider_gremlin:gremlin --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider "${interpreter}:${interpreter_version}" bash
 )
 
 

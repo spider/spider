@@ -18,15 +18,14 @@ class DriverTest extends BaseTestSuite
 
     public function setup()
     {
-        $this->markTestSkipped('The Gremlin docker container is not yet functioning');
-//        $this->fixture = new GremlinFixture();
-//        $this->fixture->unload();
-//        $this->fixture->load();
+        $this->fixture = new GremlinFixture();
+        $this->fixture->unload();
+        $this->fixture->load();
     }
 
     public function teardown()
     {
-//        $this->fixture->unload();
+        $this->fixture->unload();
     }
 
     /* Implemented Methods */
