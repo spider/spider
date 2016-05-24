@@ -181,7 +181,7 @@ spider-dev_command_test () (
 
     # Run the tests and kill the container
     spider-dev_command_up
-    sleep 40 # @todo: Find a better way to wait for db services to be up and running
+    sleep 120 # @todo: Find a better way to wait for db services to be up and running
     execute_command $phpunit_command
 
     final_exit_code=$?
