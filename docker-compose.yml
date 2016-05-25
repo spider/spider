@@ -52,3 +52,5 @@ services:
     container_name: spider_gremlin
     ports:
        - "8182:8182"
+    volumes:
+       - ./tests/extras/gremlin-conf:/gremlin-server/conf
