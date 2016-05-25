@@ -181,9 +181,11 @@ spider-dev_command_test () (
 
     # Run the tests and kill the container
     spider-dev_command_up
-    sleep 30 # @todo: Find a better way to wait for db services to be up and running
+    sleep 40 # @todo: Find a better way to wait for db services to be up and running
              # If it can't be done in 30 seconds, it shouldn't be done at all
-    execute_command $phpunit_command
+     HHVM_VERSION=":${hhvm_version}" PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}"  GREMLIN_VERSION=":${gremlin_version}" docker-compose run --rm php ${phpunit_command}
+
+#    execute_command $phpunit_command
 
     final_exit_code=$?
 

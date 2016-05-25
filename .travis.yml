@@ -15,7 +15,7 @@ env:
     - TEST_SCRIPT="bin/spider-dev --php=7.0 test"
     - TEST_SCRIPT="bin/spider-dev --php=5.6 test"
     - TEST_SCRIPT="bin/spider-dev --hhvm=latest test"
-    - TEST_SCRIPT="bin/run-ci-test.sh"
+#    - TEST_SCRIPT="bin/run-ci-test.sh"
 
 matrix:
   exclude:
@@ -25,8 +25,8 @@ matrix:
       env: TEST_SCRIPT="bin/spider-dev --php=5.6 test"
     - php: nightly
       env: TEST_SCRIPT="bin/spider-dev --hhvm=latest test"
-    - php: 5.6
-      env: TEST_SCRIPT="bin/run-ci-test.sh"
+#    - php: 5.6
+#      env: TEST_SCRIPT="bin/run-ci-test.sh"
   allow_failures:
    - php: nightly
 
