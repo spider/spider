@@ -6,7 +6,7 @@ services:
     links:
       - orientdb:orientdb
       - neo4j:neo4j
-#      - gremlin:gremlin
+      - gremlin:gremlin
     volumes:
       - ./:/spider
     working_dir: /spider
@@ -19,7 +19,7 @@ services:
       links:
         - orientdb:orientdb
         - neo4j:neo4j
-#        - gremlin:gremlin
+        - gremlin:gremlin
       volumes:
         - ./:/spider
       working_dir: /spider
@@ -46,10 +46,10 @@ services:
     volumes:
        - /data
 
-#  gremlin:
-#    image: dmillgremlin/gremlin-server:3.1.1
-#    container_name: spider_gremlin
-#    ports:
-#       - "8182:8182"
-#    volumes:
-#       - ./tests/extras/gremlin-conf:/gremlin-server/conf
+  gremlin:
+    image: dmillgremlin/gremlin-server:3.1.1
+    container_name: spider_gremlin
+    ports:
+       - "8182:8182"
+    volumes:
+       - ./tests/extras/gremlin-conf:/gremlin-server/conf
