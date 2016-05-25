@@ -18,14 +18,15 @@ class DriverTest extends BaseTestSuite
 
     public function setup()
     {
-        $this->fixture = new GremlinFixture();
-        $this->fixture->unload();
-        $this->fixture->load();
+        $this->markTestSkipped();
+//        $this->fixture = new GremlinFixture();
+//        $this->fixture->unload();
+//        $this->fixture->load();
     }
 
     public function teardown()
     {
-        $this->fixture->unload();
+//        $this->fixture->unload();
     }
 
     /* Implemented Methods */
