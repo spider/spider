@@ -60,7 +60,7 @@ if (getenv('WAIT_FOR')) {
             break;
         } catch (Exception $e) {
 
-            if ($attempts === 60) {
+            if ($attempts === 59) {
                 echo "WARNING: Database services did not startup after 2 minutes. Aborting tests.\n";
                 exit(2);
             } else {
