@@ -25,7 +25,7 @@ if (getenv('TRAVIS')) {
 } else {
     // We are not in our docker container and there are no credentials supplied
     // Use the from .env.travis (localhost)
-    echo "WARNING: No Database Credentials Supplied. Please use the supplied docker container or add a .env file.";
+    echo "WARNING: No Database Credentials Supplied. Please use the supplied docker container or add a .env file.\n";
     $dotenv = new Dotenv\Dotenv(__DIR__, '.env.travis');
 }
 $dotenv->load();

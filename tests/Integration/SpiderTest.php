@@ -22,18 +22,18 @@ class SpiderTest extends \PHPUnit_Framework_TestCase
             'default' => 'orient',
             'orient' => [
                 'driver' => 'Spider\Drivers\OrientDB\Driver',
-                'hostname' => 'localhost',
-                'port' => 2424,
-                'username' => 'root',
-                'password' => "root",
+                'hostname' => getenv('ORIENTDB_HOSTNAME'),
+                'port' => getenv('ORIENTDB_PORT'),
+                'username' => getenv('ORIENTDB_USERNAME'),
+                'password' => getenv('ORIENTDB_PASSWORD'),
                 'database' => 'modern_graph'
             ],
             'neo' => [
                 'driver' => 'neo4j',
-                'hostname' => 'localhost',
-                'port' => 7474,
-                'username' => "neo4j",
-                'password' => "j4oen",
+                'hostname' => getenv('NEO4J_HOSTNAME'),
+                'port' => getenv('NEO4J_PORT'),
+                'username' => getenv('NEO4J_USERNAME'),
+                'password' => getenv('NEO4J_PASSWORD'),
             ]
         ];
 
