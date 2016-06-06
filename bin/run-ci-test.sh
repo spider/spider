@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 bin/spider-dev up
-sleep 120
+sleep 60
 php vendor/bin/phpunit -c phpunit.xml.dist
