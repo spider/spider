@@ -32,9 +32,25 @@ At the moment, there are three drivers.
 
 You have three options in setting up your development environment. Instructions are provided for installing each database individually, you may use the provided `spider-dev` utility (with docker), or a [Vagrant](http://vagrantup.com/) box is provided to use a pre-configured virtual machine.
 
+### Spider Vagrant Box
+For the moment, this is the most complete way to develop with spider. This vagrant box gives you everything
+you need to develop and test.
+
+See https://github.com/spider/spider-box for full instructions. It's easy, we promise :)
+
 ### Spider-Dev command line utility
-NOTE: For the moment, this utility is not totally compatible with Windows or Mac versions of docker that do not run native.
-You may use the second option (vagrant) on these environments, or use the new new native docker apps (http://beta.docker.com)
+The above is meant to be a playground for graph databases, and includes more than you need. We are working
+to dockerize spider services specifically for development. This includes a command line utility to manage
+enviornments.
+
+NOTES: 
+For the moment, this utility is not totally complete
+
+  * It is NOT compatible with Windows or Mac versions of docker that do not run native.
+You may use the Vagrant option on these environments, or use the new new native docker apps (http://beta.docker.com)
+  * Gremlin is not yetsupported in the docker utilities.
+
+USAGE:
 
 It is easy to setup a development environment to test Spider by using the `spider-dev` command line utility that ships with Spider. It also includes
 configured boxes for several versions of all the database systems, and all supported versions of php and hhvm.
@@ -55,9 +71,6 @@ For more information (including options about choosing which versions and tests 
 ```
 bin/spider-dev help
 ```
-
-### Spider Vagrant Box
-See https://github.com/spider/spider-box for full instructions. It's easy, we promise :)
 
 ### Install locally
 You may also setup the databases locally. These are instructions for installing each db so all tests will pass.
