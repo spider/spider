@@ -1,0 +1,46 @@
+version: '2'
+services:
+
+  neo4j:
+      image: neo4j${NEO4J_VERSION}
+      container_name: spider_neo4j
+      environment:
+        NEO4J_AUTH: neo4j/j4oen
+      ports:
+         - "7474:7474"
+      volumes:
+         - /data
+
+  php:
+    image: skooppaos/php${PHP_VERSION}
+    container_name: spider_php
+    links:
+      - orientdb:orientdb
+      - neo4j:neo4j
+    volumes:
+      - ./:/spider
+    working_dir: /spider
+    environment:
+      - SPIDER_DOCKER=true
+
+  hhvm:
+      image: baptistedonaux/hhvm${HHVM_VERSION}
+      container_name: spider_hhvm
+      links:
+        - orientdb:orientdb
+        - neo4j:neo4j
+      volumes:
+        - ./:/spider
+      working_dir: /spider
+      environment:
+        - SPIDER_DOCKER=true
+      entrypoint: ["hhvm", "/spider/bin/vendor/kill.php"]
+
+  orientdb:
+    image: orientdb${ORIENTDB_VERSION}
+    container_name: spider_orientdb
+    environment:
+      ORIENTDB_ROOT_PASSWORD: rootpwd
+    ports:
+       - "2424:2424"
+       - "2480:2480"

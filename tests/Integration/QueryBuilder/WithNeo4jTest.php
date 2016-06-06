@@ -23,11 +23,12 @@ class WithNeo4jTest extends BaseTestSuite
         $manager = new Manager([
             'default' => 'neo',
             'neo' => [
-                'driver' => 'neo4j',
-                'hostname' => 'localhost',
-                'port' => 7474,
-                'username' => "neo4j",
-                'password' => "j4oen",
+                'hostname' => getenv('NEO4J_HOSTNAME'),
+                'port' => getenv('NEO4J_PORT'),
+                'username' => getenv('NEO4J_USERNAME'),
+                'password' => getenv('NEO4J_PASSWORD'),
+                'database' => 'modern_graph',
+                'driver' => 'neo4j'
             ]
         ]);
 

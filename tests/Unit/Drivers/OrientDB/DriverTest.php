@@ -34,10 +34,10 @@ class DriverTest extends BaseTestSuite
     public function driver($switch = null)
     {
         return new OrientDriver([
-            'hostname' => 'localhost',
-            'port' => 2424,
-            'username' => 'root',
-            'password' => "root",
+            'hostname' => getenv('ORIENTDB_HOSTNAME'),
+            'port' => getenv('ORIENTDB_PORT'),
+            'username' => getenv('ORIENTDB_USERNAME'),
+            'password' => getenv('ORIENTDB_PASSWORD'),
             'database' => 'modern_graph',
         ]);
     }
