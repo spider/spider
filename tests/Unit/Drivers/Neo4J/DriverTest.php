@@ -34,10 +34,10 @@ class DriverTest extends BaseTestSuite
     public function driver($switch = null)
     {
         return new Neo4JDriver([
-            'hostname' => 'localhost',
-            'port' => 7474,
-            'username' => "neo4j",
-            'password' => "j4oen",
+            'hostname' => getenv('NEO4J_HOSTNAME'),
+            'port' => getenv('NEO4J_PORT'),
+            'username' => getenv('NEO4J_USERNAME'),
+            'password' => getenv('NEO4J_PASSWORD'),
         ]);
     }
 

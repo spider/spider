@@ -26,36 +26,51 @@ the **develop** branch holds work in progress for the next release. Any work her
 
 Be sure to fetch often so you keep your sources up-to-date!
 
-## Test Databases
+## Test Databases and Development Environment
 In order to really test Spider, you need to install the test databases for the different drivers.
 At the moment, there are three drivers. 
 
-You have two options in setting up your development environment. Instructions are provided for installing each database individually, or a [Vagrant](http://vagrantup.com/) box is provided to use a pre-configured virtual machine.
+You have three options in setting up your development environment. Instructions are provided for installing each database individually, you may use the provided `spider-dev` utility (with docker), or a [Vagrant](http://vagrantup.com/) box is provided to use a pre-configured virtual machine.
 
-### Vagrant
-It is easy to setup a development environment to test Spider by using [Vagrant](http://vagrantup.com/), which creates a virtual machine. This isolates things like the databases and ensure that the correct php configuration is set. Simply turn on the Vagrant box when developing and turn it off when you are done.
+### Spider Vagrant Box
+For the moment, this is the most complete way to develop with spider. This vagrant box gives you everything
+you need to develop and test.
 
-To use the vagrant box, you must have 
-[Vagrant](https://www.vagrantup.com/downloads.html) and 
-[Virtual box](https://www.virtualbox.org/wiki/Downloads) installed. 
-This couldn't be simpler. Both are free. Directions on each website.
+See https://github.com/spider/spider-box for full instructions. It's easy, we promise :)
 
-Once these are installed simply use terminal or command prompt to `cd` into the directory and run `vagrant up`.
-The first time you run it, it may take a while to download everything (several Gigabytes). 
-From there, you can `vagrant ssh` into the virtual machine and `cd /vagrant`. Then run `vendor/bin/phpunit` to see the magic happen.
+### Spider-Dev command line utility
+The above is meant to be a playground for graph databases, and includes more than you need. We are working
+to dockerize spider services specifically for development. This includes a command line utility to manage
+enviornments.
 
-Please read up on Vagrant. Its super simple and powerful.
+NOTES: 
+For the moment, this utility is not totally complete
 
-Once you are finished developing, you have 3 options to turn off vagrant:
-`vagrant suspend` will keep the box as it is, but dump it all to the hard disk. Takes up some Hard drive space, but no extra ram. Fastest when turning it back on.
+  * It is NOT compatible with Windows or Mac versions of docker that do not run native.
+You may use the Vagrant option on these environments, or use the new new native docker apps (http://beta.docker.com)
+  * Gremlin is not yetsupported in the docker utilities.
 
-`vagrant halt` will totally shutdown the box.
+USAGE:
 
-With the above two options, you will NOT have to re-download anything next time, but it does eat up a few gigs of hard drive space.
+It is easy to setup a development environment to test Spider by using the `spider-dev` command line utility that ships with Spider. It also includes
+configured boxes for several versions of all the database systems, and all supported versions of php and hhvm.
 
-`vagrant destroy` totally removes the box. You will have to re-download some things next time. All is automatic.
+Spider-Dev uses Docker to create and maintain docker containers that are supported by Spider.
 
-When ready to begin again, `vagrant up`.
+Basic commands include: (note you must run it from the spider directory where composer.json lives)
+```
+cd /path/to/spider
+bin/spider-dev up # Starts up databases
+bin/spider-dev down # Shuts down databases
+bin/spider-dev test # Runs all the tests
+bin/spider-dev shell # Starts all the services, and opens a shell instance on the php container so you can play around
+```
+
+For more information (including options about choosing which versions and tests you run):
+
+```
+bin/spider-dev help
+```
 
 ### Install locally
 You may also setup the databases locally. These are instructions for installing each db so all tests will pass.

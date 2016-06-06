@@ -12,10 +12,10 @@ class OrientFixture extends DbFixture
     {
         $client = new PhpOrient();
         $client->configure([
-            'hostname' => 'localhost',
-            'port' => 2424,
-            'username' => 'root',
-            'password' => 'root',
+            'hostname' => getenv('ORIENTDB_HOSTNAME'),
+            'port' => getenv('ORIENTDB_PORT'),
+            'username' => getenv('ORIENTDB_USERNAME'),
+            'password' => getenv('ORIENTDB_PASSWORD'),
         ]);
         $client->connect();
 
@@ -29,7 +29,7 @@ class OrientFixture extends DbFixture
             PhpOrient::DATABASE_TYPE_GRAPH
         );
 
-        $client->dbOpen('modern_graph', 'admin', 'admin');
+        $client->dbOpen('modern_graph', 'root', getenv('ORIENTDB_PASSWORD'));
 
         $client->command('create class person extends V');
         $client->command('create class software extends V');
@@ -52,7 +52,7 @@ class OrientFixture extends DbFixture
             CREATE EDGE created FROM $d TO $f CONTENT { "weight" : 1.0 };
 
             commit retry 100;
-            return a;'
+            '
         );
 
         $client->dbClose();
@@ -64,10 +64,10 @@ class OrientFixture extends DbFixture
     {
         $client = new PhpOrient();
         $client->configure([
-            'hostname' => 'localhost',
-            'port' => 2424,
-            'username' => 'root',
-            'password' => "root",
+            'hostname' => getenv('ORIENTDB_HOSTNAME'),
+            'port' => getenv('ORIENTDB_PORT'),
+            'username' => getenv('ORIENTDB_USERNAME'),
+            'password' => getenv('ORIENTDB_PASSWORD'),
             'database' => 'modern_graph',
         ]);
         $client->connect();

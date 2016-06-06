@@ -1,0 +1,297 @@
+#!/usr/bin/env bash
+##############################################################
+#    _________            .__       .___                     #
+#   /   _____/  ______    |__|    __| _/    ____    _______  #
+#   \_____  \   \____ \   |  |   / __ |   _/ __ \   \_  __ \ #
+#   /        \  |  |_> >  |  |  / /_/ |   \  ___/    |  | \/ #
+#  /_______  /  |   __/   |__|  \____ |    \___  >   |__|    #
+#          \/   |__|                 \/        \/            #
+##############################################################
+#  Version 0.4.0 -- http://github.com/spider/spider -- MIT   #
+##############################################################
+
+# Spider-Dev is a command line utility for managing docker environments for the
+# Spider project. For a more complete utility use `spider` in this directory
+
+# Please note this utility MUST be run from the spider package directory
+# (where the docker-compose.yml and composer.json file life
+
+# For help please `bin/spider-dev help`
+
+
+### Let's get this party started! Declare our variables
+## Paths
+SPIDER_PATH=$(pwd)
+SPIDER_BIN_PATH=${SPIDER_PATH}/bin
+
+## Current default service versions
+odb_version="2.1.16"
+neo_version="3.0"
+php_version="7.0"
+hhvm_version="3.13"
+
+## Spider package versions
+spider_version="0.4.0"
+spider_dev_version="0.4.0"
+
+## Officially supported versions (separated by space)
+# These correspond to docker-image tags (orientdb:2.1.16)
+supported_hhvm="3.12 3.13 latest"
+supported_php="7.0 5.6 latest"
+supported_odb="2.1.16 2.1.17 latest"
+supported_neo="2.3 2.3-enterprise 3.0 3.0-enterprise latest"
+
+## Flag defaults
+is_mac=0 # This is temporary for the docker private beta release. Will be removed
+interpreter="skooppaos/php" # Do we want to use HHVM instead of PHP?
+
+# Testing flags
+using_test_flags=0 # if -i or -u is used
+run_unit_tests=0 # -i
+run_integration_tests=0 # -u
+kill_after_tests_flag=1 # --nokill to keep db services alive after tests
+
+# Private properties
+final_exit_code=0 # status
+
+### Loads the `dispatch` library
+# Mad love to https://github.com/Mosai/workshop/blob/doc/dispatch.md
+. ${SPIDER_BIN_PATH}/vendor/dispatch.sh
+
+### Loads the `require_docker` library
+# And awesome props to https://github.com/cweagans/mcrypt-polyfill/blob/master/util.sh#L9
+. ${SPIDER_BIN_PATH}/vendor/require_docker.sh
+
+### Setup our custom functions
+
+## Mimics PHP's `in_array()` function
+# @param string $needle The term to search for
+# @param string $haystack List seperated by a " "
+# @return string Echoes "true" or "false"
+# @usage switch=$(in_array "two" "one two three")
+in_array() {
+    needle=$1
+    haystack=$2
+    found="false"
+
+    for item in $haystack
+    do
+        if [ "$item" = "$needle" ]; then
+            found="true"
+            break
+        fi
+    done
+
+    echo "$found"
+}
+
+## Raises warnings if user is requesting unsupported service versions
+# @errors Echoes warnings, but does not stop execution
+check_versions() {
+    is_php_supported=$(in_array $php_version "$supported_php")
+    if [ "$is_php_supported" = "false" ]; then
+        echo "WARNING: The php version you provided (${php_version}) is not officially supported, and may not have a valid docker container"
+    fi
+
+    is_hhvm_supported=$(in_array $hhvm_version "$supported_hhvm")
+    if [ "$is_hhvm_supported" = "false" ]; then
+        echo "WARNING: The hhvm version you provided (${hhvm_version}) is not officially supported, and may not have a valid docker container"
+    fi
+
+    is_odb_supported=$(in_array $odb_version "$supported_odb")
+    if [ "$is_odb_supported" = "false" ]; then
+        echo "WARNING: The orientdb version you provided (${odb_version}) is not officially supported, and may not have a valid docker container"
+    fi
+
+    is_neo_supported=$(in_array $neo_version "$supported_neo")
+    if [ "$is_neo_supported" = "false" ]; then
+        echo "WARNING: The neo4j version you provided (${neo_version}) is not officially supported, and may not have a valid docker container"
+    fi
+}
+
+
+### Register `spider-dev` commands
+## Boilerplate Commands
+spider-dev_ () ( echo "No commands given" ) # A placeholder if not commands were given
+spider-dev_call () ( echo "Invalid call '$@'" ) # General error response for command not found
+
+
+## `up` brings up docker services
+# @options [versions] See `bin/spider-dev help`
+spider-dev_command_up () (
+    check_versions
+    HHVM_VERSION=":${hhvm_version}" PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" docker-compose up -d
+)
+
+
+## `down` Stops docker services
+spider-dev_command_down () (
+    check_versions
+    HHVM_VERSION=":${hhvm_version}" PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" docker-compose down
+)
+
+execute_command () (
+    cmd_to_execute="$1"
+
+    # Are we using HHVM or PHP?
+    interpreter_version=${php_version}
+    if [ $interpreter = "baptistedonaux/hhvm" ]; then
+        interpreter_version=${hhvm_version}
+    fi
+
+    # Find the correct volume path (temporary workaround for docker native betas)
+    if [ $is_mac = 0 ]; then
+        volume_path=${SPIDER_PATH}
+    else
+        volume_path=/Mac${SPIDER_PATH}
+    fi
+
+    docker run -it --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -e "WAIT_FOR=true" -v ${volume_path}:/spider -w /spider "${interpreter}:${interpreter_version}" ${cmd_to_execute}
+)
+
+
+## `test` Runs spider tests
+# @options [versions] See `bin/spider-dev help`
+# @flags u|i Optional test suites to run
+spider-dev_command_test () (
+    check_versions
+
+    # Create the PHPUnit command
+    phpunit_command="/spider/vendor/bin/phpunit -c /spider/phpunit.xml.dist"
+    if [ $using_test_flags = 1 ]; then
+        phpunit_command="${phpunit_command} "'--filter="'
+        if [ $run_unit_tests = 1 ]; then
+            phpunit_command="${phpunit_command}Unit|"
+        fi
+
+        if [ $run_integration_tests = 1 ]; then
+            phpunit_command="${phpunit_command}Integration"
+        fi
+
+        phpunit_command="$(echo -e "${phpunit_command}" | sed -e 's/\|*$//')"
+        phpunit_command="${phpunit_command}"'"'
+    fi
+
+    # Run the tests and kill the container
+    spider-dev_command_up
+    execute_command $phpunit_command # Will wait up to 2 minutes for services to startup
+
+    final_exit_code=$?
+
+    if [ $kill_after_tests_flag = 1 ]; then
+        spider-dev_command_down
+    fi
+
+    exit $final_exit_code
+)
+
+
+## `shell` Starts spider services and opens a shell to php container
+# @options [versions] See `bin/spider-dev help`
+spider-dev_command_shell () (
+    check_versions
+
+    # Find the correct volume path (temporary workaround for docker native betas)
+    if [ $is_mac = 0 ]; then
+        volume_path=${SPIDER_PATH}
+    else
+        volume_path=/Mac${SPIDER_PATH}
+    fi
+
+    # Are we using HHVM or PHP?
+    interpreter_version=${php_version}
+    if [ $interpreter = "baptistedonaux/hhvm" ]; then
+        interpreter_version=${hhvm_version}
+    fi
+
+    spider-dev_command_up
+    execute_command bash
+)
+
+
+## `versions` Displays version information
+spider-dev_command_versions () (
+    echo "Default versions of your development environment: "
+    echo " - spider     ${spider_version}"
+    echo " - spider-dev ${spider_dev_version}"
+    echo " - php        ${php_version}"
+    echo " - hhvm       ${hhvm_version}"
+    echo " - orientdb   ${odb_version}"
+    echo " - neo4j      ${neo_version}"
+
+    echo "Versions currently supported by Spider: "
+    echo " - php        ${supported_php}"
+    echo " - hhvm       ${supported_hhvm}"
+    echo " - orientdb   ${supported_odb}"
+    echo " - neo4j      ${supported_neo}"
+)
+
+
+## `help` Displays help information
+spider-dev_command_help () (
+    echo "Spider-Dev is a command line utility for managing docker environments for the
+Spider project. For a more complete utility use spider in this directory
+
+Please note this utility MUST be run from the spider package directory
+(where the docker-compose.yml and composer.json file life
+
+Also note that options and flags must come BEFORE commands, e.g. bin/spider-dev -i -u test"
+    echo ""
+    echo "OPTIONS and FLAGS"
+    echo "   Many commands take multiple options and flags. They are always the same."
+    echo "      Version Flags:"
+    echo "      --orientdb="x.x.x"   Sets the OrientDB service version (corresponds directly to docker image tag, e.g. orientdb:2.1.16)"
+    echo "      --neo="x.x.x"        Sets the Neo4j service version (corresponds directly to docker image tag, e.g. neo:2.1.16)"
+    echo "      --gremlin="x.x.x"    Not Supported yet"
+    echo "      --php="x.x.x"        Sets the PHP service version (corresponds directly to docker image tag, e.g. php:7.0). Note that PHP is used by default."
+    echo "      --hhvm="x.x.x"       Sets the HHVM service version, and sets HHVM as the interpreter (corresponds directly to docker image tag, e.g. hhvm:3.1.13)"
+    echo ""
+    echo "      --mac                Flag the host system as a Mac using Docker's Private Beta, which (for now) has different path needs"
+    echo ""
+    echo "COMMANDS: [options] [flags] command"
+    echo "   up            Starts docker services for all databases and builds a php image. Versions are optional."
+    echo "      [versions] See above."
+    echo ""
+    echo "   down          Stops all running docker services."
+    echo ""
+    echo "   test          Starts services and runs phpunit tests"
+    echo "      -u         Run unit tests"
+    echo "      -i         Run integration tests"
+    echo "      --nokill   Keep the database services running after the tests complete."
+    echo "      [versions] See above."
+    echo ""
+    echo "   shell         Starts services and opens a shell in the php container."
+    echo "      [versions] See above."
+    echo ""
+    echo "   versions      Displays version information."
+    echo ""
+    echo "   help          This help message."
+)
+
+
+### Handle Options and Flags
+## Service versioning
+# php/hvm will flag which interpreter to use
+spider-dev_option_orientdb () ( odb_version="$1"; shift; dispatch spider-dev "$@" )
+spider-dev_option_neo4j () ( neo_version="$1"; shift; dispatch spider-dev "$@" )
+spider-dev_option_php () ( interpreter="skooppaos/php"; php_version="$1"; shift; dispatch spider-dev "$@" )
+spider-dev_option_hhvm () ( interpreter="baptistedonaux/hhvm"; hhvm_version="$1"; shift; dispatch spider-dev "$@" )
+
+
+## Private commands
+spider-dev_option_cmd () ( cmd_to_execute="$1"; dispatch spider-dev "$@" )
+
+
+## Testing suites flags
+spider-dev_option_u () ( using_test_flags=1; run_unit_tests=1; dispatch spider-dev "$@" )
+spider-dev_option_i () ( using_test_flags=1; run_integration_tests=1; dispatch spider-dev "$@" )
+spider-dev_option_nokill () ( kill_after_tests_flag=0; dispatch spider-dev "$@" )
+
+
+# Temporary Mac Flag for shell
+spider-dev_option_mac () ( is_mac=1; dispatch spider-dev "$@" )
+
+
+#### Let'er Fly! (Dispatch the arguments)
+requireDocker
+dispatch spider-dev "$@"
