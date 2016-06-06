@@ -29,7 +29,6 @@ odb_version="2.1.16"
 neo_version="3.0"
 php_version="7.0"
 hhvm_version="3.13"
-gremlin_version="3.1.1"
 
 ## Spider package versions
 spider_version="0.4.0"
@@ -41,7 +40,6 @@ supported_hhvm="3.12 3.13 latest"
 supported_php="7.0 5.6 latest"
 supported_odb="2.1.16 2.1.17 latest"
 supported_neo="2.3 2.3-enterprise 3.0 3.0-enterprise latest"
-supported_gremlin="3.1.1"
 
 ## Flag defaults
 is_mac=0 # This is temporary for the docker private beta release. Will be removed
@@ -109,11 +107,6 @@ check_versions() {
     if [ "$is_neo_supported" = "false" ]; then
         echo "WARNING: The neo4j version you provided (${neo_version}) is not officially supported, and may not have a valid docker container"
     fi
-
-    is_gremlin_supported=$(in_array $gremlin_version "$supported_gremlin")
-    if [ "$is_gremlin_supported" = "false" ]; then
-        echo "WARNING: The gremlin version you provided (${gremlin_version}) is not officially supported, and may not have a valid docker container"
-    fi
 }
 
 
@@ -127,14 +120,14 @@ spider-dev_call () ( echo "Invalid call '$@'" ) # General error response for com
 # @options [versions] See `bin/spider-dev help`
 spider-dev_command_up () (
     check_versions
-    HHVM_VERSION=":${hhvm_version}" PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" GREMLIN_VERSION=":${gremlin_version}" docker-compose up -d
+    HHVM_VERSION=":${hhvm_version}" PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" docker-compose up -d
 )
 
 
 ## `down` Stops docker services
 spider-dev_command_down () (
     check_versions
-    HHVM_VERSION=":${hhvm_version}" PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" GREMLIN_VERSION=":${gremlin_version}" docker-compose down
+    HHVM_VERSION=":${hhvm_version}" PHP_VERSION=":${php_version}" ORIENTDB_VERSION=":${odb_version}" NEO4J_VERSION=":${neo_version}" docker-compose down
 )
 
 execute_command () (
@@ -153,7 +146,7 @@ execute_command () (
         volume_path=/Mac${SPIDER_PATH}
     fi
 
-    docker run -it --link spider_gremlin:gremlin --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider "${interpreter}:${interpreter_version}" ${cmd_to_execute}
+    docker run -it --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider "${interpreter}:${interpreter_version}" ${cmd_to_execute}
 )
 
 
@@ -181,7 +174,7 @@ spider-dev_command_test () (
 
     # Run the tests and kill the container
     spider-dev_command_up
-    sleep 60 # @todo: Find a better way to wait for db services to be up and running
+    sleep 30 # @todo: Find a better way to wait for db services to be up and running
              # If it can't be done in 30 seconds, it shouldn't be done at all
     execute_command $phpunit_command
 
@@ -227,15 +220,12 @@ spider-dev_command_versions () (
     echo " - hhvm       ${hhvm_version}"
     echo " - orientdb   ${odb_version}"
     echo " - neo4j      ${neo_version}"
-    echo " - gremlin    ${gremlin_version}"
-
 
     echo "Versions currently supported by Spider: "
     echo " - php        ${supported_php}"
     echo " - hhvm       ${supported_hhvm}"
     echo " - orientdb   ${supported_odb}"
     echo " - neo4j      ${supported_neo}"
-    echo " - gremlin    ${gremlin_version}"
 )
 
 
@@ -254,7 +244,7 @@ Also note that options and flags must come BEFORE commands, e.g. bin/spider-dev 
     echo "      Version Flags:"
     echo "      --orientdb="x.x.x"   Sets the OrientDB service version (corresponds directly to docker image tag, e.g. orientdb:2.1.16)"
     echo "      --neo="x.x.x"        Sets the Neo4j service version (corresponds directly to docker image tag, e.g. neo:2.1.16)"
-    echo "      --gremlin="x.x.x"    Sets the Gremlin service version (corresponds directly to docker image tag, e.g. gremlin:2.1.16)"
+    echo "      --gremlin="x.x.x"    Not Supported yet"
     echo "      --php="x.x.x"        Sets the PHP service version (corresponds directly to docker image tag, e.g. php:7.0). Note that PHP is used by default."
     echo "      --hhvm="x.x.x"       Sets the HHVM service version, and sets HHVM as the interpreter (corresponds directly to docker image tag, e.g. hhvm:3.1.13)"
     echo ""
@@ -286,7 +276,6 @@ Also note that options and flags must come BEFORE commands, e.g. bin/spider-dev 
 # php/hvm will flag which interpreter to use
 spider-dev_option_orientdb () ( odb_version="$1"; shift; dispatch spider-dev "$@" )
 spider-dev_option_neo4j () ( neo_version="$1"; shift; dispatch spider-dev "$@" )
-spider-dev_option_gremlin () ( gremlin="$1"; shift; dispatch spider-dev "$@" )
 spider-dev_option_php () ( interpreter="skooppaos/php"; php_version="$1"; shift; dispatch spider-dev "$@" )
 spider-dev_option_hhvm () ( interpreter="baptistedonaux/hhvm"; hhvm_version="$1"; shift; dispatch spider-dev "$@" )
 
