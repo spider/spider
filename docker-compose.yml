@@ -29,7 +29,6 @@ services:
       links:
         - orientdb:orientdb
         - neo4j:neo4j
-        - gremlin:gremlin
       volumes:
         - ./:/spider
       working_dir: /spider
