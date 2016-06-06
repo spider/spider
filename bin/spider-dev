@@ -146,7 +146,7 @@ execute_command () (
         volume_path=/Mac${SPIDER_PATH}
     fi
 
-    docker run -it --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -v ${volume_path}:/spider -w /spider "${interpreter}:${interpreter_version}" ${cmd_to_execute}
+    docker run -it --link spider_orientdb:orientdb --link spider_neo4j:neo4j --net spider_default -e "SPIDER_DOCKER=true" -e "WAIT_FOR=true" -v ${volume_path}:/spider -w /spider "${interpreter}:${interpreter_version}" ${cmd_to_execute}
 )
 
 
@@ -174,9 +174,7 @@ spider-dev_command_test () (
 
     # Run the tests and kill the container
     spider-dev_command_up
-    sleep 40 # @todo: Find a better way to wait for db services to be up and running
-             # If it can't be done in 30 seconds, it shouldn't be done at all
-    execute_command $phpunit_command
+    execute_command $phpunit_command # Will wait up to 2 minutes for services to startup
 
     final_exit_code=$?
 

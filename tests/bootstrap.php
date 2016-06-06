@@ -1,4 +1,7 @@
 <?php
+use Everyman\Neo4j\Client;
+use PhpOrient\PhpOrient;
+
 require __DIR__ . "/../vendor/autoload.php";
 
 /* Set error display appropriately */
@@ -28,3 +31,44 @@ if (getenv('TRAVIS')) {
 $dotenv->load();
 
 //echo getenv('GREMLIN_HOSTNAME');
+
+
+/* Wait for DB services to be started */
+// @todo: make this more robust. Allow for comma-separated values, etc
+if (getenv('WAIT_FOR')) {
+
+    // Create the clients
+    $neo_client = new Client(getenv('NEO4J_HOSTNAME'), getenv('NEO4J_PORT'));
+    $neo_client->getTransport()
+        ->setAuth(getenv('NEO4J_USERNAME'), getenv('NEO4J_PASSWORD'));
+
+    $orient_client = new PhpOrient();
+    $orient_client->configure([
+        'hostname' => getenv('ORIENTDB_HOSTNAME'),
+        'port' => getenv('ORIENTDB_PORT'),
+        'username' => getenv('ORIENTDB_USERNAME'),
+        'password' => getenv('ORIENTDB_PASSWORD'),
+    ]);
+
+    // Wait for good responses
+    $attempts = 0;
+    while ($attempts < 60) { // try for two minutes-ish
+        try {
+            $neo_client->getServerInfo();
+            $orient_client->connect();
+            break;
+        } catch (Exception $e) {
+
+            if ($attempts === 60) {
+                echo "WARNING: Database services did not startup after 2 minutes. Aborting tests.\n";
+            } else {
+                echo "Waiting for database services to startup...\n";
+                $attempts++;
+                sleep(2);
+            }
+        }
+    }
+
+    $time_to_startup = $attempts * 2;
+    echo "All database services started after {$time_to_startup} seconds! Moving on.\n";
+}
