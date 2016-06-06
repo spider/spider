@@ -35,6 +35,7 @@ $dotenv->load();
 
 /* Wait for DB services to be started */
 // @todo: make this more robust. Allow for comma-separated values, etc
+// @todo: extract to a separate class utility
 if (getenv('WAIT_FOR')) {
 
     // Create the clients
@@ -61,6 +62,7 @@ if (getenv('WAIT_FOR')) {
 
             if ($attempts === 60) {
                 echo "WARNING: Database services did not startup after 2 minutes. Aborting tests.\n";
+                exit(2);
             } else {
                 echo "Waiting for database services to startup...\n";
                 $attempts++;

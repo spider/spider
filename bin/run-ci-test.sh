@@ -2,4 +2,4 @@
 
 bin/spider-dev up
 sleep 60
-php vendor/bin/phpunit -c phpunit.xml.dist
+php WAIT_FOR=true vendor/bin/phpunit -c phpunit.xml.dist
