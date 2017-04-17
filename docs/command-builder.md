@@ -14,7 +14,7 @@ $person = $query
    ->select()
    ->from('person')
    ->where('name', 'vadas')
-   ->first();
+   ->getOne();
 
 echo $people->name; // 'Vadas'
 ```
@@ -89,7 +89,7 @@ $builder->select()->from('person')
     ->limit(20)
 
 $builder->select()->from('software')
-    ->first();
+    ->getOne();
 ```
 
 Order the results.
@@ -221,16 +221,16 @@ $query
     ->andWhere('height', 5)
     ->limit(1)
     ->orderBy('name', 'asc') // order of orderBy is important
-    ->all();
+    ->getAll();
 ```
 
 ### Dispatching from the Query builder
 What makes the Query Builder different is that you can interact with the database directly.
 
-You can simply **dispatch** your query, or use **go**
+You can simply **execute** your query, or use **go**
 ```php
 $result = $query->select()->from('person')
-    ->dispatch();
+    ->execute();
       
 $result = $query->select()->from('person')
     ->go();
@@ -239,10 +239,10 @@ Which will return a generic `Response`. Read [more about responses](responses.md
 
 ----
 
-**all()** removes the limit and returns a an array or collections
+**getAll()** removes the limit and returns an array of collections
 ```php
 $result = $query->select()->from('person')
-    ->all();
+    ->getAll();
 ```
 Read [more about responses](responses.md).
 
@@ -251,7 +251,7 @@ Read [more about responses](responses.md).
 Or, we recommend **get()** for most cases.
 ```php
 $result = $query->select()->from('person')
-    ->get(); // alias of set()
+    ->get(); // alias of getSet()
 ```
 Which will return a Set (array of or single`Collection`).
 Read [more about responses](responses.md).
@@ -259,19 +259,19 @@ Read [more about responses](responses.md).
 
 ----
 
-**one()** and **first()** sets the limit to `1` before dispatching
+**getOne()** sets the limit to `1` before executing
 ```php
 $result = $query->select()->from('person')
-    ->one(); // or first();
+    ->getOne();
 ```
 Returns a single `Collection`. Read [more about responses](responses.md).
 
 ----
 
-**path()** dispatches and returns a Path.
+**getPath()** executes and returns a Path.
 ```php
 $result = $query->select()->from('person')
-    ->path();
+    ->getPath();
 ```
 Read [more about responses](responses.md).
 
@@ -279,10 +279,10 @@ Read [more about responses](responses.md).
 
 ----
 
-**tree()** dispatches and returns a Tree.
+**getTree()** executes and returns a Tree.
 ```php
 $result = $query->select()->from('person')
-    ->tree();
+    ->getTree();
 ```
 Read [more about responses](responses.md).
 
@@ -290,20 +290,20 @@ Read [more about responses](responses.md).
 
 ----
 
-**set()** dispatches and returns a Set (array or single collection).
+**getSet()** executes and returns a Set (array or single collection).
 This is really an alias for `get()`
 ```php
 $result = $query->select()->from('person')
-    ->set();
+    ->getSet();
 ```
 Read [more about responses](responses.md).
 
 ----
 
-**scalar()** dispatches and returns a single, scalar value.
+**getScalar()** executes and returns a single, scalar value.
 ```php
 $result = $query->select('name')->from('person')->where('id', 5)
-    ->scalar();
+    ->getScalar();
 
 echo $result; // 'Miranda'
 ```

@@ -46,6 +46,9 @@ class CommandProcessor implements ProcessorInterface
     /** @var  Bag The CommandBag to be processed */
     protected $bag;
 
+    /** @var  SqlBatch Current SqlBatch Script */
+    protected $batch;
+
     /** @var  string The script in process */
     protected $script;
 
@@ -57,16 +60,22 @@ class CommandProcessor implements ProcessorInterface
      * script for whichever driver is specified
      *
      * @param Bag $bag
-     * @return CommandInterface
+     * @return Command
      */
     public function process(Bag $bag)
     {
         $this->init($bag);
 
-        // Process the command using select(), insert(), update(), delete()
+        // Process a single command using select(), insert(), update(), delete()
         call_user_func([$this, $this->getBagsCommand()]);
 
-        $command = new Command($this->script);
+        // Add command to SqlBatch
+        $this->batch->begin();
+        $this->batch->addStatement($this->script);
+        $this->batch->end();
+
+        // Create Command
+        $command = new Command($this->batch->getScript());
         $command->setScriptLanguage('orientSQL');
 
         return $command;
@@ -222,6 +231,7 @@ class CommandProcessor implements ProcessorInterface
     public function init(Bag $bag)
     {
         $this->bag = $bag;
+        $this->batch = new SqlBatch();
         $this->script = '';
     }
 
@@ -407,7 +417,7 @@ class CommandProcessor implements ProcessorInterface
             $keys = array_keys($this->bag->data[0]);
             $values = array_values($this->bag->data[0]);
 
-            $values = array_map(function($value) {
+            $values = array_map(function ($value) {
                 return $this->castValue($value);
             }, $values);
         }

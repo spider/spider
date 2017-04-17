@@ -4,6 +4,7 @@ namespace Spider\Test\Unit\Drivers\Gremlin;
 use Codeception\Specify;
 use Spider\Commands\Command;
 use Spider\Drivers\Gremlin\Driver as GremlinDriver;
+use Spider\Exceptions\FormattingException;
 use Spider\Test\Fixtures\GremlinFixture;
 use Spider\Test\Unit\Drivers\BaseTestSuite;
 
@@ -251,5 +252,17 @@ class DriverTest extends BaseTestSuite
     public function testFormatTree()
     {
         $this->markTestSkipped("Tree is not yet implemented as gremlin-server doesn't currently support it");
+    }
+
+    public function testThrowsFormattingExceptionForPath()
+    {
+        $this->specify("it throws an exception for scalar response on set formatting", function () {
+            $driver = $this->driver();
+
+            $response = $this->getScalarResponse('string');
+
+            $driver->formatAsPath($response);
+        }, ['throws' => new FormattingException()]);
+
     }
 }
