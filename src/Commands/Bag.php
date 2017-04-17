@@ -42,9 +42,6 @@ class Bag extends Object
     /** @var array Data to be inserted/updated */
     public $data = [];
 
-    /** @var int How many records to create */
-    public $createCount = 0;
-
     /**
      * What do you want after an operation is complete?
      *
@@ -117,4 +114,7 @@ class Bag extends Object
     const ELEMENT_EDGE   = 510;
     const ELEMENT_LABEL  = 520;
     const ELEMENT_ID     = 530;
+    const ELEMENT_TYPE = 540;
+    const EDGE_INV = 550;
+    const EDGE_OUTV = 560;
 }
