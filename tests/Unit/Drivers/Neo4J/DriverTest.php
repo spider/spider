@@ -4,6 +4,7 @@ namespace Spider\Test\Unit\Drivers\Neo4J;
 use Codeception\Specify;
 use Spider\Commands\Command;
 use Spider\Drivers\Neo4J\Driver as Neo4JDriver;
+use Spider\Exceptions\FormattingException;
 use Spider\Test\Fixtures\Graph;
 use Spider\Test\Fixtures\NeoFixture;
 use Spider\Test\Unit\Drivers\BaseTestSuite;
@@ -150,7 +151,7 @@ class DriverTest extends BaseTestSuite
     {
         $driver = $this->driver();
         $driver->open();
-        $response = $driver->executeReadCommand(new Command(
+        $response = $driver->executeCommand(new Command(
             "MATCH p =((a)-[:created]->(b)<-[:created]-(c))
              RETURN p
              ORDER BY a.name ASC, c.name DESC
@@ -172,7 +173,7 @@ class DriverTest extends BaseTestSuite
         //$this->assertEquals(2, $consistent[0][2]->meta()->id, "id wasn't properly populated");
         $this->assertEquals('person', $consistent[0][2]->meta()->label, "label wasn't properly populated");
         $this->assertEquals('peter', $consistent[0][2]->name, "name wasn't properly populated");
-        $response = $driver->executeReadCommand(new Command(
+        $response = $driver->executeCommand(new Command(
             "MATCH p =((a)-[:created]->(b)<-[:created]-(c))
              RETURN p
              ORDER BY a.name ASC, c.name DESC
@@ -213,5 +214,17 @@ class DriverTest extends BaseTestSuite
     public function testFormatTree()
     {
         $this->markTestSkipped("Tree is not yet implemented as gremlin-server doesn't curently support it");
+    }
+
+    public function testThrowsFormattingExceptionForPath()
+    {
+        $this->specify("it throws an exception for scalar response on set formatting", function () {
+            $driver = $this->driver();
+
+            $response = $this->getScalarResponse('string');
+
+            $driver->formatAsPath($response);
+        }, ['throws' => new FormattingException()]);
+
     }
 }

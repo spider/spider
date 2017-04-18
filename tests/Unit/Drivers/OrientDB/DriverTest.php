@@ -144,27 +144,28 @@ class DriverTest extends BaseTestSuite
             $driver->open();
             $driver->startTransaction();
 
-            $driver->executeWriteCommand(new Command(
+            $driver->executeCommand(new Command(
                 "CREATE VERTEX CONTENT {name:'one'}", "orientSQL"
             ));
 
-            $driver->executeWriteCommand(new Command(
+            $driver->executeCommand(new Command(
                 "CREATE VERTEX CONTENT {name:'two'}", "orientSQL"
-            ), "orientSQL");
+            ));
 
-            $driver->executeWriteCommand(new Command(
+            $driver->executeCommand(new Command(
                 "CREATE VERTEX CONTENT {name:'three'}", "orientSQL"
-            ), "orientSQL");
+            ));
 
             $expected = "begin\n";
             $expected .= "LET t1 = CREATE VERTEX CONTENT {name:'one'}\n";
             $expected .= "LET t2 = CREATE VERTEX CONTENT {name:'two'}\n";
             $expected .= "LET t3 = CREATE VERTEX CONTENT {name:'three'}\n";
-            $expected .= 'commit return [$t1,$t2,$t3]';
-
-            $driver->stopTransaction(false); // false
+            $expected .= "commit retry 100\n";
+            $expected .= 'return [$t1,$t2,$t3]';
 
             $actual = $driver->getTransactionForTest();
+
+            $driver->stopTransaction(false); // false
 
             $this->assertEquals($expected, $actual, "the transaction statement was incorrectly built");
             $driver->close();
@@ -177,7 +178,7 @@ class DriverTest extends BaseTestSuite
             $driver = $this->driver();
             $driver->open();
 
-            $driver->executeWriteCommand(new Command(
+            $driver->executeCommand(new Command(
                 "INSERT INTO nothing CONTENT {name: 'michael'}",
                 "orientSQL"
             ));
@@ -188,11 +189,11 @@ class DriverTest extends BaseTestSuite
 
     public function testFormatSingleCollectionAsScalar()
     {
-        $this->specify("it formats a single response as a scalar", function() {
+        $this->specify("it formats a single response as a scalar", function () {
             $driver = $this->driver();
             $driver->open();
 
-            $response = $driver->executeReadCommand(new Command(
+            $response = $driver->executeCommand(new Command(
                 "SELECT name FROM V LIMIT 1", 'orientSQL',
                 "orientSQL"
             ));
@@ -205,11 +206,11 @@ class DriverTest extends BaseTestSuite
             $this->assertEquals($this->expected[0]['name'], $scalar, "failed to return the correct scalar");
         });
 
-        $this->specify("it throws exception for multiple projections", function() {
+        $this->specify("it throws exception for multiple projections", function () {
             $driver = $this->driver();
             $driver->open();
 
-            $response = $driver->executeReadCommand(new Command(
+            $response = $driver->executeCommand(new Command(
                 "SELECT FROM V LIMIT 1", 'orientSQL',
                 "orientSQL"
             ));
@@ -218,11 +219,11 @@ class DriverTest extends BaseTestSuite
             $response->getScalar();
         }, ['throws' => 'Spider\Exceptions\FormattingException']);
 
-        $this->specify("it throws exception for multiple records", function() {
+        $this->specify("it throws exception for multiple records", function () {
             $driver = $this->driver();
             $driver->open();
 
-            $response = $driver->executeReadCommand(new Command(
+            $response = $driver->executeCommand(new Command(
                 "SELECT name FROM V", 'orientSQL',
                 "orientSQL"
             ));
@@ -250,7 +251,7 @@ class DriverTest extends BaseTestSuite
         $driver = $this->driver();
         $driver->open();
 
-        $response = $driver->executeReadCommand($builder);
+        $response = $driver->executeCommand($builder);
 
         $consistent = $response->getSet();
         $this->assertEquals(6, count($consistent), "wrong number of elements found");

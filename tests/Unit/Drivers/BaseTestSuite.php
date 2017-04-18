@@ -7,6 +7,7 @@ use Spider\Commands\Command;
 use Spider\Drivers\DriverInterface;
 use Spider\Exceptions\FormattingException;
 use Spider\Exceptions\InvalidCommandException;
+use Spider\Exceptions\NotSupportedException;
 
 /**
  * This is the base tests for all driver.
@@ -144,7 +145,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $driver = $this->driver();
             $driver->open();
 
-            $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
+            $response = $driver->executeCommand($this->getCommand('select-one-item'));
 
             $driver->close();
 
@@ -169,7 +170,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $driver = $this->driver();
             $driver->open();
 
-            $response = $driver->executeReadCommand($this->getCommand('select-two-items'));
+            $response = $driver->executeCommand($this->getCommand('select-two-items'));
 
             $driver->close();
 
@@ -193,7 +194,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         $driver->open();
 
         // Create new
-        $response = $driver->executeWriteCommand($this->getCommand('create-one-item'));
+        $response = $driver->executeCommand($this->getCommand('create-one-item'));
 
         $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
         $newRecord = $response->getSet();
@@ -206,7 +207,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         );
 
         // Update existing
-        $response = $driver->executeWriteCommand($this->getCommand('update-one-item', $newRecord->name));
+        $response = $driver->executeCommand($this->getCommand('update-one-item', $newRecord->name));
 
         $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
         $updatedRecord = $response->getSet();
@@ -219,7 +220,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         );
 
         // Delete That one
-        $response = $driver->executeWriteCommand($this->getCommand('delete-one-item', $updatedRecord->name));
+        $response = $driver->executeCommand($this->getCommand('delete-one-item', $updatedRecord->name));
 
         $this->assertInstanceOf('Spider\Drivers\Response', $response, 'failed to return a Response Object');
         $deletedRecord = $response->getSet();
@@ -227,7 +228,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         $this->assertEquals([], $deletedRecord, "failed to delete");
 
         // And try to get it again
-        $response = $driver->executeReadCommand(
+        $response = $driver->executeCommand(
             $this->getCommand('select-by-name', $updatedRecord->name)
         );
 
@@ -248,12 +249,12 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $driver->open();
             $driver->startTransaction();
 
-            $driver->executeWriteCommand($this->getCommand('create-one-item'));
+            $driver->executeCommand($this->getCommand('create-one-item'));
 
             $driver->stopTransaction(false);
 
             // Try to get that non-existent vertex
-            $response = $driver->executeReadCommand(
+            $response = $driver->executeCommand(
                 $this->getCommand(
                     'select-by-name',
                     'testVertex'
@@ -272,12 +273,12 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $driver->open();
             $driver->startTransaction();
 
-            $driver->executeWriteCommand($this->getCommand('create-one-item'));
+            $driver->executeCommand($this->getCommand('create-one-item'));
 
             $driver->stopTransaction(true);
 
             // Get the item just created
-            $response = $driver->executeReadCommand(
+            $response = $driver->executeCommand(
                 $this->getCommand(
                     'select-by-name',
                     'testVertex'
@@ -292,7 +293,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             );
 
             // Clean up
-            $driver->runWriteCommand(
+            $driver->runCommand(
                 $this->getCommand(
                     'delete-one-item',
                     'testVertex'
@@ -356,13 +357,25 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         }, ['throws' => new FormattingException()]);
     }
 
+    public function testThrowsFormattingExceptionForSet()
+    {
+        $this->specify("it throws an exception for scalar response on set formatting", function () {
+            $driver = $this->driver();
+
+            $response = $this->getScalarResponse('string');
+
+            $driver->formatAsSet($response);
+        }, ['throws' => new FormattingException()]);
+
+    }
+
     public function testFormatSet()
     {
         $this->specify("it formats a single record as a Collection", function () {
             $driver = $this->driver();
             $driver->open();
 
-            $rawResponse = $driver->executeReadCommand(
+            $rawResponse = $driver->executeCommand(
                 $this->getCommand('select-one-item')
             )->getRaw();
 
@@ -387,7 +400,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
             $driver = $this->driver();
             $driver->open();
 
-            $rawResponse = $driver->executeReadCommand(
+            $rawResponse = $driver->executeCommand(
                 $this->getCommand('select-two-items')
             )->getRaw();
 
@@ -433,7 +446,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         $this->specify("it throws an Exception when a modifying protected id", function () {
             $driver = $this->driver();
             $driver->open();
-            $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
+            $response = $driver->executeCommand($this->getCommand('select-one-item'));
             $consistent = $response->getSet();
 
             $this->assertEquals(
@@ -449,7 +462,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         $this->specify("it throws an Exception when a modifying protected label", function () {
             $driver = $this->driver();
             $driver->open();
-            $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
+            $response = $driver->executeCommand($this->getCommand('select-one-item'));
             $consistent = $response->getSet();
 
             $this->assertEquals(
@@ -466,7 +479,7 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
         $this->specify("it throws an Exception when a modifying protected meta", function () {
             $driver = $this->driver();
             $driver->open();
-            $response = $driver->executeReadCommand($this->getCommand('select-one-item'));
+            $response = $driver->executeCommand($this->getCommand('select-one-item'));
             $consistent = $response->getSet();
 
             $this->assertEquals(
@@ -480,6 +493,26 @@ abstract class BaseTestSuite extends \PHPUnit_Framework_TestCase
 
             $driver->close();
         }, ['throws' => new ModifyingProtectedValueException]);
+    }
+
+    public function testIncorrectLanguage()
+    {
+        $this->specify("it throws an Exception when a command with an unknown language is submitted", function () {
+            $driver = $this->driver();
+            $driver->open();
+            $response = $driver->executeCommand(new Command('script', 'unknown-language'));
+        }, ['throws' => new NotSupportedException]);
+    }
+
+    public function testIncorrectScript()
+    {
+        $this->setExpectedException('Exception');
+
+        $driver = $this->driver();
+        $driver->open();
+        $command = $this->getCommand('select-one-item');
+        $command->setScript('incorrect-script');
+        $response = $driver->executeCommand($command);
     }
 
     /* Internal Methods */

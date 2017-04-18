@@ -13,6 +13,7 @@ class Query extends Builder
     /** @var ConnectionInterface Valid connection containing a driver */
     protected $connection;
 
+
     /**
      * Creates a new instance of the Command Builder
      * With a LanguageProcessor and Connection
@@ -24,28 +25,9 @@ class Query extends Builder
         ConnectionInterface $connection,
         ProcessorInterface $processor = null,
         Bag $bag = null
-    )
-    {
+    ) {
         parent::__construct($processor, $bag);
         $this->connection = $connection;
-    }
-
-    /**
-     * In some cases, choose what the database sends back
-     * after the operation. For instance, if deleting
-     * Do you want the records affected, record
-     * before, or a simple `true` for success?
-     *
-     * $builder->drop(3)->fromDb('AFTER')
-     *
-     * @note NOT IMPLEMENTED YET see PR #21
-     * @param null $wanted
-     * @return $this
-     */
-    public function fromDb($wanted = null)
-    {
-        $this->bag->return = (is_null($wanted)) ? true : $this->csvToArray($wanted);
-        return $this;
     }
 
     /**
@@ -53,11 +35,10 @@ class Query extends Builder
      *
      * If no instance of CommandInterface is provided, then the
      * current Command Bag is processed via the Command Processor
-     *
      * @param CommandInterface|null $command
-     * @return Response the DB response in SpiderResponse format
+     * @return \Spider\Drivers\Response the DB response in SpiderResponse format
      */
-    public function dispatch(CommandInterface $command = null)
+    protected function dispatch($command = null)
     {
         $this->connection->open();
 
@@ -69,36 +50,33 @@ class Query extends Builder
             $message = $this;
         }
 
-        if ($this->bag->command === Bag::COMMAND_RETRIEVE) {
-            $response = $this->connection->executeReadCommand($message);
-        } else {
-            $response = $this->connection->executeWriteCommand($message);
-        }
+        $response = $this->connection->executeCommand($message);
 
         // Reset query and return response
-        $this->bag = new Bag();
+        $this->clear();
+
         return $response;
     }
 
     /**
      * Alias of dispatch
-     * @return Response
+     * @return \Spider\Drivers\Response
      */
     public function go()
     {
         return $this->dispatch();
     }
 
-    /* Dispatch with limits */
+    /* Dispatch without limits */
     /**
      * Dispatch a retrieve command with no limit.
      * Return all the results
      * @return array|Collection Results formatted as a Set
      */
-    public function all()
+    public function getAll()
     {
         $this->limit(false);
-        $response = $this->set();
+        $response = $this->getSet();
 
         return (is_array($response)) ? $response : [$response];
     }
@@ -109,34 +87,26 @@ class Query extends Builder
      */
     public function get()
     {
-        return $this->set();
+        return $this->getSet();
     }
 
     /**
      * Retrieve the first result by dispatching the current Command Bag.
      * @return Collection Results formatted as a set with single collection
      */
-    public function one()
+    public function getOne()
     {
-        parent::first();
+        $this->one();
         return $this->dispatch()->getSet();
     }
 
-    /**
-     * Retrieve the first result by dispatching the current Command Bag.
-     * @return Collection Results formatted as a set with single collection
-     */
-    public function first()
-    {
-        return $this->one();
-    }
 
     /* Dispatch with Response formats */
     /**
      * Dispatches Command and formats results as a Set.
      * @return array|Collection Results formatted as a set
      */
-    public function set()
+    public function getSet()
     {
         return $this->dispatch()->getSet();
     }
@@ -145,9 +115,9 @@ class Query extends Builder
      * Dispatches Command and formats results as a Tree.
      * @return array|Collection Results formatted as a tree
      */
-    public function tree()
+    public function getTree()
     {
-        parent::tree();
+        $this->tree();
         return $this->dispatch()->getTree();
     }
 
@@ -155,9 +125,9 @@ class Query extends Builder
      * Dispatches Command and formats results as a Path.
      * @return array|Collection Results formatted as a path
      */
-    public function path()
+    public function getPath()
     {
-        parent::path();
+        $this->path();
         return $this->dispatch()->getPath();
     }
 
@@ -165,10 +135,20 @@ class Query extends Builder
      * Dispatches Command and formats results as a scalar.
      * @return string|bool|int Results formatted as a scalar
      */
-    public function scalar()
+    public function getScalar()
     {
-        $this->limit(1);
+        $this->one();
         return $this->dispatch()->getScalar();
+    }
+
+    /**
+     * Execute a command through dispatch
+     * @param CommandInterface|null $command
+     * @return \Spider\Drivers\Response
+     */
+    public function execute(CommandInterface $command = null)
+    {
+        return $this->dispatch($command);
     }
 
     /* Manage the Builder itself */
