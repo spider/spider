@@ -8,7 +8,7 @@ use Spider\Commands\Languages\OrientSQL\CommandProcessor;
 
 class OrientSqlProcessorTest extends BaseTestSuite
 {
-   /* Implemented Methods */
+    /* Implemented Methods */
     public function processor()
     {
         return new CommandProcessor();
@@ -20,7 +20,8 @@ class OrientSqlProcessorTest extends BaseTestSuite
      */
     public function insertSimple()
     {
-        $query = 'INSERT INTO target';
+        $query = $this->getBatchOpening();
+        $query .= 'INSERT INTO target';
 
         /* ToDo: insert data should be produced dynamically */
         /* In order to produce this on the fly, we had to copy processor methods */
@@ -28,6 +29,7 @@ class OrientSqlProcessorTest extends BaseTestSuite
         $query .= " (one, two, three) VALUES (1, 'two', false)";
 
         $query .= ' RETURN @this';
+        $query .= $this->getBatchClosing();
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -42,13 +44,15 @@ class OrientSqlProcessorTest extends BaseTestSuite
      */
     public function insertMultiple()
     {
-        $query = "INSERT INTO target ";
+        $query = $this->getBatchOpening();
+        $query .= "INSERT INTO target ";
         $query .= "(name, role, ship, husband, past)";
         $query .= " VALUES ";
         $query .= "('mal', 'captain', 'firefly', null, null), ";
         $query .= "('zoe', 'first', null, 'wash', null), ";
         $query .= "('book', 'shepherd', null, null, 'unknown')";
         $query .= " RETURN @this";
+        $query .= $this->getBatchClosing();
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -63,9 +67,11 @@ class OrientSqlProcessorTest extends BaseTestSuite
      */
     public function updateSimple()
     {
-        $query = 'UPDATE target_id';
+        $query = $this->getBatchOpening();
+        $query .= 'UPDATE target_id';
         $query .= ' MERGE ' . json_encode($this->getData());
         $query .= ' RETURN AFTER';
+        $query .= $this->getBatchClosing();
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -78,11 +84,13 @@ class OrientSqlProcessorTest extends BaseTestSuite
      */
     public function updateComplex()
     {
-        $query = 'UPDATE target';
+        $query = $this->getBatchOpening();
+        $query .= 'UPDATE target';
         $query .= ' MERGE ' . json_encode($this->getData());
         $query .= ' RETURN AFTER';
         $query .= $this->getWhereSql();
         $query .= ' LIMIT 10';
+        $query .= $this->getBatchClosing();
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -95,7 +103,9 @@ class OrientSqlProcessorTest extends BaseTestSuite
      */
     public function deleteSimple()
     {
-        $query = "DELETE VERTEX V WHERE @rid = 'target_id'";
+        $query = $this->getBatchOpening();
+        $query .= "DELETE VERTEX V WHERE @rid = 'target_id'";
+        $query .= $this->getBatchClosing();
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -108,9 +118,11 @@ class OrientSqlProcessorTest extends BaseTestSuite
      */
     public function deleteComplex()
     {
-        $query = 'DELETE VERTEX FROM target';
+        $query = $this->getBatchOpening();
+        $query .= 'DELETE VERTEX FROM target';
         $query .= $this->getWhereSql();
         $query .= ' LIMIT 10';
+        $query .= $this->getBatchClosing();
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -123,8 +135,10 @@ class OrientSqlProcessorTest extends BaseTestSuite
      */
     public function selectSimple()
     {
-        $query = 'SELECT';
+        $query = $this->getBatchOpening();
+        $query .= 'SELECT';
         $query .= ' FROM target';
+        $query .= $this->getBatchClosing();
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -137,8 +151,10 @@ class OrientSqlProcessorTest extends BaseTestSuite
      */
     public function selectSimpleEdge()
     {
-        $query = 'SELECT';
+        $query = $this->getBatchOpening();
+        $query .= 'SELECT';
         $query .= ' FROM target';
+        $query .= $this->getBatchClosing();
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -151,9 +167,11 @@ class OrientSqlProcessorTest extends BaseTestSuite
      */
     public function selectConstraints()
     {
-        $query = 'SELECT';
+        $query = $this->getBatchOpening();
+        $query .= 'SELECT';
         $query .= ' FROM target';
         $query .= $this->getWhereSql();
+        $query .= $this->getBatchClosing();
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -166,11 +184,13 @@ class OrientSqlProcessorTest extends BaseTestSuite
      */
     public function selectOrderBy()
     {
-        $query = 'SELECT field1, field2';
+        $query = $this->getBatchOpening();
+        $query .= 'SELECT field1, field2';
         $query .= ' FROM target';
         $query .= $this->getWhereSql();
         $query .= ' ORDER BY field1 DESC';
         $query .= ' LIMIT 3';
+        $query .= $this->getBatchClosing();
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -183,11 +203,13 @@ class OrientSqlProcessorTest extends BaseTestSuite
      */
     public function selectGroupBy()
     {
-        $query = 'SELECT';
+        $query = $this->getBatchOpening();
+        $query .= 'SELECT';
         $query .= ' FROM target';
         $query .= $this->getWhereSql();
         $query .= ' GROUP BY field1';
         $query .= ' LIMIT 3';
+        $query .= $this->getBatchClosing();
 
         $command = new Command($query);
         $command->setScriptLanguage('orientSQL');
@@ -203,7 +225,12 @@ class OrientSqlProcessorTest extends BaseTestSuite
             // equivalent to $builder->select();
             // Issue #41
 
-            $expected  = new Command('SELECT FROM V');
+            $query = $this->getBatchOpening();
+            $query .= 'SELECT';
+            $query .= ' FROM V';
+            $query .= $this->getBatchClosing();
+
+            $expected = new Command($query);
             $expected->setScriptLanguage('orientSQL');
 
             $actual = $this->processor()->process($bag);
@@ -215,5 +242,19 @@ class OrientSqlProcessorTest extends BaseTestSuite
     protected function getWhereSql()
     {
         return " WHERE one = 'one' AND two > 2 OR three < 3.14 AND four = true";
+    }
+
+    protected function getBatchOpening()
+    {
+        $opening = "begin\n";
+        $opening .= "LET t1 = ";
+        return $opening;
+    }
+
+    protected function getBatchClosing()
+    {
+        $closing = "\ncommit retry 100\n";
+        $closing .= 'return $t1';
+        return $closing;
     }
 }

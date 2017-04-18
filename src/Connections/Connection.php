@@ -71,7 +71,7 @@ class Connection extends Collection implements ConnectionInterface
      *
      * @param $name
      * @param $args
-     * @return Graph
+     * @return \Spider\Drivers\Response
      */
     public function __call($name, $args)
     {
@@ -107,7 +107,8 @@ class Connection extends Collection implements ConnectionInterface
     }
 
     /**
-     * @param $driver
+     * Create a driver from classname
+     * @param string $driver
      */
     protected function driverFromString($driver)
     {
@@ -120,5 +121,52 @@ class Connection extends Collection implements ConnectionInterface
         } else {
             $this->driver = new $driver();
         }
+    }
+
+    /**
+     * Executes a Command
+     *
+     * This is the R in CRUD
+     *
+     * @param CommandInterface|BaseBuilder $query
+     * @return \Spider\Drivers\Response
+     */
+    public function executeCommand($query)
+    {
+        return $this->driver->executeCommand($query);
+    }
+
+    /**
+     * Runs a Command without waiting for a response
+     *
+     * @param CommandInterface|BaseBuilder $command
+     * @return $this
+     */
+    public function runCommand($command)
+    {
+        $this->driver->runCommand($command);
+        return $this;
+    }
+
+    /**
+     * Opens a transaction
+     *
+     * @return bool|null
+     */
+    public function startTransaction()
+    {
+        return $this->driver->startTransaction();
+    }
+
+    /**
+     * Closes a transaction
+     *
+     * @param bool $commit whether this is a commit (true) or a rollback (false)
+     *
+     * @return bool|null
+     */
+    public function stopTransaction($commit = true)
+    {
+        return $this->driver->stopTransaction($commit);
     }
 }

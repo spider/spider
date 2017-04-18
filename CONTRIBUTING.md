@@ -20,7 +20,7 @@ We accept contributions via Pull Requests on [Github](https://github.com/spider/
 
 - **Send coherent history** - Make sure each individual commit in your pull request is meaningful. If you had to make multiple intermediate commits while developing, please squash them before submitting.
 
-## Running Tests
+## Running Tests and Virtual Environments
 See documentation.
 
 ## Branches

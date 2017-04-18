@@ -1,18 +1,21 @@
 filter:
     excluded_paths:
         - 'tests/*'
+        - 'vendor/*'
+
 checks:
     php:
+        code_rating: true
+        duplication: true
         use_self_instead_of_fqcn: true
         uppercase_constants: true
         return_doc_comments: true
         return_doc_comment_if_not_inferrable: true
+        properties_in_camelcaps: true
         parameters_in_camelcaps: true
-        parameter_doc_comments: true
         param_doc_comment_if_not_inferrable: true
-        optional_parameters_at_the_end: true
         no_goto: true
-        more_specific_types_in_doc_comments: true
+        newline_at_end_of_file: true
         function_in_camel_caps: true
         fix_use_statements:
             remove_unused: true
@@ -20,21 +23,25 @@ checks:
             preserve_blanklines: false
             order_alphabetically: true
         fix_line_ending: true
-        encourage_postdec_operator: true
         classes_in_camel_caps: true
         avoid_perl_style_comments: true
-        align_assignments: true
+        avoid_multiple_statements_on_same_line: true
+
 tools:
-    php_code_coverage: false
-    external_code_coverage: false
-    
-coding_style:
-    php:
-        spaces:
-            other:
-                after_type_cast: false
-        upper_lower_casing:
-            keywords:
-                general: lower
-            constants:
-                true_false_null: lower
+    php_code_sniffer:
+        enabled: true
+        config:
+            standard: "PSR2"
+        filter:
+            excluded_paths:
+                - 'tests/*'
+                - 'vendor/*'
+
+    php_cs_fixer:
+        enabled: true
+        config:
+            level: psr2
+        filter:
+            excluded_paths:
+                - 'tests/*'
+                - 'vendor/*'

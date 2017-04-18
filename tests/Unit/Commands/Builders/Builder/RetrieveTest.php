@@ -64,6 +64,159 @@ class RetrieveTest extends TestSetup
 
     public function testWhereSugars()
     {
+        // First test is duplicated in BaseBuilder on purpose.
+        $this->specify("it adds a single, full where constraint", function () {
+            $actual = $this->builder
+                ->retrieve()
+                ->type(Bag::ELEMENT_VERTEX)
+                ->where(['name', Bag::COMPARATOR_EQUAL, 'michael', Bag::CONJUNCTION_OR])
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'command' => Bag::COMMAND_RETRIEVE,
+                'projections' => [],
+                'target' => Bag::ELEMENT_VERTEX,
+                'where' => [
+                    ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_OR],
+
+                ]
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+
+        $this->specify("it filters by a single where equals constraint", function () {
+            $actual = $this->builder
+                ->retrieve()
+                ->type(Bag::ELEMENT_VERTEX)
+                ->where('certified', 'yes')
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'command' => Bag::COMMAND_RETRIEVE,
+                'projections' => [],
+                'target' => Bag::ELEMENT_VERTEX,
+                'where' => [
+                    ['certified', Bag::COMPARATOR_EQUAL, 'yes', Bag::CONJUNCTION_AND]
+                ]
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag: true");
+        });
+
+        $this->specify("it adds several AND WHERE constraints", function () {
+            $actual = $this->builder
+                ->retrieve()
+                ->type(Bag::ELEMENT_VERTEX)
+                ->where('name', 'michael')
+                ->where('certified', true)
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'command' => Bag::COMMAND_RETRIEVE,
+                'projections' => [],
+                'target' => Bag::ELEMENT_VERTEX,
+                'where' => [
+                    ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
+                    ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_AND]
+                ]
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+
+        $this->specify("it adds an array of WHERE AND constraints", function () {
+            $actual = $this->builder
+                ->retrieve()
+                ->type(Bag::ELEMENT_VERTEX)
+                ->where(['name', '=', 'michael'])
+                ->where('certified', true)
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'command' => Bag::COMMAND_RETRIEVE,
+                'projections' => [],
+                'target' => Bag::ELEMENT_VERTEX,
+                'where' => [
+                    ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
+                    ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_AND]
+                ]
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+
+        $this->specify("it adds an array of an array of WHERE AND constraints", function () {
+            $actual = $this->builder
+                ->retrieve()
+                ->type(Bag::ELEMENT_VERTEX)
+                ->where([
+                    ['name', '=', 'michael'],
+                    ['price', '>', 2]
+                ])
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'command' => Bag::COMMAND_RETRIEVE,
+                'projections' => [],
+                'target' => Bag::ELEMENT_VERTEX,
+                'where' => [
+                    ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
+                    ['price', Bag::COMPARATOR_GT, 2, Bag::CONJUNCTION_AND]
+                ]
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+
+        $this->specify("it adds an array of WHERE OR constraints", function () {
+            $actual = $this->builder
+                ->retrieve()
+                ->type(Bag::ELEMENT_VERTEX)
+                ->where('certified', true)
+                ->where(['name', '=', 'michael', 'OR'])
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'command' => Bag::COMMAND_RETRIEVE,
+                'projections' => [],
+                'target' => Bag::ELEMENT_VERTEX,
+                'where' => [
+                    ['certified', Bag::COMPARATOR_EQUAL, true, Bag::CONJUNCTION_AND],
+                    ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_OR],
+
+                ]
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+
+        $this->specify("it adds an array of an array of WHERE AND constraints", function () {
+            $actual = $this->builder
+                ->retrieve()
+                ->type(Bag::ELEMENT_VERTEX)
+                ->where([
+                    ['name', '=', 'michael'],
+                    ['price', '>', 2, 'OR']
+                ])
+                ->getBag();
+
+            $expected = $this->buildExpectedBag([
+                'command' => Bag::COMMAND_RETRIEVE,
+                'projections' => [],
+                'target' => Bag::ELEMENT_VERTEX,
+                'where' => [
+                    ['name', Bag::COMPARATOR_EQUAL, "michael", Bag::CONJUNCTION_AND],
+                    ['price', Bag::COMPARATOR_GT, 2, Bag::CONJUNCTION_OR]
+                ]
+            ]);
+
+            $this->assertEquals($expected, $actual, "failed to return correct command bag");
+        });
+    }
+
+    public function testAndOrWheres()
+    {
         $this->specify("it adds several AND WHERE constraints", function () {
             $actual = $this->builder
                 ->select()
@@ -115,11 +268,11 @@ class RetrieveTest extends TestSetup
 
     public function testLimitSugars()
     {
-        $this->specify("it gets first records", function () {
+        $this->specify("it gets one record", function () {
             $actual = $this->builder
                 ->select()
                 ->from('v')
-                ->first()
+                ->one()
                 ->getBag();
 
             $expected = $this->buildExpectedBag([
