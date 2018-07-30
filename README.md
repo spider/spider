@@ -1,6 +1,6 @@
 # Spider Graphs
 
-#This project and organization are abandond. If you want to take this over or want github username, open an issue.
+# This project and organization are abandond. If you want to take this over or want github username, open an issue.
 
 [![Managed with ZenHub!](https://raw.githubusercontent.com/ZenHubIO/support/master/zenhub-badge.png)](https://zenhub.io)
 [![Join the chat at https://gitter.im/spider/spider](https://badges.gitter.im/spider/spider.svg)](https://gitter.im/spider/spider?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
